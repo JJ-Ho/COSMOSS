@@ -21,15 +21,15 @@ O.A_Sig1D      = str2double(get(GUI_Main.A_Sig1D    ,'String'));
 % ------------------------------------------------------------------------
 
 % For 2D ------------------------------------------------------------------
+O.A_Pump       = str2double(get(GUI_Main.A_Pump1    ,'String')); % fix it with update JonesTensor later
+O.A_Probe      = str2double(get(GUI_Main.A_Probe    ,'String'));
+O.A_Vis2D      = str2double(get(GUI_Main.A_Vis2D    ,'String'));
+O.A_Sig2D      = str2double(get(GUI_Main.A_Sig2D    ,'String'));
 O.P_Pump1      = str2double(get(GUI_Main.P_Pump1    ,'String'));
 O.P_Pump2      = str2double(get(GUI_Main.P_Pump2    ,'String'));
 O.P_Probe      = str2double(get(GUI_Main.P_Probe    ,'String'));
 O.P_Vis2D      = str2double(get(GUI_Main.P_Vis2D    ,'String'));
 O.P_Sig2D      = str2double(get(GUI_Main.P_Sig2D    ,'String'));
-O.A_Pump       = str2double(get(GUI_Main.A_Pump1    ,'String')); % fix it with update JonesTensor later
-O.A_Probe      = str2double(get(GUI_Main.A_Probe    ,'String'));
-O.A_Vis2D      = str2double(get(GUI_Main.A_Vis2D    ,'String'));
-O.A_Sig2D      = str2double(get(GUI_Main.A_Sig2D    ,'String'));
 % ------------------------------------------------------------------------
   
 O.Avg_Rot      =            get(GUI_Main.Avg_Rot    ,'Value');

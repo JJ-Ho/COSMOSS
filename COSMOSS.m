@@ -128,15 +128,14 @@ function TwoDIR_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 %% Read GUI
-O = ParseGUI_Main(handles);
+GUI_Inputs = ParseGUI_Main(handles);
 
 %% Calculate TwoD response
 Structure = handles.Structure;
-PolarAng  = [O.P_Pump1,O.P_Pump2,O.P_Probe,O.P_Sig2D];
 
-if eq(O.Sampling,1)
+if eq(GUI_Inputs.Sampling,1)
     % Pre-allocate
-    GridSize     = length(O.FreqRange);
+    GridSize     = length(GUI_Inputs.FreqRange);
 
     Rephasing    = zeros(GridSize);
     NonRephasing = zeros(GridSize);
@@ -150,14 +149,14 @@ if eq(O.Sampling,1)
     Num_Modes = Structure.Num_Modes;
     Freq_Orig = Structure.freq;
     
-    StandardDiv = O.FWHM/2*sqrt(2*log(2));
-    P_FlucCorr  = O.P_FlucCorr/100; % turn percentage to number within 0~1
+    StandardDiv = GUI_Inputs.FWHM/2*sqrt(2*log(2));
+    P_FlucCorr  = GUI_Inputs.P_FlucCorr/100; % turn percentage to number within 0~1
     
-    TSTART = zeros(O.Sample_Num,1,'uint64');
-    TIME   = zeros(O.Sample_Num,1);
+    TSTART = zeros(GUI_Inputs.Sample_Num,1,'uint64');
+    TIME   = zeros(GUI_Inputs.Sample_Num,1);
     
     
-    for i = 1:O.Sample_Num
+    for i = 1:GUI_Inputs.Sample_Num
         
         TSTART(i) = tic;
         
@@ -171,14 +170,8 @@ if eq(O.Sampling,1)
         end
         Structure.freq = Freq_Orig + Fluctuation;
        
-        [Tmp_SG,Tmp_Res] = TwoDIR_Main(Structure,...
-                                       'FreqRange'  ,O.FreqRange,...
-                                       'Label_Index',O.Label_Index,...
-                                       'Label_Freq' ,O.Label_Freq,...
-                                       'Coupling'   ,O.Coupling,...
-                                       'Beta_NN'    ,O.Beta_NN,...
-                                       'PolarAng'   ,  PolarAng);
-        
+        [Tmp_SG,Tmp_Res] = TwoDIR_Main(Structure,GUI_Inputs);
+
         Rephasing    = Rephasing    + Tmp_SG.Rephasing   ;
         NonRephasing = NonRephasing + Tmp_SG.NonRephasing;
         SpecAccuR1   = SpecAccuR1   + Tmp_SG.SpecAccuR1  ;
@@ -210,28 +203,19 @@ if eq(O.Sampling,1)
     disp(['Total time: ' num2str(Total_TIME)])
     
 else
-    [SpectraGrid,Response] = TwoDIR_Main(Structure,...
-                                        'FreqRange'  ,O.FreqRange,...
-                                        'Label_Index',O.Label_Index,...
-                                        'Label_Freq' ,O.Label_Freq,...
-                                        'Coupling'   ,O.Coupling,...
-                                        'Beta_NN'    ,O.Beta_NN,...
-                                        'PolarAng'   ,  PolarAng);
+    [SpectraGrid,Response] = TwoDIR_Main(Structure,GUI_Inputs);
+
     H     = Response.H;
     Mu_Ex = Response.Mu.Trans_Ex;
 end
 
 %% Conv2D linshape and make figure
-CVL = Conv2D(SpectraGrid,...
-            'FreqRange',O.FreqRange,...
-            'LineShape',O.LineShape,...
-            'LineWidth',O.LineWidth,...
-            'SpecType' ,O.SpecType,...
-            'Pathway'  ,O.Pathway);   
+
+CVL = Conv2D(SpectraGrid,GUI_Inputs);
 
 % Make figure
 % Plot2DIR(CVL,FreqRange,H,Mu_Ex,Daig_Cut)
-Plot2DIR(CVL,O.FreqRange,H,Mu_Ex)
+Plot2DIR(CVL,GUI_Inputs.FreqRange,H,Mu_Ex)
 
 %% update TwoDIR_Response into guidata
 TwoDIR = Response;
@@ -247,16 +231,14 @@ function TwoDSFG_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 %% Read GUI
-O = ParseGUI_Main(handles);
+GUI_Inputs = ParseGUI_Main(handles);
 
 %% Calculate TwoD response
 Structure = handles.Structure;
-PolarAng  = [O.P_Pump1,O.P_Pump2,O.P_Probe,O.P_Vis2D,O.P_Sig2D];
-INCAng    = [O.A_Pump           ,O.A_Probe,O.A_Vis2D,O.A_Sig2D];
 
-if eq(O.Sampling,1)
+if eq(GUI_Inputs.Sampling,1)
     % Pre-allocate
-    GridSize     = length(O.FreqRange);
+    GridSize     = length(GUI_Inputs.FreqRange);
 
     Rephasing    = zeros(GridSize);
     NonRephasing = zeros(GridSize);
@@ -267,13 +249,13 @@ if eq(O.Sampling,1)
     SpecAccuNR2  = zeros(GridSize);
     SpecAccuNR3  = zeros(GridSize);
     
-    StandardDiv = O.FWHM/2*sqrt(2*log(2));
-    P_FlucCorr  = O.P_FlucCorr/100; % turn percentage to number within 0~1
+    StandardDiv = GUI_Inputs.FWHM/2*sqrt(2*log(2));
+    P_FlucCorr  = GUI_Inputs.P_FlucCorr/100; % turn percentage to number within 0~1
     
-    TSTART = zeros(O.Sample_Num,1,'uint64');
-    TIME   = zeros(O.Sample_Num,1);
+    TSTART = zeros(GUI_Inputs.Sample_Num,1,'uint64');
+    TIME   = zeros(GUI_Inputs.Sample_Num,1);
     
-    for i = 1:O.Sample_Num
+    for i = 1:GUI_Inputs.Sample_Num
         
         TSTART(i) = tic;
         
@@ -291,16 +273,7 @@ if eq(O.Sampling,1)
         end
         Structure.freq = Freq_Orig + Fluctuation;
         
-        [Tmp_SG,Tmp_Res] = TwoDSFG_AmideI_Main(Structure,...
-                                               'FreqRange'  ,O.FreqRange,...
-                                               'Label_Index',O.Label_Index,...
-                                               'Label_Freq' ,O.Label_Freq,...
-                                               'Coupling'   ,O.Coupling,...
-                                               'Beta_NN'    ,O.Beta_NN,...
-                                               'PolarAng'   ,  PolarAng,...
-                                               'INCAng'     ,  INCAng,...
-                                               'Avg_Rot'    ,O.Avg_Rot,...
-                                               'Avg_Mirror' ,O.Avg_Mirror);
+        [Tmp_SG,Tmp_Res] = TwoDSFG_Main(Structure,GUI_Inputs);
         
         Rephasing    = Rephasing    + Tmp_SG.Rephasing   ;
         NonRephasing = NonRephasing + Tmp_SG.NonRephasing;
@@ -330,39 +303,22 @@ if eq(O.Sampling,1)
     disp(['Total time: ' num2str(Total_TIME)])
     
 else
-    
-    % Sample structure with assigned fluctuation
-    [SpectraGrid,Response] = TwoDSFG_AmideI_Main(Structure,...
-                                               'FreqRange'  ,O.FreqRange,...
-                                               'Label_Index',O.Label_Index,...
-                                               'Label_Freq' ,O.Label_Freq,...
-                                               'Coupling'   ,O.Coupling,...
-                                               'Beta_NN'    ,O.Beta_NN,...
-                                               'PolarAng'   ,  PolarAng,...
-                                               'INCAng'     ,  INCAng,...
-                                               'Avg_Rot'    ,O.Avg_Rot,...
-                                               'Avg_Mirror' ,O.Avg_Mirror);
+    [SpectraGrid,Response] = TwoDSFG_Main(Structure,GUI_Inputs);
 end
 %% Covolution
-CVL = Conv2D(SpectraGrid,...
-            'FreqRange',O.FreqRange,...
-            'LineShape',O.LineShape,...
-            'LineWidth',O.LineWidth,...
-            'SpecType' ,O.SpecType,...
-            'Pathway'  ,O.Pathway);
-        
-        
+CVL = Conv2D(SpectraGrid,GUI_Inputs);
+  
 %% Plot 2DSFG spectra
 f = figure;
 set(f,'Unit','normalized') % use normalized scale
 CVLRS = real(CVL.sum);
 CVLRSN = CVLRS ./max(CVLRS(:));
-contour(O.FreqRange,O.FreqRange,CVLRSN,O.Num_Contour,'LineWidth',2)
+contour(GUI_Inputs.FreqRange,GUI_Inputs.FreqRange,CVLRSN,GUI_Inputs.Num_Contour,'LineWidth',2)
 % shading flat
 ax = get(f,'CurrentAxes');
 set(ax,'DataAspectRatio',[1 1 1])
 % Plot diagonal line
-hold on; plot(O.FreqRange,O.FreqRange); hold off
+hold on; plot(GUI_Inputs.FreqRange,GUI_Inputs.FreqRange); hold off
 
 % % Set colorbar
 % MAP = custom_cmap(Num_Contour);

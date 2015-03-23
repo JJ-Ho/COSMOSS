@@ -1,4 +1,4 @@
-function O = ReadGUI(handles)
+function O = ParseGUI_Main(handles)
 %% Get GUI inputs
 GUI_Main = handles.GUI_Main;
 

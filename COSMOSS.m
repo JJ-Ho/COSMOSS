@@ -91,6 +91,8 @@ switch StructModel
         hStructure = Model_TCO(handles.hMain);
     case 2 
         hStructure = Model_PDB_AmideI(handles.hMain);
+    case 3
+        
 end
 
 handles.Structure.hStructure = hStructure;

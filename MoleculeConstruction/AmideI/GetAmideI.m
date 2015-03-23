@@ -104,46 +104,6 @@ Theta_D       = INPUT.Results.Theta_D;
 NLFreq        = INPUT.Results.NLFreq;
 Anharm        = INPUT.Results.Anharm;
 
-
-%% Get pdb file location 
-% PWD = pwd;
-% PDB_Path = [PWD, '/PDB_files/'];
-% 
-% [FilesName,PathName,FilterIndex] = uigetfile({'*.pdb','PDB file'; ...
-%                                               '*,*','All Files'},...
-%                                              'Select inputs',PDB_Path);
-
-%% Parse molecule structure
-
-% switch FilterIndex
-%     case 1 % for PDB files
-%         PDB = pdbread([PathName FilesName]);
-%         Atom_Data = PDB.Model.Atom;
-%         Num_Atoms = size(Atom_Data,2);
-% 
-%         % Get coordination data
-%         XYZ = zeros(Num_Atoms,3);
-%         AtomName = cell(Num_Atoms,1);
-%         for II = 1:Num_Atoms
-%             A = Atom_Data(II);
-%             XYZ(II,:) = [A.X, A.Y, A.Z];
-%             AtomName{II} = Atom_Data(II).AtomName;
-%         end
-
-% I decided not to read XYZ file diretly since it is hard to identify amide
-% mode without elemnt name information, such as "CA, HD1,..."  
-%     case 2 % for XYZ files
-%         fid=fopen([PathName FilesName]);
-%         Raw = textscan(fid,'%s%f64%f64%f64','HeaderLines',2);
-%         fclose(fid);
-%         
-%         XYZ =[Raw{2},Raw{3},Raw{4}];
-%         AtomName = Raw{1};
-%         Num_Atoms = size(XYZ,1);
-% end
-        
-
-
 %% find corresponding atoms for Amide I mode
 
 AmideI_C_AtomSerNo = [];
@@ -252,8 +212,8 @@ XYZ_Sim = reshape(XYZ_Sim,Num_Modes,3,[]);
 
 
 %% Calculate the transition dipoles (mu) and Raman tensors (alpha) in the Lab frame
-mu_Mol_angle = 27.5*pi/180;
-mu_Mol = [0, sin(mu_Mol_angle), cos(mu_Mol_angle)].* 16.1016; % this scale factor was calculated from DFT simulation, check 140207_NMA
+mu_Mol_angle = 10*pi/180;
+mu_Mol = -[0, sin(mu_Mol_angle), cos(mu_Mol_angle)].* 16.1016; % this scale factor was calculated from DFT simulation, check 140207_NMA
 
 
 alpha_angle = 34*pi/180;

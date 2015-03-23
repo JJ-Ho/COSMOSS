@@ -1,4 +1,4 @@
-function  OneDSFG = OneDSFG_Main(Structure_Data,varargin)
+function  OneDSFG = OneDSFG_Main(Structure_Data,GUI_Inputs)
 %% TwoDSFG_AmideI_Main
 
 % ------- Version log -----------------------------------------------------
@@ -14,18 +14,24 @@ function  OneDSFG = OneDSFG_Main(Structure_Data,varargin)
 % ------------------------------------------------------------------------
 % Copyright Jia-Jung Ho, 2014
 
-%-Degub------------------------------------------
+%% -Degub------------------------------------------
+% clear all
 % Structure_Data = GetAcid;
-% varargin = {};
-%-Degub------------------------------------------
+% GUI_Inputs.debug = 1;
+% -Degub------------------------------------------
 
 %% Inputs parser
+GUI_Inputs_C      = fieldnames(GUI_Inputs);
+GUI_Inputs_C(:,2) = struct2cell(GUI_Inputs);
+GUI_Inputs_C      = GUI_Inputs_C';
+
 INPUT = inputParser;
+INPUT.KeepUnmatched = 1;
 
 % Default values
 defaultLabel_Index  = 'Non';
 defaultLabel_Freq   = 1700;
-defaultCoupling     = 1;
+defaultCoupling     = 'TDC';
 defaultAvg_Option   = 1;
 defaultMirror_Plane = 1;
 defaultA_IR         = 90;
@@ -50,7 +56,7 @@ addOptional(INPUT,'P_Vis'       ,defaultP_Vis);
 addOptional(INPUT,'P_Sum'       ,defaultA_Sum);
 addOptional(INPUT,'Beta_NN'     ,defaultBeta_NN);
 
-parse(INPUT,varargin{:});
+parse(INPUT,GUI_Inputs_C{:});
 
 % Re-assign variable names
 Label_Index  = INPUT.Results.Label_Index;
@@ -66,7 +72,6 @@ P_Vis        = INPUT.Results.P_Vis;
 P_Sum        = INPUT.Results.P_Sum;
 Beta_NN      = INPUT.Results.Beta_NN;
 
-
 %% Deal with isotope labeling
 
 if ~ischar(Label_Index)
@@ -76,16 +81,16 @@ end
 %% Call OneExcitonH to calculate H,mu and alpha under exciton basis
 
 % Construct one exciton Hamiltonian
-switch Coupling
-    case 1
-        Coupling = 'TDC';
-    case 2
-        Coupling = 'Zero';
-    case 3
-        Coupling = 'NN';
-    case 4 
-        Coupling = 'NN_Mix_TDC';
-end
+% switch Coupling
+%     case 1
+%         Coupling = 'TDC';
+%     case 2
+%         Coupling = 'Zero';
+%     case 3
+%         Coupling = 'NN';
+%     case 4 
+%         Coupling = 'NN_Mix_TDC';
+% end
 
 H = ExcitonH(Structure_Data,'ExMode','OneEx','Coupling',Coupling,'Beta_NN',Beta_NN);
 
@@ -98,15 +103,8 @@ Alpha = MuAlphaGen(Structure_Data,H,'Mode','Alpha');
 Mu_Ex    = Mu.Trans_Ex;
 Alpha_Ex = Alpha.Trans_Ex;
 
-% export H, Mu, Alpha
-OneDSFG.H     = H;
-OneDSFG.Mu    = Mu;
-OneDSFG.Alpha = Alpha;
-
 %% Generate Molecular frame SFG Responses
 Num_Modes = Structure_Data.Num_Modes;
-OneDSFG.Num_Modes = Num_Modes; % export to OneDSFG output
-
 
 ResMolFrame = zeros(Num_Modes,3^3+1);
 
@@ -114,8 +112,6 @@ for N = 1:Num_Modes
     ResMolFrame(N,1)     = Ex_Freq(N+1);
     ResMolFrame(N,2:end) = kron(squeeze(Alpha_Ex(N+1,1,:)),squeeze(Mu_Ex(1,N+1,:)));
 end
-
-OneDSFG.MolFrame = ResMolFrame;
 
 %% Decide what kinds of ensemble average
 
@@ -126,7 +122,6 @@ OneDSFG.MolFrame = ResMolFrame;
 Phi_D = 0;
 Psi_D = 0;
 Theta_D = 0;
-
 
 % Orientation = Orientation/180*pi; % turn to radius unit
 Phi_R   = Phi_D/180*pi;
@@ -160,8 +155,6 @@ switch Avg_Option
         disp('Avg_Angle is not support, dont know how to apply Rotational average...')
 end
 
-OneDSFG.R_Avg = R_Avg;
-
 % Decide Mirror planes
 switch Mirror_Plane
     
@@ -184,12 +177,10 @@ end
 
 %% Applied ensemble avergae on Responses in molecular frame
 
-ResLabFrame  = zeros(size(OneDSFG.MolFrame));
+ResLabFrame  = zeros(size(ResMolFrame));
 
 ResLabFrame(:,1) = ResMolFrame(:,1); 
 ResLabFrame(:,2:end) = (bsxfun(@times,R_Avg*ResMolFrame(:,2:end)',Mirror_Mask))';
-
-OneDSFG.LabFrame = ResLabFrame;
 
 %% Jones Matrix convert XYZ to PS frame
 % 
@@ -207,9 +198,6 @@ JLabFrame  = zeros(size(ResLabFrame,1),9); % 9 = 1 freq + 2^3 (ppp - sss) of sig
 JLabFrame(:,1)      = ResLabFrame(:,1);
 JLabFrame(:,2:end)  = (J*ResLabFrame(:,2:end)')';
 
-OneDSFG.Jones     = J;
-OneDSFG.JLabFrame = JLabFrame;
-
 %% E part, Plarization of each incident beams
 
 E = EPolar3(P_Sum,P_Vis,P_IR);
@@ -219,6 +207,15 @@ EJLabFrame  = zeros(size(JLabFrame,1),1); % Only one signal compose of all polar
 EJLabFrame(:,1) = JLabFrame(:,1);
 EJLabFrame(:,2) = (E*JLabFrame(:,2:end)')';
 
-OneDSFG.E         = E;
+%% Output
+OneDSFG.H          = H;
+OneDSFG.Mu         = Mu;
+OneDSFG.Alpha      = Alpha;
+OneDSFG.Num_Modes  = Num_Modes;
+OneDSFG.MolFrame   = ResMolFrame;
+OneDSFG.R_Avg      = R_Avg;
+OneDSFG.LabFrame   = ResLabFrame;
+OneDSFG.Jones      = J;
+OneDSFG.JLabFrame  = JLabFrame;
+OneDSFG.E          = E;
 OneDSFG.EJLabFrame = EJLabFrame;
-

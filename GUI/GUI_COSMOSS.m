@@ -12,7 +12,7 @@ function GUI = GUI_COSMOSS(fig)
 % setappdata(fig,'GUIDEOptions',gui_Options);
 
 %% Pre-setting
-Version = '0.2';
+Version = '0.3';
 
 %% Add base layout
 MainLayout = uix.VBoxFlex(...

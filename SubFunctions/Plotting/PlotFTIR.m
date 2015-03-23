@@ -131,12 +131,12 @@ hold off
 % S.ax = get(f,'CurrentAxes');
 % Pointer_N(S) % use normalized scale
 
-% integrate the curve area
-Area = trapz(spec_range,Gaussian_Toatl);
-StickSum = sum(mu_OneD);
-
-Title = [num2str(Area), ',  ', num2str(StickSum)];
-title(Title,'FontSize',16);
+% % integrate the curve area
+% Area = trapz(spec_range,Gaussian_Toatl);
+% StickSum = sum(mu_OneD);
+% 
+% Title = [num2str(Area), ',  ', num2str(StickSum)];
+% title(Title,'FontSize',16);
 
 
 %% Output

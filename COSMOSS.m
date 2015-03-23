@@ -101,23 +101,12 @@ function FTIR_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-%% Read GUI
-O = ParseGUI_Main(handles);
+GUI_Inputs = ParseGUI_Main(handles);
+FTIR       = PlotFTIR(handles.Structure,GUI_Inputs);
 
-%% Main
-
-FTIR = PlotFTIR(handles.Structure,...
-                'Label_Index',O.Label_Index,...
-                'Label_Freq' ,O.Label_Freq,...
-                'PlotStick'  ,O.PlotStick,...
-                'Coupling'   ,O.Coupling,...
-                'Beta_NN'    ,O.Beta_NN,...
-                'F_Min'      ,O.F_Min,...
-                'F_Max'      ,O.F_Max,...
-                'LineWidth'  ,O.LineWidth);
-       
 % Update share data 
-handles.FTIR = FTIR;
+handles.GUI_Inputs = GUI_Inputs;
+handles.FTIR       = FTIR;
 guidata(hObject,handles)
 
 function SFG_Callback(hObject, eventdata, handles)

@@ -1,4 +1,4 @@
-function Output = PlotFTIR(PDB_Data,varargin)
+function Output = PlotFTIR(PDB_Data,GUI_Inputs)
 %% PlotFTIR
 %  
 % Given one exciton alpha, mu matrix and respective one exciton state
@@ -23,10 +23,19 @@ function Output = PlotFTIR(PDB_Data,varargin)
 % Copyright Jia-Jung Ho, 2013
 
 %% Debug
-% PDB_Data = GetAmideI;
+% PDB_Data = GetAcid;
 % handles.PDB_Data = PDB_Data;
+% 
+% GUI_Inputs.debug = 1;
+% GUI_Inputs.Coupling = 'NN';
 %% Inputs parser
+% Turn Output from Read GUI to cell array
+GUI_Inputs_C      = fieldnames(GUI_Inputs);
+GUI_Inputs_C(:,2) = struct2cell(GUI_Inputs);
+GUI_Inputs_C      = GUI_Inputs_C';
+
 INPUT = inputParser;
+INPUT.KeepUnmatched = 1;
 
 % Default values
 defaultLabel_Index = 'Non';
@@ -48,7 +57,7 @@ addOptional(INPUT,'F_Min'      ,defaultF_Min);
 addOptional(INPUT,'F_Max'      ,defaultF_Max);
 addOptional(INPUT,'LineWidth'  ,defaultLineWidth);
 
-parse(INPUT,varargin{:});
+parse(INPUT,GUI_Inputs_C{:});
 
 % Re-assign variable names
 Label_Index = INPUT.Results.Label_Index;
@@ -60,18 +69,6 @@ F_Min       = INPUT.Results.F_Min;
 F_Max       = INPUT.Results.F_Max;
 LineWidth   = INPUT.Results.LineWidth;
 
-%% Read GUI inputs
-% PDB_Data = handles.PDB_Data;
-% Label_Index = str2num(get(handles.E_LIndex,'String'));
-% Label_Freq  = str2double(get(handles.E_LFreq,'String'));
-
-% PlotStick = get(handles.PlotStick,'Value');
-% Coupling = get(handles.Coupling,'Value');
-
-% F_Min = str2double(get(handles.X_Min,'String'));
-% F_Max = str2double(get(handles.X_Max,'String'));
-
-% LineWidth=str2double(get(handles.LineWidth,'String'));
 %% Main
 
 Num_Modes = PDB_Data.Num_Modes;
@@ -81,16 +78,16 @@ if ~ischar(Label_Index)
     PDB_Data.freq(Label_Index) = Label_Freq.*ones(size(Label_Index));
 end
 
-switch Coupling
-    case 1
-        Coupling = 'TDC';
-    case 2
-        Coupling = 'Zero';
-    case 3
-        Coupling = 'NN';
-    case 4 
-        Coupling = 'NN_Mix_TDC';
-end
+% switch Coupling
+%     case 1
+%         Coupling = 'TDC';
+%     case 2
+%         Coupling = 'Zero';
+%     case 3
+%         Coupling = 'NN';
+%     case 4 
+%         Coupling = 'NN_Mix_TDC';
+% end
 
 H = ExcitonH(PDB_Data,'ExMode','OneEx','Coupling',Coupling,'Beta_NN',Beta_NN);
 

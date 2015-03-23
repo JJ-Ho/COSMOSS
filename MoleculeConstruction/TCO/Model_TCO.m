@@ -108,7 +108,7 @@ Theta_D1      = str2double(get(GUI_Struc.Theta1,'String'));
 Phi_D2        = str2double(get(GUI_Struc.Phi2  ,'String'));
 Psi_D2        = str2double(get(GUI_Struc.Psi2  ,'String'));
 Theta_D2      = str2double(get(GUI_Struc.Theta2,'String'));
-Displacement =    str2num(get(GUI_Struc.Trans,'String'));
+Displacement  =    str2num(get(GUI_Struc.Trans ,'String'));
 
 NLFreq       = str2double(get(GUI_Main.NLFreq  ,'String'));
 Anharm       = str2double(get(GUI_Main.Anharm  ,'String'));

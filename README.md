@@ -6,7 +6,7 @@
 <p>--------------------------------------------------------------------------------------------<br />
 COSMOSS = Coupled OScillator MOdel Spectrum Simulator &nbsp;</p>
 
-<p>Given molecule structure, this code can generates different kinds of vibrational spectrum&nbsp;<br />
+<p>Given molecule structure, this Matlab code can generates different kinds of vibrational spectrum&nbsp;<br />
 base on coupled oscillator model. For now COSMOSS can be used to simulate:<br />
 1. Fourier Transform Infared spectrum (FTIR) <br />
 2. Sum-Frequency Generation spectrum (SFG) <br />

@@ -33,17 +33,36 @@ gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
                    'gui_OpeningFcn', @COSMOSS_OpeningFcn, ...
                    'gui_OutputFcn',  @COSMOSS_OutputFcn, ...
-                   'gui_LayoutFcn',  [] , ...
+                   'gui_LayoutFcn',  [], ...
                    'gui_Callback',   []);
+               
+%- Check if GUI Layout Tool box exist ------------------------------------
+T = ver;
+UseLayoutToolBox = any(strcmp(cellstr(char(T.Name)), 'GUI Layout Toolbox'));
+if UseLayoutToolBox
+    gui_State.gui_LayoutFcn = @GUI_COSMOSS_Base;
+    nargout =1;
+end
+% ------------------------------------------------------------------------   
+
 if nargin && ischar(varargin{1})
     gui_State.gui_Callback = str2func(varargin{1});
 end
 
 if nargout
-    [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+    hFig = gui_mainfcn(gui_State, varargin{:});   
+    varargout{1} = hFig;
 else
     gui_mainfcn(gui_State, varargin{:});
 end
+
+%- Call createInterface to create GUI elements and update handles ---------
+if UseLayoutToolBox
+    GUI_Main = GUI_COSMOSS(hFig);
+    handles.GUI_Main = GUI_Main; % export GUI handles to handles
+    guidata(hFig, handles);
+end
+% ------------------------------------------------------------------------
 % End initialization code - DO NOT EDIT
 
 
@@ -57,14 +76,6 @@ function COSMOSS_OpeningFcn(hObject, eventdata, handles, varargin)
 
 % Choose default command line output for COSMOSS
 handles.output = hObject;
-
-% Call createInterface to create GUI elements
-GUI_Main = GUI_COSMOSS(hObject);
-handles.GUI_Main = GUI_Main; % export GUI handles to handles
-
-% Test of create figure by GUI_COSMOSS(hObject);
-% GUI = guihandles(hObject);
-% handles.GUI = GUI; % export GUI handles to handles
 
 % Update handles structure
 guidata(hObject, handles);

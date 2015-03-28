@@ -1,22 +1,12 @@
-function GUI = GUI_COSMOSS(fig)
-%% Create base figure (test)
-% fig = figure;
-% fig.Position = [103.8333 29.1667 600.0000 600.0000];
-% fig.Name = 'COSMOSS';
-% fig.ToolBar = 'none';
-% fig.MenuBar = 'none';
-% fig.NumberTitle = 'off';
-% fig.IntegerHandle = 'off';
-% fig.Tag = 'Main';
-% gui_Options.syscolorfig = 1;
-% setappdata(fig,'GUIDEOptions',gui_Options);
+function GUI = GUI_COSMOSS(hMainFig)
+% This function will build all GUI elements on pre-build GUI base figure
 
 %% Pre-setting
-Version = '0.5';
+Version = '0.6';
 
 %% Add base layout
 MainLayout = uix.VBoxFlex(...
-    'Parent',fig,...
+    'Parent',hMainFig,...
     'Spacing',5,...
     'Padding',1);
 
@@ -739,6 +729,6 @@ set(FPanelLayout,'Heights',[-1,-1,-4])
 set(FHBox,'Widths',[-1,-1])
 
 %% output handles
-GUI = guihandles(fig);
+GUI = guihandles(hMainFig);
 
     

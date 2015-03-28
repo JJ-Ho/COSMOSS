@@ -3,7 +3,7 @@
 	<title>COSMOSS</title>
 </head>
 <body style="zoom: 1;">
---------------------------------------------------------------------------------------------<br />
+
 COSMOSS = Coupled OScillator MOdel Spectrum Simulator &nbsp;</p>
 
 <p>Given molecule structure, this code can generates different kinds of vibrational spectrum&nbsp;<br />

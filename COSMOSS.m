@@ -39,9 +39,12 @@ gui_State = struct('gui_Name',       mfilename, ...
 %- Check if GUI Layout Tool box exist ------------------------------------
 T = ver;
 UseLayoutToolBox = any(strcmp(cellstr(char(T.Name)), 'GUI Layout Toolbox'));
-if UseLayoutToolBox
+
+if and(UseLayoutToolBox,~nargin)
     gui_State.gui_LayoutFcn = @GUI_COSMOSS_Base;
-    nargout =1;
+    CreatMainGUI = 1;
+else
+    CreatMainGUI = 0;
 end
 % ------------------------------------------------------------------------   
 
@@ -49,18 +52,25 @@ if nargin && ischar(varargin{1})
     gui_State.gui_Callback = str2func(varargin{1});
 end
 
-if nargout
-    hFig = gui_mainfcn(gui_State, varargin{:});   
-    varargout{1} = hFig;
+% and(UseLayoutToolBox,any(isempty(gui_State.gui_Callback)))
+
+if or(nargout,CreatMainGUI)
+    if nargin
+        [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+    else
+        hMain = gui_mainfcn(gui_State, varargin{:});   
+        varargout{1} = hMain;
+    end
 else
     gui_mainfcn(gui_State, varargin{:});
 end
 
 %- Call createInterface to create GUI elements and update handles ---------
-if UseLayoutToolBox
-    GUI_Main = GUI_COSMOSS(hFig);
+if and(UseLayoutToolBox,~nargin)
+    GUI_Main = GUI_COSMOSS(hMain);
+    handles.hMain    = hMain;
     handles.GUI_Main = GUI_Main; % export GUI handles to handles
-    guidata(hFig, handles);
+    guidata(hMain, handles);
 end
 % ------------------------------------------------------------------------
 % End initialization code - DO NOT EDIT

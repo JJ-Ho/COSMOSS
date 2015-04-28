@@ -73,9 +73,7 @@ Mute_Ind = INPUT.Results.Mute_Ind;
 RR = [Ang_Phi,Ang_Psi,Ang_Theta];
 RR = RR./180*pi; % turn to radius unit
 
-Phi_Fluc   = Delta_Phi*randn  ./180*pi;
-Psi_Fluc   = Delta_Psi*randn  ./180*pi;
-Theta_Fluc = Delta_Theta*randn./180*pi;
+
 
 P = ReadG09Input('140903_MMB.txt',RR);
 XYZ       = P.XYZ;
@@ -89,6 +87,10 @@ alpha_Mol = P.Raman;
 % Vec_2 = b.*[0,1,0];
 
 Num_Modes = N_1*N_2;
+
+Phi_Fluc   = Delta_Phi*randn(Num_Modes,1)  ./180*pi;
+Psi_Fluc   = Delta_Psi*randn(Num_Modes,1)  ./180*pi;
+Theta_Fluc = Delta_Theta*randn(Num_Modes,1)./180*pi;
 
 %% Creating Translation Copy
 XYZ_Grid_M = zeros(Atom_Num,3,N_1,N_2);
@@ -107,7 +109,7 @@ for j = 1:N_2
             alpha_Sim(i+(j-1)*N_1,:,:) = zeros(3,3);
         else     
             % Add random orientation fluctuation
-            R_Fluc = R1_ZYZ_0(Phi_Fluc,Psi_Fluc,Theta_Fluc);
+            R_Fluc = R1_ZYZ_0(Phi_Fluc(i+(j-1)*N_1),Psi_Fluc(i+(j-1)*N_1),Theta_Fluc(i+(j-1)*N_1));
 
             % XYZ
             XYZ_R  = (R_Fluc*XYZ')'; % apply random fluctuation 

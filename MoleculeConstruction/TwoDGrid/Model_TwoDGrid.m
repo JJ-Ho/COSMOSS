@@ -62,7 +62,7 @@ handles.GUI_Struc = GUI_Struc; % export GUI handles to handles
 % Get Main function's handles
 if nargin > 3
     hMain = varargin{1};
-    Data_Main = guidata(handles.hMain);
+    Data_Main = guidata(hMain);
 else
     hMain = 'Debug';
     Data_Main.GUI_Main.NLFreq = 1720;
@@ -96,13 +96,13 @@ GUI_Main  = Data_Main.GUI_Main;
 
 %% Construct molecule
 GUI_Inputs = ParseGUI_TwoDGrid(GUI_Struc);
-% GUI_Inputs.NLFreq = str2double(get(GUI_Main.NLFreq  ,'String'));
+GUI_Inputs.NLFreq = str2double(get(GUI_Main.NLFreq  ,'String'));
 
 Structure  = ConstructGrid(GUI_Inputs);
 
 %% Export result to Main guidata
 Data_Main.Structure = Structure;
-% guidata(handles.hMain,Data_Main)
+guidata(handles.hMain,Data_Main)
 
 
 function PlotMolecule(hObject, eventdata, handles)

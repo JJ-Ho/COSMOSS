@@ -113,7 +113,7 @@ switch StructModel
     case 2 
         hStructure = Model_PDB_AmideI(handles.hMain);
     case 3
-        
+        hStructure = Model_TwoDGrid(handles.hMain);
 end
 
 handles.Structure.hStructure = hStructure;
@@ -172,7 +172,7 @@ if eq(GUI_Inputs.Sampling,1)
     Num_Modes = Structure.Num_Modes;
     Freq_Orig = Structure.freq;
     
-    StandardDiv = GUI_Inputs.FWHM/2*sqrt(2*log(2));
+    StandardDiv = GUI_Inputs.FWHM/(2*sqrt(2*log(2)));
     P_FlucCorr  = GUI_Inputs.P_FlucCorr/100; % turn percentage to number within 0~1
     
     TSTART = zeros(GUI_Inputs.Sample_Num,1,'uint64');
@@ -272,7 +272,7 @@ if eq(GUI_Inputs.Sampling,1)
     SpecAccuNR2  = zeros(GridSize);
     SpecAccuNR3  = zeros(GridSize);
     
-    StandardDiv = GUI_Inputs.FWHM/2*sqrt(2*log(2));
+    StandardDiv = GUI_Inputs.FWHM/(2*sqrt(2*log(2)));
     P_FlucCorr  = GUI_Inputs.P_FlucCorr/100; % turn percentage to number within 0~1
     
     TSTART = zeros(GUI_Inputs.Sample_Num,1,'uint64');

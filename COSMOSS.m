@@ -334,9 +334,14 @@ CVL = Conv2D(SpectraGrid,GUI_Inputs);
 %% Plot 2DSFG spectra
 f = figure;
 set(f,'Unit','normalized') % use normalized scale
-CVLRS = real(CVL.sum);
-CVLRSN = CVLRS ./max(CVLRS(:));
-contour(GUI_Inputs.FreqRange,GUI_Inputs.FreqRange,CVLRSN,GUI_Inputs.Num_Contour,'LineWidth',2)
+CVLRS = -1.*real(CVL.selected);
+
+contour(GUI_Inputs.FreqRange,GUI_Inputs.FreqRange,CVLRS,GUI_Inputs.Num_Contour,'LineWidth',2)
+
+% Normalization
+% CVLRSN = CVLRS ./max(abs(CVLRS(:)));
+% contour(GUI_Inputs.FreqRange,GUI_Inputs.FreqRange,CVLRSN,GUI_Inputs.Num_Contour,'LineWidth',2)
+
 % shading flat
 ax = get(f,'CurrentAxes');
 set(ax,'DataAspectRatio',[1 1 1])

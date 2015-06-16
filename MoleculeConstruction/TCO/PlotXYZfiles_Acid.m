@@ -56,6 +56,9 @@ Rot_mu     = (Rot_Mat * Struc_Data.mu')';
 %% draw molecule
 figure; hold on
 Conn = Connectivity(Struc_Data.XYZ);
+% add line between the two Carbon
+Conn(1,5) = 1;
+Conn(5,1) = 1;
 gplot3(Conn,R);
 % axis auto;
 LL = 5;

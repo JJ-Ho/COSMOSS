@@ -36,6 +36,9 @@ defaultTheta_D2     = 0;
 defaultDisplacement = [0,0,5];
 defaultNLFreq       = 1716;
 defaultAnharm       = 20;
+defaultRot_X        = 0;
+defaultRot_Y        = 0;
+defaultRot_Z        = 0;
 
 % add Optional inputs / Parameters
 addOptional(INPUT,'Phi_D1'      ,defaultPhi_D1       );
@@ -44,9 +47,12 @@ addOptional(INPUT,'Theta_D1'    ,defaultTheta_D1     );
 addOptional(INPUT,'Phi_D2'      ,defaultPhi_D2       );
 addOptional(INPUT,'Psi_D2'      ,defaultPsi_D2       );
 addOptional(INPUT,'Theta_D2'    ,defaultTheta_D2     );
-addOptional(INPUT,'Displacement',defaultDisplacement);
-addOptional(INPUT,'NLFreq',defaultNLFreq);
-addOptional(INPUT,'Anharm',defaultAnharm);
+addOptional(INPUT,'Displacement',defaultDisplacement );
+addOptional(INPUT,'NLFreq'      ,defaultNLFreq       );
+addOptional(INPUT,'Anharm'      ,defaultAnharm       );
+addOptional(INPUT,'Rot_X'       ,defaultRot_X        );
+addOptional(INPUT,'Rot_Y'       ,defaultRot_Y        );
+addOptional(INPUT,'Rot_Z'       ,defaultRot_Z        );
 
 parse(INPUT,varargin{:});
 
@@ -60,7 +66,9 @@ Theta_D2      = INPUT.Results.Theta_D2;
 Displacement  = INPUT.Results.Displacement;
 NLFreq        = INPUT.Results.NLFreq;
 Anharm        = INPUT.Results.Anharm;
-
+Rot_X         = INPUT.Results.Rot_X;
+Rot_Y         = INPUT.Results.Rot_Y;
+Rot_Z         = INPUT.Results.Rot_Z;
 
 %% Settings
 
@@ -168,6 +176,22 @@ end
     
 AmideIFreq   = ones(Num_Modes,1)*NLFreq;
 AmideIAnharm = ones(Num_Modes,1)*Anharm;
+
+%% Rotate the whole system 
+RX = Rx(Rot_X/180*pi);
+RY = Ry(Rot_Y/180*pi);
+RZ = Rz(Rot_Z/180*pi);
+R_Whole = RX*RY*RZ;
+
+AcidCenter = (R_Whole * AcidCenter')';
+mu_Sim     = (R_Whole * mu_Sim')';
+XYZ        = (R_Whole * XYZ')';
+
+for ii=1:Num_Modes
+    alpha_Sim_Tmp = squeeze(alpha_Sim(ii,:,:));
+    alpha_Sim(ii,:,:) = R_Whole * alpha_Sim_Tmp' * R_Whole';
+end    
+
 
 %% Output Structure
 Output.center       = AcidCenter;

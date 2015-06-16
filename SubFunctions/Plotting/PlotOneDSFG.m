@@ -32,6 +32,7 @@ INPUT.KeepUnmatched = 1;
 
 % Default values
 defaultPlotStick   = 1;
+defaultPlotNorm    = 1;
 defaultF_Min       = 1600;
 defaultF_Max       = 1800;
 defaultLineWidth   = 5;
@@ -40,6 +41,7 @@ defaultLineShape   = 'G';
 
 % add Optional inputs / Parameters
 addOptional(INPUT,'PlotStick'  ,defaultPlotStick);
+addOptional(INPUT,'PlotNorm'   ,defaultPlotNorm);
 addOptional(INPUT,'F_Min'      ,defaultF_Min);
 addOptional(INPUT,'F_Max'      ,defaultF_Max);
 addOptional(INPUT,'LineWidth'  ,defaultLineWidth);
@@ -50,6 +52,7 @@ parse(INPUT,GUI_Inputs_C{:});
 
 % Re-assign variable names
 PlotStick   = INPUT.Results.PlotStick;
+PlotNorm    = INPUT.Results.PlotNorm;
 F_Min       = INPUT.Results.F_Min;
 F_Max       = INPUT.Results.F_Max;
 LineWidth   = INPUT.Results.LineWidth;
@@ -107,15 +110,18 @@ switch Signal_Type
     case 1 % heterodyne
         PlotY = imag(CVL_Total);
         Stick = Response1DSFG;
+        Signal_Type_Title = 'Hetero';
     case 2 % homodyne
         PlotY = abs(CVL_Total).^2;
         Stick = Response1DSFG.^2;
+        Signal_Type_Title = 'Homo';
 end
 
-Normalized = 1;
-if Normalized
-   PlotY = PlotY./max(abs(PlotY(:)));
-   Stick = Stick./max(abs(Stick(:)));
+if PlotNorm
+    PlotY = PlotY./max(abs(PlotY(:)));
+    Stick = Stick./max(abs(Stick(:)));
+else
+    Stick = Stick.*(max(abs(PlotY(:)))/max(abs(Stick(:))));
 end
 
 
@@ -129,9 +135,9 @@ plot(spec_range,PlotY,'-','LineWidth',2)
 hold off
 
 % integrate the curve area
-% Area = trapz(spec_range,abs(PlotY));
-% StickSum = sum(Stick);
-% Title = ['Area sum: ' num2str(Area), ',  Stick sum: ', num2str(StickSum)];
-% title(Title,'FontSize',16);
+Area = trapz(spec_range,abs(PlotY));
+StickSum = sum(Stick);
+Title = [Signal_Type_Title, ', IA: ' num2str(Area), ',  Stick sum: ', num2str(StickSum)];
+title(Title,'FontSize',16);
 
 set(gca,'XLim',[spec_range(1),spec_range(end)])

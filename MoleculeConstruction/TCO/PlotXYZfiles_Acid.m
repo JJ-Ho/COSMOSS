@@ -59,7 +59,7 @@ Conn = Connectivity(Struc_Data.XYZ);
 gplot3(Conn,R);
 % axis auto;
 LL = 5;
-axis([-LL,LL,-LL,LL,-LL,LL,-1,1])
+axis([-LL+2.5,LL+2.5,-LL,LL,-LL,LL,-1,1])
 rotate3d on
 
 %% Define C,OD,OS atom position

@@ -68,10 +68,6 @@ hold on
 Response1DSFG = PlotResponse(:,2);
 
 
-if eq(PlotStick,1)
-    line([Res_1DSFG_Freq';Res_1DSFG_Freq'],[zeros(1,Num_Modes);Response1DSFG']);
-    %plot(Res_1DSFG_Freq,Response1DSFG,'rx')
-end
 
 % Get Frequency axis range 
 spec_range = F_Min:F_Max;
@@ -116,6 +112,17 @@ switch Signal_Type
         Stick = Response1DSFG.^2;
 end
 
+Normalized = 1;
+if Normalized
+   PlotY = PlotY./max(abs(PlotY(:)));
+   Stick = Stick./max(abs(Stick(:)));
+end
+
+
+if eq(PlotStick,1)
+    line([Res_1DSFG_Freq';Res_1DSFG_Freq'],[zeros(1,Num_Modes);Stick']);
+    %plot(Res_1DSFG_Freq,Response1DSFG,'rx')
+end
 
 plot(spec_range,PlotY,'-','LineWidth',2)
 

@@ -6,17 +6,17 @@
 <p>--------------------------------------------------------------------------------------------<br />
 COSMOSS = Coupled OScillator MOdel Spectrum Simulator &nbsp;</p>
 
-<p>Given molecule structure, this Matlab code can generates different kinds of vibrational spectrum&nbsp;<br />
-base on coupled oscillator model. For now COSMOSS can be used to simulate:<br />
+<p>Given a molecule structure, this Matlab code can generate different kinds of vibrational spectrum&nbsp;<br />
+base on coupled oscillator model (Frankle Exiton Model). For now COSMOSS can be used to simulate:<br />
 1. Fourier Transform Infared spectrum (FTIR) <br />
 2. Sum-Frequency Generation spectrum (SFG) <br />
 3. Two dimentional Infared spectrum (2DIR)<br />
 4. Two dimentional Sum-Frequency Generation spectrum (2DSFG)</p>
 
-<p>The supported molecule structure including:<br />
+<p>The supported molecule structure/ vibrational modes including:<br />
 1. Two coupled oscillators<br />
-2. PDB_AmideI<br />
-This code is design to be used for other molecules as well. You can generate your interested molecule<br />
+2. Any PDB file with Amide I vibrational modes(PDB_Amide)<br />
+This code is design to be used for other molecules/modes combination as well. You can generate your interested molecule<br />
 and their spectra. Please check sub-function in &quot;MoleculeConstruction&quot; folder for more infomation.</p>
 
 <p>To use this code, please download it into your Matlab path and excute COSMOSS.m.<br />

@@ -68,16 +68,18 @@ end
 guidata(hObject, handles);
 
 % Reset Non-Label Frequency, anharmonicity, and F_min/F_Max to fit amideI mode
-Data_Main = guidata(handles.hMain);
-hMainGUI  = Data_Main.GUI_Main;
+% check if run this GUI stand along
+if isfield(handles,'hMAin')
+    Data_Main = guidata(handles.hMain);
+    hMainGUI  = Data_Main.GUI_Main;
 
-set(hMainGUI.NLFreq ,'String','1644')
-set(hMainGUI.LFreq  ,'String','1604')
-set(hMainGUI.Anharm ,'String','12')
-set(hMainGUI.Beta_NN,'String','0.8')
-set(hMainGUI.X_Min  ,'String','1550')
-set(hMainGUI.X_Max  ,'String','1700')
-
+    set(hMainGUI.NLFreq ,'String','1644')
+    set(hMainGUI.LFreq  ,'String','1604')
+    set(hMainGUI.Anharm ,'String','12')
+    set(hMainGUI.Beta_NN,'String','0.8')
+    set(hMainGUI.X_Min  ,'String','1550')
+    set(hMainGUI.X_Max  ,'String','1700')
+end
 % UIWAIT makes Model_PDB_AmideI wait for user response (see UIRESUME)
 % uiwait(handles.Model_PDB_AmideI);
 
@@ -128,17 +130,23 @@ guidata(hObject,handles)
 function UpdateStructure(hObject, eventdata, handles)
 
 StrucGUI  = handles.StrucGUI;
-Data_Main = guidata(handles.hMain);
-hMainGUI  = Data_Main.GUI_Main;
-
 %% Read GUI variables
-Phi_D        = str2double(get(StrucGUI.Phi  ,'String'));
-Psi_D        = str2double(get(StrucGUI.Psi  ,'String'));
-Theta_D      = str2double(get(StrucGUI.Theta,'String'));
+Phi_D   = str2double(get(StrucGUI.Phi  ,'String'));
+Psi_D   = str2double(get(StrucGUI.Psi  ,'String'));
+Theta_D = str2double(get(StrucGUI.Theta,'String'));
 
-NLFreq       = str2double(get(hMainGUI.NLFreq  ,'String'));
-Anharm       = str2double(get(hMainGUI.Anharm  ,'String'));
-
+% check if run this GUI stand along
+if isfield(handles,'hMAin')
+    Data_Main = guidata(handles.hMain);
+    hMainGUI  = Data_Main.GUI_Main;
+    
+    NLFreq    = str2double(get(hMainGUI.NLFreq  ,'String'));
+    Anharm    = str2double(get(hMainGUI.Anharm  ,'String'));
+else
+    NLFreq = 1644;
+    Anharm = 12;
+end
+    
 %% Construct molecule
 Num_Atoms = handles.Num_Atoms;
 XYZ       = handles.XYZ;
@@ -154,13 +162,27 @@ Structure = GetAmideI(Num_Atoms,XYZ,AtomName,FilesName,...
 
 %% Export result to Main guidata
 Data_Main.Structure = Structure;
-guidata(handles.hMain,Data_Main)
+% check if this program run stand along
+if isfield(handles,'hMAin')
+    guidata(handles.hMain,Data_Main)
+else
+    handles.Structure = Structure;
+    guidata(hObject,handles)
+end
+
+disp('Structure file generated!')
 
 
 function PlotMolecule(hObject, eventdata, handles)
-Data_Main = guidata(handles.hMain);
-PlotXYZfiles_AmideI(Data_Main.Structure)
 
+% check if this program run stand along
+if isfield(handles,'hMAin')
+    Data_Main = guidata(handles.hMain);
+    PlotXYZfiles_AmideI(Data_Main.Structure)
+else
+    PlotXYZfiles_AmideI(handles.Structure)
+end
+    
 
 
 

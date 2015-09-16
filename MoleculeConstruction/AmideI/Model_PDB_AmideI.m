@@ -25,7 +25,7 @@ function varargout = Model_PDB_AmideI(varargin)
 % Last Modified by GUIDE v2.5 01-Oct-2014 16:16:53
 
 % Begin initialization code - DO NOT EDIT
-gui_Singleton = 1;
+gui_Singleton = 0;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
                    'gui_OpeningFcn', @Model_PDB_AmideI_OpeningFcn, ...
@@ -125,6 +125,9 @@ handles.AtomName  = AtomName;
 handles.FilesName = FilesName;
 
 guidata(hObject,handles)
+
+%% Update PDB name on GUI
+set(handles.StrucGUI.PDB_Name,'String',FilesName)
 
 
 function UpdateStructure(hObject, eventdata, handles)

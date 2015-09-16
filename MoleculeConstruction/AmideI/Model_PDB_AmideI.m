@@ -64,6 +64,7 @@ if nargin > 3
     hMain = varargin{1};
     handles.hMain = hMain;
 end
+
 % Update handles structure
 guidata(hObject, handles);
 

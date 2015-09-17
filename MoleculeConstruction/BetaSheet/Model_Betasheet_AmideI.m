@@ -70,7 +70,8 @@ guidata(hObject, handles);
 
 % Reset Non-Label Frequency, anharmonicity, and F_min/F_Max to fit amideI mode
 % check if run this GUI stand along
-if isfield(handles,'hMAin')
+if isfield(handles,'hMain')
+    disp('yes')
     Data_Main = guidata(handles.hMain);
     hMainGUI  = Data_Main.GUI_Main;
 
@@ -101,33 +102,36 @@ StrucGUI  = handles.StrucGUI;
 %% Read GUI variables
 N_Residue = str2double(get(StrucGUI.N_Residue,'String'));
 N_Strand  = str2double(get(StrucGUI.N_Strand ,'String'));
-% Trans_X   = str2double(get(StrucGUI.Trans_X  ,'String'));
-% Trans_Y   = str2double(get(StrucGUI.Trans_Y  ,'String'));
-% Trans_Z   = str2double(get(StrucGUI.Trans_Z  ,'String'));
-% Rot_X     = str2double(get(StrucGUI.Rot_X    ,'String'));
-% Rot_Y     = str2double(get(StrucGUI.Rot_Y    ,'String'));
-% Rot_Z     = str2double(get(StrucGUI.Rot_Z    ,'String'));
+Trans_X   = str2double(get(StrucGUI.Trans_X  ,'String'));
+Trans_Y   = str2double(get(StrucGUI.Trans_Y  ,'String'));
+Trans_Z   = str2double(get(StrucGUI.Trans_Z  ,'String'));
+Rot_X     = str2double(get(StrucGUI.Rot_X    ,'String'));
+Rot_Y     = str2double(get(StrucGUI.Rot_Y    ,'String'));
+Rot_Z     = str2double(get(StrucGUI.Rot_Z    ,'String'));
 
-% % check if run this GUI stand along
-% if isfield(handles,'hMAin')
-%     Data_Main = guidata(handles.hMain);
-%     hMainGUI  = Data_Main.GUI_Main;
-%     
-%     NLFreq    = str2double(get(hMainGUI.NLFreq  ,'String'));
-%     Anharm    = str2double(get(hMainGUI.Anharm  ,'String'));
-% else
-%     NLFreq = 1644;
-%     Anharm = 12;
-% end
+% check if run this GUI stand along
+if isfield(handles,'hMain')
+    Data_Main = guidata(handles.hMain);
+    hMainGUI  = Data_Main.GUI_Main;
+    
+    NLFreq    = str2double(get(hMainGUI.NLFreq  ,'String'));
+    Anharm    = str2double(get(hMainGUI.Anharm  ,'String'));
+else
+    NLFreq = 1644;
+    Anharm = 12;
+end
 
 %% Construct molecule
-XYZ       = ConstuctBetaSheet(N_Residue,N_Strand);
+TransV = [Trans_X,Trans_Y,Trans_Z];
+RotV   = [Rot_X,Rot_Y,Rot_Z];
+
+XYZ       = ConstuctBetaSheet(N_Residue,N_Strand,TransV,RotV);
 Structure = GetAmideI_CON_XYZ_betasheet(XYZ);
 
 %% Export result to Main guidata
 Data_Main.Structure = Structure;
 % check if this program run stand along
-if isfield(handles,'hMAin')
+if isfield(handles,'hMain')
     guidata(handles.hMain,Data_Main)
 else
     handles.Structure = Structure;
@@ -140,7 +144,7 @@ disp('Structure file generated!')
 function PlotMolecule(hObject, eventdata, handles)
 
 % check if this program run stand along
-if isfield(handles,'hMAin')
+if isfield(handles,'hMain')
     Data_Main = guidata(handles.hMain);
     Plot_Betasheet_AmideI(Data_Main.Structure)
 else

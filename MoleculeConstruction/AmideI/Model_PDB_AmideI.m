@@ -70,7 +70,7 @@ guidata(hObject, handles);
 
 % Reset Non-Label Frequency, anharmonicity, and F_min/F_Max to fit amideI mode
 % check if run this GUI stand along
-if isfield(handles,'hMAin')
+if isfield(handles,'hMain')
     Data_Main = guidata(handles.hMain);
     hMainGUI  = Data_Main.GUI_Main;
 
@@ -140,7 +140,7 @@ Psi_D   = str2double(get(StrucGUI.Psi  ,'String'));
 Theta_D = str2double(get(StrucGUI.Theta,'String'));
 
 % check if run this GUI stand along
-if isfield(handles,'hMAin')
+if isfield(handles,'hMain')
     Data_Main = guidata(handles.hMain);
     hMainGUI  = Data_Main.GUI_Main;
     
@@ -167,7 +167,7 @@ Structure = GetAmideI(Num_Atoms,XYZ,AtomName,FilesName,...
 %% Export result to Main guidata
 Data_Main.Structure = Structure;
 % check if this program run stand along
-if isfield(handles,'hMAin')
+if isfield(handles,'hMain')
     guidata(handles.hMain,Data_Main)
 else
     handles.Structure = Structure;
@@ -180,7 +180,7 @@ disp('Structure file generated!')
 function PlotMolecule(hObject, eventdata, handles)
 
 % check if this program run stand along
-if isfield(handles,'hMAin')
+if isfield(handles,'hMain')
     Data_Main = guidata(handles.hMain);
     PlotXYZfiles_AmideI(Data_Main.Structure)
 else

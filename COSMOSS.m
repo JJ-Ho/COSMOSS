@@ -114,6 +114,8 @@ switch StructModel
         hStructure = Model_PDB_AmideI(handles.hMain);
     case 3
         hStructure = Model_TwoDGrid(handles.hMain);
+    case 4
+        hStructure = Model_Betasheet_AmideI(handles.hMain);
 end
 
 handles.Structure.hStructure = hStructure;

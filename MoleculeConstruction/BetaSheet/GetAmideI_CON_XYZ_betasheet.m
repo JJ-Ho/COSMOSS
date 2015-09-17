@@ -67,9 +67,13 @@ XYZ_Sim = reshape(XYZ_Sim,ModeNum,3,[]);
 % XYZ_Lab = Rot*xyz_Mol = Rot*Identity = Rot
 
 %% Calculate the transition dipole (mu) and Raman tensor (alpha) in Lab frame
-mu_Mol_angle = 27.5*pi/180;
+
+% Transition dipole Angle
+% mu_Mol_angle = 27.5*pi/180; from Jenny's paper (10.1021/jp408064b)
+mu_Mol_angle = 20*pi/180; % from D. Strasfeld's paper (10.1021/jp9072203)
 % mu_Mol_angle = 25*pi/180; % from Cho's paper
-mu_Mol = [0, sin(mu_Mol_angle), -cos(mu_Mol_angle)];
+
+mu_Mol = [0, sin(mu_Mol_angle), -cos(mu_Mol_angle)].* 16.1016; % this scale factor was calculated from DFT simulation, check 140207_NMA
 
 
 alpha_angle = 34*pi/180;
@@ -117,10 +121,10 @@ AmideIAnharm = ones(ModeNum,1)*14;
 %% Output Structure
 Output.XYZ              = XYZ;
 Output.center           = AmideICenter;
-% Output.Freq             = AmideIFreq;
-% Output.NumLocMode       = ModeNum;
-% Output.Anharm           = AmideIAnharm;
+Output.freq             = AmideIFreq;
+Output.Num_Modes        = ModeNum;
+Output.anharm           = AmideIAnharm;
 Output.mu               = mu_Sim;
-% Output.Alpha_Matrix     = alpha_Sim;
-% Output.Alpha_Vectorized = reshape(alpha_Sim,[ModeNum,9]); % non-reduced alpha "vector"
+Output.alpha_matrix     = alpha_Sim;
+Output.alpha            = reshape(alpha_Sim,[ModeNum,9]); % non-reduced alpha "vector"
 % Output.Alpha_Reduced    = alpha_Sim_reduced;

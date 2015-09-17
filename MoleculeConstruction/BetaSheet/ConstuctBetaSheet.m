@@ -1,4 +1,4 @@
-function XYZ = ConstuctBetaSheet(Num_Residue,Num_Strand)
+function XYZ = ConstuctBetaSheet(Num_Residue,Num_Strand,TransV,RotV)
 %% BetaSheet(sheetSize,E,theta,anhar,du,graph,hpar)
 % 
 % sheetsize = [# of strands, # of residue per strand]
@@ -19,8 +19,9 @@ function XYZ = ConstuctBetaSheet(Num_Residue,Num_Strand)
 % ------------------------------------------------------------------------
 
 % initail setup from Lauren's code
-rotate = [0,0,0];
-hpar = [0 0 4.75 rotate(1)*(pi/180) rotate(2)*(pi/180) rotate(3)*(pi/180)];
+% rotate = [0,0,0];
+% hpar = [0 0 4.75 rotate(1)*(pi/180) rotate(2)*(pi/180) rotate(3)*(pi/180)];
+hpar = [TransV,RotV.*pi./180];
 % hpar = [0 0 4.00 rotate(1)*(pi/180) rotate(2)*(pi/180) rotate(3)*(pi/180)];
 % E = ones(3*4);
 % theta = 20/180*pi;

@@ -212,7 +212,12 @@ XYZ_Sim = reshape(XYZ_Sim,Num_Modes,3,[]);
 
 
 %% Calculate the transition dipoles (mu) and Raman tensors (alpha) in the Lab frame
-mu_Mol_angle = 10*pi/180;
+
+% Transition dipole Angle
+% mu_Mol_angle = 27.5*pi/180; from Jenny's paper (10.1021/jp408064b)
+mu_Mol_angle = 20*pi/180; % from D. Strasfeld's paper (10.1021/jp9072203)
+% mu_Mol_angle = 10*pi/180;
+
 mu_Mol = -[0, sin(mu_Mol_angle), cos(mu_Mol_angle)].* 16.1016; % this scale factor was calculated from DFT simulation, check 140207_NMA
 
 

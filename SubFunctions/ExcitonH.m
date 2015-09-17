@@ -105,8 +105,10 @@ muIdotJ = dot(Mu(StateIndex1(:),:),Mu(StateIndex2(:),:),2);
 RdotmuI = dot(ModeDistVec,Mu(StateIndex1(:),:),2);
 RdotmuJ = dot(ModeDistVec,Mu(StateIndex2(:),:),2);
 
-% BetaPreFactor = 5034*((4.1058/sqrt(1600))*3.144)^2; %From Jenny's mathematica code "TransitionDipoleCoupling.m" The result is in cm-1 unit
-BetaPreFactor = 84862/Freq(1)*(0.23344)^2; %From Chem. Phys. Lett. v106, #6, p613
+% BetaPreFactor = 5034*((4.1058/sqrt(1600))*3.144)^2; %From Jenny's
+% mathematica code "TransitionDipoleCoupling.m" The result is in cm-1 unit
+% => this is for TDV as an unit vector 
+BetaPreFactor = 84862/Freq(1)*(0.23344)^2; %From Chem. Phys. Lett. v106, #6, p613 => this is for unit calculated from G09
 Beta = BetaPreFactor*(muIdotJ./(ModeDist.^3) - 3*RdotmuJ.*RdotmuI./(ModeDist).^5); % Beta in Num_Modes^2 x 3 size
 Beta(isnan(Beta)) = 0; % Get ride of diagnal 
 Beta = reshape(Beta,Num_Modes,Num_Modes);

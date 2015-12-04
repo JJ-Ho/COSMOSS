@@ -24,8 +24,10 @@ function varargout = COSMOSS(varargin)
 
 % Last Modified by GUIDE v2.5 01-Oct-2014 15:09:19
 
-% initailize the path
-Initialization
+% check if path is added otherwise, initailize the path
+if ~eq(exist('TwoDSFG_Main','file'),2)
+    Initialization
+end
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -370,4 +372,7 @@ TwoDSFG.SpectraGrid = SpectraGrid;
 handles.TwoDSFG = TwoDSFG;
 guidata(hObject,handles);
 
-
+function Export_Handle_Callback(hObject, eventdata, handles)
+% export handles back to work space
+assignin('base', 'H', handles)
+disp('Updated handles exported!')

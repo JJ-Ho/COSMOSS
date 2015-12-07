@@ -71,7 +71,6 @@ guidata(hObject, handles);
 % Reset Non-Label Frequency, anharmonicity, and F_min/F_Max to fit amideI mode
 % check if run this GUI stand along
 if isfield(handles,'hMain')
-    disp('yes')
     Data_Main = guidata(handles.hMain);
     hMainGUI  = Data_Main.GUI_Main;
 
@@ -81,6 +80,8 @@ if isfield(handles,'hMain')
     set(hMainGUI.Beta_NN,'String','0.8')
     set(hMainGUI.X_Min  ,'String','1550')
     set(hMainGUI.X_Max  ,'String','1700')
+else 
+    disp('Running in stand alone mode.')
 end
 % UIWAIT makes Model_Betasheet_AmideI wait for user response (see UIRESUME)
 % uiwait(handles.figure1);

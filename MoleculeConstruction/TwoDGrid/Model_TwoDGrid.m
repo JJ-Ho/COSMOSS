@@ -63,12 +63,13 @@ handles.GUI_Struc = GUI_Struc; % export GUI handles to handles
 if nargin > 3
     hMain = varargin{1};
     Data_Main = guidata(hMain);
-else
-    hMain = 'Debug';
-    Data_Main.GUI_Main.NLFreq = 1720;
+    
+    handles.hMain = hMain;
+    handles.Data_Main = Data_Main;
+
+else 
+    disp('Running in stand alone mode.')
 end
-handles.hMain = hMain;
-handles.Data_Main = Data_Main;
 
 % Update handles structure
 guidata(hObject, handles);
@@ -91,18 +92,29 @@ function LoadG09(hObject, eventdata, handles)
 
 function UpdateStructure(hObject, eventdata, handles)
 GUI_Struc = handles.GUI_Struc;
-Data_Main = handles.Data_Main;
-GUI_Main  = Data_Main.GUI_Main;
 
 %% Construct molecule
 GUI_Inputs = ParseGUI_TwoDGrid(GUI_Struc);
-GUI_Inputs.NLFreq = str2double(get(GUI_Main.NLFreq  ,'String'));
-
+if isfield(handles,'hMain')
+    Data_Main = handles.Data_Main;
+    GUI_Main  = Data_Main.GUI_Main;
+    GUI_Inputs.NLFreq = str2double(get(GUI_Main.NLFreq  ,'String'));
+else 
+    GUI_Inputs.NLFreq = 1700;
+end
 Structure  = ConstructGrid(GUI_Inputs);
 
 %% Export result to Main guidata
 Data_Main.Structure = Structure;
-guidata(handles.hMain,Data_Main)
+% guidata(handles.hMain,Data_Main)
+
+% check if this program run stand along
+if isfield(handles,'hMain')
+    guidata(handles.hMain,Data_Main)
+else
+    handles.Structure = Structure;
+    guidata(hObject,handles)
+end
 
 
 function PlotMolecule(hObject, eventdata, handles)

@@ -56,21 +56,17 @@ function Model_Betasheet_AmideI_OpeningFcn(hObject, eventdata, handles, varargin
 handles.output = hObject;
 
 % Call createInterface to create GUI elements
-StrucGUI = GUI_Betasheet_AmideI(hObject);
-handles.StrucGUI = StrucGUI; % export GUI handles to handles
+GUI_Struc = GUI_Betasheet_AmideI(hObject);
+handles.GUI_Struc = GUI_Struc; % export GUI handles to handles
 
 % Get Main function's handles
+% Reset Non-Label Frequency, anharmonicity, and F_min/F_Max to fit amideI mode
+% check if run this GUI stand along
+
 if nargin > 3
     hMain = varargin{1};
     handles.hMain = hMain;
-end
-
-% Update handles structure
-guidata(hObject, handles);
-
-% Reset Non-Label Frequency, anharmonicity, and F_min/F_Max to fit amideI mode
-% check if run this GUI stand along
-if isfield(handles,'hMain')
+    
     Data_Main = guidata(handles.hMain);
     hMainGUI  = Data_Main.GUI_Main;
 
@@ -83,6 +79,10 @@ if isfield(handles,'hMain')
 else 
     disp('Running in stand alone mode.')
 end
+
+% Update handles structure
+guidata(hObject, handles);
+
 % UIWAIT makes Model_Betasheet_AmideI wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
@@ -99,16 +99,16 @@ varargout{1} = handles.output;
 
 function UpdateStructure(hObject, eventdata, handles)
 
-StrucGUI  = handles.StrucGUI;
+GUI_Struc  = handles.GUI_Struc;
 %% Read GUI variables
-N_Residue = str2double(get(StrucGUI.N_Residue,'String'));
-N_Strand  = str2double(get(StrucGUI.N_Strand ,'String'));
-Trans_X   = str2double(get(StrucGUI.Trans_X  ,'String'));
-Trans_Y   = str2double(get(StrucGUI.Trans_Y  ,'String'));
-Trans_Z   = str2double(get(StrucGUI.Trans_Z  ,'String'));
-Rot_X     = str2double(get(StrucGUI.Rot_X    ,'String'));
-Rot_Y     = str2double(get(StrucGUI.Rot_Y    ,'String'));
-Rot_Z     = str2double(get(StrucGUI.Rot_Z    ,'String'));
+N_Residue = str2double(get(GUI_Struc.N_Residue,'String'));
+N_Strand  = str2double(get(GUI_Struc.N_Strand ,'String'));
+Trans_X   = str2double(get(GUI_Struc.Trans_X  ,'String'));
+Trans_Y   = str2double(get(GUI_Struc.Trans_Y  ,'String'));
+Trans_Z   = str2double(get(GUI_Struc.Trans_Z  ,'String'));
+Rot_X     = str2double(get(GUI_Struc.Rot_X    ,'String'));
+Rot_Y     = str2double(get(GUI_Struc.Rot_Y    ,'String'));
+Rot_Z     = str2double(get(GUI_Struc.Rot_Z    ,'String'));
 
 % check if run this GUI stand along
 if isfield(handles,'hMain')

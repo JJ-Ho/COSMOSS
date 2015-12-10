@@ -108,17 +108,8 @@ varargout{1} = handles.output;
 
 function onListSelection(hObject, eventdata, handles)
 
-StructModel = get(handles.GUI_Main.StructListBox,'Value');
-switch StructModel
-    case 1
-        hStructure = Model_TCO(handles.hMain);
-    case 2 
-        hStructure = Model_PDB_AmideI(handles.hMain);
-    case 3
-        hStructure = Model_TwoDGrid(handles.hMain);
-    case 4
-        hStructure = Model_Betasheet_AmideI(handles.hMain);
-end
+StructModel    = get(handles.GUI_Main.StructListBox,'Value');
+[hStructure,~] = StructureModel(StructModel,handles.hMain);
 
 handles.Structure.hStructure = hStructure;
 guidata(hObject,handles)

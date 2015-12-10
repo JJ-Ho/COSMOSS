@@ -59,24 +59,32 @@ handles.output = hObject;
 GUI_Struc = GUI_TCO(hObject);
 handles.GUI_Struc = GUI_Struc; % export GUI handles to handles
 
+
 % Get Main function's handles
-if nargin > 3
-    hMain = varargin{1};
-    handles.hMain = hMain;
+if nargin > 3    
+    if ishandle(varargin{1})
+       hMain = varargin{1};
+       Data_Main = guidata(hMain);
+
+       handles.hMain = hMain;
+       handles.Data_Main = Data_Main;
+       
+       % Reset Non-Label Frequency, anharmonicity, and F_min/F_Max to fit amideI mode
+       GUI_Main  = Data_Main.GUI_Main;
+       set(GUI_Main.NLFreq ,'String','1700')
+       set(GUI_Main.LFreq  ,'String','1680')
+       set(GUI_Main.Anharm ,'String','20')
+       set(GUI_Main.Beta_NN,'String','5')
+       set(GUI_Main.X_Min  ,'String','1650')
+       set(GUI_Main.X_Max  ,'String','1750')
+    
+    end
+else
+    disp('Running in stand alone mode.')
 end
+
 % Update handles structure
 guidata(hObject, handles);
-
-% Reset Non-Label Frequency, anharmonicity, and F_min/F_Max to fit amideI mode
-Data_Main = guidata(handles.hMain);
-GUI_Main  = Data_Main.GUI_Main;
-
-set(GUI_Main.NLFreq ,'String','1700')
-set(GUI_Main.LFreq  ,'String','1680')
-set(GUI_Main.Anharm ,'String','20')
-set(GUI_Main.Beta_NN,'String','5')
-set(GUI_Main.X_Min  ,'String','1650')
-set(GUI_Main.X_Max  ,'String','1750')
 
 % Generate the default structure
 UpdateStructure(hObject, eventdata, handles)
@@ -98,8 +106,16 @@ varargout{1} = handles.output;
 function UpdateStructure(hObject, eventdata, handles)
 
 GUI_Struc = handles.GUI_Struc;
-Data_Main = guidata(handles.hMain);
-GUI_Main  = Data_Main.GUI_Main;
+if isfield(handles,'hMain')
+    Data_Main = guidata(handles.hMain);
+    GUI_Main  = Data_Main.GUI_Main;
+    
+    NLFreq = str2double(get(GUI_Main.NLFreq  ,'String'));
+    Anharm = str2double(get(GUI_Main.Anharm  ,'String'));
+else
+    NLFreq = 1700;
+    Anharm = 20;
+end
 
 %% Read GUI variables
 Phi_D1        = str2double(get(GUI_Struc.Phi1  ,'String'));
@@ -110,8 +126,6 @@ Psi_D2        = str2double(get(GUI_Struc.Psi2  ,'String'));
 Theta_D2      = str2double(get(GUI_Struc.Theta2,'String'));
 Displacement  =    str2num(get(GUI_Struc.Trans ,'String'));
 
-NLFreq       = str2double(get(GUI_Main.NLFreq  ,'String'));
-Anharm       = str2double(get(GUI_Main.Anharm  ,'String'));
 Rot_X        = str2double(get(GUI_Struc.Rot_X  ,'String'));
 Rot_Y        = str2double(get(GUI_Struc.Rot_Y  ,'String'));
 Rot_Z        = str2double(get(GUI_Struc.Rot_Z  ,'String'));
@@ -132,13 +146,22 @@ Structure = GetAcid('Phi_D1',Phi_D1,...
                     'Rot_Z',Rot_Z);
 
 %% Export result to Main guidata
-Data_Main.Structure = Structure;
-guidata(handles.hMain,Data_Main)
-
+if isfield(handles,'hMain')
+    Data_Main.Structure = Structure;
+    guidata(handles.hMain,Data_Main)
+else
+    handles.Structure = Structure;
+    guidata(hObject,handles)
+end
 
 function PlotMolecule(hObject, eventdata, handles)
-Data_Main = guidata(handles.hMain);
-PlotXYZfiles_Acid(Data_Main.Structure)
+if isfield(handles,'hMain')
+    Data_Main = guidata(handles.hMain);
+    PlotXYZfiles_Acid(Data_Main.Structure)
+else
+    PlotXYZfiles_Acid(handles.Structure)
+end
+
 
 
 

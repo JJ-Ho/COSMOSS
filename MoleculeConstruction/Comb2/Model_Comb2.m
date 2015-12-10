@@ -60,17 +60,17 @@ GUI_Struc = GUI_Comb2(hObject);
 handles.GUI_Struc = GUI_Struc; % export GUI handles to handles
 
 % Get Main function's handles
-if nargin > 3
-    hMain = varargin{1};
-    Data_Main = guidata(hMain);
-    
-    handles.hMain = hMain;
-    handles.Data_Main = Data_Main;
+if nargin > 3    
+    if ishandle(varargin{1}) 
+       hMain = varargin{1};
+       Data_Main = guidata(hMain);
 
-else 
-    disp('Running in stand alone mode.')
+       handles.hMain = hMain;
+       handles.Data_Main = Data_Main;
+    else
+        disp('Running in stand alone mode.')
+    end
 end
-
 % Update handles structure
 guidata(hObject, handles);
 
@@ -87,6 +87,7 @@ function varargout = Model_Comb2_OutputFcn(hObject, eventdata, handles)
 
 % Get default command line output from handles structure
 varargout{1} = handles.output;
+
 
 function UpdateStructure(hObject, eventdata, handles)
 GUI_Struc = handles.GUI_Struc;

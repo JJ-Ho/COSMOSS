@@ -63,22 +63,27 @@ handles.GUI_Struc = GUI_Struc; % export GUI handles to handles
 % Reset Non-Label Frequency, anharmonicity, and F_min/F_Max to fit amideI mode
 % check if run this GUI stand along
 
-if nargin > 3
-    hMain = varargin{1};
-    handles.hMain = hMain;
-    
-    Data_Main = guidata(handles.hMain);
-    hMainGUI  = Data_Main.GUI_Main;
+% Get Main function's handles
+if nargin > 3    
+    if ishandle(varargin{1}) 
+       hMain = varargin{1};
+       Data_Main = guidata(hMain);
 
-    set(hMainGUI.NLFreq ,'String','1644')
-    set(hMainGUI.LFreq  ,'String','1604')
-    set(hMainGUI.Anharm ,'String','12')
-    set(hMainGUI.Beta_NN,'String','0.8')
-    set(hMainGUI.X_Min  ,'String','1550')
-    set(hMainGUI.X_Max  ,'String','1700')
-else 
-    disp('Running in stand alone mode.')
+       handles.hMain = hMain;
+       handles.Data_Main = Data_Main;
+       
+       % PRE ASSIGN VALUES TO SUBSTITUTE MAIN GUI VALUES
+       hMainGUI  = Data_Main.GUI_Main;       
+       set(hMainGUI.LFreq  ,'String','1604')
+       set(hMainGUI.Anharm ,'String','12')
+       set(hMainGUI.Beta_NN,'String','0.8')
+       set(hMainGUI.X_Min  ,'String','1550')
+       set(hMainGUI.X_Max  ,'String','1700')
+    else
+        disp('Running in stand alone mode.')
+    end
 end
+
 
 % Update handles structure
 guidata(hObject, handles);

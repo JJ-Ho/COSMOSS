@@ -60,19 +60,20 @@ GUI_Struc = GUI_TwoDGrid(hObject);
 handles.GUI_Struc = GUI_Struc; % export GUI handles to handles
 
 % Get Main function's handles
-if nargin > 3
-    hMain = varargin{1};
-    Data_Main = guidata(hMain);
-    
-    handles.hMain = hMain;
-    handles.Data_Main = Data_Main;
+if nargin > 3    
+    if ishandle(varargin{1}) 
+       hMain = varargin{1};
+       Data_Main = guidata(hMain);
 
-else 
-    disp('Running in stand alone mode.')
+       handles.hMain = hMain;
+       handles.Data_Main = Data_Main;
+    else
+        disp('Running in stand alone mode.')
+    end
 end
 
 % Update handles structure
-guidata(hObject, handles);
+guidata(hObject,handles);
 
 % UIWAIT makes Model_TwoDGrid wait for user response (see UIRESUME)
 % uiwait(handles.figure1);

@@ -109,7 +109,7 @@ varargout{1} = handles.output;
 function onListSelection(hObject, eventdata, handles)
 
 StructModel    = get(handles.GUI_Main.StructListBox,'Value');
-[hStructure,~] = StructureModel(StructModel,handles.hMain);
+[hStructure,~,~] = StructureModel(StructModel,handles.hMain);
 
 handles.Structure.hStructure = hStructure;
 guidata(hObject,handles)

@@ -128,26 +128,26 @@ XYZ_Grid = reshape(permute(XYZ_Grid_M,[1,3,4,2]),[],3);
 
 %% Make debug figure
 
-Atom_Num_NM = Atom_Num*N_1*N_2;
-
-[n,m] = ndgrid(1:Atom_Num_NM);
-T1=XYZ_Grid(m(:),:)-XYZ_Grid(n(:),:);
-T2=sqrt(sum(T1.^2,2));
-Distance_matrix=reshape(T2,Atom_Num_NM,Atom_Num_NM);
-lower=tril(Distance_matrix,-1);
-[a,b]=find(lower<1.6 & lower>0);
-C_index=[a,b];
-Conn_Grid=false(Atom_Num_NM);
-Conn_Grid(C_index(:,1)+(C_index(:,2)-1)*Atom_Num_NM)=true;
-
-for k = 1:Num_Modes
-    Conn_Grid(13+(k-1)*Atom_Num,3+(k-1)*Atom_Num) = 1; % Add S-C connection for Ester
-end
-
-Conn_Grid=Conn_Grid|Conn_Grid';
-figure
-gplot3(Conn_Grid,XYZ_Grid)
-axis equal
+% Atom_Num_NM = Atom_Num*N_1*N_2;
+% 
+% [n,m] = ndgrid(1:Atom_Num_NM);
+% T1=XYZ_Grid(m(:),:)-XYZ_Grid(n(:),:);
+% T2=sqrt(sum(T1.^2,2));
+% Distance_matrix=reshape(T2,Atom_Num_NM,Atom_Num_NM);
+% lower=tril(Distance_matrix,-1);
+% [a,b]=find(lower<1.6 & lower>0);
+% C_index=[a,b];
+% Conn_Grid=false(Atom_Num_NM);
+% Conn_Grid(C_index(:,1)+(C_index(:,2)-1)*Atom_Num_NM)=true;
+% 
+% for k = 1:Num_Modes
+%     Conn_Grid(13+(k-1)*Atom_Num,3+(k-1)*Atom_Num) = 1; % Add S-C connection for Ester
+% end
+% 
+% Conn_Grid=Conn_Grid|Conn_Grid';
+% figure
+% gplot3(Conn_Grid,XYZ_Grid)
+% axis equal
 
 %% Create Translational copy of Center
 C_Atom_Ind = 7;

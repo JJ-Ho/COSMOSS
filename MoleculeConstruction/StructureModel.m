@@ -1,4 +1,4 @@
-function [hStructure, ModelList] = StructureModel(StructModel,Handle)
+function [hStructure, ModelList, hPlotFunc] = StructureModel(StructModel,Handle)
 
 %% List 
 ModelList = {'1:Two Coupled Oscillators',...
@@ -19,18 +19,25 @@ end
 switch StructModel
     case 0
         hStructure = 'Non'; % for exporting ModelList only
+        hPlotFunc  = 'Non';
     case 1
         hStructure = Model_TCO(Export_handle);
+        hPlotFunc  = 'PlotXYZfiles_Acid';
     case 2 
         hStructure = Model_PDB_AmideI(Export_handle);
+        hPlotFunc  = 'PlotXYZfiles_AmideI';
     case 3
         hStructure = Model_TwoDGrid(Export_handle);
+        hPlotFunc  = 'PlotXYZ_Grid';
     case 4
         hStructure = Model_Betasheet_AmideI(Export_handle);
+        hPlotFunc  = 'Plot_Betasheet_AmideI';
     case 5
         hStructure = Model_Comb2(Export_handle);
+        hPlotFunc  = 'Non';
     otherwise
         hStructure = 'Non';
+        hPlotFunc  = 'Non';
         
         disp('Model List')
         disp('--------------------------')

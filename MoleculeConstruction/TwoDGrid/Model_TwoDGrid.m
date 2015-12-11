@@ -119,3 +119,5 @@ guidata(hObject,handles)
 
 
 function PlotMolecule(hObject, eventdata, handles)
+Structure = handles.Structure;
+PlotXYZ_Grid(Structure)

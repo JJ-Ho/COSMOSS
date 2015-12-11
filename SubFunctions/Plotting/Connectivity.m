@@ -1,4 +1,4 @@
-function Conn = Connectivity(XYZ)
+function Conn = Connectivity(XYZ,varargin)
 %% Connectivity
 %  
 % This script determines atomic connectivities from gamess xyz output
@@ -13,6 +13,21 @@ function Conn = Connectivity(XYZ)
 %% debug
 % clear all
 % Read input.geo
+
+%% Input parser
+
+INPUT = inputParser;
+INPUT.KeepUnmatched = 1;
+
+% Default values
+defaultBondLength = 1.6;
+
+% Add optional inputs to inputparser object
+addOptional(INPUT,'BondLength',defaultBondLength);
+
+parse(INPUT,varargin{:});
+
+BondLength = INPUT.Results.BondLength  ;
 
 %% generate connectivity matrix ndgrid version
 
@@ -29,7 +44,7 @@ Distance_matrix = reshape(T2,A_Num,A_Num);
 % grep lower triangular part in order to avoid over counting
 lower = tril(Distance_matrix,-1);
 % Transform into bonding index metrix
-[a b] = find(lower<1.6 & lower>0);
+[a b] = find(lower< BondLength & lower>0);
 C_index = [a,b];
 Conn = false(A_Num);
 Conn(C_index(:,1)+(C_index(:,2)-1)*A_Num) = true;

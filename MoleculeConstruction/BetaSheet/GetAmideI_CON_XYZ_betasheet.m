@@ -1,4 +1,4 @@
-function Output = GetAmideI_CON_XYZ_betasheet(XYZ,varargin)
+function Output = GetAmideI_CON_XYZ_betasheet(XYZ_Atom_Separate,varargin)
 
 %% GetAmideI
 % Output = GetAmideI(Betasheet_XYZ,[Isotopes,LabelFreq])
@@ -31,20 +31,19 @@ function Output = GetAmideI_CON_XYZ_betasheet(XYZ,varargin)
 % ------------------------------------------------------------------------
 % Copyright Jia-Jung Ho, 2014
 
+ModeNum = size(XYZ_Atom_Separate,1);
 
-ModeNum = size(XYZ,1);
-
-Vec_CO = XYZ(:,:,2)-XYZ(:,:,1);
+Vec_CO = XYZ_Atom_Separate(:,:,2)-XYZ_Atom_Separate(:,:,1);
 Vec_CO = squeeze(Vec_CO);
 Vec_CO_Norm = sqrt(sum(abs(Vec_CO).^2,2));
 Vec_CO = bsxfun(@rdivide,Vec_CO,Vec_CO_Norm); % normaliz CO vectors
 
-Vec_CN = XYZ(:,:,3)-XYZ(:,:,2);
+Vec_CN = XYZ_Atom_Separate(:,:,3)-XYZ_Atom_Separate(:,:,2);
 Vec_CN = squeeze(Vec_CN);
 Vec_CN_Norm = sqrt(sum(abs(Vec_CN).^2,2));
 Vec_CN = bsxfun(@rdivide,Vec_CN,Vec_CN_Norm); % normaliz CN vectors
 
-AmideICenter = squeeze(XYZ(:,:,1)) + Vec_CO.*0.665 + Vec_CN.*0.256; % center of amide I mode, ref from Jenny's mathematica code
+AmideICenter = squeeze(XYZ_Atom_Separate(:,:,1)) + Vec_CO.*0.665 + Vec_CN.*0.256; % center of amide I mode, ref from Jenny's mathematica code
 %% Define Lab frame coordinate of each mode
 
 Z_Sim = Vec_CO;
@@ -117,14 +116,19 @@ end
 % anharmonicity = 14, for betasheet, ref from Lauren's code
 AmideIAnharm = ones(ModeNum,1)*14;
 
+%% consolidate XYZ formate
+XYZ_1 = permute(XYZ_Atom_Separate,[1,3,2]);
+XYZ = reshape(XYZ_1,[],3);
+
 
 %% Output Structure
-Output.XYZ              = XYZ;
-Output.center           = AmideICenter;
-Output.freq             = AmideIFreq;
-Output.Num_Modes        = ModeNum;
-Output.anharm           = AmideIAnharm;
-Output.mu               = mu_Sim;
-Output.alpha_matrix     = alpha_Sim;
-Output.alpha            = reshape(alpha_Sim,[ModeNum,9]); % non-reduced alpha "vector"
+Output.XYZ               = XYZ;
+Output.XYZ_Atom_Separate = XYZ_Atom_Separate;
+Output.center            = AmideICenter;
+Output.freq              = AmideIFreq;
+Output.Num_Modes         = ModeNum;
+Output.anharm            = AmideIAnharm;
+Output.mu                = mu_Sim;
+Output.alpha_matrix      = alpha_Sim;
+Output.alpha             = reshape(alpha_Sim,[ModeNum,9]); % non-reduced alpha "vector"
 % Output.Alpha_Reduced    = alpha_Sim_reduced;

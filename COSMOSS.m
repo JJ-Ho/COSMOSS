@@ -267,6 +267,9 @@ if eq(GUI_Inputs.Sampling,1)
     SpecAccuNR2  = zeros(GridSize);
     SpecAccuNR3  = zeros(GridSize);
     
+    Num_Modes = Structure.Num_Modes;
+    Freq_Orig = Structure.freq;
+    
     StandardDiv = GUI_Inputs.FWHM/(2*sqrt(2*log(2)));
     P_FlucCorr  = GUI_Inputs.P_FlucCorr/100; % turn percentage to number within 0~1
     
@@ -276,10 +279,6 @@ if eq(GUI_Inputs.Sampling,1)
     for i = 1:GUI_Inputs.Sample_Num
         
         TSTART(i) = tic;
-        
-        % Sample structure with assigned fluctuation
-        Num_Modes = Structure.Num_Modes;
-        Freq_Orig = Structure.freq;
         
         % Add diagonal disorder
         Correlation_Dice = rand;
@@ -316,7 +315,7 @@ if eq(GUI_Inputs.Sampling,1)
     SpectraGrid.SpecAccuNR3  = SpecAccuNR3  ;
     
     Response = Tmp_Res;
-    
+
     Total_TIME = sum(TIME);
     disp(['Total time: ' num2str(Total_TIME)])
     
@@ -359,6 +358,7 @@ Pointer_N(S)
 %% update TwoDSFG_Response into guidata
 TwoDSFG = Response;
 TwoDSFG.SpectraGrid = SpectraGrid;
+TwoDSFG.CVL         = CVL;
 
 handles.TwoDSFG = TwoDSFG;
 guidata(hObject,handles);

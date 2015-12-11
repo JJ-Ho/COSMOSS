@@ -80,6 +80,9 @@ XYZ       = P.XYZ;
 Atom_Num  = P.Atom_Num;
 mu_Mol    = P.TDV;
 alpha_Mol = P.Raman;
+
+% % shift monomer to origin
+% XYZ = bsxfun(@minus,XYZ,sum(XYZ,1)/Atom_Num);
 %% Define usefule constants
 
 % define 2D grid vector

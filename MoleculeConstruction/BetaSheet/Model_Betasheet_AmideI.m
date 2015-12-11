@@ -146,6 +146,5 @@ guidata(hObject,handles)
 
 disp('Structure file generated!')
 
-
 function PlotMolecule(hObject, eventdata, handles)
 Plot_Betasheet_AmideI(handles.Structure)

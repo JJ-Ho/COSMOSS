@@ -193,6 +193,16 @@ O_XYZ=coord2(4:4:length(coord2),:);
 
 clear coord1 coord2
 
+%% Rotate the whole molecule so strand align with X axis 
+Strand_Axis = C_XYZ(end,:)-C_XYZ(1,:);
+Strand_Axis = Strand_Axis./norm(Strand_Axis);
+R_Angle = acos(dot(Strand_Axis,[1,0,0]));
+RM = R1_ZYZ_0(R_Angle,0,0);
+
+C_XYZ = (RM*C_XYZ')';
+O_XYZ = (RM*O_XYZ')';
+N_XYZ = (RM*N_XYZ')';
+
 %% Formating output coordinate
 % XYZ = reshape([C_XYZ;O_XYZ;N_XYZ],[],3,3);
 XYZ(:,:,1) = C_XYZ;

@@ -25,7 +25,7 @@ function varargout = Model_Comb2(varargin)
 % Last Modified by GUIDE v2.5 09-Dec-2015 11:11:21
 
 % Begin initialization code - DO NOT EDIT
-gui_Singleton = 1;
+gui_Singleton = 0;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
                    'gui_OpeningFcn', @Model_Comb2_OpeningFcn, ...
@@ -67,9 +67,9 @@ if nargin > 3
 
        handles.hMain = hMain;
        handles.Data_Main = Data_Main;
-    else
-        disp('Running in stand alone mode.')
     end
+else
+    disp('Running in stand alone mode.')    
 end
 % Update handles structure
 guidata(hObject, handles);
@@ -88,11 +88,45 @@ function varargout = Model_Comb2_OutputFcn(hObject, eventdata, handles)
 % Get default command line output from handles structure
 varargout{1} = handles.output;
 
+function Struc1(hObject, eventdata, handles)
+
+GUI_Struc = handles.GUI_Struc;
+StructModel    = get(GUI_Struc.StructBox1,'Value');
+[hStructure1,~] = StructureModel(StructModel,handles.hMain);
+
+handles.hStruc1 = hStructure1;
+guidata(hObject,handles)
+
+function Struc2(hObject, eventdata, handles)
+
+GUI_Struc = handles.GUI_Struc;
+StructModel    = get(GUI_Struc.StructBox2,'Value');
+[hStructure2,~] = StructureModel(StructModel,handles.hMain);
+
+handles.hStruc2 = hStructure2;
+guidata(hObject,handles)
 
 function UpdateStructure(hObject, eventdata, handles)
 GUI_Struc = handles.GUI_Struc;
 
+hStruc1        = handles.hStruc1;
+hStruc2        = handles.hStruc2;
+StrucGUI_Data1 = guidata(hStruc1);
+StrucGUI_Data2 = guidata(hStruc2);
+StrucData1     = StrucGUI_Data1.Structure;
+StrucData2     = StrucGUI_Data2.Structure;
+
 %% Construct molecule
 GUI_Inputs = ParseGUI_Comb2(GUI_Struc);
+
+
+%% export back to handles
+handles.StrucData1 = StrucData1;
+handles.StrucData2 = StrucData2;
+guidata(hObject,handles)
+
+
+function Export_Handle_Callback(hObject, eventdata, handles)
 % export handles back to work space
-assignin('base', 'GUI', GUI_Inputs)
+assignin('base', 'H', handles)
+disp('Updated handles exported!')

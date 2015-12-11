@@ -59,28 +59,30 @@ handles.output = hObject;
 StrucGUI = GUI_PDB_AmideI(hObject);
 handles.StrucGUI = StrucGUI; % export GUI handles to handles
 
-% Get Main function's handles
-if nargin > 3
-    hMain = varargin{1};
-    handles.hMain = hMain;
-end
 
 % Update handles structure
 guidata(hObject, handles);
 
 % Reset Non-Label Frequency, anharmonicity, and F_min/F_Max to fit amideI mode
 % check if run this GUI stand along
-if isfield(handles,'hMain')
-    Data_Main = guidata(handles.hMain);
-    hMainGUI  = Data_Main.GUI_Main;
-
-    set(hMainGUI.NLFreq ,'String','1644')
-    set(hMainGUI.LFreq  ,'String','1604')
-    set(hMainGUI.Anharm ,'String','12')
-    set(hMainGUI.Beta_NN,'String','0.8')
-    set(hMainGUI.X_Min  ,'String','1550')
-    set(hMainGUI.X_Max  ,'String','1700')
+if nargin > 3    
+    if ishandle(varargin{1}) 
+        hMain = varargin{1};
+        Data_Main = guidata(hMain);
+        
+        % PRE ASSIGN VALUES TO SUBSTITUTE MAIN GUI VALUES
+        GUI_Main  = Data_Main.GUI_Main;
+        set(GUI_Main.NLFreq ,'String','1644')
+        set(GUI_Main.LFreq  ,'String','1604')
+        set(GUI_Main.Anharm ,'String','12')
+        set(GUI_Main.Beta_NN,'String','0.8')
+        set(GUI_Main.X_Min  ,'String','1550')
+        set(GUI_Main.X_Max  ,'String','1700')
+    end
+else
+    disp('Running in stand alone mode.')    
 end
+
 % UIWAIT makes Model_PDB_AmideI wait for user response (see UIRESUME)
 % uiwait(handles.Model_PDB_AmideI);
 
@@ -169,23 +171,17 @@ Data_Main.Structure = Structure;
 % check if this program run stand along
 if isfield(handles,'hMain')
     guidata(handles.hMain,Data_Main)
-else
-    handles.Structure = Structure;
-    guidata(hObject,handles)
 end
+
+handles.Structure = Structure;
+guidata(hObject,handles)
 
 disp('Structure file generated!')
 
 
 function PlotMolecule(hObject, eventdata, handles)
+PlotXYZfiles_AmideI(handles.Structure)
 
-% check if this program run stand along
-if isfield(handles,'hMain')
-    Data_Main = guidata(handles.hMain);
-    PlotXYZfiles_AmideI(Data_Main.Structure)
-else
-    PlotXYZfiles_AmideI(handles.Structure)
-end
     
 
 

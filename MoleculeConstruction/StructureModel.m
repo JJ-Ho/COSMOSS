@@ -4,7 +4,9 @@ function [hStructure, ModelList] = StructureModel(StructModel,Handle)
 ModelList = {'1:Two Coupled Oscillators',...
              '2:PDB_AmideI',...
              '3:2D Grid',...
-             '4:Ideal Betasheet'};
+             '4:Ideal Betasheet',...
+             '5:Combination of any two',...
+             };
 %% Run Models
 
 % check if input is an figure handle
@@ -25,6 +27,8 @@ switch StructModel
         hStructure = Model_TwoDGrid(Export_handle);
     case 4
         hStructure = Model_Betasheet_AmideI(Export_handle);
+    case 5
+        hStructure = Model_Comb2(Export_handle);
     otherwise
         hStructure = 'Non';
         

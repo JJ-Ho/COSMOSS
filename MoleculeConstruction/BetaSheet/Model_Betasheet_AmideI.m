@@ -25,7 +25,7 @@ function varargout = Model_Betasheet_AmideI(varargin)
 % Last Modified by GUIDE v2.5 16-Sep-2015 10:37:46
 
 % Begin initialization code - DO NOT EDIT
-gui_Singleton = 1;
+gui_Singleton = 0;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
                    'gui_OpeningFcn', @Model_Betasheet_AmideI_OpeningFcn, ...
@@ -73,15 +73,15 @@ if nargin > 3
        handles.Data_Main = Data_Main;
        
        % PRE ASSIGN VALUES TO SUBSTITUTE MAIN GUI VALUES
-       hMainGUI  = Data_Main.GUI_Main;       
-       set(hMainGUI.LFreq  ,'String','1604')
-       set(hMainGUI.Anharm ,'String','12')
-       set(hMainGUI.Beta_NN,'String','0.8')
-       set(hMainGUI.X_Min  ,'String','1550')
-       set(hMainGUI.X_Max  ,'String','1700')
-    else
-        disp('Running in stand alone mode.')
+       GUI_Main  = Data_Main.GUI_Main;       
+       set(GUI_Main.LFreq  ,'String','1604')
+       set(GUI_Main.Anharm ,'String','12')
+       set(GUI_Main.Beta_NN,'String','0.8')
+       set(GUI_Main.X_Min  ,'String','1550')
+       set(GUI_Main.X_Max  ,'String','1700')
     end
+else
+    disp('Running in stand alone mode.')    
 end
 
 
@@ -139,20 +139,13 @@ Data_Main.Structure = Structure;
 % check if this program run stand along
 if isfield(handles,'hMain')
     guidata(handles.hMain,Data_Main)
-else
-    handles.Structure = Structure;
-    guidata(hObject,handles)
 end
+
+handles.Structure = Structure;
+guidata(hObject,handles)
 
 disp('Structure file generated!')
 
 
 function PlotMolecule(hObject, eventdata, handles)
-
-% check if this program run stand along
-if isfield(handles,'hMain')
-    Data_Main = guidata(handles.hMain);
-    Plot_Betasheet_AmideI(Data_Main.Structure)
-else
-    Plot_Betasheet_AmideI(handles.Structure)
-end
+Plot_Betasheet_AmideI(handles.Structure)

@@ -25,7 +25,7 @@ function varargout = Model_TCO(varargin)
 % Last Modified by GUIDE v2.5 01-Oct-2014 16:16:53
 
 % Begin initialization code - DO NOT EDIT
-gui_Singleton = 1;
+gui_Singleton = 0;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
                    'gui_OpeningFcn', @Model_TCO_OpeningFcn, ...
@@ -77,7 +77,6 @@ if nargin > 3
        set(GUI_Main.Beta_NN,'String','5')
        set(GUI_Main.X_Min  ,'String','1650')
        set(GUI_Main.X_Max  ,'String','1750')
-    
     end
 else
     disp('Running in stand alone mode.')
@@ -149,19 +148,13 @@ Structure = GetAcid('Phi_D1',Phi_D1,...
 if isfield(handles,'hMain')
     Data_Main.Structure = Structure;
     guidata(handles.hMain,Data_Main)
-else
-    handles.Structure = Structure;
-    guidata(hObject,handles)
 end
+
+handles.Structure = Structure;
+guidata(hObject,handles)
 
 function PlotMolecule(hObject, eventdata, handles)
-if isfield(handles,'hMain')
-    Data_Main = guidata(handles.hMain);
-    PlotXYZfiles_Acid(Data_Main.Structure)
-else
-    PlotXYZfiles_Acid(handles.Structure)
-end
-
+PlotXYZfiles_Acid(handles.Structure)
 
 
 

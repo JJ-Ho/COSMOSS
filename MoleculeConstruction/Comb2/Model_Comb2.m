@@ -22,7 +22,7 @@ function varargout = Model_Comb2(varargin)
 
 % Edit the above text to modify the response to help Model_Comb2
 
-% Last Modified by GUIDE v2.5 09-Dec-2015 11:11:21
+% Last Modified by GUIDE v2.5 12-Dec-2015 12:22:30
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 0;
@@ -75,7 +75,7 @@ end
 guidata(hObject, handles);
 
 % UIWAIT makes Model_Comb2 wait for user response (see UIRESUME)
-% uiwait(handles.figure1);
+% uiwait(handles.Model_Comb2);
 
 
 % --- Outputs from this function are returned to the command line.

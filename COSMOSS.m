@@ -61,7 +61,7 @@ if or(nargout,CreatMainGUI)
         [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
     else
         hMain = gui_mainfcn(gui_State, varargin{:});   
-        varargout{1} = hMain;
+        %varargout{1} = hMain;
     end
 else
     gui_mainfcn(gui_State, varargin{:});
@@ -77,7 +77,6 @@ end
 % ------------------------------------------------------------------------
 % End initialization code - DO NOT EDIT
 
-
 % --- Executes just before COSMOSS is made visible.
 function COSMOSS_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
@@ -89,12 +88,11 @@ function COSMOSS_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for COSMOSS
 handles.output = hObject;
 
-% Update handles structure
-guidata(hObject, handles);
-
 % UIWAIT makes COSMOSS wait for user response (see UIRESUME)
 % uiwait(handles.Main);
 
+% Update handles structure
+guidata(hObject, handles);
 
 % --- Outputs from this function are returned to the command line.
 function varargout = COSMOSS_OutputFcn(hObject, eventdata, handles) 
@@ -108,7 +106,7 @@ varargout{1} = handles.output;
 
 function onListSelection(hObject, eventdata, handles)
 
-StructModel    = get(handles.GUI_Main.StructListBox,'Value');
+StructModel      = get(handles.GUI_Main.StructListBox,'Value');
 [hStructure,~,~] = StructureModel(StructModel,handles.hMain);
 
 handles.Structure.hStructure = hStructure;

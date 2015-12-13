@@ -124,12 +124,13 @@ GUI_Inputs = ParseGUI_Comb2(GUI_Struc);
 Trans_X   = GUI_Inputs.Trans_X;
 Trans_Y   = GUI_Inputs.Trans_Y;
 Trans_Z   = GUI_Inputs.Trans_Z;
-Rot_Phi   = GUI_Inputs.Rot_Phi;
-Rot_Psi   = GUI_Inputs.Rot_Psi;
-Rot_Theta = GUI_Inputs.Rot_Theta;
+Rot_Phi   = GUI_Inputs.Rot_Phi/180*pi;
+Rot_Psi   = GUI_Inputs.Rot_Psi/180*pi;
+Rot_Theta = GUI_Inputs.Rot_Theta/180*pi;
 
 TransV = [Trans_X,Trans_Y,Trans_Z];
-RM = R1_ZYZ_0(Rot_Phi,Rot_Psi,Rot_Theta);
+% RM = R1_ZYZ_0(Rot_Phi,Rot_Psi,Rot_Theta);
+RM = Rx(Rot_Phi)*Ry(Rot_Psi)*Rz(Rot_Theta);
 
 %% Shift the center of mass of each structure to origin
 Center1 = StrucData1.center;
@@ -259,12 +260,12 @@ GUI_Inputs = ParseGUI_Comb2(GUI_Struc);
 Trans_X   = GUI_Inputs.Trans_X;
 Trans_Y   = GUI_Inputs.Trans_Y;
 Trans_Z   = GUI_Inputs.Trans_Z;
-Rot_Phi   = GUI_Inputs.Rot_Phi;
-Rot_Psi   = GUI_Inputs.Rot_Psi;
-Rot_Theta = GUI_Inputs.Rot_Theta;
+Rot_Phi   = GUI_Inputs.Rot_Phi/180*pi;
+Rot_Psi   = GUI_Inputs.Rot_Psi/180*pi;
+Rot_Theta = GUI_Inputs.Rot_Theta/180*pi;
 
 TransV = [Trans_X,Trans_Y,Trans_Z];
-RM = R1_ZYZ_0(Rot_Phi,Rot_Psi,Rot_Theta);
+RM = Rx(Rot_Phi)*Ry(Rot_Psi)*Rz(Rot_Theta);
 
 Center2 = StrucData2.center;
 COM2 = sum(Center2,1)./size(Center2,1);
@@ -302,8 +303,9 @@ end
 
 hold off
 %% figure options
-axis equal;
+axis image;
 rotate3d on
+grid on
 
 xlabel('X')
 ylabel('Y')

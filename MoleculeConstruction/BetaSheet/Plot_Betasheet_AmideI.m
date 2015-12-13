@@ -66,7 +66,7 @@ hF = figure;
 hold on
 Conn = Connectivity(R,'BondLength',7);
 gplot3(Conn,R);
-axis equal;
+axis image;
 rotate3d on
 
 

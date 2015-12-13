@@ -192,16 +192,36 @@ C_XYZ=coord2(3:4:length(coord2),:);
 O_XYZ=coord2(4:4:length(coord2),:);
 
 clear coord1 coord2
+%% Rotate the whole molecule so the strand align with X and CO align with Z
 
-%% Rotate the whole molecule so strand align with X axis 
-Strand_Axis = C_XYZ(end,:)-C_XYZ(1,:);
+% rotate along x-y plane
+Strand_Axis = C_XYZ(Num_Residue,:)-C_XYZ(1,:);
 Strand_Axis = Strand_Axis./norm(Strand_Axis);
-R_Angle = acos(dot(Strand_Axis,[1,0,0]));
-RM = R1_ZYZ_0(R_Angle,0,0);
+
+Vec_CO = O_XYZ - C_XYZ;
+% remove odd row for the following reshaping 
+if mod(size(Vec_CO,1),2)
+    Vec_CO(end,:) = [];
+end
+Vec_CO_reshape  = reshape(Vec_CO,2,[],3);
+Vec_CO_vec_flip = squeeze(diff(Vec_CO_reshape,1));
+CO_Axis = mean(Vec_CO_vec_flip,1);
+CO_Axis = CO_Axis./norm(CO_Axis);
+
+
+X_Axis = Strand_Axis;
+Z_Axis = CO_Axis;
+Y_Axis = cross(Z_Axis,X_Axis); % put Stand axis on X, and CO axis on Z 
+Y_Axis = Y_Axis./norm(Y_Axis);
+
+Rotated_frame = [1,0,0;0,1,0;0,0,1]';
+Original_frame = [X_Axis;Y_Axis;Z_Axis]';
+RM = Euler_Rot(Rotated_frame,Original_frame);
 
 C_XYZ = (RM*C_XYZ')';
 O_XYZ = (RM*O_XYZ')';
 N_XYZ = (RM*N_XYZ')';
+
 
 %% Formating output coordinate
 % XYZ = reshape([C_XYZ;O_XYZ;N_XYZ],[],3,3);

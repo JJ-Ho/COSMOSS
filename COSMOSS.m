@@ -231,7 +231,7 @@ CVL = Conv2D(SpectraGrid,GUI_Inputs);
 
 % Make figure
 % Plot2DIR(CVL,FreqRange,H,Mu_Ex,Daig_Cut)
-Plot2DIR(CVL,GUI_Inputs.FreqRange,H,Mu_Ex)
+Plot2DIR(CVL,H,Mu_Ex,GUI_Inputs)
 
 %% update TwoDIR_Response into guidata
 TwoDIR = Response;
@@ -320,41 +320,13 @@ if eq(GUI_Inputs.Sampling,1)
 else
     [SpectraGrid,Response] = TwoDSFG_Main(Structure,GUI_Inputs);
 end
-%% Covolution
+
+%% Covolution and make figure
 CVL = Conv2D(SpectraGrid,GUI_Inputs);
-  
-%% Plot 2DSFG spectra
-f = figure;
-set(f,'Unit','normalized') % use normalized scale
-CVLRS = -1.*real(CVL.selected);
-
-contour(GUI_Inputs.FreqRange,GUI_Inputs.FreqRange,CVLRS,GUI_Inputs.Num_Contour,'LineWidth',2)
-
-% Normalization
-% CVLRSN = CVLRS ./max(abs(CVLRS(:)));
-% contour(GUI_Inputs.FreqRange,GUI_Inputs.FreqRange,CVLRSN,GUI_Inputs.Num_Contour,'LineWidth',2)
-
-% shading flat
-ax = get(f,'CurrentAxes');
-set(ax,'DataAspectRatio',[1 1 1])
-% Plot diagonal line
-hold on; plot(GUI_Inputs.FreqRange,GUI_Inputs.FreqRange); hold off
-
-% % Set colorbar
-% MAP = custom_cmap(Num_Contour);
-% colormap(MAP)
-
-colorbar
-Amp = max(abs(caxis));
-caxis([-Amp Amp])
-
-% Call pointer
-S.fh = f;
-S.ax = ax;
-Pointer_N(S)
+Plot2DSFG(CVL,GUI_Inputs)
 
 %% update TwoDSFG_Response into guidata
-TwoDSFG = Response;
+TwoDSFG             = Response;
 TwoDSFG.SpectraGrid = SpectraGrid;
 TwoDSFG.CVL         = CVL;
 

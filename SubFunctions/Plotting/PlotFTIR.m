@@ -46,6 +46,7 @@ defaultBeta_NN     = 0.8;
 defaultF_Min       = 1600;
 defaultF_Max       = 1800;
 defaultLineWidth   = 5;
+defaultPlotCursor  = 0;
 
 % add Optional inputs / Parameters
 addOptional(INPUT,'Label_Index',defaultLabel_Index);
@@ -56,6 +57,7 @@ addOptional(INPUT,'Beta_NN'    ,defaultBeta_NN);
 addOptional(INPUT,'F_Min'      ,defaultF_Min);
 addOptional(INPUT,'F_Max'      ,defaultF_Max);
 addOptional(INPUT,'LineWidth'  ,defaultLineWidth);
+addOptional(INPUT,'PlotCursor' ,defaultPlotCursor);
 
 parse(INPUT,GUI_Inputs_C{:});
 
@@ -68,6 +70,7 @@ Beta_NN     = INPUT.Results.Beta_NN;
 F_Min       = INPUT.Results.F_Min;
 F_Max       = INPUT.Results.F_Max;
 LineWidth   = INPUT.Results.LineWidth;
+PlotCursor  = INPUT.Results.PlotCursor;
 
 %% Main
 
@@ -104,8 +107,7 @@ IntM = sum(mu01Ex.^2,3);
 mu_OneD = IntM(2:Num_Modes+1,1);
 freq_OneD = Freq01Ex(2:Num_Modes+1);
 
-f = figure; hold on
-set(f,'Unit','normalized') % use normalized scale
+hF = figure; hold on
 
 if eq(PlotStick,1)
 %     plot(freq_OneD,mu_OneD,'rx')
@@ -122,14 +124,25 @@ Gaussian = bsxfun(@times,exp(-(spec_array2.^2)./(LineWidth^2)),mu_OneD);
 Gaussian_Toatl = sum(Gaussian,1);
 
 plot(spec_range,Gaussian_Toatl,'-')
-set(gca,'XLim',[spec_range(1),spec_range(end)])
-
 hold off
 
-% % Call pointer
-% S.fh = f;
-% S.ax = get(f,'CurrentAxes');
-% Pointer_N(S) % use normalized scale
+%% figure setting 
+hF.Units = 'normalized'; % use normalized scale
+hAx = hF.CurrentAxes;
+hAx.FontSize = 14;
+hAx.XLim = [spec_range(1),spec_range(end)];
+hAx.XLabel.String = 'cm^{-1}';
+
+grid on
+
+if PlotCursor
+    % Call pointer
+    S.fh = hF;
+    S.ax = hAx;
+    Pointer_N(S) % use normalized scale
+else
+    title('FTIR','FontSize',16);    
+end
 
 % % integrate the curve area
 % Area = trapz(spec_range,Gaussian_Toatl);

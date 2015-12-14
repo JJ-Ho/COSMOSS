@@ -38,6 +38,7 @@ defaultF_Max       = 1800;
 defaultLineWidth   = 5;
 defaultSignal_Type = 1;
 defaultLineShape   = 'G';
+defaultPlotCursor  = 0;
 
 % add Optional inputs / Parameters
 addOptional(INPUT,'PlotStick'  ,defaultPlotStick);
@@ -47,6 +48,7 @@ addOptional(INPUT,'F_Max'      ,defaultF_Max);
 addOptional(INPUT,'LineWidth'  ,defaultLineWidth);
 addOptional(INPUT,'Signal_Type',defaultSignal_Type);
 addOptional(INPUT,'LineShape'  ,defaultLineShape);
+addOptional(INPUT,'PlotCursor' ,defaultPlotCursor);
 
 parse(INPUT,GUI_Inputs_C{:});
 
@@ -58,6 +60,7 @@ F_Max       = INPUT.Results.F_Max;
 LineWidth   = INPUT.Results.LineWidth;
 Signal_Type = INPUT.Results.Signal_Type;
 LineShape   = INPUT.Results.LineShape;
+PlotCursor  = INPUT.Results.PlotCursor;
 
 %% Plot 1DSFG spectra  
 Num_Modes = OneDSFG.Num_Modes;
@@ -65,12 +68,10 @@ PlotResponse = OneDSFG.EJLabFrame;
 
 Res_1DSFG_Freq = PlotResponse(:,1);
 
-figure;
+hF = figure;
 hold on
 
 Response1DSFG = PlotResponse(:,2);
-
-
 
 % Get Frequency axis range 
 spec_range = F_Min:F_Max;
@@ -99,8 +100,7 @@ switch LineShape
         
         Re = kkimbook2(spec_range,Im_Total,1);
 
-        CVL_Total = 1i*Im_Total + Re;
-        
+        CVL_Total = 1i*Im_Total + Re;       
 end
 
 % CVL = bsxfun(@times,LineShape,Response1DSFG); 
@@ -131,13 +131,30 @@ if eq(PlotStick,1)
 end
 
 plot(spec_range,PlotY,'-','LineWidth',2)
-
 hold off
 
-% integrate the curve area
-Area = trapz(spec_range,abs(PlotY));
-StickSum = sum(Stick);
-Title = [Signal_Type_Title, ', IA: ' num2str(Area), ',  Stick sum: ', num2str(StickSum)];
-title(Title,'FontSize',16);
+%% figure setting 
+hF.Units = 'normalized'; % use normalized scale
+hAx = hF.CurrentAxes;
+hAx.FontSize = 14;
+hAx.XLim = [spec_range(1),spec_range(end)];
+hAx.XLabel.String = 'cm^{-1}';
 
-set(gca,'XLim',[spec_range(1),spec_range(end)])
+if PlotCursor
+    % Call pointer
+    S.fh = hF;
+    S.ax = hAx;
+    Pointer_N(S) % use normalized scale
+else
+    Title = [Signal_Type_Title, ' SFG'];
+    title(Title,'FontSize',16);    
+end
+
+
+% integrate the curve area
+% Area = trapz(spec_range,abs(PlotY));
+% StickSum = sum(Stick);
+% Title = [Signal_Type_Title, ', IA: ' num2str(Area), ',  Stick sum: ', num2str(StickSum)];
+% title(Title,'FontSize',16);
+
+

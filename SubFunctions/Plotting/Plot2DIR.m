@@ -1,4 +1,4 @@
-function Plot2DIR(CVL,FreqRange,H,Mu_Ex)
+function Plot2DIR(CVL,H,Mu_Ex,GUI_Inputs)
 % 
 % This function plot 2DIR and other information
 
@@ -11,8 +11,31 @@ function Plot2DIR(CVL,FreqRange,H,Mu_Ex)
 % ------------------------------------------------------------------------
 % Copyright Jia-Jung Ho, 2014
 
-f = figure('Position',[600,200,500,450],...
-           'units','pix');
+%% Inputs parser
+GUI_Inputs_C      = fieldnames(GUI_Inputs);
+GUI_Inputs_C(:,2) = struct2cell(GUI_Inputs);
+GUI_Inputs_C      = GUI_Inputs_C';
+
+INPUT = inputParser;
+INPUT.KeepUnmatched = 1;
+
+% Default values
+defaultFreqRange   = 1600:1800;
+defaultPlotCursor  = 0;
+
+% add Optional inputs / Parameters
+addOptional(INPUT,'FreqRange'  ,defaultFreqRange);
+addOptional(INPUT,'PlotCursor' ,defaultPlotCursor);
+
+parse(INPUT,GUI_Inputs_C{:});
+
+% Re-assign variable names
+FreqRange   = INPUT.Results.FreqRange;
+PlotCursor  = INPUT.Results.PlotCursor;
+
+%% Main
+hF = figure('Position',[600,200,500,450],...
+           'units','pixel');
 
 % Generate Mu value table and eigen mode frequencies
 Mod_Ine_All = 2:3; % for two coupled oscillators
@@ -34,7 +57,7 @@ dat = [F;Beta;T]';
 rnames = {'S1','S2'};
 cnames = {'Freq','Beta','IR_Int','2DIR_Int','Mu_X','Mu_Y','Mu_Z'};
 
-t = uitable('Parent',f,...
+t = uitable('Parent',hF,...
             'Data',dat,...
             'ColumnFormat',{'bank','bank','bank','bank','bank','bank','bank'},...
             'ColumnWidth' ,{60,50,60,80,40,40,40},...
@@ -45,9 +68,9 @@ t = uitable('Parent',f,...
             'Position',[40,10,420,60]);
         
 % Make 2DSFG plot
-h1 = axes('units','pix','Position',[100,80,350,350]);
+hAx = axes('units','pix','Position',[100,80,350,350]);
 % h1 = axes('units','pix','Position',[100,100,300,300]);
-set(gcf,'CurrentAxes',h1)
+set(gcf,'CurrentAxes',hAx)
 
 % Num_Contour = 20;
 % [C,Ch] = contour(FreqRange,FreqRange,real(CVL.selected),Num_Contour,'LineWidth',2);
@@ -67,15 +90,25 @@ set(gca,'DataAspectRatio',[1 1 1])
 % Plot diagonal line
 hold on; plot(FreqRange,FreqRange); hold off
 
+%% figure setting 
+hAx.FontSize = 14;
+hAx.XLabel.String = 'Probe (cm^{-1})';
+hAx.YLabel.String = 'Pump (cm^{-1})';
+
 % Set colorbar
 colorbar
+colormap('jet')
 Amp = max(abs(caxis));
 caxis([-Amp Amp])
 
-% Call pointer
-S.fh = f;
-S.ax = h1;
-% Pointer(S)
-Pointer_N(S)
+if PlotCursor
+    % Call pointer
+    S.fh = hF;
+    S.ax = hAx;
+    Pointer_N(S) % use normalized scale
+else
+    Title = ['2DIR'];
+    title(Title,'FontSize',16);    
+end
 
 % figure; plot(FreqRange,diag(real(CVL.selected)))

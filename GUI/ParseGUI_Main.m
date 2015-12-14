@@ -38,6 +38,7 @@ O.Avg_Mirror   =            get(GUI_Main.Avg_Mirror ,'Value');
 O.Num_Contour  = str2double(get(GUI_Main.Num_Contour,'String'));
 O.PlotStick    =            get(GUI_Main.PlotStick  ,'Value');
 O.PlotNorm     =            get(GUI_Main.PlotNorm   ,'Value');
+O.PlotCursor   =            get(GUI_Main.PlotCursor ,'Value');
 
 %% Variable Need to be processed 
 O.F_Min     = str2double(get(GUI_Main.X_Min,'String'));

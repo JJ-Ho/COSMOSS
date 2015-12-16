@@ -135,7 +135,7 @@ Output.mu                = mu_Sim;
 Output.alpha_matrix      = alpha_Sim;
 Output.alpha             = reshape(alpha_Sim,[ModeNum,9]); % non-reduced alpha "vector"
 % Output.Alpha_Reduced    = alpha_Sim_reduced;
-Output.Mol_Frame        = XYZ_Sim;
+% Output.Mol_Frame        = XYZ_Sim;
 Output.mu_angle         = mu_angle;
 Output.alpha_angle      = alpha_angle;
 

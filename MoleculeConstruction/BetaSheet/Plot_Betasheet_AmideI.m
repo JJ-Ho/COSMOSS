@@ -22,10 +22,10 @@ function hF = Plot_Betasheet_AmideI(Structure,varargin)
 % ------------------------------------------------------------------------
 % Copyright Jia-Jung Ho, 2013
 
-%% Debug
+% %% Debug
 % clear all 
 % 
-% XYZ      = ConstuctBetaSheet(10,2);
+% XYZ      = ConstuctBetaSheet(4,1,[0,0,4.75],[0,0,0]);
 % Structure = GetAmideI_CON_XYZ_betasheet(XYZ);
 
 %% Input parser
@@ -44,6 +44,7 @@ function hF = Plot_Betasheet_AmideI(Structure,varargin)
 
 
 %% Main
+Num_Modes = Structure.Num_Modes;
 
 % Rotate molecule and transition dipole 
 XYZ        = Structure.XYZ;
@@ -54,38 +55,100 @@ Rot_mu     = Structure.mu;
 R_1 = reshape(XYZ,[],3,3);
 R = permute(R_1,[1,3,2]);
 
-% Scale TDV vector in plot
-Rot_mu_S = Rot_mu./10;
+
 
 % draw molecule
-
-
 hF = figure;
-
-
 hold on
-Conn = Connectivity(R,'BondLength',7);
-gplot3(Conn,R);
-axis image;
-rotate3d on
+   
+    %% draw atoms    
+    Carbon_Pos   = R(:,:,1);
+    Oxygen_Pos   = R(:,:,2);
+    Nitrogen_Pos = R(:,:,3);
+
+    plot3(Rot_Center(:,1)  ,Rot_Center(:,2)  ,Rot_Center(:,3)  ,'LineStyle','none','Marker','d','MarkerFaceColor','w')
+    plot3(Carbon_Pos(:,1)  ,Carbon_Pos(:,2)  ,Carbon_Pos(:,3)  ,'LineStyle','none','Marker','o','MarkerFaceColor','k','MarkerSize',10)
+    plot3(Oxygen_Pos(:,1)  ,Oxygen_Pos(:,2)  ,Oxygen_Pos(:,3)  ,'LineStyle','none','Marker','o','MarkerFaceColor','r','MarkerSize',10)
+    plot3(Nitrogen_Pos(:,1),Nitrogen_Pos(:,2),Nitrogen_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','b','MarkerSize',10)
+
+    %% draws bonds
+    % Chain
+        Conn1 = Connectivity(R(:,:,1),'BondLength',3.5);
+        gplot3(Conn1, R(:,:,1));
+    % C=O bond
+        Conn2 = Connectivity([R(:,:,1);R(:,:,2)],'BondLength',1.6);
+        gplot3(Conn2, [R(:,:,1);R(:,:,2)]);
+    % C-N bond
+        Conn2 = Connectivity([R(:,:,1);R(:,:,3)],'BondLength',1.6);
+        gplot3(Conn2, [R(:,:,1);R(:,:,3)]);
 
 
-Carbon_Pos   = R(:,:,1);
-Oxygen_Pos   = R(:,:,2);
-Nitrogen_Pos = R(:,:,3);
-
-% line(Test_X',Test_Y',Test_Z','LineWidth',2)
-quiver3(Rot_Center(:,1),Rot_Center(:,2),Rot_Center(:,3),...
-        Rot_mu_S(:,1),Rot_mu_S(:,2),Rot_mu_S(:,3),0,...
-        'LineWidth',2,...
-        'Color',[0 1 0]);
-
-plot3(Rot_Center(:,1)  ,Rot_Center(:,2)  ,Rot_Center(:,3)  ,'LineStyle','none','Marker','d','MarkerFaceColor','w')
-plot3(Carbon_Pos(:,1)  ,Carbon_Pos(:,2)  ,Carbon_Pos(:,3)  ,'LineStyle','none','Marker','o','MarkerFaceColor','k','MarkerSize',10)
-plot3(Oxygen_Pos(:,1)  ,Oxygen_Pos(:,2)  ,Oxygen_Pos(:,3)  ,'LineStyle','none','Marker','o','MarkerFaceColor','r','MarkerSize',10)
-plot3(Nitrogen_Pos(:,1),Nitrogen_Pos(:,2),Nitrogen_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','b','MarkerSize',10)
+    %% Draw molecular frame on each modes
+    Mol_Frame_scale = 0.5;
+    Mol_Frame_all = Mol_Frame_scale.* Structure.Mol_Frame;
+    
+        % X
+        quiver3(Rot_Center(:,1)     ,Rot_Center(:,2)     ,Rot_Center(:,3),...
+                Mol_Frame_all(:,1,1),Mol_Frame_all(:,2,1),Mol_Frame_all(:,3,1),0,...
+                'LineWidth',2,...
+                'Color',[1,0,0]);
+        % Y
+        quiver3(Rot_Center(:,1)     ,Rot_Center(:,2)     ,Rot_Center(:,3),...
+                Mol_Frame_all(:,1,2),Mol_Frame_all(:,2,2),Mol_Frame_all(:,3,2),0,...
+                'LineWidth',2,...
+                'Color',[0,1,0]);
+        % Z
+        quiver3(Rot_Center(:,1)     ,Rot_Center(:,2)     ,Rot_Center(:,3),...
+                Mol_Frame_all(:,1,3),Mol_Frame_all(:,2,3),Mol_Frame_all(:,3,3),0,...
+                'LineWidth',2,...
+                'Color',[0,0,1]);
+        
+    %% draw transition dipoles
+    TDV_Scale = 0.1;
+    Rot_mu_S = TDV_Scale .* Rot_mu; % Scale TDV vector in plot
+    
+    quiver3(Rot_Center(:,1),Rot_Center(:,2),Rot_Center(:,3),...
+            Rot_mu_S(:,1),Rot_mu_S(:,2),Rot_mu_S(:,3),0,...
+            'LineWidth',2,...
+            'Color',[255,128,0]./256);
+        
+    %% draw Raman tensor
+    RT_scale = 0.5;
+    N_mesh = 10;
+    Semi_Axis_L = RT_scale*[0.25,1,5]; 
+    alpha_angle = Structure.alpha_angle;
+    
+    [Ex0, Ey0, Ez0] = ellipsoid(0,0,0,Semi_Axis_L(1),Semi_Axis_L(2),Semi_Axis_L(3),N_mesh);
+    OrigE = [Ex0(:),Ey0(:),Ez0(:)];
+    RotE  = (Rx(alpha_angle)*OrigE')'; % rotate the ellipsoid by 34 degrees about X axis
+    
+    Orig_Frame = [1,0,0;0,1,0;0,0,1]';
+    
+    for i = 1: Num_Modes
+        % rotation
+        Mol_Frame = squeeze(Mol_Frame_all(i,:,:));
+        RM = Euler_Rot(Mol_Frame,Orig_Frame);
+        Rot_XYZ = (RM*RotE')';
+        Rot_XM = reshape(Rot_XYZ(:,1),N_mesh+1,N_mesh+1);
+        Rot_YM = reshape(Rot_XYZ(:,2),N_mesh+1,N_mesh+1);
+        Rot_ZM = reshape(Rot_XYZ(:,3),N_mesh+1,N_mesh+1);
+        % translation 
+        Trans_XM = Rot_XM + Rot_Center(i,1);
+        Trans_YM = Rot_YM + Rot_Center(i,2);
+        Trans_ZM = Rot_ZM + Rot_Center(i,3);
+        
+        surf(Trans_XM,Trans_YM,Trans_ZM,...
+            'LineStyle','-',...
+            'EdgeAlpha',0.2,...
+            'FaceColor',[204,152,255]./255,...
+            'FaceAlpha',0.2);
+    end
+    
 
 hold off
 
+%% figure setting
+axis image;
+rotate3d on
 xlabel('X')
 ylabel('Y')

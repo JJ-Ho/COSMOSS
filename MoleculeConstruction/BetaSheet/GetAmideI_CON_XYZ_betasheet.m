@@ -35,21 +35,20 @@ ModeNum = size(XYZ_Atom_Separate,1);
 
 Vec_CO = XYZ_Atom_Separate(:,:,2)-XYZ_Atom_Separate(:,:,1);
 Vec_CO = squeeze(Vec_CO);
-Vec_CO_Norm = sqrt(sum(abs(Vec_CO).^2,2));
-Vec_CO = bsxfun(@rdivide,Vec_CO,Vec_CO_Norm); % normaliz CO vectors
+Vec_CO = bsxfun(@rdivide,Vec_CO,sqrt(sum(abs(Vec_CO).^2,2))); % normaliz CO vectors
 
 Vec_CN = XYZ_Atom_Separate(:,:,3)-XYZ_Atom_Separate(:,:,2);
 Vec_CN = squeeze(Vec_CN);
-Vec_CN_Norm = sqrt(sum(abs(Vec_CN).^2,2));
-Vec_CN = bsxfun(@rdivide,Vec_CN,Vec_CN_Norm); % normaliz CN vectors
+Vec_CN = bsxfun(@rdivide,Vec_CN,sqrt(sum(abs(Vec_CN).^2,2))); % normaliz CN vectors
 
 AmideICenter = squeeze(XYZ_Atom_Separate(:,:,1)) + Vec_CO.*0.665 + Vec_CN.*0.256; % center of amide I mode, ref from Jenny's mathematica code
 %% Define Lab frame coordinate of each mode
 
 Z_Sim = Vec_CO;
-X_Sim = cross(Z_Sim,Vec_CN,2);
+X_Sim = cross(Vec_CN,Z_Sim,2);
 X_Sim = bsxfun(@rdivide,X_Sim,sqrt(sum(abs(X_Sim).^2,2))); % normalize
-Y_Sim = cross(X_Sim,Z_Sim,2);
+Y_Sim = cross(Z_Sim,X_Sim,2);
+Y_Sim = bsxfun(@rdivide,Y_Sim,sqrt(sum(abs(Y_Sim).^2,2))); % normalize
 
 XYZ_Sim = [X_Sim(:); Y_Sim(:); Z_Sim(:)]';
 XYZ_Sim = reshape(XYZ_Sim,ModeNum,3,[]); 
@@ -68,17 +67,21 @@ XYZ_Sim = reshape(XYZ_Sim,ModeNum,3,[]);
 %% Calculate the transition dipole (mu) and Raman tensor (alpha) in Lab frame
 
 % Transition dipole Angle
-% mu_Mol_angle = 27.5*pi/180; from Jenny's paper (10.1021/jp408064b)
-mu_Mol_angle = 20*pi/180; % from D. Strasfeld's paper (10.1021/jp9072203)
-% mu_Mol_angle = 25*pi/180; % from Cho's paper
+mu_angle = -27.5*pi/180; % cunter clockwise roation about x axis from Jenny's paper (10.1021/jp408064b)
+% mu_angle = -20*pi/180; % from D. Strasfeld's paper (10.1021/jp9072203)
+% mu_angle = -25*pi/180; % from Cho's paper
+% mu_angle = -10*pi/180; % follow Skinner's 2014 paper, doi:10.1063/1.4882059
 
-mu_Mol = [0, sin(mu_Mol_angle), -cos(mu_Mol_angle)].* 16.1016; % this scale factor was calculated from DFT simulation, check 140207_NMA
+mu_vec0 = 16.1016*[0,0,-1]';       % this scale factor was calculated from DFT simulation, check 140207_NMA
+mu_Mol  = (Rx(mu_angle)*mu_vec0)'; % 3 by 1
 
+% Raman tensor
+alpha_angle = -34*pi/180;    % cunter clockwise roation about x axis from Jenny's paper (10.1021/jp408064b)
+alpha0 = 5*[ 0.05, 0  , 0;   
+             0   , 0.2, 0; 
+             0   , 0  , 1 ];
 
-alpha_angle = 34*pi/180;
-alpha = [ 0.05,0,0; 0,0.2,0; 0,0,1].*5;
-Rot_to_Mol = [ 1,0,0; 0,cos(alpha_angle),-sin(alpha_angle); 0, sin(alpha_angle),cos(alpha_angle) ];
-alpha_Mol = Rot_to_Mol*alpha*Rot_to_Mol';
+alpha_Mol = Rx(alpha_angle) * alpha0 * Rx(alpha_angle)';
 
 mu_Sim = zeros(ModeNum,3);
 alpha_Sim = zeros(ModeNum,3,3);
@@ -132,3 +135,7 @@ Output.mu                = mu_Sim;
 Output.alpha_matrix      = alpha_Sim;
 Output.alpha             = reshape(alpha_Sim,[ModeNum,9]); % non-reduced alpha "vector"
 % Output.Alpha_Reduced    = alpha_Sim_reduced;
+Output.Mol_Frame        = XYZ_Sim;
+Output.mu_angle         = mu_angle;
+Output.alpha_angle      = alpha_angle;
+

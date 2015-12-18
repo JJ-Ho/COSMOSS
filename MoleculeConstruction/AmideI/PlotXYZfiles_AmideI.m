@@ -28,62 +28,56 @@ function hF = PlotXYZfiles_AmideI(PDB_Data)
 % PDB_Data = TwoMolConstruct;
 % Orientation = [0,0,0];
 
-%% Read orientation inputs from GUI
-% PDB_Data = handles.PDB_Data;
-
-% Phi_D   = str2double(get(handles.Mol_Phi,'String'));
-% Psi_D   = str2double(get(handles.Mol_Psi,'String'));
-% Theta_D = str2double(get(handles.Mol_Theta,'String'));
-
-Phi_D = 0;
-Psi_D = 0;
-Theta_D = 0;
-Orientation = [Phi_D,Psi_D,Theta_D];
-
 %% Main
 
-% Generate rotation matrix
-Orientation = Orientation/180*pi; % turn to radius unit
-
-Phi_Avg   = Orientation(1);
-Psi_Avg   = Orientation(2);
-Theta_Avg = Orientation(3);
-
-Rot_Mat = R1_ZYZ_0(Phi_Avg,Psi_Avg,Theta_Avg);
-
 % Rotate molecule and transition dipole 
-R          = (Rot_Mat * PDB_Data.XYZ')';
-Rot_Center = (Rot_Mat * PDB_Data.center')';
-Rot_mu     = (Rot_Mat * PDB_Data.mu')';
-
-% Scale TDV vector in plot
-Rot_mu_S = Rot_mu./16;
-
-% draw molecule
-hF = figure; hold on
-Conn = Connectivity(PDB_Data.XYZ);
-gplot3(Conn,R);
-axis image;
-rotate3d on
-
-% Define C,O,N atom position
-Carbon_Pos   = R(PDB_Data.AtomSerNo(:,1),:);
-Oxygen_Pos   = R(PDB_Data.AtomSerNo(:,2),:);
-Nitrogen_Pos = R(PDB_Data.AtomSerNo(:,3),:);
+Num_Modes = PDB_Data.Num_Modes;
+XYZ       = PDB_Data.XYZ;
+Center    = PDB_Data.center;
+Mu        = PDB_Data.mu;
+RamanM    = PDB_Data.alpha_matrix;
 
 
-% line(Test_X',Test_Y',Test_Z','LineWidth',2)
-quiver3(Rot_Center(:,1),Rot_Center(:,2),Rot_Center(:,3),...
-        Rot_mu_S(:,1),Rot_mu_S(:,2),Rot_mu_S(:,3),0,...
-        'LineWidth',2,...
-        'Color',[0 1 0]);
+hF = figure; 
+hold on
 
-plot3(Rot_Center(:,1)  ,Rot_Center(:,2)  ,Rot_Center(:,3)  ,'LineStyle','none','Marker','d','MarkerFaceColor','w')
-plot3(Carbon_Pos(:,1)  ,Carbon_Pos(:,2)  ,Carbon_Pos(:,3)  ,'LineStyle','none','Marker','o','MarkerFaceColor','k','MarkerSize',10)
-plot3(Oxygen_Pos(:,1)  ,Oxygen_Pos(:,2)  ,Oxygen_Pos(:,3)  ,'LineStyle','none','Marker','o','MarkerFaceColor','r','MarkerSize',10)
-plot3(Nitrogen_Pos(:,1),Nitrogen_Pos(:,2),Nitrogen_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','b','MarkerSize',10)
+    %% draw bonds
+    Conn = Connectivity(XYZ);
+    gplot3(Conn,XYZ);
+    
+    %% Draw atoms
+    Carbon_Pos   = XYZ(PDB_Data.AtomSerNo(:,1),:);
+    Oxygen_Pos   = XYZ(PDB_Data.AtomSerNo(:,2),:);
+    Nitrogen_Pos = XYZ(PDB_Data.AtomSerNo(:,3),:);
+
+    plot3(Center(:,1)  ,Center(:,2)  ,Center(:,3)  ,'LineStyle','none','Marker','d','MarkerFaceColor','w')
+    plot3(Carbon_Pos(:,1)  ,Carbon_Pos(:,2)  ,Carbon_Pos(:,3)  ,'LineStyle','none','Marker','o','MarkerFaceColor','k','MarkerSize',10)
+    plot3(Oxygen_Pos(:,1)  ,Oxygen_Pos(:,2)  ,Oxygen_Pos(:,3)  ,'LineStyle','none','Marker','o','MarkerFaceColor','r','MarkerSize',10)
+    plot3(Nitrogen_Pos(:,1),Nitrogen_Pos(:,2),Nitrogen_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','b','MarkerSize',10)
+
+
+    %% draw transition dipoles
+    TDV_Scale = 0.1;
+    Rot_mu_S = TDV_Scale .* Mu; % Scale TDV vector in plot
+    
+    quiver3(Center(:,1),Center(:,2),Center(:,3),...
+            Rot_mu_S(:,1),Rot_mu_S(:,2),Rot_mu_S(:,3),0,...
+            'LineWidth',2,...
+            'Color',[255,128,0]./256);
+
+    %% draw Raman tensor using plot_Raman
+    RT_scale = 0.5;
+    N_mesh   = 20;
+
+    for i = 1: Num_Modes
+        Raman  = squeeze(RamanM(i,:,:));
+        plot_Raman(Raman,Center(i,:),RT_scale,N_mesh)
+    end
 
 hold off
 
+%% figure setting
 xlabel('X')
 ylabel('Y')
+axis image;
+rotate3d on

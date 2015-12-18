@@ -30,7 +30,6 @@ function hF = PlotXYZfiles_AmideI(PDB_Data)
 
 %% Main
 
-% Rotate molecule and transition dipole 
 Num_Modes = PDB_Data.Num_Modes;
 XYZ       = PDB_Data.XYZ;
 Center    = PDB_Data.center;
@@ -58,10 +57,10 @@ hold on
 
     %% draw transition dipoles
     TDV_Scale = 0.1;
-    Rot_mu_S = TDV_Scale .* Mu; % Scale TDV vector in plot
+    Mu_S = TDV_Scale .* Mu; % Scale TDV vector in plot
     
     quiver3(Center(:,1),Center(:,2),Center(:,3),...
-            Rot_mu_S(:,1),Rot_mu_S(:,2),Rot_mu_S(:,3),0,...
+            Mu_S(:,1),Mu_S(:,2),Mu_S(:,3),0,...
             'LineWidth',2,...
             'Color',[255,128,0]./256);
 

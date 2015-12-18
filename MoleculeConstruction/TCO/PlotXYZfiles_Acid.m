@@ -38,56 +38,64 @@ function hF = PlotXYZfiles_Acid(Struc_Data)
 
 %% Main
 
-% Generate rotation matrix
-% Orientation = Orientation/180*pi; % turn to radius unit
-% 
-% Phi_Avg   = Orientation(1);
-% Psi_Avg   = Orientation(2);
-% Theta_Avg = Orientation(3);
+Num_Modes = Struc_Data.Num_Modes;
+XYZ       = Struc_Data.XYZ;
+Center    = Struc_Data.center;
+Mu        = Struc_Data.mu;
+RamanM    = Struc_Data.alpha_matrix;
 
-% Rot_Mat = R1_ZYZ_0(Phi_Avg,Psi_Avg,Theta_Avg);
-Rot_Mat = eye(3);
 
-% Rotate molecule and transition dipole 
-R          = (Rot_Mat * Struc_Data.XYZ')';
-Rot_Center = (Rot_Mat * Struc_Data.center')';
-Rot_mu     = (Rot_Mat * Struc_Data.mu')';
+hF = figure; 
+hold on
 
-%% draw molecule
-hF = figure; hold on
-Conn = Connectivity(Struc_Data.XYZ);
-% add line between the two Carbon
-Conn(1,5) = 1;
-Conn(5,1) = 1;
-gplot3(Conn,R);
-% axis auto;
+    %% draw bonds
+    Conn = Connectivity(XYZ);
+        % add line between the two Carbon
+        Conn(1,5) = 1;
+        Conn(5,1) = 1;
+
+    gplot3(Conn,XYZ);
+    
+
+    %%  Draw atoms
+    %Define C,OD,OS atom position
+    Carbon_Pos   = XYZ(Struc_Data.AtomSerNo(:,1),:);
+    OxygenD_Pos  = XYZ(Struc_Data.AtomSerNo(:,2),:);
+    OxygenS_Pos  = XYZ(Struc_Data.AtomSerNo(:,3),:);
+    Hydrogen_Pos = XYZ(Struc_Data.AtomSerNo(:,4),:);
+    
+    plot3(Center(:,1)  ,Center(:,2)  ,Center(:,3)  ,'LineStyle','none','Marker','d','MarkerFaceColor','w')
+    plot3(Carbon_Pos(:,1)  ,Carbon_Pos(:,2)  ,Carbon_Pos(:,3)  ,'LineStyle','none','Marker','o','MarkerFaceColor','k','MarkerSize',10)
+    plot3(OxygenD_Pos(:,1) ,OxygenD_Pos(:,2) ,OxygenD_Pos(:,3) ,'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',10)
+    plot3(OxygenS_Pos(:,1) ,OxygenS_Pos(:,2) ,OxygenS_Pos(:,3) ,'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',10)
+    plot3(Hydrogen_Pos(:,1),Hydrogen_Pos(:,2),Hydrogen_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,1,1],'MarkerSize',10)
+
+
+    %% draw transition dipoles
+    TDV_Scale = 0.1;
+    Mu_S = TDV_Scale .* Mu; % Scale TDV vector in plot
+    
+    quiver3(Center(:,1),Center(:,2),Center(:,3),...
+            Mu_S(:,1),Mu_S(:,2),Mu_S(:,3),0,...
+            'LineWidth',2,...
+            'Color',[255,128,0]./256);
+
+    %% draw Raman tensor using plot_Raman
+    RT_scale = 2;
+    N_mesh   = 20;
+
+    for i = 1: Num_Modes
+        Raman  = squeeze(RamanM(i,:,:));
+        plot_Raman(Raman,Center(i,:),RT_scale,N_mesh)
+    end
+
+hold off
+
+%% figure setting 
 LL = 5;
 axis([-LL+2.5,LL+2.5,-LL,LL,-LL,LL,-1,1])
 rotate3d on
 
-%% Define C,OD,OS atom position
-Carbon_Pos   = R(Struc_Data.AtomSerNo(:,1),:);
-OxygenD_Pos  = R(Struc_Data.AtomSerNo(:,2),:);
-OxygenS_Pos  = R(Struc_Data.AtomSerNo(:,3),:);
-Hydrogen_Pos = R(Struc_Data.AtomSerNo(:,4),:);
-
-% Vector scale Factor
-SF = 10;
-
-% line(Test_X',Test_Y',Test_Z','LineWidth',2)
-quiver3(Rot_Center(:,1),Rot_Center(:,2),Rot_Center(:,3),...
-        Rot_mu(:,1)./SF,Rot_mu(:,2)./SF,Rot_mu(:,3)./SF,0,...
-        'LineWidth',2,...
-        'Color',[0 1 0],...
-        'AutoScaleFactor',0.5);
-
-plot3(Rot_Center(:,1)  ,Rot_Center(:,2)  ,Rot_Center(:,3)  ,'LineStyle','none','Marker','d','MarkerFaceColor','w')
-plot3(Carbon_Pos(:,1)  ,Carbon_Pos(:,2)  ,Carbon_Pos(:,3)  ,'LineStyle','none','Marker','o','MarkerFaceColor','k','MarkerSize',10)
-plot3(OxygenD_Pos(:,1) ,OxygenD_Pos(:,2) ,OxygenD_Pos(:,3) ,'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',10)
-plot3(OxygenS_Pos(:,1) ,OxygenS_Pos(:,2) ,OxygenS_Pos(:,3) ,'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',10)
-plot3(Hydrogen_Pos(:,1),Hydrogen_Pos(:,2),Hydrogen_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,1,1],'MarkerSize',10)
-
-hold off
 
 xlabel('X')
 ylabel('Y')

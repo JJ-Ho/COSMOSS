@@ -88,47 +88,16 @@ hold on
             Rot_mu_S(:,1),Rot_mu_S(:,2),Rot_mu_S(:,3),0,...
             'LineWidth',2,...
             'Color',[255,128,0]./256);
-        
-    %% draw Raman tensor
+
+    %% draw Raman tensor using plot_Raman
     RT_scale = 0.5;
-    N_mesh = 20;
-    
-    RamanM = Structure.alpha_matrix;
-    Orig_Frame = [1,0,0;0,1,0;0,0,1]';
-    
+    N_mesh   = 20;
+    RamanM   = Structure.alpha_matrix;
+
     for i = 1: Num_Modes
-        % Extract ellipsoid info from Raman tensor
-        [V,D] = eig(squeeze(RamanM(i,:,:)));
-        SemiAxisL = RT_scale.*diag(D);
-        E_Axis = V;
-        
-        % I found I don't have to re-order the axis since the eigne valuses
-        % floow the ordering of vetors
-        % % Reorder the eigen vector to X,Y,Z priciple axis order
-        % % I knew the vector from eig is output in assending order, and corresponding to Z,Y,X axis.
-        %Order_Ind = [1,2,3];
-        %SemiAxisL = SemiAxisL(Order_Ind);
-        %E_Axis = V(:,Order_Ind); 
-        
-        % generate ellipsoid coordinate in Original Frame 
-        [Ex0, Ey0, Ez0] = ellipsoid(0,0,0,SemiAxisL(1),SemiAxisL(2),SemiAxisL(3),N_mesh);
-        OrigE = [Ex0(:),Ey0(:),Ez0(:)]; 
-        % rotation
-        RM = Euler_Rot(E_Axis,Orig_Frame);
-        Rot_XYZ = (RM*OrigE')';
-        Rot_XM = reshape(Rot_XYZ(:,1),N_mesh+1,N_mesh+1);
-        Rot_YM = reshape(Rot_XYZ(:,2),N_mesh+1,N_mesh+1);
-        Rot_ZM = reshape(Rot_XYZ(:,3),N_mesh+1,N_mesh+1);
-        % translation 
-        Trans_XM = Rot_XM + Rot_Center(i,1);
-        Trans_YM = Rot_YM + Rot_Center(i,2);
-        Trans_ZM = Rot_ZM + Rot_Center(i,3);
-        
-        surf(Trans_XM,Trans_YM,Trans_ZM,...
-            'LineStyle','-',...
-            'EdgeAlpha',0.2,...
-            'FaceColor',[204,152,255]./255,...
-            'FaceAlpha',0.2);
+        Raman  = squeeze(RamanM(i,:,:));
+        Center = Rot_Center(i,:);
+        plot_Raman(Raman,Center,RT_scale,N_mesh)
     end
 
     %% Draw molecular frame on each modes

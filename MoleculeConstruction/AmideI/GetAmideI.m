@@ -178,8 +178,10 @@ Theta_R = Theta_D/180*pi;
 Rot_Mat = R1_ZYZ_0(Phi_R,Psi_R,Theta_R);
 XYZ_Atom_Rot = (Rot_Mat*XYZ_Orig')';
 
-
 XYZ_Atom_Rot = reshape(XYZ_Atom_Rot,Num_Modes,3,[]); % [C_xyz O_xyz N_xyz ; C_xyz, O_xyz, N_xyz ; ...]
+
+% rotate the whole XYZ coordinate
+XYZ_Rot = (Rot_Mat*XYZ')';
 
 %% Define Aminde I modes coordinate system
 switch Num_Modes
@@ -253,7 +255,7 @@ Output.alpha        = reshape(alpha_Sim,[Num_Modes,9]); % non-reduced alpha "vec
 Output.alpha_matrix = alpha_Sim;
 Output.AtomSerNo    = AmideIAtomSerNo;
 Output.Num_Modes    = Num_Modes;
-Output.XYZ          = XYZ;
+Output.XYZ          = XYZ_Rot;
 Output.FilesName    = FilesName;
 Output.mu_angle     = mu_angle;
 Output.alpha_angle  = alpha_angle;

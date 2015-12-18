@@ -91,7 +91,7 @@ hold on
         
     %% draw Raman tensor
     RT_scale = 0.5;
-    N_mesh = 10;
+    N_mesh = 20;
     
     RamanM = Structure.alpha_matrix;
     Orig_Frame = [1,0,0;0,1,0;0,0,1]';
@@ -100,11 +100,15 @@ hold on
         % Extract ellipsoid info from Raman tensor
         [V,D] = eig(squeeze(RamanM(i,:,:)));
         SemiAxisL = RT_scale.*diag(D);
-        % Reorder the eigen vector to X,Y,Z priciple axis order
-        % I knew the vector from eig is output in assending order, and corresponding to Z,Y,X axis.
-        Order_Ind = [3,2,1];
-        SemiAxisL = SemiAxisL(Order_Ind);
-        E_Axis = V(:,Order_Ind); 
+        E_Axis = V;
+        
+        % I found I don't have to re-order the axis since the eigne valuses
+        % floow the ordering of vetors
+        % % Reorder the eigen vector to X,Y,Z priciple axis order
+        % % I knew the vector from eig is output in assending order, and corresponding to Z,Y,X axis.
+        %Order_Ind = [1,2,3];
+        %SemiAxisL = SemiAxisL(Order_Ind);
+        %E_Axis = V(:,Order_Ind); 
         
         % generate ellipsoid coordinate in Original Frame 
         [Ex0, Ey0, Ez0] = ellipsoid(0,0,0,SemiAxisL(1),SemiAxisL(2),SemiAxisL(3),N_mesh);

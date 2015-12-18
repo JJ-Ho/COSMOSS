@@ -3,7 +3,7 @@
 Current_path = pwd;
 
 % Add path of SubFunctions
-Functions = genpath([Current_path '/SubFunctions']);
+Functions = genpath([Current_path '/SpecFunc']);
 addpath(Functions);
 
 GUIs = genpath([Current_path '/GUI']);

@@ -38,12 +38,12 @@ function hF = PlotXYZfiles_Acid(Struc_Data)
 
 %% Main
 
-Num_Modes = Struc_Data.Num_Modes;
-XYZ       = Struc_Data.XYZ;
-Center    = Struc_Data.center;
-Mu        = Struc_Data.mu;
-RamanM    = Struc_Data.alpha_matrix;
-
+Num_Modes    = Struc_Data.Num_Modes;
+XYZ          = Struc_Data.XYZ;
+Center       = Struc_Data.center;
+Mu           = Struc_Data.mu;
+RamanM       = Struc_Data.alpha_matrix;
+Displacement = Struc_Data.Displacement;
 
 hF = figure; 
 hold on
@@ -92,9 +92,24 @@ hold on
 hold off
 
 %% figure setting 
+hAx = findobj(hF,'type','axes');
+
 LL = 5;
-axis([-LL+2.5,LL+2.5,-LL,LL,-LL,LL,-1,1])
+Orig_Box = [-LL,LL,-LL,LL,-LL,LL];
+
+XMin = min( Orig_Box(1),Orig_Box(1)+ Displacement(1));
+XMax = max( Orig_Box(2),Orig_Box(2)+ Displacement(1));
+YMin = min( Orig_Box(3),Orig_Box(3)+ Displacement(2));
+YMax = max( Orig_Box(4),Orig_Box(4)+ Displacement(2));
+ZMin = min( Orig_Box(5),Orig_Box(5)+ Displacement(3));
+ZMax = max( Orig_Box(6),Orig_Box(6)+ Displacement(3));
+
+hAx.XLim = [XMin,XMax];
+hAx.YLim = [YMin,YMax];
+hAx.ZLim = [ZMin,ZMax];
+
 rotate3d on
+grid on
 
 
 xlabel('X')

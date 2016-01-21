@@ -204,5 +204,6 @@ Output.Num_Modes    = Num_Modes;
 Output.XYZ          = XYZ;
 Output.AtomSerNo    = AcidAtomSerNo;
 Output.FilesName    = 'Acid Dimer';
+Output.Displacement = Displacement;
 
 

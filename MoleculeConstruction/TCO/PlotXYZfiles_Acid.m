@@ -115,3 +115,5 @@ grid on
 xlabel('X')
 ylabel('Y')
 zlabel('Z')
+
+view([0,0])

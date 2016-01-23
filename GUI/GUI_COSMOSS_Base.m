@@ -18,4 +18,4 @@ gui_Options.syscolorfig = 1;
 setappdata(hMainFig,'GUIDEOptions',gui_Options);
 hMainFig.HandleVisibility= 'Callback';
 
-disp('Using GUI Layout Toolbox!')
+disp('Creating COSMOSS GUI Using GUI Layout Toolbox!')

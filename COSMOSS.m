@@ -106,8 +106,9 @@ varargout{1} = handles.output;
 
 function onListSelection(hObject, eventdata, handles)
 
-StructModel      = get(handles.GUI_Main.StructListBox,'Value');
-[hStructure,~,~] = StructureModel(StructModel,handles.hMain);
+StructModel              = get(handles.GUI_Main.StructListBox,'Value');
+[hStructure,ModelList,~] = StructureModel(StructModel,handles.hMain);
+disp(['COSMOSS using model ' ModelList{StructModel}])
 
 handles.Structure.hStructure = hStructure;
 guidata(hObject,handles)
@@ -335,5 +336,5 @@ guidata(hObject,handles);
 
 function Export_Handle_Callback(hObject, eventdata, handles)
 % export handles back to work space
-assignin('base', 'H', handles)
+assignin('base', 'hMain', handles)
 disp('Updated handles exported!')

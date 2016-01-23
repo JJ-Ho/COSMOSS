@@ -79,7 +79,7 @@ if nargin > 3
        set(GUI_Main.X_Max  ,'String','1750')
     end
 else
-    disp('Running in stand alone mode.')
+    disp('Running Model_TCO in stand alone mode.')
 end
 
 % Update handles structure
@@ -153,10 +153,28 @@ end
 handles.Structure = Structure;
 guidata(hObject,handles)
 
-function PlotMolecule(hObject, eventdata, handles)
-PlotXYZfiles_Acid(handles.Structure)
+function PlotMolecule_Local(hObject, eventdata, handles)
+PlotXYZfiles_Acid(handles.Structure);
 
+function PlotMolecule_Exciton(hObject, eventdata, handles)
+%% Calling Plot_Excitoninterface 
+hPlot_Exciton = Plot_Excitons(handles.hModel);
+Data_Exciton = guidata(hPlot_Exciton);
 
+%% Export/Update handles
 
+% % if exixting Main GUI (COSMOSS), export the handles to Plot_Exciton so it
+% % can access the GUI inputs.
+% if isfield(handles,'hMain')
+%     Data_Exciton.hMain = handles.hMain;
+%     guidata(hPlot_Exciton,Data_Exciton)
+% end
 
+% % Export hadles of Plot_Exciton to Modleing function 
+% handles.hPlot_Exciton = hPlot_Exciton;
+% guidata(hObject,handles)
 
+function Export_Handle_Callback(hObject, eventdata, handles)
+% export handles back to work space
+assignin('base', 'hModel_TCO', handles)
+disp('Updated handles exported!')

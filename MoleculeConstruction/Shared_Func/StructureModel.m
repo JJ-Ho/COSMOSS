@@ -1,5 +1,4 @@
 function [hStructure, ModelList, hPlotFunc] = StructureModel(StructModel,Handle)
-
 %% List 
 ModelList = {'1:Two Coupled Oscillators',...
              '2:PDB_AmideI',...
@@ -17,8 +16,8 @@ else
 end
 
 switch StructModel
-    case 0
-        hStructure = 'Non'; % for exporting ModelList only
+    case 0 % for exporting ModelList only
+        hStructure = 'Non'; 
         hPlotFunc  = 'Non';
     case 1
         hStructure = Model_TCO(Export_handle);

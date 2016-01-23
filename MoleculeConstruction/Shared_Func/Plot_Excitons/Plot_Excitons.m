@@ -56,10 +56,10 @@ function Plot_Excitons_OpeningFcn(hObject, eventdata, handles, varargin)
 handles.output = hObject;
 
 % Call createInterface to create GUI elements
-hPlot_Exciton= GUI_Plot_Excitons(hObject);
-handles.hPlot_Exciton = hPlot_Exciton; % export GUI handles to handles
+GUI_Plot_Exciton= GUI_Plot_Excitons(hObject);
+handles.GUI_Plot_Exciton = GUI_Plot_Exciton; % export GUI handles to handles
 
-% Get Main function's handles
+% Get Structural modeling GUI's handles
 if nargin > 3    
     if ishandle(varargin{1}) 
        hStructure = varargin{1};
@@ -69,16 +69,13 @@ else
     hStructure = Model_TCO(handles);
 end
 
-% Retreive structure data from model GUI
-Model_Data = guidata(hStructure);
-Structure = Model_Data.Structure;
+% Change Names on Plot_Exciton GUI to identify which Structural model is
+% using
+Model_Name = hStructure.Name;
+Plot_Exciton_GUI_Name = GUI_Plot_Exciton.hPlot_Exciton.Name;
+GUI_Plot_Exciton.hPlot_Exciton.Name = [Plot_Exciton_GUI_Name, ': ', Model_Name];
 
-% Export handle of Plot_Exciton to model GUI so it can pass the updated
-% structure info later
-Model_Data.hPlot_Exciton = handles;
-guidata(hStructure, Model_Data);
-
-% Export handles of Structure Modle to guidata of Plot_Exciton
+% Export the handle of Structure Modle to guidata of Plot_Exciton
 handles.hStructure = hStructure;
 guidata(hObject, handles);
 
@@ -129,11 +126,10 @@ Mode_List = [Ex_Freq,Ex_Mu_Int,Ex_Alpha_ZZ];
 handles.hMain          = GUI_Data_hStructure.hMain;
 handles.Structure      = Structure;
 handles.MianGUI_Inputs = MainGUI_Inputs;
-% handles.Mode_List = Mode_List;
 guidata(hObject, handles);
 
 % update the list on hPlot_Exciton GUI
-set(handles.hPlot_Exciton.ModeList,'Data',Mode_List)
+set(handles.GUI_Plot_Exciton.ModeList,'Data',Mode_List)
 
 function Update_Figure(hObject, eventdata, handles)
 

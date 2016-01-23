@@ -129,7 +129,6 @@ Rot_X        = str2double(get(GUI_Struc.Rot_X  ,'String'));
 Rot_Y        = str2double(get(GUI_Struc.Rot_Y  ,'String'));
 Rot_Z        = str2double(get(GUI_Struc.Rot_Z  ,'String'));
 
-
 %% Construct molecule
 Structure = GetAcid('Phi_D1',Phi_D1,...
                     'Psi_D1',Psi_D1,...
@@ -145,9 +144,14 @@ Structure = GetAcid('Phi_D1',Phi_D1,...
                     'Rot_Z',Rot_Z);
 
 %% Export result to Main guidata
+Data_Main.Structure = Structure;
 if isfield(handles,'hMain')
-    Data_Main.Structure = Structure;
     guidata(handles.hMain,Data_Main)
+    
+    % change Name of Main GUI to help identifying which Structural Model is
+    % using
+    Model_Name    = handles.hModel.Name;
+    handles.hMain.Name = ['COSMOSS: ' Model_Name];
 end
 
 handles.Structure = Structure;
@@ -158,21 +162,7 @@ PlotXYZfiles_Acid(handles.Structure);
 
 function PlotMolecule_Exciton(hObject, eventdata, handles)
 %% Calling Plot_Excitoninterface 
-hPlot_Exciton = Plot_Excitons(handles.hModel);
-Data_Exciton = guidata(hPlot_Exciton);
-
-%% Export/Update handles
-
-% % if exixting Main GUI (COSMOSS), export the handles to Plot_Exciton so it
-% % can access the GUI inputs.
-% if isfield(handles,'hMain')
-%     Data_Exciton.hMain = handles.hMain;
-%     guidata(hPlot_Exciton,Data_Exciton)
-% end
-
-% % Export hadles of Plot_Exciton to Modleing function 
-% handles.hPlot_Exciton = hPlot_Exciton;
-% guidata(hObject,handles)
+Plot_Excitons(handles.hModel);
 
 function Export_Handle_Callback(hObject, eventdata, handles)
 % export handles back to work space

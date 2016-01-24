@@ -155,7 +155,7 @@ end
 handles.Structure = Structure;
 guidata(hObject,handles)
 
-function PlotMolecule_Local(hObject, eventdata, handles)
+function PlotMolecule(hObject, eventdata, handles)
 PlotXYZfiles_Acid(handles.Structure);
 
 function PlotMolecule_Exciton(hObject, eventdata, handles)

@@ -72,22 +72,22 @@ hold on
 
 
     %% draw transition dipoles
-    TDV_Scale = 0.1;
-    Mu_S = TDV_Scale .* Mu; % Scale TDV vector in plot
-    
-    quiver3(Center(:,1),Center(:,2),Center(:,3),...
-            Mu_S(:,1),Mu_S(:,2),Mu_S(:,3),0,...
-            'LineWidth',2,...
-            'Color',[255,128,0]./256);
+%     TDV_Scale = 0.1;
+%     Mu_S = TDV_Scale .* Mu; % Scale TDV vector in plot
+%     
+%     quiver3(Center(:,1),Center(:,2),Center(:,3),...
+%             Mu_S(:,1),Mu_S(:,2),Mu_S(:,3),0,...
+%             'LineWidth',2,...
+%             'Color',[255,128,0]./256);
 
     %% draw Raman tensor using plot_Raman
-    RT_scale = 2;
-    N_mesh   = 20;
-
-    for i = 1: Num_Modes
-        Raman  = squeeze(RamanM(i,:,:));
-        plot_Raman(Raman,Center(i,:),RT_scale,N_mesh)
-    end
+%     RT_scale = 2;
+%     N_mesh   = 20;
+% 
+%     for i = 1: Num_Modes
+%         Raman  = squeeze(RamanM(i,:,:));
+%         plot_Raman(Raman,Center(i,:),RT_scale,N_mesh)
+%     end
 
 hold off
 

@@ -106,11 +106,13 @@ varargout{1} = handles.output;
 
 function onListSelection(hObject, eventdata, handles)
 
-StructModel              = get(handles.GUI_Main.StructListBox,'Value');
-[hStructure,ModelList,~] = StructureModel(StructModel,handles.hMain);
+StructModel          = get(handles.GUI_Main.StructListBox,'Value');
+[hModel,ModelList,~] = StructureModel(StructModel);
+
+feval(hModel,handles.hMain);
 disp(['COSMOSS using model ' ModelList{StructModel}])
 
-handles.Structure.hStructure = hStructure;
+% handles.Structure.hModel = hModel;
 guidata(hObject,handles)
 
 function FTIR_Callback(hObject, eventdata, handles)

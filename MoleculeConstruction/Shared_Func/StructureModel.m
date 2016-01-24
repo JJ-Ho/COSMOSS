@@ -1,4 +1,4 @@
-function [hStructure, ModelList, hPlotFunc] = StructureModel(StructModel,Handle)
+function [hModel, ModelList, hPlotFunc] = StructureModel(StructModel)
 %% List 
 ModelList = {'1:Two Coupled Oscillators',...
              '2:PDB_AmideI',...
@@ -9,33 +9,34 @@ ModelList = {'1:Two Coupled Oscillators',...
 %% Run Models
 
 % check if input is an figure handle
-if ishandle(Handle)
-    Export_handle = Handle;
-else
-    Export_handle = 'StandAlone';
-end
+% if ishandle(Handle)
+%     Export_handle = Handle;
+% else
+%     Export_handle = 'StandAlone';
+% end
 
 switch StructModel
     case 0 % for exporting ModelList only
-        hStructure = 'Non'; 
+        hModel     = 'Non'; 
         hPlotFunc  = 'Non';
     case 1
-        hStructure = Model_TCO(Export_handle);
-        hPlotFunc  = 'PlotXYZfiles_Acid';
+        %hModel     = Model_TCO(Export_handle);
+        hModel     = @Model_TCO;
+        hPlotFunc  = @PlotXYZfiles_Acid;
     case 2 
-        hStructure = Model_PDB_AmideI(Export_handle);
-        hPlotFunc  = 'PlotXYZfiles_AmideI';
+        hModel     = @Model_PDB_AmideI;
+        hPlotFunc  = @PlotXYZfiles_AmideI;
     case 3
-        hStructure = Model_TwoDGrid(Export_handle);
-        hPlotFunc  = 'PlotXYZ_Grid';
+        hModel     = @Model_TwoDGrid;
+        hPlotFunc  = @PlotXYZ_Grid;
     case 4
-        hStructure = Model_Betasheet_AmideI(Export_handle);
-        hPlotFunc  = 'Plot_Betasheet_AmideI';
+        hModel     = @Model_Betasheet_AmideI;
+        hPlotFunc  = @Plot_Betasheet_AmideI;
     case 5
-        hStructure = Model_Comb2(Export_handle);
+        hModel     = @Model_Comb2;
         hPlotFunc  = 'Non';
     otherwise
-        hStructure = 'Non';
+        hModel     = 'Non';
         hPlotFunc  = 'Non';
         
         disp('Model List')

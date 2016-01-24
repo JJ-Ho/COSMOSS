@@ -91,9 +91,11 @@ function Struc1(hObject, eventdata, handles)
 
 GUI_Struc = handles.GUI_Struc;
 StructModel    = get(GUI_Struc.StructBox1,'Value');
-[hStructure1,~,hPlotFunc1] = StructureModel(StructModel,handles);
+[hStructure1,~,hPlotFunc1] = StructureModel(StructModel);
 
-handles.hStruc1    = hStructure1;
+hStruc1 = feval(hStructure1,handles);
+
+handles.hStruc1    = hStruc1;
 handles.hPlotFunc1 = hPlotFunc1;
 guidata(hObject,handles)
 
@@ -101,9 +103,11 @@ function Struc2(hObject, eventdata, handles)
 
 GUI_Struc = handles.GUI_Struc;
 StructModel    = get(GUI_Struc.StructBox2,'Value');
-[hStructure2,~,hPlotFunc2] = StructureModel(StructModel,handles);
+[hStructure2,~,hPlotFunc2] = StructureModel(StructModel);
 
-handles.hStruc2    = hStructure2;
+hStruc2 = feval(hStructure2,handles);
+
+handles.hStruc2    = hStruc2;
 handles.hPlotFunc2 = hPlotFunc2;
 guidata(hObject,handles)
 
@@ -304,6 +308,7 @@ end
     
 
 hold off
+
 %% figure options
 axis image;
 rotate3d on

@@ -135,7 +135,7 @@ set(handles.GUI_Modes.ModeList,'Data',Mode_List)
 
 function Update_Figure(hObject, eventdata, handles)
 %% Re assign variable names of Inputs
-GUI_handle = handles.hGUI_Plot_Modes.Ex_Mode_Ind;
+GUI_handle = handles.GUI_Modes.Mode_Ind;
 Mode_Ind = str2num(GUI_handle.String)+1; % shift by 1 to avoid ground state 
 
 Structure = handles.Structure;
@@ -147,6 +147,13 @@ OneDSFG   = handles.OneDSFG;
 % Center = Structure.center(Mode_Ind,:);
 
 %% Calculate the exciton center
+
+%% Plot molecule
+GUI_Data_Main = guidata(handles.hMain);
+StructModel = get(GUI_Data_Main.GUI_Main.StructListBox,'Value');
+
+[~,~,hPlotFunc] = StructureModel(StructModel);
+hF = feval(hPlotFunc,Structure);
 
 %% update handles
 handles.Mode_Ind = Mode_Ind;

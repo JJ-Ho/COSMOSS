@@ -100,7 +100,7 @@ uicontrol( 'Parent', ButtonBox, ...
 
 %% StructurePanel
 % Ask for avalible models
-[~,StructureModelList,~] = StructureModel(0,'List');
+[~,StructureModelList,~] = StructureModel(0);
 
 StrucPanelLayout = uix.VBox( 'Parent', StructurePanel, ...
    'Padding', 3, 'Spacing', 3 );

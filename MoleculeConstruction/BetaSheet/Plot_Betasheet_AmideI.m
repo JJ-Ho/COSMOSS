@@ -44,12 +44,10 @@ function hF = Plot_Betasheet_AmideI(Structure,varargin)
 
 
 %% Main
-Num_Modes = Structure.Num_Modes;
 
 % Rotate molecule and transition dipole 
 XYZ        = Structure.XYZ;
 Rot_Center = Structure.center;
-Rot_mu     = Structure.mu;
 
 % permute and Reshape XYZ
 R_1 = reshape(XYZ,[],3,3);
@@ -80,25 +78,25 @@ hold on
         Conn2 = Connectivity([R(:,:,1);R(:,:,3)],'BondLength',1.6);
         gplot3(Conn2, [R(:,:,1);R(:,:,3)]);
         
-    %% draw transition dipoles
-    TDV_Scale = 0.1;
-    Rot_mu_S = TDV_Scale .* Rot_mu; % Scale TDV vector in plot
-    
-    quiver3(Rot_Center(:,1),Rot_Center(:,2),Rot_Center(:,3),...
-            Rot_mu_S(:,1),Rot_mu_S(:,2),Rot_mu_S(:,3),0,...
-            'LineWidth',2,...
-            'Color',[255,128,0]./256);
-
-    %% draw Raman tensor using plot_Raman
-    RT_scale = 0.5;
-    N_mesh   = 20;
-    RamanM   = Structure.alpha_matrix;
-
-    for i = 1: Num_Modes
-        Raman  = squeeze(RamanM(i,:,:));
-        Center = Rot_Center(i,:);
-        plot_Raman(Raman,Center,RT_scale,N_mesh)
-    end
+%     %% draw transition dipoles
+%     TDV_Scale = 0.1;
+%     Rot_mu_S = TDV_Scale .* Rot_mu; % Scale TDV vector in plot
+%     
+%     quiver3(Rot_Center(:,1),Rot_Center(:,2),Rot_Center(:,3),...
+%             Rot_mu_S(:,1),Rot_mu_S(:,2),Rot_mu_S(:,3),0,...
+%             'LineWidth',2,...
+%             'Color',[255,128,0]./256);
+% 
+%     %% draw Raman tensor using plot_Raman
+%     RT_scale = 0.5;
+%     N_mesh   = 20;
+%     RamanM   = Structure.alpha_matrix;
+% 
+%     for i = 1: Num_Modes
+%         Raman  = squeeze(RamanM(i,:,:));
+%         Center = Rot_Center(i,:);
+%         plot_Raman(Raman,Center,RT_scale,N_mesh)
+%     end
 
     %% Draw molecular frame on each modes
     % since I suppressed the Mol_Frame output from

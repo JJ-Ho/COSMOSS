@@ -29,13 +29,8 @@ function hF = PlotXYZfiles_AmideI(PDB_Data)
 % Orientation = [0,0,0];
 
 %% Main
-
-Num_Modes = PDB_Data.Num_Modes;
 XYZ       = PDB_Data.XYZ;
 Center    = PDB_Data.center;
-Mu        = PDB_Data.mu;
-RamanM    = PDB_Data.alpha_matrix;
-
 
 hF = figure; 
 hold on
@@ -53,25 +48,6 @@ hold on
     plot3(Carbon_Pos(:,1)  ,Carbon_Pos(:,2)  ,Carbon_Pos(:,3)  ,'LineStyle','none','Marker','o','MarkerFaceColor','k','MarkerSize',10)
     plot3(Oxygen_Pos(:,1)  ,Oxygen_Pos(:,2)  ,Oxygen_Pos(:,3)  ,'LineStyle','none','Marker','o','MarkerFaceColor','r','MarkerSize',10)
     plot3(Nitrogen_Pos(:,1),Nitrogen_Pos(:,2),Nitrogen_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','b','MarkerSize',10)
-
-
-    %% draw transition dipoles
-    TDV_Scale = 0.1;
-    Mu_S = TDV_Scale .* Mu; % Scale TDV vector in plot
-    
-    quiver3(Center(:,1),Center(:,2),Center(:,3),...
-            Mu_S(:,1),Mu_S(:,2),Mu_S(:,3),0,...
-            'LineWidth',2,...
-            'Color',[255,128,0]./256);
-
-    %% draw Raman tensor using plot_Raman
-    RT_scale = 0.5;
-    N_mesh   = 20;
-
-    for i = 1: Num_Modes
-        Raman  = squeeze(RamanM(i,:,:));
-        plot_Raman(Raman,Center(i,:),RT_scale,N_mesh)
-    end
 
 hold off
 

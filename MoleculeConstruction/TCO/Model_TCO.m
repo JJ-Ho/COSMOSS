@@ -158,8 +158,7 @@ guidata(hObject,handles)
 function PlotMolecule(hObject, eventdata, handles)
 PlotXYZfiles_Acid(handles.Structure);
 
-function PlotMolecule_Exciton(hObject, eventdata, handles)
-%% Calling Plot_Excitoninterface 
+function PlotModes(hObject, eventdata, handles)
 Plot_Modes(handles.hModel);
 
 function Export_Handle_Callback(hObject, eventdata, handles)

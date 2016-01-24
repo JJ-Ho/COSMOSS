@@ -148,11 +148,15 @@ uicontrol( 'Parent', MainLayout, ...
 'Callback',@(hObject,eventdata)Model_Betasheet_AmideI('PlotMolecule',hObject,eventdata,guidata(hObject)));
 
 uicontrol( 'Parent', MainLayout, ...
+'String', 'Plot Modes',...
+'Callback',@(hObject,eventdata)Model_Betasheet_AmideI('PlotModes',hObject,eventdata,guidata(hObject)));
+
+uicontrol( 'Parent', MainLayout, ...
 'String', 'Export handles',...
 'Callback',@(hObject,eventdata)Model_Betasheet_AmideI('Export_Handle_Callback',hObject,eventdata,guidata(hObject)));
 
 %% set sizes
-set(MainLayout,'Height',[50,100,-1,-1,-1])
+set(MainLayout,'Height',[50,100,-1,-1,-1,-1])
 
 %% output handles
 GUI = guihandles(fig);

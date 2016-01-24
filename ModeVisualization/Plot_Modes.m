@@ -121,9 +121,10 @@ Ex_Mu_Int   = sqrt(sum(Ex_Mu.^2,2));
 Ex_Alpha    = squeeze(OneDSFG.Alpha.Trans_Ex(1,2:end,:));
 Ex_Alpha_ZZ = Ex_Alpha(:,9);
 
+% diaplay mode properties
 Mode_List = [Ex_Freq,Ex_Mu_Int,Ex_Alpha_ZZ];
 
-% Update handles structure
+%% Update handles structure
 handles.hMain          = GUI_Data_hModel.hMain;
 handles.Structure      = Structure;
 handles.MianGUI_Inputs = MainGUI_Inputs;
@@ -134,30 +135,91 @@ guidata(hObject, handles);
 set(handles.GUI_Modes.ModeList,'Data',Mode_List)
 
 function Update_Figure(hObject, eventdata, handles)
-%% Re assign variable names of Inputs
-GUI_handle = handles.GUI_Modes.Mode_Ind;
-Mode_Ind = str2num(GUI_handle.String)+1; % shift by 1 to avoid ground state 
+%% Re-assign variable names of Inputs
+GUI_handle = handles.GUI_Modes;
+Mode_Ind   = str2num(GUI_handle.Mode_Ind.String);
+Mode_Type  = GUI_handle.Mode_Type.Value;
 
 Structure = handles.Structure;
 OneDSFG   = handles.OneDSFG;
 
-% Mu     = OneDSFG.Mu.Trans_Ex(Mode_Ind,:);
-% Alpha  = OneDSFG.Alpha.Trans_Ex(Mode_Ind,:);
-% 
-% Center = Structure.center(Mode_Ind,:);
-
 %% Calculate the exciton center
+Center_Loc = Structure.center;
+
+EigVecM   = OneDSFG.H.Sort_Ex_V;
+EigVecM   = EigVecM(2:end,2:end).^2; % get ride of ground state
+Center_Ex = EigVecM * Center_Loc;
+
+%% Switch type of plotting mode
+
+
+Num_Plot_Modes = length(Mode_Ind);
+
+switch Mode_Type
+    case 1
+        Center = Center_Loc(Mode_Ind,:);
+        Mu     = squeeze(OneDSFG.Mu.   Trans_Loc(1,Mode_Ind+1,:)); % shift by 1 to avoid ground state
+        Alpha  = squeeze(OneDSFG.Alpha.Trans_Loc(1,Mode_Ind+1,:));
+    case 2
+        Center = Center_Ex(Mode_Ind,:);
+        Mu     = squeeze(OneDSFG.Mu.   Trans_Ex(1,Mode_Ind+1,:)); % shift by 1 to avoid ground state
+        Alpha  = squeeze(OneDSFG.Alpha.Trans_Ex(1,Mode_Ind+1,:));
+end
+
+% permute the matix dimension for spectial case
+if Num_Plot_Modes == 1
+    Mu    = Mu';
+    Alpha = Alpha';
+end
 
 %% Plot molecule
-GUI_Data_Main = guidata(handles.hMain);
-StructModel = get(GUI_Data_Main.GUI_Main.StructListBox,'Value');
+if isgraphics(handles.hMain)
+    GUI_Data_Main = guidata(handles.hMain);
+    StructModel = get(GUI_Data_Main.GUI_Main.StructListBox,'Value');
+else
+    StructModel = 1;
+end
 
 [~,~,hPlotFunc] = StructureModel(StructModel);
 hF = feval(hPlotFunc,Structure);
+hAx = findobj(hF,'type','axes');
+hold on
+%% Plot Transition dipoles
+TDV_Scale = 0.1;
+Mu_S = TDV_Scale .* Mu; % Scale TDV vector in plot 
 
+quiver3(hAx,...
+        Center(:,1),Center(:,2),Center(:,3),...
+        Mu_S(:,1),Mu_S(:,2),Mu_S(:,3),0,...
+        'LineWidth',2,...
+        'Color',[255,128,0]./256);
+
+%% plot Raman tensors
+RT_scale = 2;
+N_mesh   = 20;
+
+for i = 1: Num_Plot_Modes
+    RamanM = reshape(Alpha(i,:),3,3);
+    plot_Raman(RamanM,Center(i,:),RT_scale,N_mesh)
+end
+
+hold off
 %% update handles
 handles.Mode_Ind = Mode_Ind;
+guidata(hObject,handles)
 
+function uitable1_CellSelectionCallback(hObject, eventdata, handles)
+% hObject    handle to uitable1 (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.TABLE)
+% handles    structure with handles and user data (see GUIDATA)
+
+CurrentCell = eventdata.Indices;
+Mode_Ind_Str = num2str(CurrentCell(:,1)');
+% Update the Mode index on GUI
+set(handles.GUI_Modes.Mode_Ind,'String', Mode_Ind_Str);
+
+%% update handles
+handles.Mode_Ind_Str = Mode_Ind_Str;
 guidata(hObject,handles)
 
 function Export_Handle_Callback(hObject, eventdata, handles)

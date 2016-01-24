@@ -154,6 +154,9 @@ disp('Structure file generated!')
 function PlotMolecule(hObject, eventdata, handles)
 Plot_Betasheet_AmideI(handles.Structure);
 
+function PlotModes(hObject, eventdata, handles)
+Plot_Modes(handles.hModel);
+
 function Export_Handle_Callback(hObject, eventdata, handles)
 % export handles back to work space
 assignin('base', 'hModel_Betasheet_AmideI', handles)

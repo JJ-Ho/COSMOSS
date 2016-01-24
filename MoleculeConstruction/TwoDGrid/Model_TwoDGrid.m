@@ -121,8 +121,10 @@ handles.Structure = Structure;
 guidata(hObject,handles)
 
 function PlotMolecule(hObject, eventdata, handles)
-Structure = handles.Structure;
-PlotXYZ_Grid(Structure)
+PlotXYZ_Grid(handles.Structure)
+
+function PlotModes(hObject, eventdata, handles)
+Plot_Modes(handles.hModel);
 
 function Export_Handle_Callback(hObject, eventdata, handles)
 % export handles back to work space

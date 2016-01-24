@@ -134,7 +134,6 @@ guidata(hObject,handles)
 %% Update PDB name on GUI
 set(handles.GUI_Struc.PDB_Name,'String',FilesName)
 
-
 function UpdateStructure(hObject, eventdata, handles)
 GUI_Struc  = handles.GUI_Struc;
 
@@ -185,9 +184,11 @@ guidata(hObject,handles)
 
 disp('Structure file generated!')
 
-
 function PlotMolecule(hObject, eventdata, handles)
 PlotXYZfiles_AmideI(handles.Structure)
+
+function PlotModes(hObject, eventdata, handles)
+Plot_Modes(handles.hModel);
 
 function Export_Handle_Callback(hObject, eventdata, handles)
 % export handles back to work space

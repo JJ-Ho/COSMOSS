@@ -37,12 +37,8 @@ function hF = PlotXYZfiles_Acid(Struc_Data)
 % Orientation = [Phi_D,Psi_D,Theta_D];
 
 %% Main
-
-Num_Modes    = Struc_Data.Num_Modes;
 XYZ          = Struc_Data.XYZ;
 Center       = Struc_Data.center;
-Mu           = Struc_Data.mu;
-RamanM       = Struc_Data.alpha_matrix;
 Displacement = Struc_Data.Displacement;
 
 hF = figure; 
@@ -69,25 +65,6 @@ hold on
     plot3(OxygenD_Pos(:,1) ,OxygenD_Pos(:,2) ,OxygenD_Pos(:,3) ,'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',10)
     plot3(OxygenS_Pos(:,1) ,OxygenS_Pos(:,2) ,OxygenS_Pos(:,3) ,'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',10)
     plot3(Hydrogen_Pos(:,1),Hydrogen_Pos(:,2),Hydrogen_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,1,1],'MarkerSize',10)
-
-
-    %% draw transition dipoles
-%     TDV_Scale = 0.1;
-%     Mu_S = TDV_Scale .* Mu; % Scale TDV vector in plot
-%     
-%     quiver3(Center(:,1),Center(:,2),Center(:,3),...
-%             Mu_S(:,1),Mu_S(:,2),Mu_S(:,3),0,...
-%             'LineWidth',2,...
-%             'Color',[255,128,0]./256);
-
-    %% draw Raman tensor using plot_Raman
-%     RT_scale = 2;
-%     N_mesh   = 20;
-% 
-%     for i = 1: Num_Modes
-%         Raman  = squeeze(RamanM(i,:,:));
-%         plot_Raman(Raman,Center(i,:),RT_scale,N_mesh)
-%     end
 
 hold off
 

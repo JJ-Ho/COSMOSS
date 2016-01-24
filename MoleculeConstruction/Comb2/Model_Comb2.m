@@ -1,15 +1,15 @@
 function varargout = Model_Comb2(varargin)
-% MODEL_COMB2 MATLAB code for Model_Comb2.fig
-%      MODEL_COMB2, by itself, creates a new MODEL_COMB2 or raises the existing
+% HMODEL MATLAB code for hModel.fig
+%      HMODEL, by itself, creates a new HMODEL or raises the existing
 %      singleton*.
 %
-%      H = MODEL_COMB2 returns the handle to a new MODEL_COMB2 or the handle to
+%      H = HMODEL returns the handle to a new HMODEL or the handle to
 %      the existing singleton*.
 %
-%      MODEL_COMB2('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in MODEL_COMB2.M with the given input arguments.
+%      HMODEL('CALLBACK',hObject,eventData,handles,...) calls the local
+%      function named CALLBACK in HMODEL.M with the given input arguments.
 %
-%      MODEL_COMB2('Property','Value',...) creates a new MODEL_COMB2 or raises the
+%      HMODEL('Property','Value',...) creates a new HMODEL or raises the
 %      existing singleton*.  Starting from the left, property value pairs are
 %      applied to the GUI before Model_Comb2_OpeningFcn gets called.  An
 %      unrecognized property name or invalid value makes property application
@@ -20,12 +20,12 @@ function varargout = Model_Comb2(varargin)
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
-% Edit the above text to modify the response to help Model_Comb2
+% Edit the above text to modify the response to help hModel
 
-% Last Modified by GUIDE v2.5 12-Dec-2015 12:22:30
+% Last Modified by GUIDE v2.5 23-Jan-2016 10:40:08
 
 % Begin initialization code - DO NOT EDIT
-gui_Singleton = 0;
+gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
                    'gui_OpeningFcn', @Model_Comb2_OpeningFcn, ...
@@ -44,15 +44,15 @@ end
 % End initialization code - DO NOT EDIT
 
 
-% --- Executes just before Model_Comb2 is made visible.
+% --- Executes just before hModel is made visible.
 function Model_Comb2_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% varargin   command line arguments to Model_Comb2 (see VARARGIN)
+% varargin   command line arguments to hModel (see VARARGIN)
 
-% Choose default command line output for Model_Comb2
+% Choose default command line output for hModel
 handles.output = hObject;
 
 % Call createInterface to create GUI elements
@@ -69,14 +69,13 @@ if nargin > 3
        handles.Data_Main = Data_Main;
     end
 else
-    disp('Running in stand alone mode.')    
+    disp('Running Model_Comb2 in stand alone mode.')    
 end
 % Update handles structure
 guidata(hObject, handles);
 
-% UIWAIT makes Model_Comb2 wait for user response (see UIRESUME)
-% uiwait(handles.Model_Comb2);
-
+% UIWAIT makes hModel wait for user response (see UIRESUME)
+% uiwait(handles.hModel);
 
 % --- Outputs from this function are returned to the command line.
 function varargout = Model_Comb2_OutputFcn(hObject, eventdata, handles) 
@@ -218,28 +217,31 @@ M_Anharm = [Anharm1;Anharm2];
 % M_AtomSerNo = [EAtomSerNo;FAtomSerNo];
 
 %% Output
-Comb2.center       = M_Center;
-Comb2.freq         = M_Freq;
-Comb2.anharm       = M_Anharm;
-Comb2.mu           = M_TDV;
-Comb2.alpha        = M_Raman;
-Comb2.alpha_matrix = M_Raman_Matrix;
-% Comb2.AtomSerNo    = M_AtomSerNo;
-Comb2.Num_Modes    = size(M_TDV,1);
-Comb2.XYZ          = M_XYZ;
-Comb2.FilesName    = 'Comb2';
+Structure.center       = M_Center;
+Structure.freq         = M_Freq;
+Structure.anharm       = M_Anharm;
+Structure.mu           = M_TDV;
+Structure.alpha        = M_Raman;
+Structure.alpha_matrix = M_Raman_Matrix;
+Structure.Num_Modes    = size(M_TDV,1);
+Structure.XYZ          = M_XYZ;
+Structure.FilesName    = 'Comb2';
 
-Structure = Comb2;
 %% export back to handles and Main GUI if any
 Data_Main.Structure = Structure;
 
 handles.StrucData1  = StrucData1;
 handles.StrucData2  = StrucData2;
-handles.Comb2       = Comb2;
+handles.Structure   = Structure;
 handles.Data_Main   = Data_Main;
 
 if isfield(handles,'hMain')
     guidata(handles.hMain,Data_Main)
+        
+    % change Name of Main GUI to help identifying which Structural Model is
+    % using
+    Model_Name    = handles.hModel.Name;
+    handles.hMain.Name = ['COSMOSS: ' Model_Name];
 end
 guidata(hObject,handles)
 
@@ -312,5 +314,5 @@ ylabel('Y')
 
 function Export_Handle_Callback(hObject, eventdata, handles)
 % export handles back to work space
-assignin('base', 'H', handles)
+assignin('base', 'hModel_Comb2', handles)
 disp('Updated handles exported!')

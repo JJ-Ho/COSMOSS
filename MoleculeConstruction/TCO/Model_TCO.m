@@ -59,7 +59,6 @@ handles.output = hObject;
 GUI_Struc = GUI_TCO(hObject);
 handles.GUI_Struc = GUI_Struc; % export GUI handles to handles
 
-
 % Get Main function's handles
 if nargin > 3    
     if ishandle(varargin{1})
@@ -103,7 +102,6 @@ function varargout = Model_TCO_OutputFcn(hObject, eventdata, handles)
 varargout{1} = handles.output;
 
 function UpdateStructure(hObject, eventdata, handles)
-
 GUI_Struc = handles.GUI_Struc;
 if isfield(handles,'hMain')
     Data_Main = guidata(handles.hMain);

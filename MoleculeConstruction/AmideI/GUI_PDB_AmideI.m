@@ -82,8 +82,12 @@ uicontrol( 'Parent', MainLayout, ...
 'String', 'Plot Molecule',...
 'Callback',@(hObject,eventdata)Model_PDB_AmideI('PlotMolecule',hObject,eventdata,guidata(hObject)));
 
+uicontrol( 'Parent', MainLayout, ...
+'String', 'Export Handle',...
+'Callback',@(hObject,eventdata)Model_PDB_AmideI('Export_Handle_Callback',hObject,eventdata,guidata(hObject)));
+
 %% set sizes
-set(MainLayout,'Height',[15,25,5,25,-1,-1,-1])
+set(MainLayout,'Height',[15,25,5,25,-1,-1,-1,-1])
 
 %% output handles
 GUI = guihandles(fig);

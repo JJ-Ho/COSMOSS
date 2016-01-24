@@ -22,10 +22,10 @@ function varargout = Model_TwoDGrid(varargin)
 
 % Edit the above text to modify the response to help Model_TwoDGrid
 
-% Last Modified by GUIDE v2.5 27-Apr-2015 21:32:58
+% Last Modified by GUIDE v2.5 23-Jan-2016 10:30:20
 
 % Begin initialization code - DO NOT EDIT
-gui_Singleton = 0;
+gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
                    'gui_OpeningFcn', @Model_TwoDGrid_OpeningFcn, ...
@@ -69,14 +69,14 @@ if nargin > 3
        handles.Data_Main = Data_Main;
     end
 else
-    disp('Running in stand alone mode.')    
+    disp('Running Model_TwoDGrid in stand alone mode.')    
 end
 
 % Update handles structure
 guidata(hObject,handles);
 
 % UIWAIT makes Model_TwoDGrid wait for user response (see UIRESUME)
-% uiwait(handles.figure1);
+% uiwait(handles.hModel);
 
 
 % --- Outputs from this function are returned to the command line.
@@ -107,11 +107,14 @@ Structure  = ConstructGrid(GUI_Inputs);
 
 %% Export result to Main guidata
 Data_Main.Structure = Structure;
-% guidata(handles.hMain,Data_Main)
-
 % check if this program run stand along
 if isfield(handles,'hMain')
     guidata(handles.hMain,Data_Main)
+    
+    % change Name of Main GUI to help identifying which Structural Model is
+    % using
+    Model_Name    = handles.hModel.Name;
+    handles.hMain.Name = ['COSMOSS: ' Model_Name];
 end
 
 handles.Structure = Structure;
@@ -120,3 +123,8 @@ guidata(hObject,handles)
 function PlotMolecule(hObject, eventdata, handles)
 Structure = handles.Structure;
 PlotXYZ_Grid(Structure)
+
+function Export_Handle_Callback(hObject, eventdata, handles)
+% export handles back to work space
+assignin('base', 'hModel_TwoDGrid', handles)
+disp('Updated handles exported!')

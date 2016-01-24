@@ -56,12 +56,8 @@ function Model_PDB_AmideI_OpeningFcn(hObject, eventdata, handles, varargin)
 handles.output = hObject;
 
 % Call createInterface to create GUI elements
-StrucGUI = GUI_PDB_AmideI(hObject);
-handles.StrucGUI = StrucGUI; % export GUI handles to handles
-
-
-% Update handles structure
-guidata(hObject, handles);
+GUI_Struc = GUI_PDB_AmideI(hObject);
+handles.GUI_Struc = GUI_Struc; % export GUI handles to handles
 
 % Reset Non-Label Frequency, anharmonicity, and F_min/F_Max to fit amideI mode
 % check if run this GUI stand along
@@ -69,6 +65,9 @@ if nargin > 3
     if ishandle(varargin{1}) 
         hMain = varargin{1};
         Data_Main = guidata(hMain);
+        
+        handles.hMain = hMain;
+        handles.Data_Main = Data_Main;
         
         % PRE ASSIGN VALUES TO SUBSTITUTE MAIN GUI VALUES
         GUI_Main  = Data_Main.GUI_Main;
@@ -80,8 +79,11 @@ if nargin > 3
         set(GUI_Main.X_Max  ,'String','1700')
     end
 else
-    disp('Running in stand alone mode.')    
+    disp('Running Model_PDB_AmideI in stand alone mode.')    
 end
+
+% Update handles structure
+guidata(hObject, handles);
 
 % UIWAIT makes Model_PDB_AmideI wait for user response (see UIRESUME)
 % uiwait(handles.Model_PDB_AmideI);
@@ -130,16 +132,16 @@ handles.FilesName = FilesName;
 guidata(hObject,handles)
 
 %% Update PDB name on GUI
-set(handles.StrucGUI.PDB_Name,'String',FilesName)
+set(handles.GUI_Struc.PDB_Name,'String',FilesName)
 
 
 function UpdateStructure(hObject, eventdata, handles)
+GUI_Struc  = handles.GUI_Struc;
 
-StrucGUI  = handles.StrucGUI;
 %% Read GUI variables
-Phi_D   = str2double(get(StrucGUI.Phi  ,'String'));
-Psi_D   = str2double(get(StrucGUI.Psi  ,'String'));
-Theta_D = str2double(get(StrucGUI.Theta,'String'));
+Phi_D   = str2double(get(GUI_Struc.Phi  ,'String'));
+Psi_D   = str2double(get(GUI_Struc.Psi  ,'String'));
+Theta_D = str2double(get(GUI_Struc.Theta,'String'));
 
 % check if run this GUI stand along
 if isfield(handles,'hMain')
@@ -171,6 +173,11 @@ Data_Main.Structure = Structure;
 % check if this program run stand along
 if isfield(handles,'hMain')
     guidata(handles.hMain,Data_Main)
+    
+    % change Name of Main GUI to help identifying which Structural Model is
+    % using
+    Model_Name    = handles.hModel.Name;
+    handles.hMain.Name = ['COSMOSS: ' Model_Name];
 end
 
 handles.Structure = Structure;
@@ -182,6 +189,10 @@ disp('Structure file generated!')
 function PlotMolecule(hObject, eventdata, handles)
 PlotXYZfiles_AmideI(handles.Structure)
 
+function Export_Handle_Callback(hObject, eventdata, handles)
+% export handles back to work space
+assignin('base', 'hModel_PDB_AmideI', handles)
+disp('Updated handles exported!')
     
 
 

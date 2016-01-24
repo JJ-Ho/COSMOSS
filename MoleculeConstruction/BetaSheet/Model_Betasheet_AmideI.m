@@ -22,10 +22,10 @@ function varargout = Model_Betasheet_AmideI(varargin)
 
 % Edit the above text to modify the response to help Model_Betasheet_AmideI
 
-% Last Modified by GUIDE v2.5 16-Sep-2015 10:37:46
+% Last Modified by GUIDE v2.5 23-Jan-2016 10:35:58
 
 % Begin initialization code - DO NOT EDIT
-gui_Singleton = 0;
+gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
                    'gui_OpeningFcn', @Model_Betasheet_AmideI_OpeningFcn, ...
@@ -81,7 +81,7 @@ if nargin > 3
        set(GUI_Main.X_Max  ,'String','1700')
     end
 else
-    disp('Running in stand alone mode.')    
+    disp('Running Model_Betasheet_AmideI in stand alone mode.')    
 end
 
 
@@ -89,7 +89,7 @@ end
 guidata(hObject, handles);
 
 % UIWAIT makes Model_Betasheet_AmideI wait for user response (see UIRESUME)
-% uiwait(handles.figure1);
+% uiwait(handles.hModel);
 
 
 % --- Outputs from this function are returned to the command line.
@@ -139,6 +139,11 @@ Data_Main.Structure = Structure;
 % check if this program run stand along
 if isfield(handles,'hMain')
     guidata(handles.hMain,Data_Main)
+    
+    % change Name of Main GUI to help identifying which Structural Model is
+    % using
+    Model_Name    = handles.hModel.Name;
+    handles.hMain.Name = ['COSMOSS: ' Model_Name];
 end
 
 handles.Structure = Structure;
@@ -148,3 +153,8 @@ disp('Structure file generated!')
 
 function PlotMolecule(hObject, eventdata, handles)
 Plot_Betasheet_AmideI(handles.Structure);
+
+function Export_Handle_Callback(hObject, eventdata, handles)
+% export handles back to work space
+assignin('base', 'hModel_Betasheet_AmideI', handles)
+disp('Updated handles exported!')

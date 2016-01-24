@@ -160,7 +160,7 @@ PlotXYZfiles_Acid(handles.Structure);
 
 function PlotMolecule_Exciton(hObject, eventdata, handles)
 %% Calling Plot_Excitoninterface 
-Plot_Excitons(handles.hModel);
+Plot_Modes(handles.hModel);
 
 function Export_Handle_Callback(hObject, eventdata, handles)
 % export handles back to work space

@@ -12,4 +12,7 @@ addpath(GUIs);
 MoleculeConstruction = genpath([Current_path '/MoleculeConstruction']);
 addpath(MoleculeConstruction);
 
+ModeVisualization = genpath([Current_path '/ModeVisualization']);
+addpath(ModeVisualization);
+
 addpath([Current_path '/StructureFiles']);

@@ -22,7 +22,7 @@ function varargout = Plot_Modes(varargin)
 
 % Edit the above text to modify the response to help Plot_Modes
 
-% Last Modified by GUIDE v2.5 24-Jan-2016 09:53:11
+% Last Modified by GUIDE v2.5 25-Jan-2016 12:03:41
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -116,13 +116,16 @@ Structure = GUI_Data_hModel.Structure;
 OneDSFG = OneDSFG_Main(Structure,MainGUI_Inputs);
 
 Ex_Freq     = OneDSFG.H.Sort_Ex_Freq(2:end);
+Num_Ex_Mode = length(Ex_Freq);
+Ex_Ind      = (1:Num_Ex_Mode)';
 Ex_Mu       = squeeze(OneDSFG.Mu.Trans_Ex(1,2:end,:));
+Ex_Mu_Z     = Ex_Mu(:,3);
 Ex_Mu_Int   = sqrt(sum(Ex_Mu.^2,2));
 Ex_Alpha    = squeeze(OneDSFG.Alpha.Trans_Ex(1,2:end,:));
 Ex_Alpha_ZZ = Ex_Alpha(:,9);
 
 % diaplay mode properties
-Mode_List = [Ex_Freq,Ex_Mu_Int,Ex_Alpha_ZZ];
+Mode_List = [Ex_Ind,Ex_Freq,Ex_Mu_Int,Ex_Mu_Z,Ex_Alpha_ZZ];
 
 %% Update handles structure
 handles.hMain          = GUI_Data_hModel.hMain;
@@ -136,9 +139,13 @@ set(handles.GUI_Modes.ModeList,'Data',Mode_List)
 
 function Update_Figure(hObject, eventdata, handles)
 %% Re-assign variable names of Inputs
-GUI_handle = handles.GUI_Modes;
-Mode_Ind   = str2num(GUI_handle.Mode_Ind.String);
-Mode_Type  = GUI_handle.Mode_Type.Value;
+GUI_handle  = handles.GUI_Modes;
+Mode_Ind    = str2num(GUI_handle.Mode_Ind.String);
+Mode_Type   = GUI_handle.Mode_Type.Value;
+Plot_TDV    = GUI_handle.Plot_TDV.Value;
+Scale_TDV   = str2double(GUI_handle.Scale_TDV.String);
+Plot_Raman  = GUI_handle.Plot_Raman.Value;
+Scale_Raman = str2double(GUI_handle.Scale_Raman.String);
 
 Structure = handles.Structure;
 OneDSFG   = handles.OneDSFG;
@@ -151,7 +158,6 @@ EigVecM   = EigVecM(2:end,2:end).^2; % get ride of ground state
 Center_Ex = EigVecM * Center_Loc;
 
 %% Switch type of plotting mode
-
 
 Num_Plot_Modes = length(Mode_Ind);
 
@@ -185,42 +191,61 @@ hF = feval(hPlotFunc,Structure);
 hAx = findobj(hF,'type','axes');
 hold on
 %% Plot Transition dipoles
-TDV_Scale = 0.1;
-Mu_S = TDV_Scale .* Mu; % Scale TDV vector in plot 
+if Plot_TDV
+    Mu_S = Scale_TDV .* Mu; % Scale TDV vector in plot 
 
-quiver3(hAx,...
-        Center(:,1),Center(:,2),Center(:,3),...
-        Mu_S(:,1),Mu_S(:,2),Mu_S(:,3),0,...
-        'LineWidth',2,...
-        'Color',[255,128,0]./256);
-
-%% plot Raman tensors
-RT_scale = 2;
-N_mesh   = 20;
-
-for i = 1: Num_Plot_Modes
-    RamanM = reshape(Alpha(i,:),3,3);
-    plot_Raman(RamanM,Center(i,:),RT_scale,N_mesh)
+    quiver3(hAx,...
+            Center(:,1),Center(:,2),Center(:,3),...
+            Mu_S(:,1),Mu_S(:,2),Mu_S(:,3),0,...
+            'LineWidth',2,...
+            'Color',[255,128,0]./256);
 end
+%% plot Raman tensors
+if Plot_Raman
+    N_mesh   = 20;
 
+    for i = 1: Num_Plot_Modes
+        RamanM = reshape(Alpha(i,:),3,3);
+        plot_Raman(RamanM,Center(i,:),Scale_Raman,N_mesh)
+    end
+end
 hold off
 %% update handles
 handles.Mode_Ind = Mode_Ind;
 guidata(hObject,handles)
 
-function uitable1_CellSelectionCallback(hObject, eventdata, handles)
+function uitable_CellSelectionCallback(hObject, eventdata, handles)
 % hObject    handle to uitable1 (see GCBO)
 % eventdata  structure with the following fields (see MATLAB.UI.CONTROL.TABLE)
 % handles    structure with handles and user data (see GUIDATA)
 
+TableData = handles.GUI_Modes.ModeList.Data;
+
 CurrentCell = eventdata.Indices;
-Mode_Ind_Str = num2str(CurrentCell(:,1)');
+CurrentRowInd = CurrentCell(:,1)';
+Mode_Ind_Str = num2str(TableData(CurrentRowInd,1)');
+
 % Update the Mode index on GUI
 set(handles.GUI_Modes.Mode_Ind,'String', Mode_Ind_Str);
 
 %% update handles
 handles.Mode_Ind_Str = Mode_Ind_Str;
 guidata(hObject,handles)
+
+function uitable_SortCallback(hObject, eventdata, handles)
+% hObject    handle to uitable1 (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.TABLE)
+% handles    structure with handles and user data (see GUIDATA)
+
+TableData = handles.GUI_Modes.ModeList.Data;
+SortColumn = handles.GUI_Modes.SortInd.Value;
+
+[~,SortInd] = sort(TableData(:,SortColumn),'descend');
+SortedData = TableData(SortInd,:);
+
+% Update Table on GUI
+set(handles.GUI_Modes.ModeList,'Data', SortedData);
+
 
 function Export_Handle_Callback(hObject, eventdata, handles)
 % export handles back to work space

@@ -1,6 +1,6 @@
 function GUI = GUI_Comb2(fig)
 %% Ask for avalible models
-[~,StructureModelList,~] = StructureModel(0,'List');
+[~,StructureModelList,~] = StructureModel(0);
 
 %% Add base layout
 MainLayout = uix.HBoxFlex(...

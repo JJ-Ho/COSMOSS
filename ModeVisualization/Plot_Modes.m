@@ -123,9 +123,10 @@ Ex_Mu_Z     = Ex_Mu(:,3);
 Ex_Mu_Int   = sqrt(sum(Ex_Mu.^2,2));
 Ex_Alpha    = squeeze(OneDSFG.Alpha.Trans_Ex(1,2:end,:));
 Ex_Alpha_ZZ = Ex_Alpha(:,9);
+Sig_ZZZ     = Ex_Mu_Z.*Ex_Alpha_ZZ;
 
 % diaplay mode properties
-Mode_List = [Ex_Ind,Ex_Freq,Ex_Mu_Int,Ex_Mu_Z,Ex_Alpha_ZZ];
+Mode_List = [Ex_Ind,Ex_Freq,Ex_Mu_Int,Ex_Mu_Z,Ex_Alpha_ZZ,Sig_ZZZ];
 
 %% Update handles structure
 handles.hMain          = GUI_Data_hModel.hMain;
@@ -137,8 +138,11 @@ guidata(hObject, handles);
 % update the list on hPlot_Exciton GUI
 set(handles.GUI_Modes.ModeList,'Data',Mode_List)
 
+% call sorting to sort table with the same GUI setting
+uitable_SortCallback(hObject, eventdata, handles)
+
 function Update_Figure(hObject, eventdata, handles)
-%% Re-assign variable names of Inputs
+%% Re-assign variable names of GUI Inputs
 GUI_handle  = handles.GUI_Modes;
 Mode_Ind    = str2num(GUI_handle.Mode_Ind.String);
 Mode_Type   = GUI_handle.Mode_Type.Value;
@@ -146,6 +150,10 @@ Plot_TDV    = GUI_handle.Plot_TDV.Value;
 Scale_TDV   = str2double(GUI_handle.Scale_TDV.String);
 Plot_Raman  = GUI_handle.Plot_Raman.Value;
 Scale_Raman = str2double(GUI_handle.Scale_Raman.String);
+
+%% Use Update Modes to update the structure and the corresponding Mu & Alpha 
+Update_Modes(hObject, eventdata, handles)
+handles = guidata(hObject);
 
 Structure = handles.Structure;
 OneDSFG   = handles.OneDSFG;
@@ -190,6 +198,7 @@ end
 hF = feval(hPlotFunc,Structure);
 hAx = findobj(hF,'type','axes');
 hold on
+
 %% Plot Transition dipoles
 if Plot_TDV
     Mu_S = Scale_TDV .* Mu; % Scale TDV vector in plot 
@@ -200,6 +209,7 @@ if Plot_TDV
             'LineWidth',2,...
             'Color',[255,128,0]./256);
 end
+
 %% plot Raman tensors
 if Plot_Raman
     N_mesh   = 20;
@@ -210,6 +220,7 @@ if Plot_Raman
     end
 end
 hold off
+
 %% update handles
 handles.Mode_Ind = Mode_Ind;
 guidata(hObject,handles)
@@ -240,12 +251,11 @@ function uitable_SortCallback(hObject, eventdata, handles)
 TableData = handles.GUI_Modes.ModeList.Data;
 SortColumn = handles.GUI_Modes.SortInd.Value;
 
-[~,SortInd] = sort(TableData(:,SortColumn),'descend');
+[~,SortInd] = sort(abs(TableData(:,SortColumn)),'descend');
 SortedData = TableData(SortInd,:);
 
 % Update Table on GUI
 set(handles.GUI_Modes.ModeList,'Data', SortedData);
-
 
 function Export_Handle_Callback(hObject, eventdata, handles)
 % export handles back to work space

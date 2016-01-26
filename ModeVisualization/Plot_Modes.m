@@ -121,12 +121,24 @@ Ex_Ind      = (1:Num_Ex_Mode)';
 Ex_Mu       = squeeze(OneDSFG.Mu.Trans_Ex(1,2:end,:));
 Ex_Mu_Z     = Ex_Mu(:,3);
 Ex_Mu_Int   = sqrt(sum(Ex_Mu.^2,2));
+
 Ex_Alpha    = squeeze(OneDSFG.Alpha.Trans_Ex(1,2:end,:));
 Ex_Alpha_ZZ = Ex_Alpha(:,9);
+Ex_Alpha_Tr = sum(Ex_Alpha(:,[1,5,9]),2);
+
 Sig_ZZZ     = Ex_Mu_Z.*Ex_Alpha_ZZ;
+Sig_Norm    = Ex_Mu_Int.*Ex_Alpha_Tr;
 
 % diaplay mode properties
-Mode_List = [Ex_Ind,Ex_Freq,Ex_Mu_Int,Ex_Mu_Z,Ex_Alpha_ZZ,Sig_ZZZ];
+Mode_List = [Ex_Ind,...
+             Ex_Freq,...
+             Sig_Norm,...
+             Ex_Mu_Int,...
+             Ex_Alpha_Tr,...
+             Sig_ZZZ,...
+             Ex_Mu_Z,...
+             Ex_Alpha_ZZ,...
+             ];
 
 %% Update handles structure
 handles.hMain          = GUI_Data_hModel.hMain;
@@ -150,6 +162,7 @@ Plot_TDV    = GUI_handle.Plot_TDV.Value;
 Scale_TDV   = str2double(GUI_handle.Scale_TDV.String);
 Plot_Raman  = GUI_handle.Plot_Raman.Value;
 Scale_Raman = str2double(GUI_handle.Scale_Raman.String);
+Normalize   = GUI_handle.Normalize.Value;
 
 %% Use Update Modes to update the structure and the corresponding Mu & Alpha 
 Update_Modes(hObject, eventdata, handles)
@@ -201,8 +214,13 @@ hold on
 
 %% Plot Transition dipoles
 if Plot_TDV
+    if Normalize
+        % normalize to unit vector for direction comparison
+        Mu_Int = sqrt(sum(Mu.^2,2));
+        Mu = bsxfun(@rdivide,Mu,Mu_Int);
+    end
     Mu_S = Scale_TDV .* Mu; % Scale TDV vector in plot 
-
+    
     quiver3(hAx,...
             Center(:,1),Center(:,2),Center(:,3),...
             Mu_S(:,1),Mu_S(:,2),Mu_S(:,3),0,...
@@ -213,6 +231,11 @@ end
 %% plot Raman tensors
 if Plot_Raman
     N_mesh   = 20;
+    if Normalize
+        % normalize to unit vector for direction comparison
+        Alpha_Tr = sum(Alpha(:,[1,5,9]),2);
+        Alpha = bsxfun(@rdivide,Alpha,Alpha_Tr);
+    end
 
     for i = 1: Num_Plot_Modes
         RamanM = reshape(Alpha(i,:),3,3);
@@ -220,6 +243,10 @@ if Plot_Raman
     end
 end
 hold off
+
+%% Figure setting
+Fig_Title = ['Mode #: ' GUI_handle.Mode_Ind.String ];
+hAx.Title.String = Fig_Title;
 
 %% update handles
 handles.Mode_Ind = Mode_Ind;

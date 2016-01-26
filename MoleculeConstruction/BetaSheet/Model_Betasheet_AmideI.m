@@ -73,7 +73,8 @@ if nargin > 3
        handles.Data_Main = Data_Main;
        
        % PRE ASSIGN VALUES TO SUBSTITUTE MAIN GUI VALUES
-       GUI_Main  = Data_Main.GUI_Main;       
+       GUI_Main  = Data_Main.GUI_Main; 
+       set(GUI_Main.NLFreq ,'String','1644')
        set(GUI_Main.LFreq  ,'String','1604')
        set(GUI_Main.Anharm ,'String','12')
        set(GUI_Main.Beta_NN,'String','0.8')

@@ -81,17 +81,6 @@ if ~ischar(Label_Index)
     PDB_Data.freq(Label_Index) = Label_Freq.*ones(size(Label_Index));
 end
 
-% switch Coupling
-%     case 1
-%         Coupling = 'TDC';
-%     case 2
-%         Coupling = 'Zero';
-%     case 3
-%         Coupling = 'NN';
-%     case 4 
-%         Coupling = 'NN_Mix_TDC';
-% end
-
 H = ExcitonH(PDB_Data,'ExMode','OneEx','Coupling',Coupling,'Beta_NN',Beta_NN);
 
 Freq01Ex = H.Sort_Ex_Freq;

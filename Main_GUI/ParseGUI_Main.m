@@ -48,13 +48,13 @@ O.FreqRange = O.F_Min:O.F_Max;
 Coupling = get(GUI_Main.Coupling,'Value');
 switch Coupling
     case 1
-        O.Coupling = 'TDC';
-    case 2
-        O.Coupling = 'Zero';
-    case 3
-        O.Coupling = 'NN';
-    case 4 
         O.Coupling = 'NN_Mix_TDC';
+    case 2
+        O.Coupling = 'TDC';
+    case 3
+        O.Coupling = 'Cho_PB';
+    case 4 
+        O.Coupling = 'Cho_APB';
 end
 
 LineShape = get(GUI_Main.LineShape,'Value');

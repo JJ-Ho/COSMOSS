@@ -1,4 +1,4 @@
-function Output= ExcitonH(PDB_Data,varargin)
+function Output= ExcitonH_old(PDB_Data,varargin)
 %% TwoExcitonH
 %  
 % This Script generate the state transition list. I intentionally make this

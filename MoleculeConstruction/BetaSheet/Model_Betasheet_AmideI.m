@@ -135,6 +135,9 @@ RotV   = [Rot_X,Rot_Y,Rot_Z];
 XYZ       = ConstuctBetaSheet(N_Residue,N_Strand,TransV,RotV);
 Structure = GetAmideI_CON_XYZ_betasheet(XYZ);
 
+Structure.N_Residue = N_Residue;
+Structure.N_Strand  = N_Strand;
+
 %% Export result to Main guidata
 Data_Main.Structure = Structure;
 % check if this program run stand along

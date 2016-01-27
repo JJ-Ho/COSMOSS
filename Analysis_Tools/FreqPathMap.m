@@ -1,5 +1,5 @@
  function R_pumpS_probe = FreqPathMap(Response,PumpMin,PumpMax,ProbeMin,ProbeMax)
-% The FreqPathMap function can narror down the corresponding pathways that
+% The FreqPathMap function can narrow down the corresponding pathways that
 % contribute to a frequency window defined by PumpRange X ProbRange
 
 %% debug

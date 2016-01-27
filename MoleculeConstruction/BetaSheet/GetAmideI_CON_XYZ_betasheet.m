@@ -72,11 +72,11 @@ mu_angle = -27.5*pi/180; % cunter clockwise roation about x axis from Jenny's pa
 % mu_angle = -25*pi/180; % from Cho's paper
 % mu_angle = -10*pi/180; % follow Skinner's 2014 paper, doi:10.1063/1.4882059
 
-mu_vec0 = 16.1016*[0,0,-1]';       % this scale factor was calculated from DFT simulation, check 140207_NMA
+mu_vec0 = 16.1016*[0,0,-1]';       % this scale factor was calculated from DFT simulation, check the 'NMA' note
 mu_Mol  = (Rx(mu_angle)*mu_vec0)'; % 3 by 1
 
 % Raman tensor
-alpha_angle = -34*pi/180;    % cunter clockwise roation about x axis from Jenny's paper (10.1021/jp408064b)
+alpha_angle = -34*pi/180;    % counter clockwise roation about x axis from Jenny's paper (10.1021/jp408064b)
 alpha0 = 5*[ 0.05, 0  , 0;   
              0   , 0.2, 0; 
              0   , 0  , 1 ];

@@ -45,4 +45,6 @@ switch CoupleType
         
     case 'Cho_APB'
         Beta = Coupling_Cho_APB(S);
+    otherwise
+        disp(['Unsupported coupling model:' CoupleType])  
 end      

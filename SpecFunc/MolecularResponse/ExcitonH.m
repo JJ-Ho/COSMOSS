@@ -80,23 +80,23 @@ INPUT = inputParser;
 
 % Default values
 defaultExMode            = 'OneEx';
+expectedExModes          = {'OneEx','TwoEx'};
 defaultCouplingType      = 'NN_Mix_TDC';
+% expectedCouplingType    = {'NN_Mix_TDC','TDC','Cho_PB','Cho_APB'}; % TDC = Transition Dipole Coupling; NN = Nearest Neighbor.
 defaultOffDiagDisorder   = 0;
-defaultBeta_NN   = 0.8; % 0.8 cm-1 according to Lauren's PNAS paper (doi/10.1073/pnas.1117704109); that originate from Min Cho's paper (doi:10.1063/1.1997151)
-
-expectedCouplingType = {'NN_Mix_TDC','TDC','Cho_PB','Cho_APB'}; % TDC = Transition Dipole Coupling; NN = Nearest Neighbor.
-expectedExModes = {'OneEx','TwoEx'};
+defaultBeta_NN           = 0.8; % 0.8 cm-1 according to Lauren's PNAS paper (doi/10.1073/pnas.1117704109); that originate from Min Cho's paper (doi:10.1063/1.1997151)
 
 
 % Add optional inputs to inputparser object
 addParamValue(INPUT,'ExMode',defaultExMode,...
                  @(x) any(validatestring(x,expectedExModes)));
              
-addParamValue(INPUT,'CouplingType',defaultCouplingType,...
-                 @(x) any(validatestring(x,expectedCouplingType)));       
-             
+% addParamValue(INPUT,'CouplingType',defaultCouplingType,...
+%                  @(x) any(validatestring(x,expectedCouplingType))); 
+
+addOptional(INPUT,'CouplingType'   ,defaultCouplingType);
 addOptional(INPUT,'OffDiagDisorder',defaultOffDiagDisorder);
-addOptional(INPUT,'Beta_NN',defaultBeta_NN);
+addOptional(INPUT,'Beta_NN'        ,defaultBeta_NN);
 
 parse(INPUT,varargin{:});
 
@@ -104,7 +104,7 @@ parse(INPUT,varargin{:});
 ExMode          = INPUT.Results.ExMode;
 CouplingType    = INPUT.Results.CouplingType;
 OffDiagDisorder = INPUT.Results.OffDiagDisorder;
-Beta_NN  = INPUT.Results.Beta_NN;
+Beta_NN         = INPUT.Results.Beta_NN;
 
 if strcmp(ExMode,'TwoEx')
     StatesNum = (Num_Modes+2)*(Num_Modes+1)/2; 

@@ -42,7 +42,7 @@ defaultFreqRange   = 1650:1750;
 defaultLabel_Index = 'Not Labeled';
 defaultLabel_Freq  = 1716;
 defaultCoupling    = 'TDC'; 
-expectedCoupling   = {'TDC','Zero','NN','NN_Mix_TDC'};
+% expectedCoupling   = {'NN_Mix_TDC','TDC','Cho_PB','Cho_APB'};
 defaultBeta_NN     = 0.8; % 0.8 cm-1 according to Lauren's PNAS paper (doi/10.1073/pnas.1117704109); that originate from Min Cho's paper (doi:10.1063/1.1997151)
 defaultA_Pump      = 90;
 defaultA_Probe     = 90;
@@ -53,19 +53,20 @@ defaultP_Probe     = 0;
 defaultP_Sig2D     = 0;
 
 
-addOptional(INPUT,'FreqRange',defaultFreqRange);
+addOptional(INPUT,'FreqRange'  ,defaultFreqRange);
 addOptional(INPUT,'Label_Index',defaultLabel_Index);
-addOptional(INPUT,'Label_Freq',defaultLabel_Freq);
-addOptional(INPUT,'Beta_NN',defaultBeta_NN);
-addOptional(INPUT,'A_Pump' ,defaultA_Pump);
-addOptional(INPUT,'A_Probe',defaultA_Probe);
-addOptional(INPUT,'A_Sig2D',defaultA_Sig2D);
-addOptional(INPUT,'P_Pump1',defaultP_Pump1);
-addOptional(INPUT,'P_Pump2',defaultP_Pump2);
-addOptional(INPUT,'P_Probe',defaultP_Probe);
-addOptional(INPUT,'P_Sig2D',defaultP_Sig2D);
-addParamValue(INPUT,'Coupling',defaultCoupling,...
-                 @(x) any(validatestring(x,expectedCoupling)));
+addOptional(INPUT,'Label_Freq' ,defaultLabel_Freq);
+addOptional(INPUT,'Beta_NN'    ,defaultBeta_NN);
+addOptional(INPUT,'A_Pump'     ,defaultA_Pump);
+addOptional(INPUT,'A_Probe'    ,defaultA_Probe);
+addOptional(INPUT,'A_Sig2D'    ,defaultA_Sig2D);
+addOptional(INPUT,'P_Pump1'    ,defaultP_Pump1);
+addOptional(INPUT,'P_Pump2'    ,defaultP_Pump2);
+addOptional(INPUT,'P_Probe'    ,defaultP_Probe);
+addOptional(INPUT,'P_Sig2D'    ,defaultP_Sig2D);
+addOptional(INPUT,'Coupling'   ,defaultCoupling);
+% addParamValue(INPUT,'Coupling',defaultCoupling,...
+%                  @(x) any(validatestring(x,expectedCoupling)));
          
 parse(INPUT,GUI_Inputs_C{:});
 

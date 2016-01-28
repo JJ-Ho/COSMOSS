@@ -136,17 +136,17 @@ for nn=1:10
 end
 fpar=out;
 
-Rx = [1 0 0; 0 cos(fpar(4)) -sin(fpar(4)); 0 sin(fpar(4)) cos(fpar(4))];
-Ry = [cos(fpar(5)) 0 sin(fpar(5)); 0 1 0; -sin(fpar(5)) 0 cos(fpar(5))];
-Rz = [cos(fpar(6)) -sin(fpar(6)) 0; sin(fpar(6)) cos(fpar(6)) 0; 0 0 1];
+Twist_x = [1 0 0; 0 cos(fpar(4)) -sin(fpar(4)); 0 sin(fpar(4)) cos(fpar(4))];
+Twist_y = [cos(fpar(5)) 0 sin(fpar(5)); 0 1 0; -sin(fpar(5)) 0 cos(fpar(5))];
+Twist_z = [cos(fpar(6)) -sin(fpar(6)) 0; sin(fpar(6)) cos(fpar(6)) 0; 0 0 1];
 
 % Create dummy variables and apply rotation and translation to first strand
 ca2=zeros(size(CA_XYZ)); n2=zeros(size(N_XYZ)); c2=zeros(size(C_XYZ)); o2=zeros(size(O_XYZ));
 for i=1:length(CA_XYZ)
-    ca2(i,:) = (Rx*Ry*Rz*(CA_XYZ(i,:)' + fpar(1:3)'))';
-    n2(i,:) = (Rx*Ry*Rz*(N_XYZ(i,:)' + fpar(1:3)'))';
-    c2(i,:) = (Rx*Ry*Rz*(C_XYZ(i,:)' + fpar(1:3)'))';
-    o2(i,:) = (Rx*Ry*Rz*(O_XYZ(i,:)' + fpar(1:3)'))';
+    ca2(i,:) = (Twist_x*Twist_y*Twist_z*(CA_XYZ(i,:)' + fpar(1:3)'))';
+    n2(i,:) = (Twist_x*Twist_y*Twist_z*(N_XYZ(i,:)' + fpar(1:3)'))';
+    c2(i,:) = (Twist_x*Twist_y*Twist_z*(C_XYZ(i,:)' + fpar(1:3)'))';
+    o2(i,:) = (Twist_x*Twist_y*Twist_z*(O_XYZ(i,:)' + fpar(1:3)'))';
 end
 
 clear coord carbonA carbon nitrogen oxygen
@@ -170,18 +170,20 @@ end
 clear carbonA nitrogen carbon oxygen temp1 temp2 temp3 temp4
 
 %% Translate first strand to create the full beta-sheet
-
+% case parallel betasheet
 T=[hpar(1) hpar(2) hpar(3)];
-Rx = [1 0 0; 0 cos(hpar(4)) -sin(hpar(4)); 0 sin(hpar(4)) cos(hpar(4))];
-Ry = [cos(hpar(5)) 0 sin(hpar(5)); 0 1 0; -sin(hpar(5)) 0 cos(hpar(5))];
-Rz = [cos(hpar(6)) -sin(hpar(6)) 0; sin(hpar(6)) cos(hpar(6)) 0; 0 0 1];
+Twist_x = [1 0 0; 0 cos(hpar(4)) -sin(hpar(4)); 0 sin(hpar(4)) cos(hpar(4))];
+Twist_y = [cos(hpar(5)) 0 sin(hpar(5)); 0 1 0; -sin(hpar(5)) 0 cos(hpar(5))];
+Twist_z = [cos(hpar(6)) -sin(hpar(6)) 0; sin(hpar(6)) cos(hpar(6)) 0; 0 0 1];
 
 for i=1:Num_Strand
     for nn=1:length(coord1)
         if i==1
             coord2((i-1)*length(coord1)+nn,:)=coord1(nn,:);
         else
-            coord2((i-1)*length(coord1)+nn,:)=(coord2((i-2)*length(coord1)+nn,:)+T)*Rx*Ry*Rz;
+            coord2((i-1)*length(coord1)+nn,:)=(coord2((i-2)*length(coord1)+nn,:)+T)*Twist_x*Twist_y*Twist_z;
+            % anti-parallel
+            %coord2((i-1)*length(coord1)+nn,:)=(coord2((i-2)*length(coord1)+nn,:)+T)*(Ry(pi))^(nn-1);
         end
     end
 end
@@ -210,7 +212,7 @@ CO_Axis = CO_Axis./norm(CO_Axis);
 
 
 X_Axis = Strand_Axis;
-Z_Axis = CO_Axis;
+Z_Axis = -CO_Axis;
 Y_Axis = cross(Z_Axis,X_Axis); % put Stand axis on X, and CO axis on Z 
 Y_Axis = Y_Axis./norm(Y_Axis);
 

@@ -81,7 +81,7 @@ INPUT = inputParser;
 % Default values
 defaultExMode            = 'OneEx';
 defaultCouplingType      = 'NN_Mix_TDC';
-defaultOffDiagDisorder   = 1;
+defaultOffDiagDisorder   = 0;
 defaultBeta_NN   = 0.8; % 0.8 cm-1 according to Lauren's PNAS paper (doi/10.1073/pnas.1117704109); that originate from Min Cho's paper (doi:10.1063/1.1997151)
 
 expectedCouplingType = {'NN_Mix_TDC','TDC','Cho_PB','Cho_APB'}; % TDC = Transition Dipole Coupling; NN = Nearest Neighbor.

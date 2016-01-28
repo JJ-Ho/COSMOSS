@@ -44,5 +44,5 @@ switch CoupleType
         Beta = Coupling_Cho_PB(S);
         
     case 'Cho_APB'
-        disp('Not supporting NN_Cho_APB yet')
+        Beta = Coupling_Cho_APB(S);
 end      

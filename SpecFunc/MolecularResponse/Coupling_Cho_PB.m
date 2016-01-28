@@ -1,15 +1,15 @@
 function Beta = Coupling_Cho_PB(S)
 %% debug
-% S.N_Residue = 4;
-% S.N_Strand  = 3;
+% clear all
+% 
+% S.N_Residue = 10;
+% S.N_Strand  = 5;
 % S.Num_Modes = S.N_Strand*S.N_Residue;
 
 %% Reassign variable names from StrucInfo
 Num_Modes = S.Num_Modes;
 N_Residue = S.N_Residue;
 N_Strand  = S.N_Strand;
-
-Beta = zeros(Num_Modes);
 
 % Define Parallel Betasheet parameters
 F12  =  0.8;
@@ -21,86 +21,101 @@ Fpb2 =  1.5;
 Fpb3 = -1.0;
 Fpb4 =  1.5;
 
-% N_pair = N_Strand*(N_Residue-1);
-N_pair = Num_Modes*(Num_Modes-1)/2;
+Beta = zeros(Num_Modes);
+
+% define mode index
+I_Mode = (1: Num_Modes)';
+[I_Residue,~] = ind2sub([N_Residue,N_Strand],I_Mode);
+
+I_Residue_head = eq(I_Residue,1);
+I_Residue_tail = eq(I_Residue,N_Residue);
 
 %% F12
-Ind12 = nan(N_pair,2);
+Sub12 = [I_Mode,I_Mode+1];
 
-for i1 = 1:N_Strand
-    for j1 = 1:N_Residue-1
-        
-        N_loop = (i1-1)*N_Residue+j1;
-        Ind12(N_loop,:) = [(i1-1)*N_Residue+j1,(i1-1)*N_Residue+j1+1]; 
-        
-        Beta(Ind12(N_loop,:)) = F12;
-    end
-end
+Remove_I_12 = I_Residue_tail;
+Sub12(Remove_I_12,:) = [];
+Ind12 = sub2ind(size(Beta),Sub12(:,2),Sub12(:,1));
+Beta(Ind12) = F12;
 
 %% F13
-Ind13 = nan(N_pair,2);
+Sub13 = [I_Mode,I_Mode+2];
 
-for i2 = 1:N_Strand
-    for j2 = 1:N_Residue-2
-        
-        N_loop = (i2-1)*N_Residue+j2;
-        Ind13(N_loop,:) = [(i2-1)*N_Residue+j2, (i2-1)*N_Residue+j2+2]; 
-        
-        Beta(Ind13(N_loop,:)) = F13;
-    end
-end
+Remove_I_13 = or(I_Residue_tail, circshift(I_Residue_tail,[-1,0]) );
+Sub13(Remove_I_13,:) = [];
+Ind13 = sub2ind(size(Beta),Sub13(:,2),Sub13(:,1));
+Beta(Ind13) = F13;
 
 %% Fab
-Ind_ab = nan(Num_Modes - N_Residue,2);
-
-for i3 = 1:length(Ind_ab)
-    Ind_ab(i3,:) = [i3,i3+N_Residue];
-    Beta(Ind_ab(i3,:)) = Fab;
-end
+Sub_ab = [I_Mode(1:Num_Modes-N_Residue),I_Mode(N_Residue+1:Num_Modes)];
+Ind_ab = sub2ind(size(Beta),Sub_ab(:,2),Sub_ab(:,1));
+Beta(Ind_ab) = Fab;
 
 %% Fac
-Ind_ac = nan(Num_Modes - 2*N_Residue,2);
+Sub_ac = [I_Mode(1:Num_Modes-2*N_Residue),I_Mode(2*N_Residue+1:Num_Modes)];
+Ind_ac = sub2ind(size(Beta),Sub_ac(:,2),Sub_ac(:,1));
+Beta(Ind_ac) = Fac;
 
-for i4 = 1:length(Ind_ac)
-    Ind_ac(i4,:) = [i4,i4+2*N_Residue];
-    Beta(Ind_ac(i4,:)) = Fac;
-end
 
-%% Fpb1
-for i5 = 1:N_Strand-1
-    for j5 = 2:2:N_Residue
-        Indpb1 = j5 + (i5-1)*N_Residue;
+%% Fpbx
+I1_Down  = 1:(Num_Modes-N_Residue);
+L_I1     = length(I1_Down);
+
+I2_Left  = I1_Down + N_Residue -1;
+I2_Right = I1_Down + N_Residue +1;
+ 
+Sub_Left  = [I1_Down;I2_Left ]';
+Sub_Right = [I1_Down;I2_Right]';
+
+Sub_pb1 = nan(L_I1,2);
+Sub_pb2 = nan(L_I1,2);
+Sub_pb3 = nan(L_I1,2);
+Sub_pb4 = nan(L_I1,2);
+
+for k = 1:length(I1_Down)
+    if mod(I_Residue(k),2) 
+        % case odd, left = Fpb4
+        Sub_pb4(k,:) = Sub_Left(k,:);
         
-        Beta(Indpb1,Indpb1 + N_Residue -1) = Fpb1;
+        % case odd, right = Fpb2
+        Sub_pb2(k,:) = Sub_Right(k,:);
+    else
+        % case even, left = Fpb1
+        Sub_pb1(k,:) = Sub_Left(k,:);
+        
+        % case even, right = Fpb3
+        Sub_pb3(k,:) = Sub_Right(k,:);
     end
 end
 
-%% Fpb2
-for i6 = 1:N_Strand-1
-    for j6 = 1:2:N_Residue-1
-        Indpb2 = j6 + (i6-1)*N_Residue;
-        
-        Beta(Indpb2,Indpb2 + N_Residue +1) = Fpb2;
-    end
-end
+% Count heads and tails
+N_heads = sum(I_Residue_head(I1_Down));
+N_tails = sum(I_Residue_tail(I1_Down));
 
-%% Fpb3
-for i7 = 1:N_Strand-1
-    for j7 = 2:2:N_Residue-1
-        Indpb3 = j7 + (i7-1)*N_Residue;
-        
-        Beta(Indpb3,Indpb3 + N_Residue +1) = Fpb3;
-    end
-end
+% case left
+Sub_pb1(I_Residue_head(I1_Down),:) = nan(N_heads,2);
+Sub_pb4(I_Residue_head(I1_Down),:) = nan(N_heads,2);
+% case right
+Sub_pb2(I_Residue_tail(I1_Down),:) = nan(N_tails,2);
+Sub_pb3(I_Residue_tail(I1_Down),:) = nan(N_tails,2);
 
-%% Fpb4
-for i8 = 1:N_Strand-1
-    for j8 = 1:2:N_Residue
-        Indpb4 = j8 + (i8-1)*N_Residue;
-        
-        Beta(Indpb4,Indpb4 + N_Residue -1) = Fpb4;
-    end
-end
+% clean up NaNs
+Sub_pb1(isnan(Sub_pb1(:,1)),:) = [];
+Sub_pb2(isnan(Sub_pb2(:,1)),:) = [];
+Sub_pb3(isnan(Sub_pb3(:,1)),:) = [];
+Sub_pb4(isnan(Sub_pb4(:,1)),:) = [];
+
+% turn sub to ind
+Ind_pb1 = sub2ind(size(Beta),Sub_pb1(:,2),Sub_pb1(:,1));
+Ind_pb2 = sub2ind(size(Beta),Sub_pb2(:,2),Sub_pb2(:,1));
+Ind_pb3 = sub2ind(size(Beta),Sub_pb3(:,2),Sub_pb3(:,1));
+Ind_pb4 = sub2ind(size(Beta),Sub_pb4(:,2),Sub_pb4(:,1));
+
+
+Beta(Ind_pb1) = Fpb1;
+Beta(Ind_pb2) = Fpb2;
+Beta(Ind_pb3) = Fpb3;
+Beta(Ind_pb4) = Fpb4;
 
 %% Symmetrize
 Beta = Beta + Beta';

@@ -87,7 +87,7 @@ switch LineShape
         LineShape = 1i*exp(-(spec_array2.^2)./(LineWidth^2));
         CVL = bsxfun(@times,LineShape,Response1DSFG); 
         CVL_Total = sum(CVL,1);
-    case 'L' % Loretizain 
+    case 'L' % Lorentzain 
         LineWidth = LineWidth/2;
         LineShape = spec_array2./((spec_array2.^2)+(LineWidth^2)) + 1i*LineWidth./(spec_array2.^2+LineWidth^2);
         CVL = bsxfun(@times,LineShape,Response1DSFG); 

@@ -47,6 +47,7 @@ defaultF_Min       = 1600;
 defaultF_Max       = 1800;
 defaultLineWidth   = 5;
 defaultPlotCursor  = 0;
+defaultLineShape   = 'G';
 
 % add Optional inputs / Parameters
 addOptional(INPUT,'Label_Index',defaultLabel_Index);
@@ -58,6 +59,7 @@ addOptional(INPUT,'F_Min'      ,defaultF_Min);
 addOptional(INPUT,'F_Max'      ,defaultF_Max);
 addOptional(INPUT,'LineWidth'  ,defaultLineWidth);
 addOptional(INPUT,'PlotCursor' ,defaultPlotCursor);
+addOptional(INPUT,'LineShape'  ,defaultLineShape);
 
 parse(INPUT,GUI_Inputs_C{:});
 
@@ -71,6 +73,7 @@ F_Min       = INPUT.Results.F_Min;
 F_Max       = INPUT.Results.F_Max;
 LineWidth   = INPUT.Results.LineWidth;
 PlotCursor  = INPUT.Results.PlotCursor;
+LineShape   = INPUT.Results.LineShape;
 
 %% Main
 
@@ -102,17 +105,35 @@ if eq(PlotStick,1)
 %     plot(freq_OneD,mu_OneD,'rx')
     line([freq_OneD';freq_OneD'],[zeros(1,Num_Modes);mu_OneD'])
 end
-    
+
 % Get Frequency axis range
 spec_range = F_Min:F_Max;
 
 spec_array1 = bsxfun(@times,ones(Num_Modes,length(spec_range)),spec_range);
 spec_array2 = bsxfun(@minus,spec_array1,freq_OneD);
 
-Gaussian = bsxfun(@times,exp(-(spec_array2.^2)./(LineWidth^2)),mu_OneD);
-Gaussian_Toatl = sum(Gaussian,1);
 
-plot(spec_range,Gaussian_Toatl,'-')
+switch LineShape 
+    case 'G' % Gaussian
+        LineShape = exp(-(spec_array2.^2)./(LineWidth^2));
+        CVL = bsxfun(@times,LineShape,mu_OneD); 
+        CVL_Total = sum(CVL,1);
+    case 'L' % Lorentzain 
+        LineWidth = LineWidth/2;
+        LineShape = LineWidth./((spec_array2.^2)+(LineWidth^2));
+        CVL = bsxfun(@times,LineShape,mu_OneD); 
+        CVL_Total = sum(CVL,1); 
+    case 'KK'
+        disp('KK is not support for FTIR...')
+        CVL_Total = zeros(size(spec_range));
+end
+
+
+% Normalize the convoluted lineshape to maximum stick height.
+Norm = max(abs(mu_OneD(:)))./max(abs(CVL_Total));
+CVL_Total = CVL_Total.*Norm;
+
+plot(spec_range,CVL_Total,'-')
 hold off
 
 %% figure setting 

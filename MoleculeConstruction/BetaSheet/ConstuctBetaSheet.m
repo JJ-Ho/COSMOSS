@@ -135,16 +135,16 @@ Twist_z = [cos(fpar(6)) -sin(fpar(6)) 0; sin(fpar(6)) cos(fpar(6)) 0; 0 0 1];
 ca2=zeros(size(CA_XYZ)); n2=zeros(size(N_XYZ)); c2=zeros(size(C_XYZ)); o2=zeros(size(O_XYZ));
 for i=1:length(CA_XYZ)
     ca2(i,:) = (Twist_x*Twist_y*Twist_z*(CA_XYZ(i,:)' + fpar(1:3)'))';
-    n2(i,:) = (Twist_x*Twist_y*Twist_z*(N_XYZ(i,:)' + fpar(1:3)'))';
-    c2(i,:) = (Twist_x*Twist_y*Twist_z*(C_XYZ(i,:)' + fpar(1:3)'))';
-    o2(i,:) = (Twist_x*Twist_y*Twist_z*(O_XYZ(i,:)' + fpar(1:3)'))';
+    n2(i,:)  = (Twist_x*Twist_y*Twist_z*(N_XYZ(i,:)'  + fpar(1:3)'))';
+    c2(i,:)  = (Twist_x*Twist_y*Twist_z*(C_XYZ(i,:)'  + fpar(1:3)'))';
+    o2(i,:)  = (Twist_x*Twist_y*Twist_z*(O_XYZ(i,:)'  + fpar(1:3)'))';
 end
 
 clear coord carbonA carbon nitrogen oxygen
 CA_XYZ=ca2; N_XYZ=n2; C_XYZ=c2; O_XYZ=o2;
 clear ca2 n2 c2 o2
 
-%% Rotate the whole molecule so the strand align with X and CO align with Z
+%% Rotate the whole molecule so the 1st strand align with X and CO align with Z
 
 % rotate along x-y plane
 Strand_Axis = C_XYZ(N_Residue,:)-C_XYZ(1,:);

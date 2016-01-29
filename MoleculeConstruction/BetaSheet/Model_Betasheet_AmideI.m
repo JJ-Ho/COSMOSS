@@ -22,7 +22,7 @@ function varargout = Model_Betasheet_AmideI(varargin)
 
 % Edit the above text to modify the response to help Model_Betasheet_AmideI
 
-% Last Modified by GUIDE v2.5 23-Jan-2016 10:35:58
+% Last Modified by GUIDE v2.5 28-Jan-2016 18:00:56
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -107,6 +107,7 @@ function UpdateStructure(hObject, eventdata, handles)
 
 GUI_Struc  = handles.GUI_Struc;
 %% Read GUI variables
+SheetType =            get(GUI_Struc.SheetType,'Value' ) ;
 N_Residue = str2double(get(GUI_Struc.N_Residue,'String'));
 N_Strand  = str2double(get(GUI_Struc.N_Strand ,'String'));
 Trans_X   = str2double(get(GUI_Struc.Trans_X  ,'String'));
@@ -132,7 +133,7 @@ end
 TransV = [Trans_X,Trans_Y,Trans_Z];
 RotV   = [Rot_X,Rot_Y,Rot_Z];
 
-XYZ       = ConstuctBetaSheet(N_Residue,N_Strand,TransV,RotV);
+XYZ       = ConstuctBetaSheet(SheetType,N_Residue,N_Strand,TransV,RotV);
 Structure = GetAmideI_CON_XYZ_betasheet(XYZ);
 
 Structure.N_Residue = N_Residue;

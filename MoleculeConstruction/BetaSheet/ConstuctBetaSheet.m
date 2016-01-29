@@ -1,4 +1,4 @@
-function XYZ = ConstuctBetaSheet(Num_Residue,Num_Strand,TransV,RotV)
+function XYZ = ConstuctBetaSheet(SheetType,N_Residue,N_Strand,TransV,RotV)
 %% BetaSheet(sheetSize,E,theta,anhar,du,graph,hpar)
 % 
 % sheetsize = [# of strands, # of residue per strand]
@@ -18,17 +18,8 @@ function XYZ = ConstuctBetaSheet(Num_Residue,Num_Strand,TransV,RotV)
 % Num_Strand = 10;
 % ------------------------------------------------------------------------
 
-% initail setup from Lauren's code
-% rotate = [0,0,0];
-% hpar = [0 0 4.75 rotate(1)*(pi/180) rotate(2)*(pi/180) rotate(3)*(pi/180)];
-hpar = [TransV,RotV.*pi./180];
-% hpar = [0 0 4.00 rotate(1)*(pi/180) rotate(2)*(pi/180) rotate(3)*(pi/180)];
-% E = ones(3*4);
-% theta = 20/180*pi;
-% du = 3.144;
-% anhar = 14;
-% graph = 'n';
 
+hpar = [TransV,RotV.*pi./180];
 
 %%Pull coordinates from short ideal parallel beta-sheet
 fid = fopen('BETA-3.ENT');
@@ -77,13 +68,13 @@ Bond = 0.5*(Bond1+Bond2);
 
 %% Determine positions of atoms for first strand
 
-C_XYZ=zeros(Num_Residue,3); 
-O_XYZ=zeros(Num_Residue,3); 
-N_XYZ=zeros(Num_Residue,3); 
-CA_XYZ=zeros(Num_Residue,3);
+C_XYZ=zeros(N_Residue,3); 
+O_XYZ=zeros(N_Residue,3); 
+N_XYZ=zeros(N_Residue,3); 
+CA_XYZ=zeros(N_Residue,3);
 
-% chain=chainUnit*6.5;  %why round???
-for i=1:Num_Residue
+% chain=chainUnit*6.5; 
+for i=1:N_Residue
     if mod(i,2)==1          %Odd residues
         C_XYZ (i,:) = C_0 (1,:)+floor(i/2)*Chain;
         O_XYZ (i,:) = O_0 (1,:)+floor(i/2)*Chain;
@@ -110,7 +101,7 @@ MW_N  =  N_XYZ*AW_N;
 MW_O  =  O_XYZ*AW_O;
 MW_CA = CA_XYZ*AW_C;
 
-Strand_Weight = Num_Residue*(2*AW_C + AW_O + AW_N);
+Strand_Weight = N_Residue*(2*AW_C + AW_O + AW_N);
 
 CoMass = sum((MW_C + MW_N + MW_O + MW_CA),1)/Strand_Weight;
 
@@ -123,8 +114,8 @@ nma_md=[0 0 0; 0 0 4.75];       % Z distance?
 nma_es(1,:)=CoMass;             % NMA estimation?
 nma_es(2,:)=CoMass+gpar;
 
-for nn=1:10
-    if nn==1
+for I_Residue=1:10
+    if I_Residue==1
         fpar(1:3)=[14.5004 -9.4375 -6.3790];    % Translation parameter
         fpar(4:6)=[-4.0559 -0.5700 0.6973];     % Rotation parameter in radius
     else
@@ -153,51 +144,10 @@ clear coord carbonA carbon nitrogen oxygen
 CA_XYZ=ca2; N_XYZ=n2; C_XYZ=c2; O_XYZ=o2;
 clear ca2 n2 c2 o2
 
-%% Group all atoms in first strand together and find COM of each residue
-
-for i=1:Num_Residue
-    coord1((i-1)*4+1,:)=CA_XYZ(i,:);
-    coord1((i-1)*4+2,:)=N_XYZ(i,:);
-    coord1((i-1)*4+3,:)=C_XYZ(i,:);    
-    coord1((i-1)*4+4,:)=O_XYZ(i,:);
-    temp1=CA_XYZ(i,:)*12.011;
-    temp2=N_XYZ(i,:)*14.007;
-    temp3=C_XYZ(i,:)*12.011;
-    temp4=O_XYZ(i,:)*15.999;
-    COM(i,:)=(temp1+temp2+temp3+temp4)/(12.011+14.007+12.011+15.999);
-end
-
-clear carbonA nitrogen carbon oxygen temp1 temp2 temp3 temp4
-
-%% Translate first strand to create the full beta-sheet
-% case parallel betasheet
-T=[hpar(1) hpar(2) hpar(3)];
-Twist_x = [1 0 0; 0 cos(hpar(4)) -sin(hpar(4)); 0 sin(hpar(4)) cos(hpar(4))];
-Twist_y = [cos(hpar(5)) 0 sin(hpar(5)); 0 1 0; -sin(hpar(5)) 0 cos(hpar(5))];
-Twist_z = [cos(hpar(6)) -sin(hpar(6)) 0; sin(hpar(6)) cos(hpar(6)) 0; 0 0 1];
-
-for i=1:Num_Strand
-    for nn=1:length(coord1)
-        if i==1
-            coord2((i-1)*length(coord1)+nn,:)=coord1(nn,:);
-        else
-            coord2((i-1)*length(coord1)+nn,:)=(coord2((i-2)*length(coord1)+nn,:)+T)*Twist_x*Twist_y*Twist_z;
-            % anti-parallel
-            %coord2((i-1)*length(coord1)+nn,:)=(coord2((i-2)*length(coord1)+nn,:)+T)*(Ry(pi))^(nn-1);
-        end
-    end
-end
-
-CA_XYZ=coord2(1:4:length(coord2),:);
-N_XYZ=coord2(2:4:length(coord2),:);
-C_XYZ=coord2(3:4:length(coord2),:);
-O_XYZ=coord2(4:4:length(coord2),:);
-
-clear coord1 coord2
 %% Rotate the whole molecule so the strand align with X and CO align with Z
 
 % rotate along x-y plane
-Strand_Axis = C_XYZ(Num_Residue,:)-C_XYZ(1,:);
+Strand_Axis = C_XYZ(N_Residue,:)-C_XYZ(1,:);
 Strand_Axis = Strand_Axis./norm(Strand_Axis);
 
 Vec_CO = O_XYZ - C_XYZ;
@@ -224,6 +174,73 @@ C_XYZ = (RM*C_XYZ')';
 O_XYZ = (RM*O_XYZ')';
 N_XYZ = (RM*N_XYZ')';
 
+%% Group all atoms in first strand together and find COM of each residue
+
+for i=1:N_Residue
+    coord1((i-1)*4+1,:)=CA_XYZ(i,:);
+    coord1((i-1)*4+2,:)=N_XYZ(i,:);
+    coord1((i-1)*4+3,:)=C_XYZ(i,:);    
+    coord1((i-1)*4+4,:)=O_XYZ(i,:);
+    temp1=CA_XYZ(i,:)*12.011;
+    temp2=N_XYZ(i,:)*14.007;
+    temp3=C_XYZ(i,:)*12.011;
+    temp4=O_XYZ(i,:)*15.999;
+    COM(i,:)=(temp1+temp2+temp3+temp4)/(12.011+14.007+12.011+15.999);
+end
+
+clear carbonA nitrogen carbon oxygen temp1 temp2 temp3 temp4
+
+%% Translate first strand to create the full beta-sheet
+% case parallel betasheet
+T=[hpar(1) hpar(2) hpar(3)];
+Twist_x = [1 0 0; 0 cos(hpar(4)) -sin(hpar(4)); 0 sin(hpar(4)) cos(hpar(4))];
+Twist_y = [cos(hpar(5)) 0 sin(hpar(5)); 0 1 0; -sin(hpar(5)) 0 cos(hpar(5))];
+Twist_z = [cos(hpar(6)) -sin(hpar(6)) 0; sin(hpar(6)) cos(hpar(6)) 0; 0 0 1];
+
+N_Atom_1Strand = length(coord1);
+
+switch SheetType
+    case 1 % parallel
+        AntiPara = 0;
+    case 2 % anti-parallel
+        AntiPara = 1;
+        X_Shift = [2.2,0,0];
+end
+
+
+for I_Strand=1:N_Strand
+    I_Mode = [1:N_Atom_1Strand] + (I_Strand-1)*N_Atom_1Strand;
+    if I_Strand==1
+        coord2(I_Mode,:)=coord1;
+        
+        if AntiPara
+            coord2(I_Mode,:) = bsxfun(@plus,coord2(I_Mode,:),X_Shift);
+        end
+            
+    else
+        coord2(I_Mode,:) = bsxfun(@plus,coord2(I_Mode - N_Atom_1Strand,:),T) * Twist_x*Twist_y*Twist_z;
+        
+        % anti-parallel
+        if AntiPara
+            % shift vector in alternating pattern
+            X_Shift_N = X_Shift.*(-1)^(I_Strand-1); 
+            % Shift back to X =0
+            coord2(I_Mode,:) = bsxfun(@plus,coord2(I_Mode,:),X_Shift_N);
+            % flip strand direction
+            coord2(I_Mode,:) = bsxfun(@times,coord2(I_Mode,:),[-1,1,1]); 
+            % Shift to |X_Sift|
+            coord2(I_Mode,:) = bsxfun(@plus,coord2(I_Mode,:),X_Shift_N);
+        end
+    end
+end
+
+
+CA_XYZ=coord2(1:4:length(coord2),:);
+N_XYZ=coord2(2:4:length(coord2),:);
+C_XYZ=coord2(3:4:length(coord2),:);
+O_XYZ=coord2(4:4:length(coord2),:);
+
+clear coord1 coord2
 
 %% Formating output coordinate
 % XYZ = reshape([C_XYZ;O_XYZ;N_XYZ],[],3,3);

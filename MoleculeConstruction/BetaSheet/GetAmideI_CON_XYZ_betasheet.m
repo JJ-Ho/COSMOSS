@@ -37,7 +37,7 @@ Vec_CO = XYZ_Atom_Separate(:,:,2)-XYZ_Atom_Separate(:,:,1);
 Vec_CO = squeeze(Vec_CO);
 Vec_CO = bsxfun(@rdivide,Vec_CO,sqrt(sum(abs(Vec_CO).^2,2))); % normaliz CO vectors
 
-Vec_CN = XYZ_Atom_Separate(:,:,3)-XYZ_Atom_Separate(:,:,2);
+Vec_CN = XYZ_Atom_Separate(:,:,3)-XYZ_Atom_Separate(:,:,1);
 Vec_CN = squeeze(Vec_CN);
 Vec_CN = bsxfun(@rdivide,Vec_CN,sqrt(sum(abs(Vec_CN).^2,2))); % normaliz CN vectors
 

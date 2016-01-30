@@ -14,8 +14,11 @@ function XYZ = ConstuctBetaSheet(SheetType,N_Residue,N_Strand,TransV,RotV)
 
 % ---[Debug]--------------------------------------------------------------
 % clear all
-% Num_Residue= 10;
-% Num_Strand = 10;
+% SheetType = 1;
+% N_Residue= 4;
+% N_Strand = 5;
+% TransV = [0,0,0];
+% RotV = [0,0,0];
 % ------------------------------------------------------------------------
 
 
@@ -204,7 +207,7 @@ switch SheetType
         AntiPara = 0;
     case 2 % anti-parallel
         AntiPara = 1;
-        X_Shift = [2.2,0,0];
+        X_Shift = [1.9,0,0];
 end
 
 
@@ -240,13 +243,17 @@ N_XYZ=coord2(2:4:length(coord2),:);
 C_XYZ=coord2(3:4:length(coord2),:);
 O_XYZ=coord2(4:4:length(coord2),:);
 
-clear coord1 coord2
+clear coord1 
+clear coord2
 
 %% Formating output coordinate
 % XYZ = reshape([C_XYZ;O_XYZ;N_XYZ],[],3,3);
+
 XYZ(:,:,1) = C_XYZ;
 XYZ(:,:,2) = O_XYZ;
 XYZ(:,:,3) = N_XYZ;
+
+% XYZ = coord2;
 
 
 % StrucInfo = GetAmideI_CON_XYZ_version(XYZ);

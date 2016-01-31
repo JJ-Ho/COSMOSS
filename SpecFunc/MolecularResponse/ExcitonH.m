@@ -71,7 +71,7 @@ function Output= ExcitonH(StrucInfo,varargin)
 %% Initiation part
 
 % Reassign variable names from StrucInfo
-Num_Modes = StrucInfo.Num_Modes;
+Num_Modes  = StrucInfo.Num_Modes;
 Freq       = StrucInfo.freq;
 Anharm     = StrucInfo.anharm;
 
@@ -123,6 +123,7 @@ Beta = Coupling(StrucInfo,CouplingType);
 % off diagonal disorder
 OffDisorder = sqrt(OffDiagDisorder)*randn(Num_Modes);
 OffDisorder = (OffDisorder + OffDisorder')./2; % symetrize
+
 Beta = Beta + OffDisorder;
 
 % The result is in cm-1 unit

@@ -24,9 +24,29 @@ function hF = Plot_Betasheet_AmideI(Structure,varargin)
 
 %% Debug
 % clear all 
+% SheetType = 'Anti';
+% % SheetType = 'Para';
+% N_Residue= 10;
+% N_Strand = 3;
+% TransV = [0,0,4];
+% TwistV = [0,0,0];
 % 
-% XYZ      = ConstuctBetaSheet(4,1,[0,0,4.75],[0,0,0]);
-% Structure = GetAmideI_CON_XYZ_betasheet(XYZ);
+% Phi_D = 0;
+% Psi_D = 0;
+% Theta_D = 0;
+% NLFreq = 1644;
+% Anharm = 12;
+% 
+% BB        = ConstuctBetaSheet(SheetType,N_Residue,N_Strand,TransV,TwistV);
+% Structure = GetAmideI(BB.Num_Atoms,...
+%                       BB.XYZ,...
+%                       BB.AtomName,...
+%                       BB.FilesName,...
+%                       'Phi_D',Phi_D,...
+%                       'Psi_D',Psi_D,...
+%                       'Theta_D',Theta_D,...
+%                       'NLFreq',NLFreq,...
+%                       'Anharm',Anharm);
 
 %% Input parser
 % INPUT = inputParser;
@@ -49,34 +69,50 @@ function hF = Plot_Betasheet_AmideI(Structure,varargin)
 XYZ        = Structure.XYZ;
 Rot_Center = Structure.center;
 
-% permute and Reshape XYZ
-R_1 = reshape(XYZ,[],3,3);
-R = permute(R_1,[1,3,2]);
-
+% % permute and Reshape XYZ
+% R_1 = reshape(XYZ,[],3,3);
+% R = permute(R_1,[1,3,2]);
+R = XYZ;
 % draw molecule
 hF = figure;
 hold on
    
-    %% draw atoms    
-    Carbon_Pos   = R(:,:,1);
-    Oxygen_Pos   = R(:,:,2);
-    Nitrogen_Pos = R(:,:,3);
+    %% draw atoms   
+    Carbon_Pos   = XYZ(Structure.AtomSerNo(:,1),:);
+    Oxygen_Pos   = XYZ(Structure.AtomSerNo(:,2),:);
+    Nitrogen_Pos = XYZ(Structure.AtomSerNo(:,3),:);
+    CarbonA_Pos  = XYZ(Structure.AtomSerNo(:,4),:);
+    
+%     Carbon_Pos   = R(:,:,1);
+%     Oxygen_Pos   = R(:,:,2);
+%     Nitrogen_Pos = R(:,:,3);
 
     plot3(Rot_Center(:,1)  ,Rot_Center(:,2)  ,Rot_Center(:,3)  ,'LineStyle','none','Marker','d','MarkerFaceColor','w')
     plot3(Carbon_Pos(:,1)  ,Carbon_Pos(:,2)  ,Carbon_Pos(:,3)  ,'LineStyle','none','Marker','o','MarkerFaceColor','k','MarkerSize',10)
     plot3(Oxygen_Pos(:,1)  ,Oxygen_Pos(:,2)  ,Oxygen_Pos(:,3)  ,'LineStyle','none','Marker','o','MarkerFaceColor','r','MarkerSize',10)
     plot3(Nitrogen_Pos(:,1),Nitrogen_Pos(:,2),Nitrogen_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','b','MarkerSize',10)
-
+%     plot3(CarbonA_Pos(:,1) ,CarbonA_Pos(:,2) ,CarbonA_Pos(:,3) ,'LineStyle','none','Marker','o','MarkerFaceColor','k','MarkerSize',10)
     %% draws bonds
-    % Chain
-        Conn1 = Connectivity(R(:,:,1),'BondLength',3.5);
-        gplot3(Conn1, R(:,:,1));
+%     % Chain
+%         Conn1 = Connectivity(Carbon_Pos,'BondLength',3.5);
+%         gplot3(Conn1, Carbon_Pos);
     % C=O bond
-        Conn2 = Connectivity([R(:,:,1);R(:,:,2)],'BondLength',1.6);
-        gplot3(Conn2, [R(:,:,1);R(:,:,2)]);
+        C_O_XYZ = [Carbon_Pos;Oxygen_Pos];
+        Conn1 = Connectivity(C_O_XYZ,'BondLength',1.6);
+        gplot3(Conn1,C_O_XYZ,'LineWidth',2,'Color',[0,0,0]);
     % C-N bond
-        Conn2 = Connectivity([R(:,:,1);R(:,:,3)],'BondLength',1.6);
-        gplot3(Conn2, [R(:,:,1);R(:,:,3)]);
+        C_N_XYZ = [Carbon_Pos;Nitrogen_Pos];
+        Conn2 = Connectivity(C_N_XYZ,'BondLength',1.6);
+        gplot3(Conn2,C_N_XYZ,'LineWidth',1,'Color',[0,0,0]);
+%     % N-CA bond
+%         N_CA_XYZ = [Nitrogen_Pos;CarbonA_Pos];
+%         Conn3 = Connectivity(N_CA_XYZ,'BondLength',1.6);
+%         gplot3(Conn3,N_CA_XYZ);
+%     % CA-C bond
+%         N_CA_XYZ = [CarbonA_Pos;Carbon_Pos];
+%         Conn3 = Connectivity(N_CA_XYZ,'BondLength',1.6);
+%         gplot3(Conn3,N_CA_XYZ);
+        
         
 
     %% Draw molecular frame on each modes

@@ -107,15 +107,15 @@ function UpdateStructure(hObject, eventdata, handles)
 
 GUI_Struc  = handles.GUI_Struc;
 %% Read GUI variables
-SheetType =            get(GUI_Struc.SheetType,'Value' ) ;
-N_Residue = str2double(get(GUI_Struc.N_Residue,'String'));
-N_Strand  = str2double(get(GUI_Struc.N_Strand ,'String'));
-Trans_X   = str2double(get(GUI_Struc.Trans_X  ,'String'));
-Trans_Y   = str2double(get(GUI_Struc.Trans_Y  ,'String'));
-Trans_Z   = str2double(get(GUI_Struc.Trans_Z  ,'String'));
-Rot_X     = str2double(get(GUI_Struc.Rot_X    ,'String'));
-Rot_Y     = str2double(get(GUI_Struc.Rot_Y    ,'String'));
-Rot_Z     = str2double(get(GUI_Struc.Rot_Z    ,'String'));
+SheetTypeV =            get(GUI_Struc.SheetType,'Value' ) ;
+N_Residue  = str2double(get(GUI_Struc.N_Residue,'String'));
+N_Strand   = str2double(get(GUI_Struc.N_Strand ,'String'));
+Trans_X    = str2double(get(GUI_Struc.Trans_X  ,'String'));
+Trans_Y    = str2double(get(GUI_Struc.Trans_Y  ,'String'));
+Trans_Z    = str2double(get(GUI_Struc.Trans_Z  ,'String'));
+Rot_X      = str2double(get(GUI_Struc.Rot_X    ,'String'));
+Rot_Y      = str2double(get(GUI_Struc.Rot_Y    ,'String'));
+Rot_Z      = str2double(get(GUI_Struc.Rot_Z    ,'String'));
 
 % check if run this GUI stand along
 if isfield(handles,'hMain')
@@ -131,13 +131,35 @@ end
 
 %% Construct molecule
 TransV = [Trans_X,Trans_Y,Trans_Z];
-RotV   = [Rot_X,Rot_Y,Rot_Z];
+TwistV   = [Rot_X,Rot_Y,Rot_Z];
 
-XYZ       = ConstuctBetaSheet(SheetType,N_Residue,N_Strand,TransV,RotV);
-Structure = GetAmideI_CON_XYZ_betasheet(XYZ);
+switch SheetTypeV
+    case 1
+        SheetType = 'Para';
+    case 2
+        SheetType = 'Anti';
+end
+
+% Need to put to GUI
+Phi_D = 0;
+Psi_D = 0;
+Theta_D = 0;
+%
+
+BB        = ConstuctBetaSheet(SheetType,N_Residue,N_Strand,TransV,TwistV);
+Structure = GetAmideI(BB.Num_Atoms,...
+                      BB.XYZ,...
+                      BB.AtomName,...
+                      BB.FilesName,...
+                      'Phi_D',Phi_D,...
+                      'Psi_D',Psi_D,...
+                      'Theta_D',Theta_D,...
+                      'NLFreq',NLFreq,...
+                      'Anharm',Anharm);
 
 Structure.N_Residue = N_Residue;
 Structure.N_Strand  = N_Strand;
+Structure.N_Mode_per_Starnd = N_Residue-1;
 
 %% Export result to Main guidata
 Data_Main.Structure = Structure;

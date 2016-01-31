@@ -146,8 +146,12 @@ if PlotCursor
     S.ax = hAx;
     Pointer_N(S) % use normalized scale
 else
-    Title = [Signal_Type_Title, ' SFG'];
-    title(Title,'FontSize',16);    
+    FilesName     = OneDSFG.FilesName;
+    FilesName_Reg = regexprep(FilesName,'\_','\\_');
+    Coupling      = OneDSFG.Coupling;
+    Coupling_Reg  = regexprep(Coupling,'\_','\\_');
+    Title_String  = [Signal_Type_Title, '-SFG ',FilesName_Reg,', Coupling:',Coupling_Reg];
+    title(Title_String,'FontSize',16);    
 end
 
 

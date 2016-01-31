@@ -151,7 +151,11 @@ if PlotCursor
     S.ax = hAx;
     Pointer_N(S) % use normalized scale
 else
-    title('FTIR','FontSize',16);    
+    FilesName     = PDB_Data.FilesName;
+    FilesName_Reg = regexprep(FilesName,'\_','\\_');
+    Coupling_Reg  = regexprep(Coupling,'\_','\\_');
+    Title_String  = ['FTIR, ',FilesName_Reg,', Coupling:',Coupling_Reg];
+    title(Title_String,'FontSize',16);    
 end
 
 % % integrate the curve area

@@ -7,6 +7,11 @@ function [Xout,Yout,Zout]=gplot3(A,xyz,varargin)
 
 %   modified by Johnson Chuang 2006
 
+%% Debug
+% A =Conn1;
+% xyz = Carbon_Pos;
+
+%% Main
 xyz = double(xyz);
 
 [i,j] = find(A);

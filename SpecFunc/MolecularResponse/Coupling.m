@@ -24,16 +24,20 @@ switch CoupleType
         Beta = Coupling_TDC(S);
         
     case 'NN_Mix_TDC'
+        % this is for betasheet only
+        % othe structure do not have N_residue and N_Strand
         Beta = Coupling_TDC(S);
-        Beta_NN     = S.Beta_NN; 
+        Beta_NN   = S.Beta_NN;
         N_Residue = S.N_Residue;
         N_Strand  = S.N_Strand;
+        
+        N_Mode_per_Starnd = N_Residue -1;
 
         % Subsituting nearest neighbor Beta_NN
         for i1 = 1:N_Strand
-            for j1 = 1:N_Residue-1
+            for j1 = 1:N_Mode_per_Starnd-1
 
-                Ind12 = (i1-1)*N_Residue+j1; 
+                Ind12 = (i1-1)*N_Mode_per_Starnd+j1; 
 
                 Beta(Ind12    ,Ind12 + 1) = Beta_NN;
                 Beta(Ind12 + 1,Ind12    ) = Beta_NN;

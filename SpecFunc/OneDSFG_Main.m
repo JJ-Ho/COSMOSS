@@ -219,3 +219,5 @@ OneDSFG.Jones      = J;
 OneDSFG.JLabFrame  = JLabFrame;
 OneDSFG.E          = E;
 OneDSFG.EJLabFrame = EJLabFrame;
+OneDSFG.FilesName  = Structure_Data.FilesName;
+OneDSFG.Coupling   = Coupling;

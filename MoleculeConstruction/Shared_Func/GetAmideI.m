@@ -1,5 +1,4 @@
 function Output = GetAmideI(Num_Atoms,XYZ,AtomName,FilesName,varargin)
-
 %% GetAmideI
 % Output = GetAmideI([Isotopes,LabelFreq])
 %  
@@ -70,13 +69,20 @@ function Output = GetAmideI(Num_Atoms,XYZ,AtomName,FilesName,varargin)
 
 %% Debug input part
 % clear all
-% handles = 'Debug';
+% varargin = {'Phi_D',0};
+% 
+% SheetType = 'Anti';
+% N_Residue= 7;
+% N_Strand = 5;
+% TransV = [0,0,4.75];
+% TwistV = [0,0,4];
+% BB = ConstuctBetaSheet(SheetType,N_Residue,N_Strand,TransV,TwistV);
+% 
+% Num_Atoms = BB.Num_Atoms;
+% XYZ       = BB.XYZ;
+% AtomName  = BB.AtomName;
+% FilesName = BB.FilesName;
 
-% if ~isstruct(handles)
-%     Phi_D = 0;
-%     Psi_D = 0;
-%     Theta_D = 0;
-% end
 
 %% Inputs parser
 INPUT = inputParser;
@@ -105,26 +111,47 @@ NLFreq        = INPUT.Results.NLFreq;
 Anharm        = INPUT.Results.Anharm;
 
 %% find corresponding atoms for Amide I mode
+% The peptide atom patter in pdb file is -[N-CA-C-O-(side chain atoms)]-
+% This mode selection algorithm start by searching C atoms and fllowing
+% with the search of O,N,CA before hitting next C atom.
 
+% find C atoms
 AmideI_C_AtomSerNo = [];
-
 for ii=1:Num_Atoms
     if strcmp(AtomName{ii},'C')
         AmideI_C_AtomSerNo = [AmideI_C_AtomSerNo;ii];
     end
 end
 
-Num_AmideC = length(AmideI_C_AtomSerNo);
-AmideI_O_AtomSerNo = zeros(Num_AmideC,1);
-AmideI_N_AtomSerNo = zeros(Num_AmideC,1);
 
+Num_AmideC = length(AmideI_C_AtomSerNo);
+AmideI_O_AtomSerNo  = nan(Num_AmideC,1);
+AmideI_N_AtomSerNo  = nan(Num_AmideC,1);
+AmideI_CA_AtomSerNo = nan(Num_AmideC,1);
+
+% find O atom within two the C atoms segment
 Count = 1;
-for jj=1:length(AmideI_C_AtomSerNo)
+for jj=1:Num_AmideC
     
     FoundAmideO = 'n';
     AtomIndex = AmideI_C_AtomSerNo(jj)+1;
     
     while strcmp(FoundAmideO,'n');
+        
+        % determine if the segament between C(jj) and C(jj+1) is finished   
+        switch jj
+            case Num_AmideC             
+                if AtomIndex > Num_Atoms
+                    Count = Count + 1;
+                    break
+                end
+            otherwise
+                if AtomIndex > AmideI_C_AtomSerNo(jj+1)
+                    Count = Count + 1;
+                    break
+                end
+        end    
+        % if the segment is not finished yet continue the search
         if strcmp(AtomName{AtomIndex},'O')
             AmideI_O_AtomSerNo(Count) = AtomIndex;
             
@@ -132,20 +159,32 @@ for jj=1:length(AmideI_C_AtomSerNo)
             Count = Count + 1;
         else
             AtomIndex = AtomIndex + 1;
-            if AtomIndex > Num_Atoms
-                break
-            end
-        end 
+        end
     end
 end
 
+% find N atom within two the C atoms segment
 Count = 1;
-for kk=1:length(AmideI_C_AtomSerNo)
+for kk=1:Num_AmideC
     
     FoundAmideN = 'n';
     AtomIndex = AmideI_O_AtomSerNo(kk)+1;
     
     while strcmp(FoundAmideN,'n');
+        % determine if the segament between C(jj) and C(jj+1) is finished
+        switch kk
+            case Num_AmideC              
+                if AtomIndex > Num_Atoms
+                    Count = Count + 1;
+                    break
+                end
+            otherwise
+                if AtomIndex > AmideI_C_AtomSerNo(kk+1)
+                    Count = Count + 1;
+                    break
+                end
+        end
+        % if the segment is not finished yet continue the search
         if strcmp(AtomName{AtomIndex},'N')
             AmideI_N_AtomSerNo(Count) = AtomIndex;
             
@@ -153,18 +192,55 @@ for kk=1:length(AmideI_C_AtomSerNo)
             Count = Count + 1;
         else
             AtomIndex = AtomIndex + 1;
-            if AtomIndex > Num_Atoms
-                break
-            end
         end 
     end
 end
-            
-        
-AmideIAtomSerNo = [AmideI_C_AtomSerNo';AmideI_O_AtomSerNo';AmideI_N_AtomSerNo']';
-% delete rows without N atom presenting, this is always the last line
-AmideIAtomSerNo = AmideIAtomSerNo(logical(AmideIAtomSerNo(:,3)),:);
 
+
+% find CA atom within two the C atoms segment
+Count = 1;
+for ll=1:Num_AmideC
+    
+    FoundAmideCA = 'n';
+    AtomIndex = AmideI_N_AtomSerNo(ll)+1;
+    
+    while strcmp(FoundAmideCA,'n');
+        % break while loop if the previous Atom is not exixt
+        if isnan(AtomIndex)
+            Count = Count + 1;
+            break
+        end
+        
+        % determine if the segament between C(jj) and C(jj+1) is finished
+        switch ll
+            case Num_AmideC              
+                if AtomIndex > Num_Atoms
+                    Count = Count + 1;
+                    break
+                end
+            otherwise
+                if AtomIndex > AmideI_C_AtomSerNo(ll+1)
+                    AmideI_CA_AtomSerNo(Count) = nan;
+                    Count = Count + 1;
+                    break
+                end
+        end
+        % if the segment is not finished yet continue the search
+        if strcmp(AtomName{AtomIndex},'CA')
+            AmideI_CA_AtomSerNo(Count) = AtomIndex;
+            
+            FoundAmideCA = 'y';
+            Count = Count + 1;
+        else
+            AtomIndex = AtomIndex + 1;
+        end 
+    end
+end
+       
+AmideIAtomSerNo = [AmideI_C_AtomSerNo';AmideI_O_AtomSerNo';AmideI_N_AtomSerNo';AmideI_CA_AtomSerNo']';
+
+% delete NaN rows to eliminate non-amide modes
+AmideIAtomSerNo(any(isnan(AmideIAtomSerNo),2),:) = [];
 %% Read molecule XYZ and rotate molecule in Molecule frame
 Num_Modes = size(AmideIAtomSerNo,1);
 
@@ -178,7 +254,7 @@ Theta_R = Theta_D/180*pi;
 Rot_Mat = R1_ZYZ_0(Phi_R,Psi_R,Theta_R);
 XYZ_Atom_Rot = (Rot_Mat*XYZ_Orig')';
 
-XYZ_Atom_Rot = reshape(XYZ_Atom_Rot,Num_Modes,3,[]); % [C_xyz O_xyz N_xyz ; C_xyz, O_xyz, N_xyz ; ...]
+XYZ_Atom_Rot = reshape(XYZ_Atom_Rot,Num_Modes,[],3); % [C_xyz O_xyz N_xyz CA_xyz; C_xyz, O_xyz, N_xyz, CA_xyz ; ...]
 
 % rotate the whole XYZ coordinate
 XYZ_Rot = (Rot_Mat*XYZ')';

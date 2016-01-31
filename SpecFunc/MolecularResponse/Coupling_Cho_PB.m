@@ -7,9 +7,9 @@ function Beta = Coupling_Cho_PB(S)
 % S.Num_Modes = S.N_Strand*S.N_Residue;
 
 %% Reassign variable names from StrucInfo
-Num_Modes = S.Num_Modes;
-N_Residue = S.N_Residue;
-N_Strand  = S.N_Strand;
+Num_Modes         = S.Num_Modes;
+N_Mode_per_Starnd = S.N_Mode_per_Starnd;
+N_Strand          = S.N_Strand;
 
 % Define Parallel Betasheet parameters
 F12  =  0.8;
@@ -25,10 +25,10 @@ Beta = zeros(Num_Modes);
 
 % define mode index
 I_Mode = (1: Num_Modes)';
-[I_Residue,~] = ind2sub([N_Residue,N_Strand],I_Mode);
+[I_Residue,~] = ind2sub([N_Mode_per_Starnd,N_Strand],I_Mode);
 
 I_Residue_head = eq(I_Residue,1);
-I_Residue_tail = eq(I_Residue,N_Residue);
+I_Residue_tail = eq(I_Residue,N_Mode_per_Starnd);
 
 %% F12
 Sub12 = [I_Mode,I_Mode+1];
@@ -47,22 +47,22 @@ Ind13 = sub2ind(size(Beta),Sub13(:,2),Sub13(:,1));
 Beta(Ind13) = F13;
 
 %% Fab
-Sub_ab = [I_Mode(1:Num_Modes-N_Residue),I_Mode(N_Residue+1:Num_Modes)];
+Sub_ab = [I_Mode(1:Num_Modes-N_Mode_per_Starnd),I_Mode(N_Mode_per_Starnd+1:Num_Modes)];
 Ind_ab = sub2ind(size(Beta),Sub_ab(:,2),Sub_ab(:,1));
 Beta(Ind_ab) = Fab;
 
 %% Fac
-Sub_ac = [I_Mode(1:Num_Modes-2*N_Residue),I_Mode(2*N_Residue+1:Num_Modes)];
+Sub_ac = [I_Mode(1:Num_Modes-2*N_Mode_per_Starnd),I_Mode(2*N_Mode_per_Starnd+1:Num_Modes)];
 Ind_ac = sub2ind(size(Beta),Sub_ac(:,2),Sub_ac(:,1));
 Beta(Ind_ac) = Fac;
 
 
 %% Fpbx
-I1_Down  = 1:(Num_Modes-N_Residue);
+I1_Down  = 1:(Num_Modes-N_Mode_per_Starnd);
 L_I1     = length(I1_Down);
 
-I2_Left  = I1_Down + N_Residue -1;
-I2_Right = I1_Down + N_Residue +1;
+I2_Left  = I1_Down + N_Mode_per_Starnd -1;
+I2_Right = I1_Down + N_Mode_per_Starnd +1;
  
 Sub_Left  = [I1_Down;I2_Left ]';
 Sub_Right = [I1_Down;I2_Right]';

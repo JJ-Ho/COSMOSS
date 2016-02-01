@@ -93,9 +93,9 @@ hold on
     plot3(Nitrogen_Pos(:,1),Nitrogen_Pos(:,2),Nitrogen_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','b','MarkerSize',10)
 %     plot3(CarbonA_Pos(:,1) ,CarbonA_Pos(:,2) ,CarbonA_Pos(:,3) ,'LineStyle','none','Marker','o','MarkerFaceColor','k','MarkerSize',10)
     %% draws bonds
-%     % Chain
-%         Conn1 = Connectivity(Carbon_Pos,'BondLength',3.5);
-%         gplot3(Conn1, Carbon_Pos);
+    % Chain
+        Conn0 = Connectivity(Carbon_Pos,'BondLength',3.5);
+        gplot3(Conn0, Carbon_Pos);
     % C=O bond
         C_O_XYZ = [Carbon_Pos;Oxygen_Pos];
         Conn1 = Connectivity(C_O_XYZ,'BondLength',1.6);

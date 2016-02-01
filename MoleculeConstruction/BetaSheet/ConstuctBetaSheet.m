@@ -111,14 +111,13 @@ AtomName_1strand{end}   = 'H';
 if mod(N_Residue,2)
     % N_Residue is odd, but number of amide mode is even
     Ind_Center_AmideI = (N_Residue-1)/2;
-    COF_N_XYZ = XYZ_1strand(Ind_Center_AmideI  ,:,3);
-    COF_C_XYZ = XYZ_1strand(Ind_Center_AmideI+1,:,1);
 else
     % N_Residue is even, but number of amide mode is odd
     Ind_Center_AmideI = (N_Residue)/2;
-    COF_C_XYZ = XYZ_1strand(Ind_Center_AmideI,:,1);
-    COF_N_XYZ = XYZ_1strand(Ind_Center_AmideI,:,3);
 end
+
+COF_C_XYZ = XYZ_1strand(Ind_Center_AmideI,:,1);
+COF_N_XYZ = XYZ_1strand(Ind_Center_AmideI,:,3);
 COF_V = (COF_C_XYZ + COF_N_XYZ)./2;
 COF   = reshape(COF_V,1,3,1);
     

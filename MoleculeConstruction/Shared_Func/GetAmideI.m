@@ -245,6 +245,7 @@ AmideIAtomSerNo(any(isnan(AmideIAtomSerNo),2),:) = [];
 Num_Modes = size(AmideIAtomSerNo,1);
 
 XYZ_Orig = XYZ(AmideIAtomSerNo(:),:);
+Mol_Frame_Orig = [1,0,0;0,1,0;0,0,1];
 
 % Orientation = Orientation/180*pi; % turn to radius unit
 Phi_R   = Phi_D/180*pi;
@@ -258,6 +259,7 @@ XYZ_Atom_Rot = reshape(XYZ_Atom_Rot,Num_Modes,[],3); % [C_xyz O_xyz N_xyz CA_xyz
 
 % rotate the whole XYZ coordinate
 XYZ_Rot = (Rot_Mat*XYZ')';
+Mol_Frame_Rot = (Rot_Mat*Mol_Frame_Orig')';
 
 %% Define Aminde I modes coordinate system
 switch Num_Modes
@@ -335,5 +337,7 @@ Output.XYZ          = XYZ_Rot;
 Output.FilesName    = FilesName;
 Output.mu_angle     = mu_angle;
 Output.alpha_angle  = alpha_angle;
+Output.Mol_Frame_Rot  = Mol_Frame_Rot;
+Output.Mol_Frame_Orig = Mol_Frame_Orig;
 
 

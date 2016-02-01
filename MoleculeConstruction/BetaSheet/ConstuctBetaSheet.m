@@ -102,15 +102,19 @@ for i = 1:N_Residue
 end
 
 AtomName_1strand = reshape(AtomName_1strand',[],1);
-
+N_Atom_per_strand = length(AtomName_1strand);
 %% substitute the last N and CA to O and H on C terminus
-AtomName_1strand{end-1} = 'O';
-AtomName_1strand{end}   = 'H';
+Ind_H_1strand = length(AtomName_1strand);
+Ind_O_1strand = length(AtomName_1strand)-1;
+AtomName_1strand{Ind_O_1strand} = 'O';
+AtomName_1strand{Ind_H_1strand} = 'H';
 
+Ind_H = Ind_H_1strand:N_Atom_per_strand:N_Strand*N_Atom_per_strand;
+Ind_O = Ind_O_1strand:N_Atom_per_strand:N_Strand*N_Atom_per_strand-1;
 %% Define flipping center for the fliping operation in creating antiparallel betasheet
 if mod(N_Residue,2)
     % N_Residue is odd, but number of amide mode is even
-    Ind_Center_AmideI = (N_Residue-1)/2;
+    Ind_Center_AmideI = (N_Residue-1)/2+1;
 else
     % N_Residue is even, but number of amide mode is odd
     Ind_Center_AmideI = (N_Residue)/2;
@@ -177,4 +181,5 @@ Output.Num_Atoms = length(AtomName);
 Output.XYZ       = XYZ;
 Output.AtomName  = AtomName;
 Output.FilesName = ['Betasheet-',SheetType,'-R',num2str(N_Residue),'S',num2str(N_Strand)];
-
+Output.Ind_H     = Ind_H;
+Output.Ind_O     = Ind_O;

@@ -69,41 +69,42 @@ function hF = Plot_Betasheet_AmideI(Structure,varargin)
 XYZ        = Structure.XYZ;
 Rot_Center = Structure.center;
 
-% % permute and Reshape XYZ
-% R_1 = reshape(XYZ,[],3,3);
-% R = permute(R_1,[1,3,2]);
-R = XYZ;
-% draw molecule
 hF = figure;
 hold on
    
-    %% draw atoms   
-    Carbon_Pos   = XYZ(Structure.AtomSerNo(:,1),:);
-    Oxygen_Pos   = XYZ(Structure.AtomSerNo(:,2),:);
-    Nitrogen_Pos = XYZ(Structure.AtomSerNo(:,3),:);
-    CarbonA_Pos  = XYZ(Structure.AtomSerNo(:,4),:);
-    
-%     Carbon_Pos   = R(:,:,1);
-%     Oxygen_Pos   = R(:,:,2);
-%     Nitrogen_Pos = R(:,:,3);
+%% draw atoms   
+Carbon_Pos   = XYZ(Structure.AtomSerNo(:,1),:);
+Oxygen_Pos   = XYZ(Structure.AtomSerNo(:,2),:);
+Nitrogen_Pos = XYZ(Structure.AtomSerNo(:,3),:);
+% CarbonA_Pos  = XYZ(Structure.AtomSerNo(:,4),:);
 
-    plot3(Rot_Center(:,1)  ,Rot_Center(:,2)  ,Rot_Center(:,3)  ,'LineStyle','none','Marker','d','MarkerFaceColor','w')
-    plot3(Carbon_Pos(:,1)  ,Carbon_Pos(:,2)  ,Carbon_Pos(:,3)  ,'LineStyle','none','Marker','o','MarkerFaceColor','k','MarkerSize',10)
-    plot3(Oxygen_Pos(:,1)  ,Oxygen_Pos(:,2)  ,Oxygen_Pos(:,3)  ,'LineStyle','none','Marker','o','MarkerFaceColor','r','MarkerSize',10)
-    plot3(Nitrogen_Pos(:,1),Nitrogen_Pos(:,2),Nitrogen_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','b','MarkerSize',10)
+plot3(Rot_Center(:,1)  ,Rot_Center(:,2)  ,Rot_Center(:,3)  ,'LineStyle','none','Marker','d','MarkerFaceColor','w')
+plot3(Carbon_Pos(:,1)  ,Carbon_Pos(:,2)  ,Carbon_Pos(:,3)  ,'LineStyle','none','Marker','o','MarkerFaceColor','k','MarkerSize',10)
+plot3(Oxygen_Pos(:,1)  ,Oxygen_Pos(:,2)  ,Oxygen_Pos(:,3)  ,'LineStyle','none','Marker','o','MarkerFaceColor','r','MarkerSize',10)
+plot3(Nitrogen_Pos(:,1),Nitrogen_Pos(:,2),Nitrogen_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','b','MarkerSize',10)
 %     plot3(CarbonA_Pos(:,1) ,CarbonA_Pos(:,2) ,CarbonA_Pos(:,3) ,'LineStyle','none','Marker','o','MarkerFaceColor','k','MarkerSize',10)
-    %% draws bonds
-    % Chain
-        Conn0 = Connectivity(Carbon_Pos,'BondLength',3.5);
-        gplot3(Conn0, Carbon_Pos);
-    % C=O bond
-        C_O_XYZ = [Carbon_Pos;Oxygen_Pos];
-        Conn1 = Connectivity(C_O_XYZ,'BondLength',1.6);
-        gplot3(Conn1,C_O_XYZ,'LineWidth',2,'Color',[0,0,0]);
-    % C-N bond
-        C_N_XYZ = [Carbon_Pos;Nitrogen_Pos];
-        Conn2 = Connectivity(C_N_XYZ,'BondLength',1.6);
-        gplot3(Conn2,C_N_XYZ,'LineWidth',1,'Color',[0,0,0]);
+
+% C terminus H/O atoms
+C_Ind_H = Structure.Ind_H;
+C_Ind_O = Structure.Ind_O;
+
+C_H_Pos = XYZ(C_Ind_H,:);
+C_O_Pos = XYZ(C_Ind_O,:);
+plot3(C_H_Pos(:,1),C_H_Pos(:,2),C_H_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','w','MarkerSize',10)
+plot3(C_O_Pos(:,1),C_O_Pos(:,2),C_O_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','r','MarkerSize',10)
+
+%% draws bonds
+% Chain
+    Conn0 = Connectivity(Carbon_Pos,'BondLength',3.5);
+    gplot3(Conn0, Carbon_Pos);
+% C=O bond
+    C_O_XYZ = [Carbon_Pos;Oxygen_Pos];
+    Conn1 = Connectivity(C_O_XYZ,'BondLength',1.6);
+    gplot3(Conn1,C_O_XYZ,'LineWidth',2,'Color',[0,0,0]);
+% C-N bond
+    C_N_XYZ = [Carbon_Pos;Nitrogen_Pos];
+    Conn2 = Connectivity(C_N_XYZ,'BondLength',1.6);
+    gplot3(Conn2,C_N_XYZ,'LineWidth',1,'Color',[0,0,0]);
 %     % N-CA bond
 %         N_CA_XYZ = [Nitrogen_Pos;CarbonA_Pos];
 %         Conn3 = Connectivity(N_CA_XYZ,'BondLength',1.6);
@@ -113,8 +114,50 @@ hold on
 %         Conn3 = Connectivity(N_CA_XYZ,'BondLength',1.6);
 %         gplot3(Conn3,N_CA_XYZ);
         
-        
+%% Draw rotated molecular frame
+Mol_Frame_scale = 5;
+Mol_Frame_Rot = Mol_Frame_scale.*Structure.Mol_Frame_Rot;
+Mol_Frame_Orig = Mol_Frame_scale.*Structure.Mol_Frame_Orig;
+COA = [0,0,-10];
 
+% Original Axis
+% X
+quiver3(COA(1)        ,COA(2)        ,COA(3),...
+        Mol_Frame_Orig(1,1),Mol_Frame_Orig(2,1),Mol_Frame_Orig(3,1),0,...
+        'LineWidth',2,...
+        'LineStyle','--',...
+        'Color',[1,0,0]);  
+% Y
+quiver3(COA(1)        ,COA(2)        ,COA(3),...
+        Mol_Frame_Orig(1,2),Mol_Frame_Orig(2,2),Mol_Frame_Orig(3,2),0,...
+        'LineWidth',2,...
+        'LineStyle','--',...
+        'Color',[0,1,0]);  
+% Z    
+quiver3(COA(1)        ,COA(2)        ,COA(3),...
+        Mol_Frame_Orig(1,3),Mol_Frame_Orig(2,3),Mol_Frame_Orig(3,3),0,...
+        'LineWidth',2,...
+        'LineStyle','--',...
+        'Color',[0,0,1]); 
+    
+% Rotated Axis
+% X
+quiver3(COA(1)        ,COA(2)        ,COA(3),...
+        Mol_Frame_Rot(1,1),Mol_Frame_Rot(2,1),Mol_Frame_Rot(3,1),0,...
+        'LineWidth',2,...
+        'Color',[1,0,0]);
+% Y
+quiver3(COA(1)        ,COA(2)        ,COA(3),...
+        Mol_Frame_Rot(1,2),Mol_Frame_Rot(2,2),Mol_Frame_Rot(3,2),0,...
+        'LineWidth',2,...
+        'Color',[0,1,0]);
+% Z
+quiver3(COA(1)        ,COA(2)        ,COA(3),...
+        Mol_Frame_Rot(1,3),Mol_Frame_Rot(2,3),Mol_Frame_Rot(3,3),0,...
+        'LineWidth',2,...
+        'Color',[0,0,1]);
+   
+    
     %% Draw molecular frame on each modes
     % since I suppressed the Mol_Frame output from
     % GetAmideI_CON_XYZ_betasheet, I suppress this part accordingly. 
@@ -142,6 +185,8 @@ hold off
 %% figure setting
 axis image;
 rotate3d on
+grid on
+box on
 view([0,0])
 xlabel('X')
 ylabel('Y')

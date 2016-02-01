@@ -113,9 +113,12 @@ N_Strand   = str2double(get(GUI_Struc.N_Strand ,'String'));
 Trans_X    = str2double(get(GUI_Struc.Trans_X  ,'String'));
 Trans_Y    = str2double(get(GUI_Struc.Trans_Y  ,'String'));
 Trans_Z    = str2double(get(GUI_Struc.Trans_Z  ,'String'));
-Rot_X      = str2double(get(GUI_Struc.Rot_X    ,'String'));
-Rot_Y      = str2double(get(GUI_Struc.Rot_Y    ,'String'));
-Rot_Z      = str2double(get(GUI_Struc.Rot_Z    ,'String'));
+Twist_X    = str2double(get(GUI_Struc.Twist_X  ,'String'));
+Twist_Y    = str2double(get(GUI_Struc.Twist_Y  ,'String'));
+Twist_Z    = str2double(get(GUI_Struc.Twist_Z  ,'String'));
+Phi_D      = str2double(get(GUI_Struc.Phi_D    ,'String'));
+Psi_D      = str2double(get(GUI_Struc.Psi_D    ,'String'));
+Theta_D    = str2double(get(GUI_Struc.Theta_D  ,'String'));
 
 % check if run this GUI stand along
 if isfield(handles,'hMain')
@@ -131,7 +134,7 @@ end
 
 %% Construct molecule
 TransV = [Trans_X,Trans_Y,Trans_Z];
-TwistV   = [Rot_X,Rot_Y,Rot_Z];
+TwistV   = [Twist_X,Twist_Y,Twist_Z];
 
 switch SheetTypeV
     case 1
@@ -139,12 +142,6 @@ switch SheetTypeV
     case 2
         SheetType = 'Anti';
 end
-
-% Need to put to GUI
-Phi_D = 0;
-Psi_D = 0;
-Theta_D = 0;
-%
 
 BB        = ConstuctBetaSheet(SheetType,N_Residue,N_Strand,TransV,TwistV);
 Structure = GetAmideI(BB.Num_Atoms,...
@@ -157,9 +154,14 @@ Structure = GetAmideI(BB.Num_Atoms,...
                       'NLFreq',NLFreq,...
                       'Anharm',Anharm);
 
-Structure.N_Residue = N_Residue;
-Structure.N_Strand  = N_Strand;
+Structure.N_Residue         = N_Residue;
+Structure.N_Strand          = N_Strand;
 Structure.N_Mode_per_Starnd = N_Residue-1;
+
+% C terminus Index
+Structure.Ind_H = BB.Ind_H;
+Structure.Ind_O = BB.Ind_O;
+
 
 %% Export result to Main guidata
 Data_Main.Structure = Structure;

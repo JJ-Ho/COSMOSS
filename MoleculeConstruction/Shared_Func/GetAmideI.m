@@ -259,7 +259,7 @@ XYZ_Atom_Rot = reshape(XYZ_Atom_Rot,Num_Modes,[],3); % [C_xyz O_xyz N_xyz CA_xyz
 
 % rotate the whole XYZ coordinate
 XYZ_Rot = (Rot_Mat*XYZ')';
-Mol_Frame_Rot = (Rot_Mat*Mol_Frame_Orig')';
+Mol_Frame_Rot = (Rot_Mat\Mol_Frame_Orig')'; % axis rotation is inv(Rot_M)*Axis_M = Rot_M\Axis_M
 
 %% Define Aminde I modes coordinate system
 switch Num_Modes

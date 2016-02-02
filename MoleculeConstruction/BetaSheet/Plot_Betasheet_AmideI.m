@@ -190,3 +190,12 @@ box on
 view([0,0])
 xlabel('X')
 ylabel('Y')
+
+% title
+FilesName     = Structure.FilesName;
+FilesName_Reg = regexprep(FilesName,'\_','\\_');
+TransV_String = sprintf('T: %1.2f, %1.2f, %1.2f; ' ,Structure.TransV(1),Structure.TransV(2),Structure.TransV(3));
+TwistV_String = sprintf('Tw: %3.0f, %3.0f, %3.0f; ',Structure.TwistV(1),Structure.TwistV(2),Structure.TwistV(3));
+RotV_String   = sprintf('R: %3.0f, %3.0f, %3.0f; ' ,Structure.RotV(1),Structure.RotV(2),Structure.RotV(3));
+Title_String  = {[FilesName_Reg, ', ', TransV_String], [TwistV_String, RotV_String]};
+title(Title_String,'FontSize',14); 

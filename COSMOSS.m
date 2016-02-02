@@ -326,6 +326,7 @@ end
 
 %% Covolution and make figure
 CVL = Conv2D(SpectraGrid,GUI_Inputs);
+CVL.FilesName = Structure.FilesName; % pass filesname for figure title
 Plot2DSFG(CVL,GUI_Inputs)
 
 %% update TwoDSFG_Response into guidata

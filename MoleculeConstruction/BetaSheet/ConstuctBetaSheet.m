@@ -150,8 +150,10 @@ AtomName(:,1)= AtomName_1strand;
 
 if strcmp(SheetType,'Anti')
     Flip_Sign = -1;
+    SheetTypeString = 'APB';
 else
     Flip_Sign = 1;
+    SheetTypeString = 'PB';
 end
 
 TwistV = TwistV/180*pi; % unit raidus
@@ -180,6 +182,6 @@ XYZ      = reshape(XYZ,[],3);
 Output.Num_Atoms = length(AtomName);
 Output.XYZ       = XYZ;
 Output.AtomName  = AtomName;
-Output.FilesName = ['Betasheet-',SheetType,'-R',num2str(N_Residue),'S',num2str(N_Strand)];
+Output.FilesName = [SheetTypeString,'-R',num2str(N_Residue),'S',num2str(N_Strand)];
 Output.Ind_H     = Ind_H;
 Output.Ind_O     = Ind_O;

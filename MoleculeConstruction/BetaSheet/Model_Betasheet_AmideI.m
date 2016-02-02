@@ -162,6 +162,10 @@ Structure.N_Mode_per_Starnd = N_Residue-1;
 Structure.Ind_H = BB.Ind_H;
 Structure.Ind_O = BB.Ind_O;
 
+% Betasheet orientation info export
+Structure.TransV = TransV;
+Structure.TwistV = TwistV;
+Structure.RotV   = [Phi_D,Psi_D,Theta_D];
 
 %% Export result to Main guidata
 Data_Main.Structure = Structure;

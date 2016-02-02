@@ -60,6 +60,10 @@ if PlotCursor
     S.ax = hAx;
     Pointer_N(S) % use normalized scale
 else
-    Title = ['2DSFG'];
-    title(Title,'FontSize',16);    
+    FilesName     = CVL.FilesName;
+    FilesName_Reg = regexprep(FilesName,'\_','\\_');
+    Coupling      = GUI_Inputs.Coupling;
+    Coupling_Reg  = regexprep(Coupling,'\_','\\_');
+    Title_String  = ['2DSFG ',FilesName_Reg,', Coupling:',Coupling_Reg];
+    title(Title_String,'FontSize',16); 
 end

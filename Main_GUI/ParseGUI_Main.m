@@ -89,4 +89,10 @@ switch Pathway
         O.Pathway = 'EA';
 end
 
-O.Signal_Type = get(GUI_Main.Sig_Type,'Value');
+Signal_Type = get(GUI_Main.Sig_Type,'Value');
+switch Signal_Type
+    case 1 % heterodyne
+        O.Signal_Type = 'Hetero';
+    case 2 % homodyne
+        O.Signal_Type = 'Homo';
+end

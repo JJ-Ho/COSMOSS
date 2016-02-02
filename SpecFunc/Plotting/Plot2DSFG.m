@@ -1,4 +1,4 @@
-function Plot2DSFG(CVL,GUI_Inputs)
+function hF = Plot2DSFG(CVL,GUI_Inputs)
 
 %% Inputs parser
 GUI_Inputs_C      = fieldnames(GUI_Inputs);

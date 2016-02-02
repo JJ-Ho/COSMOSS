@@ -1,4 +1,4 @@
-function Plot2DIR(CVL,H,Mu_Ex,GUI_Inputs)
+function hF = Plot2DIR(CVL,H,Mu_Ex,GUI_Inputs)
 % 
 % This function plot 2DIR and other information
 

@@ -1,5 +1,6 @@
 % Initialization Script
 Current_path = pwd;
+addpath(Current_path);
 
 % Add path to SubFunctions
 SpectalFunctions = genpath([Current_path '/SpecFunc']);

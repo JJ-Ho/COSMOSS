@@ -79,8 +79,9 @@ switch Pathway
         
 end
 
-Rf  = ifftshift(ifft2(Re_phasing_Res));
-NRf = ifftshift(ifft2(NR_phasing_Res));
+% Conver frequency domain Responde in time domain
+Rt  = ifftshift(ifft2(Re_phasing_Res));
+NRt = ifftshift(ifft2(NR_phasing_Res));
 
 %% Deal with Gaussian/Loentizan lineshape
 
@@ -89,20 +90,18 @@ NumFreqPoint = numel(FreqRange);
 center  = ceil(NumFreqPoint/2);
 [p1,p2] = meshgrid(1:NumFreqPoint,1:NumFreqPoint);
 
-% Gaussian / Lorentizan
-
+% Gaussian / Lorentizan line shape in frequency domain
 switch LineShape
     case 'L'
         FF = 1; % Counting for probe beam line width
-        lnshp_R =((-1./(-(p2-center)+1i*LineWidth*FF)).*(1./((p1-center)+1i*LineWidth)));
-        lnshp_N =((-1./( (p2-center)+1i*LineWidth*FF)).*(1./((p1-center)+1i*LineWidth)));
+        lnshpf_R =((-1./(-(p2-center)+1i*LineWidth*FF)).*(1./((p1-center)+1i*LineWidth)));
+        lnshpf_N =((-1./( (p2-center)+1i*LineWidth*FF)).*(1./((p1-center)+1i*LineWidth)));
     
     case 'G'
-        
-        lnshp_R = ngaussval(sqrt((p1-center).^2+(p2-center).^2),LineWidth);
-        lnshp_N = ngaussval(sqrt((p1-center).^2+(p2-center).^2),LineWidth);
+        lnshpf_R = ngaussval(sqrt((p1-center).^2+(p2-center).^2),LineWidth);
+        lnshpf_N = ngaussval(sqrt((p1-center).^2+(p2-center).^2),LineWidth);
 end
-
+%%
 % Create Vis probe line shape
 % -------------------------------------------------------------------------
 % c = (3E8).*100./(1E12); % The speed of light (in cm/ps)
@@ -115,11 +114,12 @@ end
 % prbcor1 = (real(prb1t)./max(max(real(prb1t))));
 % -------------------------------------------------------------------------        
 
-lnshpf_R = ifftshift(ifft2(fftshift(lnshp_R)));
-lnshpf_N = ifftshift(ifft2(fftshift(lnshp_N)));
+% Convert the lineshape to time domain
+lnshpt_R = ifftshift(ifft2(fftshift(lnshpf_R)));
+lnshpt_N = ifftshift(ifft2(fftshift(lnshpf_N)));
 
-CVL.R  = fft2(fftshift(lnshpf_R.*(Rf)));
-CVL.NR = fft2(fftshift(lnshpf_N.*(NRf)));
+CVL.R  = fft2(fftshift(lnshpt_R.*(Rt)));
+CVL.NR = fft2(fftshift(lnshpt_N.*(NRt)));
 
 CVL.sum = CVL.R + CVL.NR;
 

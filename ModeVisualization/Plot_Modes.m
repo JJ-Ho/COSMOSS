@@ -231,6 +231,7 @@ end
 %% plot Raman tensors
 if Plot_Raman
     N_mesh   = 20;
+    F_Color = [204,152,255]./255;
     if Normalize
         % normalize to unit vector for direction comparison
         Alpha_Tr = sum(Alpha(:,[1,5,9]),2);
@@ -239,7 +240,7 @@ if Plot_Raman
 
     for i = 1: Num_Plot_Modes
         RamanM = reshape(Alpha(i,:),3,3);
-        plot_Raman(RamanM,Center(i,:),Scale_Raman,N_mesh)
+        plot_Raman(hAx,RamanM,Center(i,:),Scale_Raman,N_mesh,F_Color)
     end
 end
 hold off

@@ -29,7 +29,7 @@ INPUT.KeepUnmatched = 1;
 % Default values
 defaultFreqRange   = 1650:1750;
 defaultLineShape   = 'L';
-expectedLineShape  = {'L','G'};
+expectedLineShape  = {'L','G','None'};
 defauleLineWidth   = 5;
 defaultSpecType    = 'Abs';
 expectedSpecType   = {'R','NR','Abs'};
@@ -79,9 +79,6 @@ switch Pathway
         
 end
 
-% Conver frequency domain Responde in time domain
-Rt  = ifftshift(ifft2(Re_phasing_Res));
-NRt = ifftshift(ifft2(NR_phasing_Res));
 
 %% Deal with Gaussian/Loentizan lineshape
 
@@ -100,7 +97,15 @@ switch LineShape
     case 'G'
         lnshpf_R = ngaussval(sqrt((p1-center).^2+(p2-center).^2),LineWidth);
         lnshpf_N = ngaussval(sqrt((p1-center).^2+(p2-center).^2),LineWidth);
+    case 'KK'
+        disp('not support KK lineshape in 2D yet...')
+    case 'None'
+        lnshpf_R = 1;
+        lnshpf_N = 1;
+        disp('Plotting stick spectrum')     
 end
+% export type of lineshape to output
+CVL.Lineshape = LineShape;
 %%
 % Create Vis probe line shape
 % -------------------------------------------------------------------------
@@ -115,11 +120,16 @@ end
 % -------------------------------------------------------------------------        
 
 % Convert the lineshape to time domain
-lnshpt_R = ifftshift(ifft2(fftshift(lnshpf_R)));
-lnshpt_N = ifftshift(ifft2(fftshift(lnshpf_N)));
+% Rt  = ifftshift(ifft2(Re_phasing_Res));
+% NRt = ifftshift(ifft2(NR_phasing_Res));
+% lnshpt_R = ifftshift(ifft2(fftshift(lnshpf_R)));
+% lnshpt_N = ifftshift(ifft2(fftshift(lnshpf_N)));
+% CVL.R  = fft2(fftshift(lnshpt_R.*(Rt)));
+% CVL.NR = fft2(fftshift(lnshpt_N.*(NRt)));
 
-CVL.R  = fft2(fftshift(lnshpt_R.*(Rt)));
-CVL.NR = fft2(fftshift(lnshpt_N.*(NRt)));
+% frequency domain 2D convolution
+CVL.R  = conv2(Re_phasing_Res,lnshpf_R,'same');
+CVL.NR = conv2(NR_phasing_Res,lnshpf_N,'same');
 
 CVL.sum = CVL.R + CVL.NR;
 

@@ -65,6 +65,8 @@ switch LineShape
         O.LineShape = 'L';
     case 3
         O.LineShape = 'KK';
+    case 4
+        O.LineShape = 'None'; 
 end
 
 SpecType = get(GUI_Main.SpecType, 'Value');

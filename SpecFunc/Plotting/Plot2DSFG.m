@@ -27,13 +27,38 @@ PlotCursor  = INPUT.Results.PlotCursor;
 
 %% Main
 hF = figure;
+
 CVLRS = -1.*real(CVL.selected);
+if strcmp(CVL.Lineshape,'None')
+    % plot stick spectrum
+    imagesc(FreqRange,FreqRange,CVLRS)
+    %StickC_Map = load('JetWhite');
+    StickC_Map = load('JetBlack');
+    colormap(StickC_Map.MAP)
+    set(gca,'Ydir','normal')
+    
+    
+%     % bar style
+%     bar3(CVLRS)
+%     LabelTick = FreqRange(1):10:FreqRange(end);
+%     set(gca, 'XTickLabel', LabelTick)
+%     set(gca, 'YTickLabel', LabelTick)
+%     set(gca, 'DataAspectRatio',[1,1,1E4])
 
-contour(FreqRange,FreqRange,CVLRS,Num_Contour,'LineWidth',2)
+else
+    % plot convoluted spectrum
+    contour(FreqRange,FreqRange,CVLRS,Num_Contour,'LineWidth',2)
+    % Normalization
+    % CVLRSN = CVLRS ./max(abs(CVLRS(:)));
+    % contour(GUI_Inputs.FreqRange,GUI_Inputs.FreqRange,CVLRSN,GUI_Inputs.Num_Contour,'LineWidth',2)
+    
+    colormap('jet')
 
-% Normalization
-% CVLRSN = CVLRS ./max(abs(CVLRS(:)));
-% contour(GUI_Inputs.FreqRange,GUI_Inputs.FreqRange,CVLRSN,GUI_Inputs.Num_Contour,'LineWidth',2)
+end
+
+colorbar
+Amp = max(abs(caxis));
+caxis([-Amp Amp])
 
 % Plot diagonal line
 hold on; plot(FreqRange,FreqRange); hold off
@@ -46,13 +71,6 @@ hAx.FontSize = 14;
 hAx.XLabel.String = 'Probe (cm^{-1})';
 hAx.YLabel.String = 'Pump (cm^{-1})';
 
-colorbar
-colormap('jet')
-Amp = max(abs(caxis));
-caxis([-Amp Amp])
-% % Set colorbar
-% MAP = custom_cmap(Num_Contour);
-% colormap(MAP)
 
 if PlotCursor
     % Call pointer

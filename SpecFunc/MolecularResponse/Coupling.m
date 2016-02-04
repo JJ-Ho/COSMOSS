@@ -49,6 +49,17 @@ switch CoupleType
         
     case 'Cho_APB'
         Beta = Coupling_Cho_APB(S);
+        
+    case 'TDC+Cho_APB'
+        Beta_TDC_all = Coupling_TDC(S);
+        Num_Modes1 = S.StrucData1.Num_Modes;
+        Beta_Betasheet = Coupling_Cho_APB(S.StrucData2);
+        
+        Beta_Mix = Beta_TDC_all;
+        Beta_Betasheet_Ind = Num_Modes1+1:S.Num_Modes;
+        Beta_Mix(Beta_Betasheet_Ind,Beta_Betasheet_Ind) = Beta_Betasheet;
+        
+        Beta = Beta_Mix;
     otherwise
         disp(['Unsupported coupling model:' CoupleType])  
 end      

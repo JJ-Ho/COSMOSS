@@ -534,7 +534,7 @@ set(DDPanelLayout,'Heights',[-1,-3])
 set(DDHBox,'Widths',[-3,-1])
 
 %% Coupling / Signal panel
-CouplingList = {'NN_Mix_TDC','TDC','Cho_PB','Cho_APB'};
+CouplingList = {'NN_Mix_TDC','TDC','Cho_PB','Cho_APB','TDC+Cho_APB'};
 
 CSPanelLayout = uix.HBox('Parent',ModelPanel,...
     'Padding', 3, 'Spacing', 3);

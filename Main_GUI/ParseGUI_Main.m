@@ -55,6 +55,8 @@ switch Coupling
         O.Coupling = 'Cho_PB';
     case 4 
         O.Coupling = 'Cho_APB';
+    case 5
+        O.Coupling = 'TDC+Cho_APB';
 end
 
 LineShape = get(GUI_Main.LineShape,'Value');

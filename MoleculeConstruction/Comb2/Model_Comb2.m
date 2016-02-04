@@ -232,11 +232,12 @@ Structure.XYZ          = M_XYZ;
 Structure.FilesName    = 'Comb2';
 
 %% export back to handles and Main GUI if any
-Data_Main.Structure = Structure;
-
-handles.StrucData1  = StrucData1;
-handles.StrucData2  = StrucData2;
+Structure.StrucData1  = StrucData1;
+Structure.StrucData2  = StrucData2;
 handles.Structure   = Structure;
+
+
+Data_Main.Structure = Structure;
 handles.Data_Main   = Data_Main;
 
 if isfield(handles,'hMain')
@@ -254,8 +255,8 @@ function PlotComb2_Callback(hObject, eventdata, handles)
 %% retreive data from handles
 hStruc1        = handles.hStruc1;
 hStruc2        = handles.hStruc2;
-StrucData1     = handles.StrucData1;
-StrucData2     = handles.StrucData2;
+StrucData1     = handles.Structure.StrucData1;
+StrucData2     = handles.Structure.StrucData2;
 
 hPlotFunc1     = handles.hPlotFunc1;
 hPlotFunc2     = handles.hPlotFunc2;

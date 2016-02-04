@@ -32,8 +32,8 @@ CVLRS = -1.*real(CVL.selected);
 if strcmp(CVL.Lineshape,'None')
     % plot stick spectrum
     imagesc(FreqRange,FreqRange,CVLRS)
-    %StickC_Map = load('JetWhite');
-    StickC_Map = load('JetBlack');
+    StickC_Map = load('CoolBlack');
+    %StickC_Map = load('JetBlack');
     colormap(StickC_Map.MAP)
     set(gca,'Ydir','normal')
     

@@ -39,8 +39,6 @@ INPUT.KeepUnmatched = 1;
 
 % Default values
 defaultFreqRange   = 1650:1750;
-defaultLabel_Index = 'Not Labeled';
-defaultLabel_Freq  = 1716;
 defaultCoupling    = 'TDC'; 
 % expectedCoupling   = {'NN_Mix_TDC','TDC','Cho_PB','Cho_APB'};
 defaultBeta_NN     = 0.8; % 0.8 cm-1 according to Lauren's PNAS paper (doi/10.1073/pnas.1117704109); that originate from Min Cho's paper (doi:10.1063/1.1997151)
@@ -54,8 +52,6 @@ defaultP_Sig2D     = 0;
 
 
 addOptional(INPUT,'FreqRange'  ,defaultFreqRange);
-addOptional(INPUT,'Label_Index',defaultLabel_Index);
-addOptional(INPUT,'Label_Freq' ,defaultLabel_Freq);
 addOptional(INPUT,'Beta_NN'    ,defaultBeta_NN);
 addOptional(INPUT,'A_Pump'     ,defaultA_Pump);
 addOptional(INPUT,'A_Probe'    ,defaultA_Probe);
@@ -72,8 +68,6 @@ parse(INPUT,GUI_Inputs_C{:});
 
 % Reassign Variable names
 FreqRange   = INPUT.Results.FreqRange;
-Label_Index = INPUT.Results.Label_Index;
-Label_Freq  = INPUT.Results.Label_Freq;
 Coupling    = INPUT.Results.Coupling;
 Beta_NN     = INPUT.Results.Beta_NN;
 A_Pump      = INPUT.Results.A_Pump;
@@ -83,14 +77,6 @@ P_Pump1     = INPUT.Results.P_Pump1;
 P_Pump2     = INPUT.Results.P_Pump2;
 P_Probe     = INPUT.Results.P_Probe;
 P_Sig2D     = INPUT.Results.P_Sig2D;
-
-%% Read input PDB data and deal with isotope labeling
-Num_Modes = PDB_Data.Num_Modes;
-
-% isotope labled frequencies
-if ~ischar(Label_Index)
-    PDB_Data.freq(Label_Index) = Label_Freq.*ones(size(Label_Index));
-end
 
 %% Correct the units
 
@@ -117,7 +103,8 @@ Sort_Ex_Freq = H.Sort_Ex_Freq;
 Mu_Ex        = Mu.Trans_Ex;
 
 %% Generate Feynman pathway for 2DSFG
-Response = Feynman_2DIR_kron(Num_Modes,Sort_Ex_Freq,Mu_Ex);
+Num_Modes = PDB_Data.Num_Modes;
+Response  = Feynman_2DIR_kron(Num_Modes,Sort_Ex_Freq,Mu_Ex);
 Response.H  = H;
 Response.Mu = Mu;
 

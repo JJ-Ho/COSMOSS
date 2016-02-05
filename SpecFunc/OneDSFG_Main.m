@@ -29,8 +29,6 @@ INPUT = inputParser;
 INPUT.KeepUnmatched = 1;
 
 % Default values
-defaultLabel_Index  = 'Non';
-defaultLabel_Freq   = 1700;
 defaultCoupling     = 'TDC';
 defaultAvg_Option   = 1;
 defaultMirror_Plane = 1;
@@ -43,8 +41,6 @@ defaultP_Sum        = 90;
 defaultBeta_NN      = 0.8;
 
 % add Optional inputs / Parameters
-addOptional(INPUT,'Label_Index' ,defaultLabel_Index);
-addOptional(INPUT,'Label_Freq'  ,defaultLabel_Freq);
 addOptional(INPUT,'Coupling'    ,defaultCoupling);
 addOptional(INPUT,'Avg_Option'  ,defaultAvg_Option);
 addOptional(INPUT,'Mirror_Plane',defaultMirror_Plane);
@@ -59,8 +55,7 @@ addOptional(INPUT,'Beta_NN'     ,defaultBeta_NN);
 parse(INPUT,GUI_Inputs_C{:});
 
 % Re-assign variable names
-Label_Index  = INPUT.Results.Label_Index;
-Label_Freq   = INPUT.Results.Label_Freq;
+
 Coupling     = INPUT.Results.Coupling;
 Avg_Option   = INPUT.Results.Avg_Option;
 Mirror_Plane = INPUT.Results.Mirror_Plane;
@@ -71,12 +66,6 @@ P_IR         = INPUT.Results.P_IR;
 P_Vis        = INPUT.Results.P_Vis;
 P_Sum        = INPUT.Results.P_Sum;
 Beta_NN      = INPUT.Results.Beta_NN;
-
-%% Deal with isotope labeling
-
-if ~ischar(Label_Index)
-    Structure_Data.freq(Label_Index) = Label_Freq.*ones(size(Label_Index));
-end
 
 %% Call OneExcitonH to calculate H,mu and alpha under exciton basis
 

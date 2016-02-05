@@ -102,11 +102,11 @@ GUI_Data_hModel = guidata(handles.hModel);
 if isfield(GUI_Data_hModel,'hMain')
     GUI_Data_hMain = guidata(GUI_Data_hModel.hMain);
     MainGUI_Inputs = ParseGUI_Main(GUI_Data_hMain);
-    disp('Plot_Modes: Using the labeing index and coupling info from Main GUI')
+    %disp('Plot_Modes: Using coupling info from Main GUI')
 else
     MainGUI_Inputs.debug = 'debug';
     GUI_Data_hModel.hMain = 'debug';
-    disp('Plot_Modes: Labeling index and coupling info come from defulat setting of OneDSFG_Main.m')
+    %disp('Plot_Modes: Coupling info comes from defulat setting of OneDSFG_Main.m')
 end
 
 Structure = GUI_Data_hModel.Structure;

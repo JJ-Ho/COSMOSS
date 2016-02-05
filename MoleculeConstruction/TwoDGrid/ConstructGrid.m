@@ -1,4 +1,4 @@
-function Output = ConstructGrid(GUI_Inputs)
+function Output = ConstructGrid(Gaussian_Input,GUI_Inputs)
 %% ConstructGrid
 
 % ------- Version log -----------------------------------------------------
@@ -25,9 +25,6 @@ INPUT = inputParser;
 INPUT.KeepUnmatched = 1;
 
 % Default values
-defaultAng_Phi     = 0;
-defaultAng_Psi     = 0;
-defaultAng_Theta   = 0;
 defaultDelta_Phi   = 0;
 defaultDelta_Psi   = 0;
 defaultDelta_Theta = 0;
@@ -36,12 +33,12 @@ defaultVec_2       = [0,4,0];
 defaultN_1         = 2;
 defaultN_2         = 3;
 defaultNLFreq      = 1720;
+defaultAnharm      = 20;
+defaultLFreq       = 1700;
+defaultL_Index     = 'None';
 defaultMute_Ind    = 'Non';
 
 % add Optional inputs / Parameters
-addOptional(INPUT,'Ang_Phi'    ,defaultAng_Phi    );
-addOptional(INPUT,'Ang_Psi'    ,defaultAng_Psi    );
-addOptional(INPUT,'Ang_Theta'  ,defaultAng_Theta  );
 addOptional(INPUT,'Delta_Phi'  ,defaultDelta_Phi  );
 addOptional(INPUT,'Delta_Psi'  ,defaultDelta_Psi  );
 addOptional(INPUT,'Delta_Theta',defaultDelta_Theta);
@@ -50,14 +47,14 @@ addOptional(INPUT,'Vec_2'      ,defaultVec_2      );
 addOptional(INPUT,'N_1'        ,defaultN_1        );
 addOptional(INPUT,'N_2'        ,defaultN_2        );
 addOptional(INPUT,'NLFreq'     ,defaultNLFreq     );
+addOptional(INPUT,'Anharm'     ,defaultAnharm     );
+addOptional(INPUT,'LFreq'      ,defaultLFreq      );
+addOptional(INPUT,'L_Index'    ,defaultL_Index    );
 addOptional(INPUT,'Mute_Ind'   ,defaultMute_Ind   );
 
 parse(INPUT,GUI_Inputs_C{:});
 
 % Re-assign variable names
-Ang_Phi     = INPUT.Results.Ang_Phi    ;
-Ang_Psi     = INPUT.Results.Ang_Psi    ;
-Ang_Theta   = INPUT.Results.Ang_Theta  ;
 Delta_Phi   = INPUT.Results.Delta_Phi  ;
 Delta_Psi   = INPUT.Results.Delta_Psi  ;
 Delta_Theta = INPUT.Results.Delta_Theta;
@@ -66,20 +63,18 @@ Vec_2       = INPUT.Results.Vec_2      ;
 N_1         = INPUT.Results.N_1        ;
 N_2         = INPUT.Results.N_2        ;
 NLFreq      = INPUT.Results.NLFreq     ;
-Mute_Ind = INPUT.Results.Mute_Ind;
+Anharm      = INPUT.Results.Anharm     ;
+LFreq       = INPUT.Results.LFreq      ;
+L_Index     = INPUT.Results.L_Index    ;
+Mute_Ind    = INPUT.Results.Mute_Ind   ;
 
 %% Read G09 structure and reassign variables
-    
-RR = [Ang_Phi,Ang_Psi,Ang_Theta];
-RR = RR./180*pi; % turn to radius unit
 
-
-
-P = ReadG09Input('140903_MMB.txt',RR);
-XYZ       = P.XYZ;
-Atom_Num  = P.Atom_Num;
-mu_Mol    = P.TDV;
-alpha_Mol = P.Raman;
+XYZ_G09       = Gaussian_Input.XYZ;
+Atom_Num_G09  = Gaussian_Input.Atom_Num;
+mu_Mol_G09    = Gaussian_Input.TDV;
+alpha_Mol_G09 = Gaussian_Input.Raman;
+%Freq_G09      = Gaussian_Input.Freq;
 
 % % shift monomer to origin
 % XYZ = bsxfun(@minus,XYZ,sum(XYZ,1)/Atom_Num);
@@ -96,7 +91,7 @@ Psi_Fluc   = Delta_Psi*randn(Num_Modes,1)  ./180*pi;
 Theta_Fluc = Delta_Theta*randn(Num_Modes,1)./180*pi;
 
 %% Creating Translation Copy
-XYZ_Grid_M = zeros(Atom_Num,3,N_1,N_2);
+XYZ_Grid_M = zeros(Atom_Num_G09,3,N_1,N_2);
 
 mu_Sim    = zeros(Num_Modes,3);
 alpha_Sim = zeros(Num_Modes,3,3);
@@ -107,7 +102,7 @@ for j = 1:N_2
 
         if any(Mute_Ind == i+(j-1)*N_1)
             % Mute some molecule in the grid
-            XYZ_Grid_M(:,:,i,j)      = zeros(Atom_Num,3);
+            XYZ_Grid_M(:,:,i,j)      = zeros(Atom_Num_G09,3);
             mu_Sim(i+(j-1)*N_1,:,:)    = zeros(3,1);
             alpha_Sim(i+(j-1)*N_1,:,:) = zeros(3,3);
         else     
@@ -115,13 +110,13 @@ for j = 1:N_2
             R_Fluc = R1_ZYZ_0(Phi_Fluc(i+(j-1)*N_1),Psi_Fluc(i+(j-1)*N_1),Theta_Fluc(i+(j-1)*N_1));
 
             % XYZ
-            XYZ_R  = (R_Fluc*XYZ')'; % apply random fluctuation 
+            XYZ_R  = (R_Fluc*XYZ_G09')'; % apply random fluctuation 
             TransV = (i-1)*Vec_1 + (j-1)*Vec_2;
             XYZ_Grid_M(:,:,i,j) = bsxfun(@plus,XYZ_R,TransV);
 
             % Mu & Alpha
-               mu_Sim(i+(j-1)*N_1,:,:) = (R_Fluc*mu_Mol')';
-            alpha_Sim(i+(j-1)*N_1,:,:) =  R_Fluc*alpha_Mol*R_Fluc';
+               mu_Sim(i+(j-1)*N_1,:,:) = (R_Fluc*mu_Mol_G09')';
+            alpha_Sim(i+(j-1)*N_1,:,:) =  R_Fluc*alpha_Mol_G09*R_Fluc';
         end
     end
 end
@@ -158,38 +153,22 @@ C_Atom_Ind = 7;
 Center_M = XYZ_Grid_M(C_Atom_Ind,:,:,:);
 Center = reshape(permute(Center_M,[1,3,4,2]),[],3);
 
-%% Calculate the transition dipoles (mu) and Raman tensors (alpha) in the Lab frame
-% 
-% mu_Mol    = P.TDV;
-% alpha_Mol = P.Raman;
-% 
-% mu_Sim    = zeros(Num_Modes,3);
-% alpha_Sim = zeros(Num_Modes,3,3);
-% 
-% for ii=1:Num_Modes
-%     mu_Sim(ii,:,:)    = (mu_Mol);
-%     alpha_Sim(ii,:,:) = alpha_Mol;
-% end 
-
 %% Define Mode frequency and anharmonicity
 
-% if isstruct(handles)
-%     NLFreq = str2double(get(handles.E_NLFreq  ,'String'));
-%     Anharm = str2double(get(handles.E_Anharm  ,'String'));
-% else
-%     NLFreq = P.Freq.Fundamental;
-%     Anharm = 2*P.Freq.Fundamental - P.Freq.Overtone;
-% end
-%     
-% 
-Freq   = ones(Num_Modes,1)* NLFreq;
-Anharm = ones(Num_Modes,1)*(2*P.Freq.Fundamental - P.Freq.Overtone);
+Loc_Freq = ones(Num_Modes,1)* NLFreq;
+
+if ~ischar(L_Index)
+    Loc_Freq(L_Index) = LFreq.*ones(size(L_Index));
+end
+
+% Anharm = ones(Num_Modes,1)*(2*Freq_G09.Fundamental - Freq_G09.Overtone);
+Anharm = Anharm.*ones(Num_Modes,1);
 
 %% AtomSerNo
 
 AtomSerNo = zeros(Num_Modes,3);
 for jj = 1:Num_Modes
-    Shift_Ind = (jj-1)*Atom_Num;
+    Shift_Ind = (jj-1)*Atom_Num_G09;
     AtomSerNo(jj,:) = [7+Shift_Ind,10+Shift_Ind,8+Shift_Ind];
 end
 
@@ -198,7 +177,7 @@ Grid_FilesName = [ 'Ester_Grid_V1' num2str(N_1) 'V2' num2str(N_2)];
 
 %% Output Structure
 Output.center       = Center;
-Output.freq         = Freq;
+Output.freq         = Loc_Freq;
 Output.anharm       = Anharm;
 Output.mu           = mu_Sim;
 Output.alpha        = reshape(alpha_Sim,[Num_Modes,9]); % non-reduced alpha "vector"
@@ -207,4 +186,4 @@ Output.AtomSerNo    = AtomSerNo;
 Output.Num_Modes    = Num_Modes;
 Output.XYZ          = XYZ_Grid;
 Output.FilesName    = Grid_FilesName;
-Output.Monomer      = P;
+Output.Monomer      = Gaussian_Input;

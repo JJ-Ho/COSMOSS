@@ -22,7 +22,7 @@ function varargout = Model_TwoDGrid(varargin)
 
 % Edit the above text to modify the response to help Model_TwoDGrid
 
-% Last Modified by GUIDE v2.5 23-Jan-2016 10:30:20
+% Last Modified by GUIDE v2.5 05-Feb-2016 15:41:40
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 0;
@@ -91,28 +91,50 @@ varargout{1} = handles.output;
 
 function LoadG09(hObject, eventdata, handles)
 
-function UpdateStructure(hObject, eventdata, handles)
+%% read Monomer structural orientation on Model GUI
 GUI_Struc = handles.GUI_Struc;
 
+Ang_Phi     =    str2double(get(GUI_Struc.Ang_Phi     ,'String'));
+Ang_Psi     =    str2double(get(GUI_Struc.Ang_Psi     ,'String'));
+Ang_Theta   =    str2double(get(GUI_Struc.Ang_Theta   ,'String'));
+
+RR = [Ang_Phi,Ang_Psi,Ang_Theta];
+RR = RR./180*pi; % turn to radius unit
+
+%% Call ReadG09Input
+PWD = pwd;
+G09_Path = [PWD, '/StructureFiles/G09/'];
+
+[FilesName,PathName,~] = uigetfile({'*.txt','Formatted G09 output'; ...
+                                    '*,*','All Files'},...
+                                    'Select inputs',G09_Path);
+
+Gaussian_Input = ReadG09Input([PathName FilesName],RR);
+disp([FilesName,' loaded...'])
+
+%% Export the Gaussian frequency and anharmonicity to GUI?
+
+%% Export to Model handles
+handles.Gaussian_Input = Gaussian_Input;
+guidata(hObject,handles)
+
+
+function UpdateStructure(hObject, eventdata, handles)
 %% Construct molecule
+GUI_Struc  = handles.GUI_Struc;
 GUI_Inputs = ParseGUI_TwoDGrid(GUI_Struc);
-if isfield(handles,'hMain')
-    Data_Main = handles.Data_Main;
-    GUI_Main  = Data_Main.GUI_Main;
-    GUI_Inputs.NLFreq = str2double(get(GUI_Main.NLFreq  ,'String'));
-else 
-    GUI_Inputs.NLFreq = 1700;
-end
-Structure  = ConstructGrid(GUI_Inputs);
+Gaussian_Input = handles.Gaussian_Input;
+Structure      = ConstructGrid(Gaussian_Input,GUI_Inputs);
 
 % Export into Structure so it can be passsed around different GUIs
 Structure.StructModel = 3;
 
 %% Export result to Main guidata
-Data_Main.Structure = Structure;
 
-% check if this program run stand along
+% check if this program run stand along, if not push Structure info to Main
 if isfield(handles,'hMain')
+    Data_Main = guidata(handles.hMain);
+    Data_Main.Structure = Structure;
     guidata(handles.hMain,Data_Main)
     
     % change Name of Main GUI to help identifying which Structural Model is

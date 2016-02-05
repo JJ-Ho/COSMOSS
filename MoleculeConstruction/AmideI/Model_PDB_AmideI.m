@@ -102,11 +102,11 @@ varargout{1} = handles.output;
 function LoadStructure(hObject, eventdata, handles)
 %% Get pdb file location 
 PWD = pwd;
-PDB_Path = [PWD, '/PDB_files/'];
+PDB_Path = [PWD, '.StructureFiles/PDB/'];
 
-[FilesName,PathName,FilterIndex] = uigetfile({'*.pdb','PDB file'; ...
-                                              '*,*','All Files'},...
-                                             'Select inputs',PDB_Path);
+[FilesName,PathName,~] = uigetfile({'*.pdb','PDB file'; ...
+                                    '*,*','All Files'},...
+                                    'Select inputs',PDB_Path);
 
 %% Parse molecule structure
 

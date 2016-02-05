@@ -15,3 +15,9 @@ O.Vec_2 =    str2num(get(hGUI.Vec_2 ,'String'));
 O.N_1   = str2double(get(hGUI.N_1   ,'String'));
 O.N_2   = str2double(get(hGUI.N_2   ,'String'));
 % -------------------------------------------------------------------------
+
+% For Local Mode frequencies ----------------------------------------------
+O.NLFreq  = str2double(get(hGUI.NLFreq ,'String'));
+O.LFreq   = str2double(get(hGUI.LFreq  ,'String'));
+O.Anharm  = str2double(get(hGUI.Anharm ,'String'));
+O.L_Index =    str2num(get(hGUI.L_Index,'String'));

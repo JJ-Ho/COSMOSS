@@ -79,10 +79,10 @@ LineShape   = INPUT.Results.LineShape;
 
 Num_Modes = PDB_Data.Num_Modes;
 
-% isotope labled frequencies
-if ~ischar(Label_Index)
-    PDB_Data.freq(Label_Index) = Label_Freq.*ones(size(Label_Index));
-end
+% % isotope labled frequencies
+% if ~ischar(Label_Index)
+%     PDB_Data.freq(Label_Index) = Label_Freq.*ones(size(Label_Index));
+% end
 
 H = ExcitonH(PDB_Data,'ExMode','OneEx','Coupling',Coupling,'Beta_NN',Beta_NN);
 

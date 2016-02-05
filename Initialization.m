@@ -9,7 +9,8 @@ addpath(SpectalFunctions);
 MoleculeConstruction = genpath([Current_path '/MoleculeConstruction']);
 addpath(MoleculeConstruction);
 
-addpath([Current_path '/StructureFiles']);
+StructureFiles = genpath([Current_path '/StructureFiles']);
+addpath(StructureFiles);
 
 ModeVisualization = genpath([Current_path '/ModeVisualization']);
 addpath(ModeVisualization);

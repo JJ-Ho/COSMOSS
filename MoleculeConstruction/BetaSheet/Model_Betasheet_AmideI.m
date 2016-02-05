@@ -154,6 +154,8 @@ Structure = GetAmideI(BB.Num_Atoms,...
                       'NLFreq',NLFreq,...
                       'Anharm',Anharm);
 
+%% Export extra info into Structure 
+                  
 Structure.N_Residue         = N_Residue;
 Structure.N_Strand          = N_Strand;
 Structure.N_Mode_per_Starnd = N_Residue-1;
@@ -166,6 +168,9 @@ Structure.Ind_O = BB.Ind_O;
 Structure.TransV = TransV;
 Structure.TwistV = TwistV;
 Structure.RotV   = [Phi_D,Psi_D,Theta_D];
+
+% Export into Structure so it can be passsed around different GUIs
+Structure.StructModel = 4;
 
 %% Export result to Main guidata
 Data_Main.Structure = Structure;

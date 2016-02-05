@@ -140,6 +140,9 @@ Structure = GetAcid('Phi_D1',Phi_D1,...
                     'Rot_X',Rot_X,...
                     'Rot_Y',Rot_Y,...
                     'Rot_Z',Rot_Z);
+                
+% Export into Structure so it can be passsed around different GUIs
+Structure.StructModel = 1;                
 
 %% Export result to Main guidata
 Data_Main.Structure = Structure;

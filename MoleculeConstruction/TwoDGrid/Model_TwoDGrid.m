@@ -25,7 +25,7 @@ function varargout = Model_TwoDGrid(varargin)
 % Last Modified by GUIDE v2.5 23-Jan-2016 10:30:20
 
 % Begin initialization code - DO NOT EDIT
-gui_Singleton = 1;
+gui_Singleton = 0;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
                    'gui_OpeningFcn', @Model_TwoDGrid_OpeningFcn, ...
@@ -105,8 +105,12 @@ else
 end
 Structure  = ConstructGrid(GUI_Inputs);
 
+% Export into Structure so it can be passsed around different GUIs
+Structure.StructModel = 3;
+
 %% Export result to Main guidata
 Data_Main.Structure = Structure;
+
 % check if this program run stand along
 if isfield(handles,'hMain')
     guidata(handles.hMain,Data_Main)

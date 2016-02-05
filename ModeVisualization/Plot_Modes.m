@@ -25,7 +25,7 @@ function varargout = Plot_Modes(varargin)
 % Last Modified by GUIDE v2.5 25-Jan-2016 12:03:41
 
 % Begin initialization code - DO NOT EDIT
-gui_Singleton = 1;
+gui_Singleton = 0;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
                    'gui_OpeningFcn', @Plot_Modes_OpeningFcn, ...
@@ -43,7 +43,6 @@ else
 end
 % End initialization code - DO NOT EDIT
 
-
 % --- Executes just before Plot_Modes is made visible.
 function Plot_Modes_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
@@ -57,7 +56,6 @@ handles.output = hObject;
 
 % Call createInterface to create GUI elements
 GUI_Modes = GUI_Plot_Modes(hObject);
-handles.GUI_Modes = GUI_Modes; % export GUI handles to handles
 
 % Get Structural modeling GUI's handles
 if nargin > 3    
@@ -77,14 +75,11 @@ GUI_Modes.hPlot_Modes.Name = [Plot_Modes_GUI_Name, ': ', Model_Name];
 
 % Export the handle of Structure Modle to guidata of Plot_Exciton
 handles.hModel = hModel;
+handles.GUI_Modes = GUI_Modes; % export GUI handles to handles
 guidata(hObject, handles);
 
 % update exciton info in Plot_Exciton
 Update_Modes(hObject, eventdata, handles)
-
-% UIWAIT makes Plot_Modes wait for user response (see UIRESUME)
-% uiwait(handles.hPlot_Modes);
-
 
 % --- Outputs from this function are returned to the command line.
 function varargout = Plot_Modes_OutputFcn(hObject, eventdata, handles) 
@@ -96,6 +91,8 @@ function varargout = Plot_Modes_OutputFcn(hObject, eventdata, handles)
 % Get default command line output from handles structure
 varargout{1} = handles.output;
 
+
+
 function Update_Modes(hObject, eventdata, handles)
 % Run OneDSFG to get the corresponding mu and alpha of exciton modes
 % Retrieve Label index and Coupling model from COSMOSS GUI if any, if
@@ -105,11 +102,11 @@ GUI_Data_hModel = guidata(handles.hModel);
 if isfield(GUI_Data_hModel,'hMain')
     GUI_Data_hMain = guidata(GUI_Data_hModel.hMain);
     MainGUI_Inputs = ParseGUI_Main(GUI_Data_hMain);
-    %disp('Using the labeing index and coupling info from Main GUI')
+    disp('Plot_Modes: Using the labeing index and coupling info from Main GUI')
 else
     MainGUI_Inputs.debug = 'debug';
     GUI_Data_hModel.hMain = 'debug';
-    %disp('Labeling index and coupling info come from defulat setting of OneDSFG_Main.m')
+    disp('Plot_Modes: Labeling index and coupling info come from defulat setting of OneDSFG_Main.m')
 end
 
 Structure = GUI_Data_hModel.Structure;
@@ -200,15 +197,16 @@ if Num_Plot_Modes == 1
 end
 
 %% Plot molecule
-if isgraphics(handles.hMain)
-    GUI_Data_Main = guidata(handles.hMain);
-    StructModel = get(GUI_Data_Main.GUI_Main.StructListBox,'Value');
-else
-    StructModel = 1;
-end
+StructModel = Structure.StructModel;
 
-[~,~,hPlotFunc] = StructureModel(StructModel);
-hF = feval(hPlotFunc,Structure);
+if eq(StructModel,5)
+    GUI_Data_Comb2  = guidata(handles.hModel);
+    GUI_Struc_Comb2 = GUI_Data_Comb2.GUI_Struc;
+    hF = PlotComb2(Structure,GUI_Struc_Comb2);
+else
+    [~,~,hPlotFunc] = StructureModel(StructModel);
+    hF = feval(hPlotFunc,Structure);
+end
 hAx = findobj(hF,'type','axes');
 hold on
 

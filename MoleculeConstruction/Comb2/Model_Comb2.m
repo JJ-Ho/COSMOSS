@@ -25,7 +25,7 @@ function varargout = Model_Comb2(varargin)
 % Last Modified by GUIDE v2.5 23-Jan-2016 10:40:08
 
 % Begin initialization code - DO NOT EDIT
-gui_Singleton = 1;
+gui_Singleton = 0;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
                    'gui_OpeningFcn', @Model_Comb2_OpeningFcn, ...
@@ -42,7 +42,6 @@ else
     gui_mainfcn(gui_State, varargin{:});
 end
 % End initialization code - DO NOT EDIT
-
 
 % --- Executes just before hModel is made visible.
 function Model_Comb2_OpeningFcn(hObject, eventdata, handles, varargin)
@@ -74,9 +73,6 @@ end
 % Update handles structure
 guidata(hObject, handles);
 
-% UIWAIT makes hModel wait for user response (see UIRESUME)
-% uiwait(handles.hModel);
-
 % --- Outputs from this function are returned to the command line.
 function varargout = Model_Comb2_OutputFcn(hObject, eventdata, handles) 
 % varargout  cell array for returning output args (see VARARGOUT);
@@ -93,7 +89,7 @@ GUI_Struc = handles.GUI_Struc;
 StructModel    = get(GUI_Struc.StructBox1,'Value');
 [hStructure1,~,hPlotFunc1] = StructureModel(StructModel);
 
-hStruc1 = feval(hStructure1,handles);
+hStruc1 = feval(hStructure1,handles.hMain);
 
 handles.hStruc1    = hStruc1;
 handles.hPlotFunc1 = hPlotFunc1;
@@ -105,7 +101,7 @@ GUI_Struc = handles.GUI_Struc;
 StructModel    = get(GUI_Struc.StructBox2,'Value');
 [hStructure2,~,hPlotFunc2] = StructureModel(StructModel);
 
-hStruc2 = feval(hStructure2,handles);
+hStruc2 = feval(hStructure2,handles.hMain);
 
 handles.hStruc2    = hStruc2;
 handles.hPlotFunc2 = hPlotFunc2;
@@ -231,11 +227,13 @@ Structure.Num_Modes    = size(M_TDV,1);
 Structure.XYZ          = M_XYZ;
 Structure.FilesName    = 'Comb2';
 
-%% export back to handles and Main GUI if any
+% Export into Structure so it can be passsed around different GUIs
 Structure.StrucData1  = StrucData1;
 Structure.StrucData2  = StrucData2;
-handles.Structure   = Structure;
+Structure.StructModel = 5;
 
+%% export back to handles and Main GUI if any
+handles.Structure   = Structure;
 
 Data_Main.Structure = Structure;
 handles.Data_Main   = Data_Main;
@@ -251,72 +249,10 @@ end
 guidata(hObject,handles)
 
 function PlotComb2_Callback(hObject, eventdata, handles)
+PlotComb2(handles.Structure,handles.GUI_Struc);
 
-%% retreive data from handles
-hStruc1        = handles.hStruc1;
-hStruc2        = handles.hStruc2;
-StrucData1     = handles.Structure.StrucData1;
-StrucData2     = handles.Structure.StrucData2;
-
-hPlotFunc1     = handles.hPlotFunc1;
-hPlotFunc2     = handles.hPlotFunc2;
-
-%% Retreive GUI inputs
-GUI_Struc = handles.GUI_Struc;
-GUI_Inputs = ParseGUI_Comb2(GUI_Struc);
-Trans_X   = GUI_Inputs.Trans_X;
-Trans_Y   = GUI_Inputs.Trans_Y;
-Trans_Z   = GUI_Inputs.Trans_Z;
-Rot_Phi   = GUI_Inputs.Rot_Phi/180*pi;
-Rot_Psi   = GUI_Inputs.Rot_Psi/180*pi;
-Rot_Theta = GUI_Inputs.Rot_Theta/180*pi;
-
-TransV = [Trans_X,Trans_Y,Trans_Z];
-RM = Rx(Rot_Phi)*Ry(Rot_Psi)*Rz(Rot_Theta);
-
-Center2 = StrucData2.center;
-COM2 = sum(Center2,1)./size(Center2,1);
-
-%% make figure
-hF1 = feval(hPlotFunc1,StrucData1);
-hF2 = feval(hPlotFunc2,StrucData2);
-hAx1 = findobj(hF1,'type','axes');
-hAx2 = findobj(hF2,'type','axes');
-
-hFcomb2 = figure;
-hAx_Comb2 = axes;
-copyobj(allchild(hAx1),hAx_Comb2);
-copyobj(allchild(hAx2),hAx_Comb2);
-
-close(hF1)
-close(hF2)
-hold on 
-% plot the XYZ axis of the second structure
-Scale = 2;
-Axis2_0 = [1,0,0;0,1,0;0,0,1];
-Axis2_R = RM*Axis2_0 .* Scale;
-
-Origin   = bsxfun(@times,COM2,[1,1,1]');
-
-CMatrix = [1,0,0;0,1,0;0,0,1];
-
-for i = 1:3
-quiver3(Origin(i,1),Origin(i,2),Origin(i,3),...
-        Axis2_R(i,1),Axis2_R(i,2),Axis2_R(i,3),0,...
-        'LineWidth',5,...
-        'Color',CMatrix(i,:));
-end  
-    
-
-hold off
-
-%% figure options
-axis image;
-rotate3d on
-grid on
-
-xlabel('X')
-ylabel('Y')
+function PlotModes(hObject, eventdata, handles)
+Plot_Modes(handles.hModel);
 
 function Export_Handle_Callback(hObject, eventdata, handles)
 % export handles back to work space

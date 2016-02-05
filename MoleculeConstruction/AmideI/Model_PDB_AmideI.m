@@ -166,9 +166,13 @@ Structure = GetAmideI(Num_Atoms,XYZ,AtomName,FilesName,...
                       'Theta_D',Theta_D,...
                       'NLFreq',NLFreq,...
                       'Anharm',Anharm);
+                  
+% Export into Structure so it can be passsed around different GUIs
+Structure.StructModel = 2;
 
 %% Export result to Main guidata
 Data_Main.Structure = Structure;
+
 % check if this program run stand along
 if isfield(handles,'hMain')
     guidata(handles.hMain,Data_Main)

@@ -102,7 +102,7 @@ varargout{1} = handles.output;
 function LoadStructure(hObject, eventdata, handles)
 %% Get pdb file location 
 PWD = pwd;
-PDB_Path = [PWD, '.StructureFiles/PDB/'];
+PDB_Path = [PWD, '/StructureFiles/PDB/'];
 
 [FilesName,PathName,~] = uigetfile({'*.pdb','PDB file'; ...
                                     '*,*','All Files'},...
@@ -131,28 +131,16 @@ handles.FilesName = FilesName;
 
 guidata(hObject,handles)
 
-%% Update PDB name on GUI
+%% Update PDB name and data to GUI
 set(handles.GUI_Struc.PDB_Name,'String',FilesName)
+UpdateStructure(hObject, eventdata, handles)
+
+
 
 function UpdateStructure(hObject, eventdata, handles)
-GUI_Struc  = handles.GUI_Struc;
-
 %% Read GUI variables
-Phi_D   = str2double(get(GUI_Struc.Phi  ,'String'));
-Psi_D   = str2double(get(GUI_Struc.Psi  ,'String'));
-Theta_D = str2double(get(GUI_Struc.Theta,'String'));
-
-% check if run this GUI stand along
-if isfield(handles,'hMain')
-    Data_Main = guidata(handles.hMain);
-    hMainGUI  = Data_Main.GUI_Main;
-    
-    NLFreq    = str2double(get(hMainGUI.NLFreq  ,'String'));
-    Anharm    = str2double(get(hMainGUI.Anharm  ,'String'));
-else
-    NLFreq = 1644;
-    Anharm = 12;
-end
+GUI_Struc  = handles.GUI_Struc;
+GUI_Inputs = ParseGUI_AmideI(GUI_Struc);
     
 %% Construct molecule
 Num_Atoms = handles.Num_Atoms;
@@ -160,21 +148,17 @@ XYZ       = handles.XYZ;
 AtomName  = handles.AtomName;
 FilesName = handles.FilesName;
 
-Structure = GetAmideI(Num_Atoms,XYZ,AtomName,FilesName,...
-                      'Phi_D',Phi_D,...
-                      'Psi_D',Psi_D,...
-                      'Theta_D',Theta_D,...
-                      'NLFreq',NLFreq,...
-                      'Anharm',Anharm);
+Structure = GetAmideI(Num_Atoms,XYZ,AtomName,FilesName,GUI_Inputs);
                   
 % Export into Structure so it can be passsed around different GUIs
 Structure.StructModel = 2;
 
 %% Export result to Main guidata
-Data_Main.Structure = Structure;
 
 % check if this program run stand along
 if isfield(handles,'hMain')
+    Data_Main = guidata(handles.hMain);
+    Data_Main.Structure = Structure;
     guidata(handles.hMain,Data_Main)
     
     % change Name of Main GUI to help identifying which Structural Model is

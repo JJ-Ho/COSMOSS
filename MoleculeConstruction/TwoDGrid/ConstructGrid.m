@@ -78,6 +78,7 @@ alpha_Mol_G09 = Gaussian_Input.Raman;
 
 % % shift monomer to origin
 % XYZ = bsxfun(@minus,XYZ,sum(XYZ,1)/Atom_Num);
+
 %% Define usefule constants
 
 % define 2D grid vector
@@ -122,7 +123,6 @@ for j = 1:N_2
 end
 
 XYZ_Grid = reshape(permute(XYZ_Grid_M,[1,3,4,2]),[],3);
-
 
 %% Make debug figure
 

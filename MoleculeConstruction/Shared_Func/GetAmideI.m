@@ -1,4 +1,4 @@
-function Output = GetAmideI(Num_Atoms,XYZ,AtomName,FilesName,varargin)
+function Output = GetAmideI(Num_Atoms,XYZ,AtomName,FilesName,GUI_Inputs)
 %% GetAmideI
 % Output = GetAmideI([Isotopes,LabelFreq])
 %  
@@ -83,9 +83,13 @@ function Output = GetAmideI(Num_Atoms,XYZ,AtomName,FilesName,varargin)
 % AtomName  = BB.AtomName;
 % FilesName = BB.FilesName;
 
-
 %% Inputs parser
+GUI_Inputs_C      = fieldnames(GUI_Inputs);
+GUI_Inputs_C(:,2) = struct2cell(GUI_Inputs);
+GUI_Inputs_C      = GUI_Inputs_C';
+
 INPUT = inputParser;
+INPUT.KeepUnmatched = 1;
 
 % Default values
 defaultPhi_D        = 0;
@@ -93,15 +97,19 @@ defaultPsi_D        = 0;
 defaultTheta_D      = 0;
 defaultNLFreq       = 1644;
 defaultAnharm       = 12;
+defaultLFreq        = 1604;
+defaultL_Index      = 'None';
 
 % add Optional inputs / Parameters
 addOptional(INPUT,'Phi_D'       ,defaultPhi_D       );
 addOptional(INPUT,'Psi_D'       ,defaultPsi_D       );
 addOptional(INPUT,'Theta_D'     ,defaultTheta_D     );
-addOptional(INPUT,'NLFreq',defaultNLFreq);
-addOptional(INPUT,'Anharm',defaultAnharm);
+addOptional(INPUT,'NLFreq'      ,defaultNLFreq      );
+addOptional(INPUT,'Anharm'      ,defaultAnharm      );
+addOptional(INPUT,'LFreq'       ,defaultLFreq       );
+addOptional(INPUT,'L_Index'     ,defaultL_Index     );
 
-parse(INPUT,varargin{:});
+parse(INPUT,GUI_Inputs_C{:});
 
 % Re-assign variable names
 Phi_D         = INPUT.Results.Phi_D;
@@ -109,6 +117,8 @@ Psi_D         = INPUT.Results.Psi_D;
 Theta_D       = INPUT.Results.Theta_D;
 NLFreq        = INPUT.Results.NLFreq;
 Anharm        = INPUT.Results.Anharm;
+LFreq         = INPUT.Results.LFreq;
+L_Index       = INPUT.Results.L_Index;
 
 %% find corresponding atoms for Amide I mode
 % The peptide atom patter in pdb file is -[N-CA-C-O-(side chain atoms)]-
@@ -241,6 +251,7 @@ AmideIAtomSerNo = [AmideI_C_AtomSerNo';AmideI_O_AtomSerNo';AmideI_N_AtomSerNo';A
 
 % delete NaN rows to eliminate non-amide modes
 AmideIAtomSerNo(any(isnan(AmideIAtomSerNo),2),:) = [];
+
 %% Read molecule XYZ and rotate molecule in Molecule frame
 Num_Modes = size(AmideIAtomSerNo,1);
 
@@ -289,7 +300,6 @@ Y_Sim = bsxfun(@rdivide,Y_Sim,sqrt(sum(abs(Y_Sim).^2,2))); % normalize
 XYZ_Sim = [X_Sim(:); Y_Sim(:); Z_Sim(:)]';
 XYZ_Sim = reshape(XYZ_Sim,Num_Modes,3,[]); 
 
-
 %% Calculate the transition dipoles (mu) and Raman tensors (alpha) in the Lab frame
 
 % Transition dipole Angle
@@ -319,24 +329,28 @@ end
 
 %% Define Mode frequency and anharmonicity
 
-AmideIFreq = ones(Num_Modes,1).*NLFreq;
+AmideIFreq = ones(Num_Modes,1)* NLFreq;
+
+if ~ischar(L_Index)
+    AmideIFreq(L_Index) = LFreq.*ones(size(L_Index));
+end
 
 % anharmonicity = 12
 AmideIAnharm = ones(Num_Modes,1).*Anharm;
 
 %% Output Structure
-Output.center       = AmideICenter;
-Output.freq         = AmideIFreq;
-Output.anharm       = AmideIAnharm;
-Output.mu           = mu_Sim;
-Output.alpha        = reshape(alpha_Sim,[Num_Modes,9]); % non-reduced alpha "vector"
-Output.alpha_matrix = alpha_Sim;
-Output.AtomSerNo    = AmideIAtomSerNo;
-Output.Num_Modes    = Num_Modes;
-Output.XYZ          = XYZ_Rot;
-Output.FilesName    = FilesName;
-Output.mu_angle     = mu_angle;
-Output.alpha_angle  = alpha_angle;
+Output.center         = AmideICenter;
+Output.freq           = AmideIFreq;
+Output.anharm         = AmideIAnharm;
+Output.mu             = mu_Sim;
+Output.alpha          = reshape(alpha_Sim,[Num_Modes,9]); % non-reduced alpha "vector"
+Output.alpha_matrix   = alpha_Sim;
+Output.AtomSerNo      = AmideIAtomSerNo;
+Output.Num_Modes      = Num_Modes;
+Output.XYZ            = XYZ_Rot;
+Output.FilesName      = FilesName;
+Output.mu_angle       = mu_angle;
+Output.alpha_angle    = alpha_angle;
 Output.Mol_Frame_Rot  = Mol_Frame_Rot;
 Output.Mol_Frame_Orig = Mol_Frame_Orig;
 

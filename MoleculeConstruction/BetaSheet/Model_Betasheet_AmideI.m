@@ -22,7 +22,7 @@ function varargout = Model_Betasheet_AmideI(varargin)
 
 % Edit the above text to modify the response to help Model_Betasheet_AmideI
 
-% Last Modified by GUIDE v2.5 28-Jan-2016 18:00:56
+% Last Modified by GUIDE v2.5 07-Feb-2016 16:17:11
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 0;
@@ -73,10 +73,7 @@ if nargin > 3
        handles.Data_Main = Data_Main;
        
        % PRE ASSIGN VALUES TO SUBSTITUTE MAIN GUI VALUES
-       GUI_Main  = Data_Main.GUI_Main; 
-       set(GUI_Main.NLFreq ,'String','1644')
-       set(GUI_Main.LFreq  ,'String','1604')
-       set(GUI_Main.Anharm ,'String','12')
+       GUI_Main  = Data_Main.GUI_Main;
        set(GUI_Main.Beta_NN,'String','0.8')
        set(GUI_Main.X_Min  ,'String','1550')
        set(GUI_Main.X_Max  ,'String','1700')
@@ -104,78 +101,40 @@ function varargout = Model_Betasheet_AmideI_OutputFcn(hObject, eventdata, handle
 varargout{1} = handles.output;
 
 function UpdateStructure(hObject, eventdata, handles)
-
-GUI_Struc  = handles.GUI_Struc;
 %% Read GUI variables
-SheetTypeV =            get(GUI_Struc.SheetType,'Value' ) ;
-N_Residue  = str2double(get(GUI_Struc.N_Residue,'String'));
-N_Strand   = str2double(get(GUI_Struc.N_Strand ,'String'));
-Trans_X    = str2double(get(GUI_Struc.Trans_X  ,'String'));
-Trans_Y    = str2double(get(GUI_Struc.Trans_Y  ,'String'));
-Trans_Z    = str2double(get(GUI_Struc.Trans_Z  ,'String'));
-Twist_X    = str2double(get(GUI_Struc.Twist_X  ,'String'));
-Twist_Y    = str2double(get(GUI_Struc.Twist_Y  ,'String'));
-Twist_Z    = str2double(get(GUI_Struc.Twist_Z  ,'String'));
-Phi_D      = str2double(get(GUI_Struc.Phi_D    ,'String'));
-Psi_D      = str2double(get(GUI_Struc.Psi_D    ,'String'));
-Theta_D    = str2double(get(GUI_Struc.Theta_D  ,'String'));
-
-% check if run this GUI stand along
-if isfield(handles,'hMain')
-    Data_Main = guidata(handles.hMain);
-    hMainGUI  = Data_Main.GUI_Main;
-    
-    NLFreq    = str2double(get(hMainGUI.NLFreq  ,'String'));
-    Anharm    = str2double(get(hMainGUI.Anharm  ,'String'));
-else
-    NLFreq = 1644;
-    Anharm = 12;
-end
+GUI_Struc  = handles.GUI_Struc;
+GUI_Inputs = ParseGUI_Betasheet(GUI_Struc);
 
 %% Construct molecule
-TransV = [Trans_X,Trans_Y,Trans_Z];
-TwistV   = [Twist_X,Twist_Y,Twist_Z];
-
-switch SheetTypeV
-    case 1
-        SheetType = 'Para';
-    case 2
-        SheetType = 'Anti';
-end
-
-BB        = ConstuctBetaSheet(SheetType,N_Residue,N_Strand,TransV,TwistV);
+BB        = ConstuctBetaSheet(GUI_Inputs);
 Structure = GetAmideI(BB.Num_Atoms,...
                       BB.XYZ,...
                       BB.AtomName,...
                       BB.FilesName,...
-                      'Phi_D',Phi_D,...
-                      'Psi_D',Psi_D,...
-                      'Theta_D',Theta_D,...
-                      'NLFreq',NLFreq,...
-                      'Anharm',Anharm);
+                      GUI_Inputs);
 
-%% Export extra info into Structure 
-                  
-Structure.N_Residue         = N_Residue;
-Structure.N_Strand          = N_Strand;
-Structure.N_Mode_per_Starnd = N_Residue-1;
+%% Export extra info into Structure                   
+Structure.N_Residue         = BB.N_Residue;
+Structure.N_Strand          = BB.N_Strand;
+Structure.N_Mode_per_Starnd = BB.N_Residue-1;
 
 % C terminus Index
 Structure.Ind_H = BB.Ind_H;
 Structure.Ind_O = BB.Ind_O;
 
 % Betasheet orientation info export
-Structure.TransV = TransV;
-Structure.TwistV = TwistV;
-Structure.RotV   = [Phi_D,Psi_D,Theta_D];
+Structure.TransV = BB.TransV;
+Structure.TwistV = BB.TwistV;
+Structure.RotV   = [GUI_Inputs.Phi_D,GUI_Inputs.Psi_D,GUI_Inputs.Theta_D];
 
 % Export into Structure so it can be passsed around different GUIs
 Structure.StructModel = 4;
 
 %% Export result to Main guidata
-Data_Main.Structure = Structure;
 % check if this program run stand along
 if isfield(handles,'hMain')
+    Data_Main = guidata(handles.hMain);
+    Data_Main.Structure = Structure;
     guidata(handles.hMain,Data_Main)
     
     % change Name of Main GUI to help identifying which Structural Model is

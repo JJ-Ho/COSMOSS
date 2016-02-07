@@ -1,4 +1,4 @@
-function Output = ConstuctBetaSheet(SheetType,N_Residue,N_Strand,TransV,TwistV)
+function Output = ConstuctBetaSheet(GUI_Inputs)
 %% ConstuctBetaSheet(SheetType,N_Residue,N_Strand,TransV,TwistV)
 % Given inputs, ConstuctBetaSheet build idea betasheet so that the strand
 % aligned with X axis and the C=O axis alignd with Z axis while its center
@@ -38,6 +38,61 @@ function Output = ConstuctBetaSheet(SheetType,N_Residue,N_Strand,TransV,TwistV)
 % TransV = [0,0,4.75];
 % TwistV = [0,0,4];
 % ------------------------------------------------------------------------
+
+%% Inputs parser
+GUI_Inputs_C      = fieldnames(GUI_Inputs);
+GUI_Inputs_C(:,2) = struct2cell(GUI_Inputs);
+GUI_Inputs_C      = GUI_Inputs_C';
+
+INPUT = inputParser;
+INPUT.KeepUnmatched = 1;
+
+% Default values
+defaultSheetTypeV = 'Anti';
+defaultN_Residue  = 3;
+defaultN_Strand   = 2;
+defaultTrans_X    = 0;
+defaultTrans_Y    = 0;
+defaultTrans_Z    = 0;
+defaultTwist_X    = 0;
+defaultTwist_Y    = 0;
+defaultTwist_Z    = 0; 
+
+% add Optional inputs / Parameters
+addOptional(INPUT,'SheetTypeV', defaultSheetTypeV);
+addOptional(INPUT,'N_Residue' , defaultN_Residue );
+addOptional(INPUT,'N_Strand'  , defaultN_Strand  );
+addOptional(INPUT,'Trans_X'   , defaultTrans_X   );
+addOptional(INPUT,'Trans_Y'   , defaultTrans_Y   );
+addOptional(INPUT,'Trans_Z'   , defaultTrans_Z   );
+addOptional(INPUT,'Twist_X'   , defaultTwist_X   );
+addOptional(INPUT,'Twist_Y'   , defaultTwist_Y   );
+addOptional(INPUT,'Twist_Z'   , defaultTwist_Z   );
+
+
+parse(INPUT,GUI_Inputs_C{:});
+
+% Re-assign variable names
+SheetTypeV = INPUT.Results.SheetTypeV;
+N_Residue  = INPUT.Results.N_Residue;
+N_Strand   = INPUT.Results.N_Strand;
+Trans_X    = INPUT.Results.Trans_X;
+Trans_Y    = INPUT.Results.Trans_Y;
+Trans_Z    = INPUT.Results.Trans_Z;
+Twist_X    = INPUT.Results.Twist_X;
+Twist_Y    = INPUT.Results.Twist_Y;
+Twist_Z    = INPUT.Results.Twist_Z;
+
+%% Post process of inputs
+switch SheetTypeV
+    case 1
+        SheetType = 'Para';
+    case 2
+        SheetType = 'Anti';
+end
+
+TransV = [Trans_X,Trans_Y,Trans_Z];
+TwistV = [Twist_X,Twist_Y,Twist_Z];
 
 %% Pull coordinates from short ideal parallel beta-sheet
 
@@ -185,3 +240,7 @@ Output.AtomName  = AtomName;
 Output.FilesName = [SheetTypeString,'-R',num2str(N_Residue),'S',num2str(N_Strand)];
 Output.Ind_H     = Ind_H;
 Output.Ind_O     = Ind_O;
+Output.N_Residue = N_Residue;
+Output.N_Strand  = N_Strand;
+Output.TransV    = TransV;
+Output.TwistV    = TwistV;

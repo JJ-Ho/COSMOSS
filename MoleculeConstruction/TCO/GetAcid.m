@@ -1,4 +1,4 @@
-function Output = GetAcid(varargin)
+function Output = GetAcid(GUI_Inputs)
 %% GetAmideI
 
 % ------- Version log -----------------------------------------------------
@@ -24,7 +24,12 @@ function Output = GetAcid(varargin)
 % handles = 'Debug';
 
 %% Inputs parser
+GUI_Inputs_C      = fieldnames(GUI_Inputs);
+GUI_Inputs_C(:,2) = struct2cell(GUI_Inputs);
+GUI_Inputs_C      = GUI_Inputs_C';
+
 INPUT = inputParser;
+INPUT.KeepUnmatched = 1;
 
 % Default values
 defaultPhi_D1       = 0;
@@ -36,6 +41,8 @@ defaultTheta_D2     = 0;
 defaultDisplacement = [0,0,5];
 defaultNLFreq       = 1716;
 defaultAnharm       = 20;
+defaultLFreq        = 1604;
+defaultL_Index      = 'None';
 defaultRot_X        = 0;
 defaultRot_Y        = 0;
 defaultRot_Z        = 0;
@@ -50,11 +57,13 @@ addOptional(INPUT,'Theta_D2'    ,defaultTheta_D2     );
 addOptional(INPUT,'Displacement',defaultDisplacement );
 addOptional(INPUT,'NLFreq'      ,defaultNLFreq       );
 addOptional(INPUT,'Anharm'      ,defaultAnharm       );
+addOptional(INPUT,'LFreq'       ,defaultLFreq       );
+addOptional(INPUT,'L_Index'     ,defaultL_Index     );
 addOptional(INPUT,'Rot_X'       ,defaultRot_X        );
 addOptional(INPUT,'Rot_Y'       ,defaultRot_Y        );
 addOptional(INPUT,'Rot_Z'       ,defaultRot_Z        );
 
-parse(INPUT,varargin{:});
+parse(INPUT,GUI_Inputs_C{:});
 
 % Re-assign variable names
 Phi_D1        = INPUT.Results.Phi_D1;
@@ -66,6 +75,8 @@ Theta_D2      = INPUT.Results.Theta_D2;
 Displacement  = INPUT.Results.Displacement;
 NLFreq        = INPUT.Results.NLFreq;
 Anharm        = INPUT.Results.Anharm;
+LFreq         = INPUT.Results.LFreq;
+L_Index       = INPUT.Results.L_Index;
 Rot_X         = INPUT.Results.Rot_X;
 Rot_Y         = INPUT.Results.Rot_Y;
 Rot_Z         = INPUT.Results.Rot_Z;
@@ -166,15 +177,13 @@ end
 
 %% Define Mode frequency and anharmonicity
 
-% if isstruct(handles)
-%     NLFreq = str2double(get(handles.edit_NLFreq  ,'String'));
-%     Anharm = str2double(get(handles.edit_Anharm  ,'String'));
-% else
-%     NLFreq = 1716;
-%     Anharm = 20;
-% end
+AmideIFreq = ones(Num_Modes,1)* NLFreq;
+
+if ~ischar(L_Index)
+    AmideIFreq(L_Index) = LFreq.*ones(size(L_Index));
+end
+
     
-AmideIFreq   = ones(Num_Modes,1)*NLFreq;
 AmideIAnharm = ones(Num_Modes,1)*Anharm;
 
 %% Rotate the whole system 

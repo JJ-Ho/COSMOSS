@@ -102,51 +102,20 @@ function varargout = Model_TCO_OutputFcn(hObject, eventdata, handles)
 varargout{1} = handles.output;
 
 function UpdateStructure(hObject, eventdata, handles)
-GUI_Struc = handles.GUI_Struc;
-if isfield(handles,'hMain')
-    Data_Main = guidata(handles.hMain);
-    GUI_Main  = Data_Main.GUI_Main;
-    
-    NLFreq = str2double(get(GUI_Main.NLFreq  ,'String'));
-    Anharm = str2double(get(GUI_Main.Anharm  ,'String'));
-else
-    NLFreq = 1700;
-    Anharm = 20;
-end
-
 %% Read GUI variables
-Phi_D1        = str2double(get(GUI_Struc.Phi1  ,'String'));
-Psi_D1        = str2double(get(GUI_Struc.Psi1  ,'String'));
-Theta_D1      = str2double(get(GUI_Struc.Theta1,'String'));
-Phi_D2        = str2double(get(GUI_Struc.Phi2  ,'String'));
-Psi_D2        = str2double(get(GUI_Struc.Psi2  ,'String'));
-Theta_D2      = str2double(get(GUI_Struc.Theta2,'String'));
-Displacement  =    str2num(get(GUI_Struc.Trans ,'String'));
-
-Rot_X        = str2double(get(GUI_Struc.Rot_X  ,'String'));
-Rot_Y        = str2double(get(GUI_Struc.Rot_Y  ,'String'));
-Rot_Z        = str2double(get(GUI_Struc.Rot_Z  ,'String'));
+GUI_Struc = handles.GUI_Struc;
+GUI_Inputs = ParseGUI_TCO(GUI_Struc);
 
 %% Construct molecule
-Structure = GetAcid('Phi_D1',Phi_D1,...
-                    'Psi_D1',Psi_D1,...
-                    'Theta_D1',Theta_D1,...
-                    'Phi_D2',Phi_D2,...
-                    'Psi_D2',Psi_D2,...
-                    'Theta_D2',Theta_D2,...
-                    'Displacement',Displacement,...
-                    'NLFreq',NLFreq,...
-                    'Anharm',Anharm,...
-                    'Rot_X',Rot_X,...
-                    'Rot_Y',Rot_Y,...
-                    'Rot_Z',Rot_Z);
-                
+Structure = GetAcid(GUI_Inputs);
+
 % Export into Structure so it can be passsed around different GUIs
 Structure.StructModel = 1;                
 
 %% Export result to Main guidata
-Data_Main.Structure = Structure;
 if isfield(handles,'hMain')
+    Data_Main = guidata(handles.hMain);
+    Data_Main.Structure = Structure;
     guidata(handles.hMain,Data_Main)
     
     % change Name of Main GUI to help identifying which Structural Model is

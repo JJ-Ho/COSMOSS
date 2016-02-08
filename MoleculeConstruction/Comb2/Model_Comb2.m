@@ -249,7 +249,9 @@ end
 guidata(hObject,handles)
 
 function PlotComb2_Callback(hObject, eventdata, handles)
-PlotComb2(handles.Structure,handles.GUI_Struc);
+GUI_Struc = handles.GUI_Struc;
+GUI_Inputs = ParseGUI_Comb2(GUI_Struc);
+PlotComb2(handles.Structure,GUI_Inputs);
 
 function PlotModes(hObject, eventdata, handles)
 Plot_Modes(handles.hModel);

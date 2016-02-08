@@ -202,7 +202,8 @@ StructModel = Structure.StructModel;
 if eq(StructModel,5)
     GUI_Data_Comb2  = guidata(handles.hModel);
     GUI_Struc_Comb2 = GUI_Data_Comb2.GUI_Struc;
-    hF = PlotComb2(Structure,GUI_Struc_Comb2);
+    GUI_Inputs      = ParseGUI_Comb2(GUI_Struc_Comb2);
+    hF = PlotComb2(Structure,GUI_Inputs);
 else
     [~,~,hPlotFunc] = StructureModel(StructModel);
     hF = feval(hPlotFunc,Structure);

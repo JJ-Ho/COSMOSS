@@ -1,5 +1,4 @@
-function hFcomb2 = PlotComb2(Structure,GUI_Struc)
-
+function hFcomb2 = PlotComb2(Structure,GUI_Inputs)
 %% retreive data from handles
 StrucData1     = Structure.StrucData1;
 StrucData2     = Structure.StrucData2;
@@ -7,7 +6,7 @@ StrucData2     = Structure.StrucData2;
 [~,~,hPlotFunc1] = StructureModel(StrucData1.StructModel);
 [~,~,hPlotFunc2] = StructureModel(StrucData2.StructModel);
 %% Retreive GUI inputs
-GUI_Inputs = ParseGUI_Comb2(GUI_Struc);
+% GUI_Inputs = ParseGUI_Comb2(GUI_Struc);
 
 % translation part has been taking cared by UpdateStructure in Model_Comb2
 % Trans_X    = GUI_Inputs.Trans_X;

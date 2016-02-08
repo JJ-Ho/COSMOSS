@@ -90,7 +90,6 @@ function varargout = Model_TwoDGrid_OutputFcn(hObject, eventdata, handles)
 varargout{1} = handles.output;
 
 function LoadG09(hObject, eventdata, handles)
-
 %% read Monomer structural orientation on Model GUI
 GUI_Struc = handles.GUI_Struc;
 

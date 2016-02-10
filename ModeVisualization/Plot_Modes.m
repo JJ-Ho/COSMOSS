@@ -22,7 +22,7 @@ function varargout = Plot_Modes(varargin)
 
 % Edit the above text to modify the response to help Plot_Modes
 
-% Last Modified by GUIDE v2.5 25-Jan-2016 12:03:41
+% Last Modified by GUIDE v2.5 10-Feb-2016 16:58:08
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 0;
@@ -211,6 +211,14 @@ end
 hAx = findobj(hF,'type','axes');
 hold on
 
+%% Generate distinguisable colors for modes
+if exist('distinguishable_colors','file')
+    UnWanted = [0,0,0;1,1,1;1,0,0;0,1,0;0,0,1];
+    Mode_colors = distinguishable_colors(Num_Plot_Modes,UnWanted);
+else
+    Mode_colors = [255,128,0]./256;
+end
+
 %% Plot Transition dipoles
 if Plot_TDV
     if Normalize
@@ -219,12 +227,13 @@ if Plot_TDV
         Mu = bsxfun(@rdivide,Mu,Mu_Int);
     end
     Mu_S = Scale_TDV .* Mu; % Scale TDV vector in plot 
-    
-    quiver3(hAx,...
-            Center(:,1),Center(:,2),Center(:,3),...
-            Mu_S(:,1),Mu_S(:,2),Mu_S(:,3),0,...
-            'LineWidth',2,...
-            'Color',[255,128,0]./256);
+    for j = 1: Num_Plot_Modes
+        quiver3(hAx,...
+                Center(j,1),Center(j,2),Center(j,3),...
+                Mu_S(j,1),Mu_S(j,2),Mu_S(j,3),0,...
+                'LineWidth',2,...
+                'Color',Mode_colors(j,:));
+    end
 end
 
 %% plot Raman tensors
@@ -239,7 +248,7 @@ if Plot_Raman
 
     for i = 1: Num_Plot_Modes
         RamanM = reshape(Alpha(i,:),3,3);
-        plot_Raman(hAx,RamanM,Center(i,:),Scale_Raman,N_mesh,F_Color)
+        plot_Raman(hAx,RamanM,Center(i,:),Scale_Raman,N_mesh,Mode_colors(i,:))
     end
 end
 hold off

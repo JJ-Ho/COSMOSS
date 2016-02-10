@@ -1,5 +1,5 @@
 % Plot_Cho_Coupling_Matrix
-Beta = hMain.FTIR.H.Beta;
+% Beta = hMain.FTIR.H.Beta;
 hF = figure;
 pcolor(Beta);
 hAx = findobj(hF,'Type','axes');

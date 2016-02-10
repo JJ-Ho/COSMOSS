@@ -64,8 +64,6 @@ addOptional(INPUT,'LineShape'  ,defaultLineShape);
 parse(INPUT,GUI_Inputs_C{:});
 
 % Re-assign variable names
-Label_Index = INPUT.Results.Label_Index;
-Label_Freq  = INPUT.Results.Label_Freq;
 PlotStick   = INPUT.Results.PlotStick;
 Coupling    = INPUT.Results.Coupling;
 Beta_NN     = INPUT.Results.Beta_NN;
@@ -169,3 +167,6 @@ end
 %% Output
 Output.H  = H;
 Output.Mu = mu;
+Output.hF = hF;
+Output.X  = spec_range;
+Output.Y  = CVL_Total;

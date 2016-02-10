@@ -126,7 +126,7 @@ end
 
 
 if eq(PlotStick,1)
-    line([Res_1DSFG_Freq';Res_1DSFG_Freq'],[zeros(1,Num_Modes);Stick']);
+    line([Res_1DSFG_Freq';Res_1DSFG_Freq'],[zeros(1,Num_Modes);Stick'],'Tag','Stick');
     %plot(Res_1DSFG_Freq,Response1DSFG,'rx')
 end
 

@@ -3,47 +3,54 @@
 %- Major options  ---------------------------------------------------------
 Scan_Theta = 0:10:350;
 % Scan_Theta = 10;
+O.Coupling = 'Cho_APB';
 
-SheetType = 'Para';
-N_Residue = 6;
-N_Strand  = 3;
-
-O.Coupling = 'Cho_PB';
+%- Figure options ---------------------------------------------------------
 Fig_Save = 0;
-BaseFileName = 'PB_R6S3_';
+saveGIF  = 1;
+BaseFileName = 'APB_R5S4_';
 PathName = pwd;
 
-%- Things need to be determined case by case ------------------------------
-Ax_Struc_XLim = [-11.40, 11.40];
-Ax_Struc_YLim = [-11.40, 11.40];
-Ax_Struc_ZLim = [-15.00, 11.40];
+Struc_XLim = [-12.00, 12.00];
+Struc_YLim = [-11.40, 11.40];
+Struc_ZLim = [-15.00, 15.00];
+Struc_View = [-120,5];
 
-Ax_OneDSFG_YLim = [-40,40];
+OneDSFG_YLim      = [-0.6,0.6];
+TwoDSFG_CLim      = [-1E3,1E3];
+TwoDSFG_Diag_CLim = [-6E4,6E4];
 
-Mode_Ind    = [5,3,15];
-Scale_TDV   = 0.7;
+Struc_XLimMode        = 'Manual';
+Struc_YLimMode        = 'Manual';
+Struc_ZLimMode        = 'Manual';
+OneDSFG_YLimMode      = 'Manual';
+TwoDSFG_CLimMode      = 'Manual';
+TwoDSFG_Diag_CLimMode = 'Manual';
+
+Mode_Ind         = [4,10,6,2];
+Mode_Stick_Width = 5;
+
+Scale_TDV   = 20;
 Scale_Raman = 0.5;
 N_mesh      = 20;
 
-Ax_TwoDSFG_CLim = [-1,1];
-
-AX_2D_Diag_YLim = [-1500000,1500000];
-
-
 %- Structural part --------------------------------------------------------
-
-TransV    = [0,0,4.75];
-TwistV    = [0,0,0];
-Phi_D     = 0;
-Psi_D     = 0;
-% Theta_D   = 0;
-NLFreq    = 1644;
-Anharm    = 20;
-
-%- Labeling part ----------------------------------------------------------
-O.Label_Index  = 'Not Labeled';
-O.Label_Freq   = 1604;
-O.LineWidth    = 5;
+StrucInput.SheetType = 2; % 'Anti'
+StrucInput.N_Residue = 5;
+StrucInput.N_Strand  = 4;
+StrucInput.Trans_X   = 0;
+StrucInput.Trans_Y   = 0;
+StrucInput.Trans_Z   = 4.75;
+StrucInput.Twist_X   = 0;
+StrucInput.Twist_Y   = 0;
+StrucInput.Twist_Z   = 0;
+StrucInput.Phi_D     = 0;
+StrucInput.Psi_D     = 0;
+StrucInput.Theta_D   = 0;
+StrucInput.NLFreq    = 1644;
+StrucInput.LFreq     = 1604;
+StrucInput.Anharm    = 20;
+StrucInput.L_Index   = 'None';
 
 % For 1D ------------------------------------------------------------------
 O.P_IR         = 0;
@@ -89,37 +96,39 @@ O.Signal_Type = 'Hetero';
 
 for i = 1:length(Scan_Theta)
 
+    StrucInput.Theta_D = Scan_Theta(i);
     %% Structure 
-    BB        = ConstuctBetaSheet(SheetType,N_Residue,N_Strand,TransV,TwistV);
+    BB        = ConstuctBetaSheet(StrucInput);
     Structure = GetAmideI(BB.Num_Atoms,...
                           BB.XYZ,...
                           BB.AtomName,...
                           BB.FilesName,...
-                          'Phi_D',Phi_D,...
-                          'Psi_D',Psi_D,...
-                          'Theta_D',Scan_Theta(i),...
-                          'NLFreq',NLFreq,...
-                          'Anharm',Anharm);
+                          StrucInput);
 
-    Structure.N_Residue         = N_Residue;
-    Structure.N_Strand          = N_Strand;
-    Structure.N_Mode_per_Starnd = N_Residue-1;
+    Structure.N_Residue         = StrucInput.N_Residue;
+    Structure.N_Strand          = StrucInput.N_Strand;
+    Structure.N_Mode_per_Starnd = StrucInput.N_Residue-1;
 
     % C terminus Index
     Structure.Ind_H = BB.Ind_H;
     Structure.Ind_O = BB.Ind_O;
 
     % Betasheet orientation info export
-    Structure.TransV = TransV;
-    Structure.TwistV = TwistV;
-    Structure.RotV   = [Phi_D,Psi_D,Scan_Theta(i)];
+    Structure.TransV = [StrucInput.Trans_X,StrucInput.Trans_Y,StrucInput.Trans_Z];
+    Structure.TwistV = [StrucInput.Twist_X,StrucInput.Twist_Y,StrucInput.Twist_Z];
+    Structure.RotV   = [StrucInput.Phi_D  ,StrucInput.Psi_D  ,StrucInput.Theta_D];
 
     hF_Struc = Plot_Betasheet_AmideI(Structure);
     hAx_Struc = findobj(hF_Struc,'type','axes');
     
-    hAx_Struc.XLim = Ax_Struc_XLim;
-    hAx_Struc.YLim = Ax_Struc_YLim;
-    hAx_Struc.ZLim = Ax_Struc_ZLim;
+    hAx_Struc.XLim = Struc_XLim;
+    hAx_Struc.YLim = Struc_YLim;
+    hAx_Struc.ZLim = Struc_ZLim;
+    hAx_Struc.XLimMode = Struc_XLimMode;
+    hAx_Struc.YLimMode = Struc_YLimMode;
+    hAx_Struc.ZLimMode = Struc_ZLimMode;
+    
+    view(Struc_View)
     
     %% OneDSFG
     OneDSFG    = OneDSFG_Main(Structure,O);
@@ -127,15 +136,37 @@ for i = 1:length(Scan_Theta)
     hF_OneDSFG = PlotOneDSFG(OneDSFG,O);
     hAx_OneDSFG = findobj(hF_OneDSFG,'type','axes');
     
-    hAx_OneDSFG.YLim = Ax_OneDSFG_YLim;
-    
-    %% Exiton Modes
-    hold(hAx_Struc,'on')
-    
+    % Apply Color and Broader linewith to selected modes
+    hSticks = findobj(hAx_OneDSFG,'Tag','Stick');
     Num_Plot_Modes = length(Mode_Ind);
-    
     UnWanted = [0,0,0;1,1,1;1,0,0;0,1,0;0,0,1];
     Mode_colors = distinguishable_colors(Num_Plot_Modes,UnWanted);
+    
+    for m = 1:Num_Plot_Modes
+        Stick_Ind = Structure.Num_Modes +1 - Mode_Ind(m);
+        hSticks(Stick_Ind).Color = Mode_colors(m,:);
+        hSticks(Stick_Ind).LineWidth = Mode_Stick_Width;
+    end
+    
+    hAx_OneDSFG.YLim = OneDSFG_YLim;
+    hAx_OneDSFG.YLimMode = OneDSFG_YLimMode;
+    hAx_OneDSFG.XGrid = 'on';
+    %hAx_OneDSFG.YGrid = 'on';
+    
+    %% FTIR
+    FTIR = PlotFTIR(Structure,O);
+    FTIR_X = FTIR.X;
+    FTIR_Y = FTIR.Y;
+    FTIR_Y_Norm = FTIR_Y./abs(max(FTIR_Y));
+    Scale_OneDSFG = max(abs(hAx_OneDSFG.YLim));
+    FTIR_Y_Scale = FTIR_Y_Norm.*Scale_OneDSFG;
+    
+    hold(hAx_OneDSFG,'on')
+    plot(hAx_OneDSFG,FTIR_X,FTIR_Y_Scale,'r','LineWidth',2)
+    hold(hAx_OneDSFG,'off')
+    
+    %% Plot selected Exiton Modes
+    hold(hAx_Struc,'on')
     
     % Calculate the exciton center
     Center_Loc = Structure.center;
@@ -155,7 +186,7 @@ for i = 1:length(Scan_Theta)
         quiver3(hAx_Struc,...
             Center(r,1),Center(r,2),Center(r,3),...
             Mu_S(r,1),Mu_S(r,2),Mu_S(r,3),0,...
-            'LineWidth',2,...
+            'LineWidth',Mode_Stick_Width,...
             'Color',Mode_colors(r,:));
         
         RamanM = reshape(Alpha(r,:),3,3);
@@ -174,22 +205,35 @@ for i = 1:length(Scan_Theta)
     hAx_TwoDSFG = findobj(hF_TwoDSFG,'type','axes');
     hAx_TwoDSFG_cbar = findobj(hF_TwoDSFG,'type','colorbar');
     
-    hAx_TwoDSFG.CLim = Ax_TwoDSFG_CLim;
+    if strcmp(TwoDSFG_CLimMode,'Manual')
+        hAx_TwoDSFG.CLim = TwoDSFG_CLim;
+        hAx_TwoDSFG.CLimMode = TwoDSFG_CLimMode;
+    end
+    
+    hAx_TwoDSFG.XGrid ='on';
+    hAx_TwoDSFG.YGrid ='on';
     
     %% TwoDSFG diagonal sticks
-    
     Re_Diag = diag(SpectraGrid.Rephasing);
     NR_Diag = diag(SpectraGrid.NonRephasing);
     
     hF_2D_Diag = figure;
     line([O.FreqRange(1);O.FreqRange(end)],[0;0],'Color',[0,0,0])
     line([O.FreqRange;O.FreqRange],[zeros(1,length(O.FreqRange));(Re_Diag+NR_Diag)'],'LineWidth',4)
-    line([O.FreqRange(end);O.FreqRange(end)],AX_2D_Diag_YLim,'Color',[1,0,0],'LineWidth',4)
     
     hAx_2D_Diag = findobj(hF_2D_Diag,'type','axes');
+    
+    if strcmp(TwoDSFG_Diag_CLimMode,'Manual')
+        line([O.FreqRange(end);O.FreqRange(end)],TwoDSFG_Diag_CLim,'Color',[1,0,0],'LineWidth',4)
+        hAx_2D_Diag.YLim = TwoDSFG_Diag_CLim;
+        hAx_2D_Diag.YLimMode = TwoDSFG_Diag_CLimMode;
+    else 
+        line([O.FreqRange(end);O.FreqRange(end)],hAx_2D_Diag.YLim,'Color',[1,0,0],'LineWidth',4)
+    end
+    
     hAx_2D_Diag.Color = 'none';
     hAx_2D_Diag.Visible = 'off';
-    hAx_2D_Diag.YLim = AX_2D_Diag_YLim;
+    
     % Plot Rephasing / Nonrephasing separate
     %line([O.FreqRange;O.FreqRange],[zeros(1,length(O.FreqRange));Re_Diag'],'LineWidth',2)
     %line([O.FreqRange;O.FreqRange],[zeros(1,length(O.FreqRange));NR_Diag'],'LineWidth',2)
@@ -201,6 +245,16 @@ for i = 1:length(Scan_Theta)
     %line([O.FreqRange;O.FreqRange],[zeros(1,length(O.FreqRange));Log_NR_Diag'],'LineWidth',2)
     
 
+    %% Paste 2DSFG diag sticks to 2DSFG figure
+    hAx_2D_Diag_sub = copyobj(hAx_2D_Diag,hF_TwoDSFG);
+    
+    pos_2D = hAx_TwoDSFG.Position;
+    pos_2D_Diag = pos_2D;
+    pos_2D_Diag(1) = pos_2D_Diag(1)+0.037;
+    pos_2D_Diag(3) = pos_2D_Diag(4)*0.750;
+    pos_2D_Diag(4) = pos_2D_Diag(4)*0.300;
+    set(hAx_2D_Diag_sub,'Position',pos_2D_Diag);
+    
     %% Makeing subplot
     hF = figure;
     
@@ -214,7 +268,7 @@ for i = 1:length(Scan_Theta)
     pos_2DSFG   = [0.6733    0.1025    0.2503    0.8150];
     pos_cBar    = [0.9466    0.1083    0.0149    0.7929];
     pos_Base    = [0.0690    0.4886    0.7726    0.4010];
-    pos_2D_Diag = [0.6733    0.1275    0.2503    0.3150];
+    pos_2D_Diag = [0.6788    0.1070    0.2393    0.3150];
     
     set(hAx_Struc_sub     ,'Position',pos_Struct);
     set(hAx_OneDSFG_sub   ,'Position',pos_1DSFG);
@@ -227,51 +281,62 @@ for i = 1:length(Scan_Theta)
     set(hF,'Unit','Normalized','Position',pos_Base)
     
     Frame_all(i) = getframe(hF);
-    close all
     
-   
-
     %% Save figure
     SavePath = PathName;
     if Fig_Save
-
-        FigName1  = [BaseFileName,'Th',num2str(Scan_Theta(i)),'_Structure'];
+        
+        SaveNamePrefix = [BaseFileName,'Th',num2str(Scan_Theta(i))];
+        FigName1  = [SaveNamePrefix,'_Structure'];
         SaveName1 = [SavePath,'/', FigName1];
-        FigName2  = [BaseFileName,'Th',num2str(Scan_Theta(i)),'_1DSFG'];
+        FigName2  = [SaveNamePrefix,'_SFG_FTIR'];
         SaveName2 = [SavePath,'/', FigName2];
-        FigName3  = [BaseFileName,'Th',num2str(Scan_Theta(i)),'_2DSFG'];
+        FigName3  = [SaveNamePrefix,'_2DSFG'];
         SaveName3 = [SavePath,'/', FigName3];
+        FigName4  = [SaveNamePrefix,'_2DSFG_Diag'];
+        SaveName4 = [SavePath,'/', FigName4];
         
         saveas(hF_Struc  ,SaveName1,'png') 
         saveas(hF_OneDSFG,SaveName2,'png')
         saveas(hF_TwoDSFG,SaveName3,'png')
+        %saveas(hF_2D_Diag,SaveName4,'png')
+
+    end
+    
+    if saveGIF
         close all
     end
 end
-%% Save Frame
-SaveName = [SavePath,'/',BaseFileName];
-FrameName = [SaveName,'Frame_0-360'];
-save(FrameName,'Frame_all') 
 
-%% save gif
-load(FrameName)
-filename = [SaveName,'0-360.gif'];
-DT = 0.5;
+disp('Loop finished...')
 
-for j = 1:length(Scan_Theta)
-    
-    frame = Frame_all(j);
-    im = frame2im(frame);
-    [imind,cm] = rgb2ind(im,256);
-    
-    if j == 1;
-      imwrite(imind,cm,filename,'gif','Loopcount',inf,'DelayTime',DT);
-    else
-      imwrite(imind,cm,filename,'gif','WriteMode','append','DelayTime',DT);
+if saveGIF
+    %% Save Frame
+    SaveName = [SavePath,'/',BaseFileName];
+    FrameName = [SaveName,'Frame_0-360'];
+    save(FrameName,'Frame_all') 
+
+    %% save gif
+    load(FrameName)
+    filename = [SaveName,'0-360.gif'];
+    DT = 0.5;
+
+    for j = 1:length(Scan_Theta)
+
+        frame = Frame_all(j);
+        im = frame2im(frame);
+        [imind,cm] = rgb2ind(im,256);
+
+        if j == 1;
+          imwrite(imind,cm,filename,'gif','Loopcount',inf,'DelayTime',DT);
+        else
+          imwrite(imind,cm,filename,'gif','WriteMode','append','DelayTime',DT);
+        end
+
     end
-
+    disp('GIF saved...')
 end
-%% Plot frame
+    %% Plot frame
 % load('Frame_all_0-360.mat')
 % hF = figure; set(hF,'Position',[207 494 2051 527]);set(gca,'Position',[0,0,1,1]),movie(Frame_all,5,1)
 

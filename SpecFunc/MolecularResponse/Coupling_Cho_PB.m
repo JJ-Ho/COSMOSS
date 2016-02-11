@@ -2,9 +2,10 @@ function Beta = Coupling_Cho_PB(S)
 %% debug
 % clear all
 % 
-% S.N_Residue = 10;
-% S.N_Strand  = 5;
-% S.Num_Modes = S.N_Strand*S.N_Residue;
+% S.N_Residue = 4;
+% S.N_Strand  = 4;
+% S.N_Mode_per_Starnd = S.N_Residue - 1;
+% S.Num_Modes = S.N_Mode_per_Starnd*S.N_Residue;
 
 %% Reassign variable names from StrucInfo
 Num_Modes         = S.Num_Modes;

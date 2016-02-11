@@ -52,18 +52,12 @@ else
     % CVLRSN = CVLRS ./max(abs(CVLRS(:)));
     % contour(GUI_Inputs.FreqRange,GUI_Inputs.FreqRange,CVLRSN,GUI_Inputs.Num_Contour,'LineWidth',2)
     
-    colormap('jet')
-
 end
-
-colorbar
-Amp = max(abs(caxis));
-caxis([-Amp Amp])
 
 % Plot diagonal line
 hold on; plot(FreqRange,FreqRange); hold off
 
-% figure setting 
+%% figure setting 
 hF.Units = 'normalized'; % use normalized scale
 hAx = hF.CurrentAxes;
 hAx.DataAspectRatio = [1,1,1];
@@ -71,6 +65,11 @@ hAx.FontSize = 14;
 hAx.XLabel.String = 'Probe (cm^{-1})';
 hAx.YLabel.String = 'Pump (cm^{-1})';
 
+% Set colorbar
+colormap('jet')
+colorbar
+Amp = max(abs(caxis));
+caxis([-Amp Amp])
 
 if PlotCursor
     % Call pointer

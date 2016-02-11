@@ -231,10 +231,10 @@ end
 %% Conv2D linshape and make figure
 
 CVL = Conv2D(SpectraGrid,GUI_Inputs);
-
+CVL.FilesName = Structure.FilesName; % pass filesname for figure title
 % Make figure
 % Plot2DIR(CVL,FreqRange,H,Mu_Ex,Daig_Cut)
-Plot2DIR(CVL,H,Mu_Ex,GUI_Inputs);
+Plot2DIR(CVL,GUI_Inputs);
 
 %% update TwoDIR_Response into guidata
 TwoDIR = Response;

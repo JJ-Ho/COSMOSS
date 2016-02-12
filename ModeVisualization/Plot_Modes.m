@@ -121,7 +121,7 @@ Ex_Mu_Int   = sqrt(sum(Ex_Mu.^2,2));
 
 Ex_Alpha    = squeeze(OneDSFG.Alpha.Trans_Ex(1,2:end,:));
 Ex_Alpha_ZZ = Ex_Alpha(:,9);
-Ex_Alpha_Tr = sum(Ex_Alpha(:,[1,5,9]),2);
+Ex_Alpha_Tr = sum(abs(Ex_Alpha(:,[1,5,9])),2); % take trace of abosolute value!
 
 Sig_Z_1D     =  Ex_Mu_Z    .*Ex_Alpha_ZZ;
 Sig_Z_2D     = (Ex_Mu_Z.^3).*Ex_Alpha_ZZ;
@@ -244,10 +244,9 @@ end
 %% plot Raman tensors
 if Plot_Raman
     N_mesh   = 20;
-    F_Color = [204,152,255]./255;
     if Normalize
         % normalize to unit vector for direction comparison
-        Alpha_Tr = sum(Alpha(:,[1,5,9]),2);
+        Alpha_Tr = sum(abs(Alpha(:,[1,5,9])),2);
         Alpha = bsxfun(@rdivide,Alpha,Alpha_Tr);
     end
 

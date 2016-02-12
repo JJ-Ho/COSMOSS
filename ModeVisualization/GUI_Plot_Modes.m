@@ -29,9 +29,9 @@ set(MainLayout,'Heights',[-1,120,25,25])
 
 %% ModeListPanel
 ModeList = [0,0,0];
-cnames  = {'Index','Freq.','Sig Norm','Mu Int','Tr[A]' ,'Sig ZZZ','Mu z','A zz'};
-cformat = {'short', 'bank',    'bank',  'bank',  'bank',   'bank','bank','bank'};
-cwidth  = {     40,     50,        60,      50,      50,       50,    50,    50};
+cnames  = {'Index','Freq.','Norm 1D','Norm 2D','Mu Int','Tr[A]' ,'S_Z 1D','S_Z 2D','Mu z','A zz'};
+cformat = {'short', 'bank',   'bank',   'bank',  'bank',  'bank',  'bank',  'bank','bank','bank'};
+cwidth  = {     40,     50,       60,       60,      50,      50,      50,      60,    50,    50};
 
 % cformat = {'short','bank' ,'short'   ,'short' ,'short' ,'short'  ,'short','short'};
 % cwidth  = {     40,     50,'auto'    ,'auto'  ,'auto'  ,'auto'   ,'auto' ,'auto' };

@@ -157,29 +157,34 @@ for i = 1:N_Residue
 end
 
 AtomName_1strand = reshape(AtomName_1strand',[],1);
-N_Atom_per_strand = length(AtomName_1strand);
-%% substitute the last N and CA to O and H on C terminus
+%% substitute the last N and CA to O and H on C terminus for the first strand
 Ind_H_1strand = length(AtomName_1strand);
 Ind_O_1strand = length(AtomName_1strand)-1;
 AtomName_1strand{Ind_O_1strand} = 'O';
 AtomName_1strand{Ind_H_1strand} = 'H';
 
-Ind_H = Ind_H_1strand:N_Atom_per_strand:N_Strand*N_Atom_per_strand;
-Ind_O = Ind_O_1strand:N_Atom_per_strand:N_Strand*N_Atom_per_strand-1;
 %% Define flipping center for the fliping operation in creating antiparallel betasheet
 if mod(N_Residue,2)
     % N_Residue is odd, but number of amide mode is even
-    Ind_Center_AmideI = (N_Residue-1)/2+1;
+    Ind_Center_AmideI = (N_Residue-1)/2;
+    
+    COF_O1_XYZ = XYZ_1strand(Ind_Center_AmideI  ,:,2);
+    COF_O2_XYZ = XYZ_1strand(Ind_Center_AmideI+1,:,2);
+    COF_N1_XYZ = XYZ_1strand(Ind_Center_AmideI  ,:,3);
+    COF_N2_XYZ = XYZ_1strand(Ind_Center_AmideI+1,:,3);
+    COF_V = (COF_O1_XYZ + COF_O2_XYZ + COF_N1_XYZ + COF_N2_XYZ)./4;
+    COF   = reshape(COF_V,1,3,1);
+
 else
     % N_Residue is even, but number of amide mode is odd
     Ind_Center_AmideI = (N_Residue)/2;
+    
+    COF_C_XYZ = XYZ_1strand(Ind_Center_AmideI,:,1);
+    COF_N_XYZ = XYZ_1strand(Ind_Center_AmideI,:,3);
+    COF_V = (COF_C_XYZ + COF_N_XYZ)./2;
+    COF   = reshape(COF_V,1,3,1);
 end
 
-COF_C_XYZ = XYZ_1strand(Ind_Center_AmideI,:,1);
-COF_N_XYZ = XYZ_1strand(Ind_Center_AmideI,:,3);
-COF_V = (COF_C_XYZ + COF_N_XYZ)./2;
-COF   = reshape(COF_V,1,3,1);
-    
 % move the 1st strand's COF to origin of lab fram
 XYZ_1strand_COF = bsxfun(@minus,XYZ_1strand,COF);
 
@@ -204,19 +209,47 @@ AtomName = cell(N_Atom_1strand,N_Strand);
 AtomName(:,1)= AtomName_1strand;
 
 if strcmp(SheetType,'Anti')
-    Flip_Sign = -1;
+    APB_Flag = 1;
     SheetTypeString = 'APB';
 else
-    Flip_Sign = 1;
+    APB_Flag = 0;
     SheetTypeString = 'PB';
 end
 
 TwistV = TwistV/180*pi; % unit raidus
 for j = 2:N_Strand
     
-    % flip strand if Anti-parallel
-    Flip_V = [Flip_Sign^(j-1),1,1];
-    XYZ_j_flip = bsxfun(@times,XYZ_1strand_COF,Flip_V);
+    if APB_Flag
+        if mod(N_Residue,2)
+        % Rotate strand around Y axis for APB with odd number of strand
+            XYZ_j_tmp1 = (Ry((j-1)*pi) * XYZ_1strand_COF')';
+        else
+        % flip X to -X of strand for APB with even number of strand
+            Flip_V = [(-1)^(j-1),1,1];
+            XYZ_j_tmp1 = bsxfun(@times,XYZ_1strand_COF,Flip_V);
+        end
+        
+        if mod(j-1,2)
+            % Flip the sequence of index so the numbering of residue will all
+            % strat from left to right
+            XYZ_j_tmp2 = reshape(XYZ_j_tmp1,4,[],3);
+            XYZ_j_tmp3 = flip(XYZ_j_tmp2,2);
+            XYZ_j_flip = reshape(XYZ_j_tmp3,[],3);
+
+            % Flip the atom name accordingly 
+            AtomName_1strand_tmp1 = reshape(AtomName_1strand,4,[]);
+            AtomName_1strand_tmp2 = flip(AtomName_1strand_tmp1,2);
+            AtomName_1strand_j    = reshape(AtomName_1strand_tmp2,[],1);
+        else 
+            XYZ_j_flip = XYZ_j_tmp1;
+            AtomName_1strand_j = AtomName_1strand;
+        end
+          
+    else 
+        % for PB doing notheing here
+        XYZ_j_flip = XYZ_1strand_COF; 
+        AtomName_1strand_j = AtomName_1strand;
+    end
     
     % twist strand
     TwistM = (Rx(TwistV(1))*Ry(TwistV(2))*Rz(TwistV(3)) )^(j-1);
@@ -226,12 +259,20 @@ for j = 2:N_Strand
     XYZ(:,j,:) = bsxfun(@plus, XYZ_j_flip_tw, (j-1)*TransV);  
     
     % Save Atome name for each strand
-    AtomName(:,j)= AtomName_1strand;
+    AtomName(:,j)= AtomName_1strand_j;
+    
+
 end
 
 % reshape
 AtomName = reshape(AtomName,[],1);
 XYZ      = reshape(XYZ,[],3);
+
+%% Retrieve O and H index of C terminus for molecule plotting
+Num_Atoms = length(AtomName);
+Atoms_Array = 1:Num_Atoms;
+Ind_H = Atoms_Array(strcmp(AtomName,'H'));
+Ind_O = Ind_H -1;
 
 %% Formating output coordinate
 Output.Num_Atoms = length(AtomName);

@@ -2,7 +2,7 @@ function Beta = Coupling_Cho_APB(S)
 %% debug
 % clear all
 % 
-% S.N_Residue = 10;
+% S.N_Residue = 11;
 % S.N_Strand  = 5;
 % S.N_Mode_per_Starnd = S.N_Residue - 1;
 % S.Num_Modes = S.N_Strand*S.N_Mode_per_Starnd;
@@ -97,15 +97,27 @@ Sub_Left_Direct  = StrandDirection(Sub_Left);
 Sub_Right_Direct = StrandDirection(Sub_Right);
 
 %% ap1
-Pattern_ap1   = bsxfun(@times,ones(size(Sub_Left)),[-1,1]);
-Match_Ind_ap1 = all(eq(Pattern_ap1,Sub_Left_Direct),2);
-Sub_ap1 = Sub_Left(Match_Ind_ap1,:);
+Pattern_ap1_L   = bsxfun(@times,ones(size(Sub_Left)),[-1,1]);
+Match_Ind_ap1_L = all(eq(Pattern_ap1_L,Sub_Left_Direct),2);
+Sub_ap1_L = Sub_Left(Match_Ind_ap1_L,:);
+
+Pattern_ap1_R   = bsxfun(@times,ones(size(Sub_Right)),[1i,-1i]);
+Match_Ind_ap1_R = all(eq(Pattern_ap1_R,Sub_Right_Direct),2);
+Sub_ap1_R = Sub_Right(Match_Ind_ap1_R,:);
+
+Sub_ap1 = [Sub_ap1_L;Sub_ap1_R];
 Ind_ap1 = sub2ind(size(Beta),Sub_ap1(:,1),Sub_ap1(:,2));
 
 %% ap2
-Pattern_ap2   = bsxfun(@times,ones(size(Sub_Right)),[-1i,1i]);
-Match_Ind_ap2 = all(eq(Pattern_ap2,Sub_Right_Direct),2);
-Sub_ap2 = Sub_Right(Match_Ind_ap2,:);
+Pattern_ap2_R   = bsxfun(@times,ones(size(Sub_Right)),[-1i,1i]);
+Match_Ind_ap2_R = all(eq(Pattern_ap2_R,Sub_Right_Direct),2);
+Sub_ap2_R = Sub_Right(Match_Ind_ap2_R,:);
+
+Pattern_ap2_L   = bsxfun(@times,ones(size(Sub_Left)),[1,-1]);
+Match_Ind_ap2_L = all(eq(Pattern_ap2_L,Sub_Left_Direct),2);
+Sub_ap2_L = Sub_Left(Match_Ind_ap2_L,:);
+
+Sub_ap2 = [Sub_ap2_L;Sub_ap2_R];
 Ind_ap2 = sub2ind(size(Beta),Sub_ap2(:,1),Sub_ap2(:,2));
 
 %% hh

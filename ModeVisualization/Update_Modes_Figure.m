@@ -1,4 +1,4 @@
-function Output = Update_Modes_Figure(hF,GUI_Inputs, Structure, OneDSFG, hModel)
+function Output = Update_Modes_Figure(hF,GUI_Inputs, Structure, OneDSFG)
 %% Inputs parser
 GUI_Inputs_C      = fieldnames(GUI_Inputs);
 GUI_Inputs_C(:,2) = struct2cell(GUI_Inputs);
@@ -51,6 +51,10 @@ EigneVec_Ind   = INPUT.Results.EigneVec_Ind  ;
 
 
 %% Generate distinguisable colors for modes
+if Plot_EigenVec
+    Loc_Ind = 1:Structure.Num_Modes;
+end
+
 N_Loc_Mode = length(Loc_Ind);
 N_Ex_Mode  = length(Ex_Ind );
 Total_N_Plot_Modes = N_Loc_Mode + N_Ex_Mode;
@@ -68,9 +72,9 @@ Ex_Mode_colors  = Mode_colors(N_Loc_Mode+1:Total_N_Plot_Modes,:);
 %% Calculate the exciton center
 Center_Loc = Structure.center;
 
-EigVecM   = OneDSFG.H.Sort_Ex_V;
-EigVecM   = EigVecM(2:end,2:end).^2; % get ride of ground state
-Center_Ex = EigVecM * Center_Loc;
+EigVecM   = OneDSFG.H.Sort_Ex_V(2:end,2:end); % get ride of ground state
+EigVecM2  = EigVecM.^2; 
+Center_Ex = EigVecM2 * Center_Loc;
 
 %% Retreive Axes from input figure with molecule plotted 
 hAx = findobj(hF,'type','axes');
@@ -78,11 +82,18 @@ hold on
 
     %% Plot local modes
     if Plot_Loc
-        Center_Loc = Center_Loc(Loc_Ind,:);
-        Mu_Loc     = squeeze(OneDSFG.Mu.   Trans_Loc(1,Loc_Ind+1,:)); % shift by 1 to avoid ground state
-        Alpha_Loc  = squeeze(OneDSFG.Alpha.Trans_Loc(1,Loc_Ind+1,:));
+        
+        N_Plot_Mode = length(Loc_Ind);
+        Center_Loc  = Center_Loc(Loc_Ind,:);
+        Mu_Loc      = squeeze(OneDSFG.Mu.   Trans_Loc(1,Loc_Ind+1,:)); % shift by 1 to avoid ground state
+        Alpha_Loc   = squeeze(OneDSFG.Alpha.Trans_Loc(1,Loc_Ind+1,:));
 
+        if Plot_EigenVec
+            Mu_Loc = bsxfun(@times,Mu_Loc,EigVecM(:,EigneVec_Ind));
+        end
+        
         Plot_Mu_Alpha(hAx,...
+                      N_Plot_Mode,...
                       Center_Loc,...
                       Mu_Loc,...
                       Alpha_Loc,...
@@ -96,11 +107,13 @@ hold on
 
     %% Plot Exciton modes
     if Plot_Ex
-        Center_Ex = Center_Ex(Ex_Ind,:);
-        Mu_Ex     = squeeze(OneDSFG.Mu.   Trans_Ex(1,Ex_Ind+1,:)); % shift by 1 to avoid ground state
-        Alpha_Ex  = squeeze(OneDSFG.Alpha.Trans_Ex(1,Ex_Ind+1,:));
-
+        N_Plot_Mode = length(Ex_Ind);
+        Center_Ex   = Center_Ex(Ex_Ind,:);
+        Mu_Ex       = squeeze(OneDSFG.Mu.   Trans_Ex(1,Ex_Ind+1,:)); % shift by 1 to avoid ground state
+        Alpha_Ex    = squeeze(OneDSFG.Alpha.Trans_Ex(1,Ex_Ind+1,:));
+        
         Plot_Mu_Alpha(hAx,...
+                      N_Plot_Mode,...
                       Center_Ex,...
                       Mu_Ex,...
                       Alpha_Ex,...
@@ -113,6 +126,30 @@ hold on
     end
 
     %% Plot Mixing coefficients
+    if Plot_EigenVec
+       Mix_Coeft  = EigVecM(:,EigneVec_Ind);
+       [X0,Y0,Z0] = sphere;
+       for k = 1:Structure.Num_Modes
+           
+           R_Scaling = 3;
+           RR   = abs(Mix_Coeft(k)) .* R_Scaling;
+           Sign = sign(Mix_Coeft(k));
+           switch Sign
+               case 1
+                   F_Color = [1,0,0];
+               case -1
+                   F_Color = [0,0,1];
+           end
+           
+           surf(hAx,...
+                RR.*X0 + Center_Loc(k,1),...
+                RR.*Y0 + Center_Loc(k,2),...
+                RR.*Z0 + Center_Loc(k,3),...
+                'FaceColor',F_Color,...
+                'FaceAlpha',0.5,...
+                'LineStyle','none')
+       end
+    end
     
 hold off
 
@@ -125,16 +162,12 @@ Output.Loc_Ind = Loc_Ind;
 Output.Ex_Ind  = Ex_Ind;
 
 
-function Plot_Mu_Alpha(hAx,Center,Mu,Alpha,Mode_colors,Plot_TDV,Scale_TDV,Plot_Raman,Scale_Raman,Normalize)
-
-N_Mode = size(Mu,1);
-
+function Plot_Mu_Alpha(hAx,N_Plot_Mode,Center,Mu,Alpha,Mode_colors,Plot_TDV,Scale_TDV,Plot_Raman,Scale_Raman,Normalize)
 % permute the matix dimension for spectial case
-if N_Mode == 1
+if N_Plot_Mode == 1
     Mu    = Mu';
     Alpha = Alpha';
 end
-
 
 % Plot Transition dipoles
 if Plot_TDV
@@ -144,7 +177,7 @@ if Plot_TDV
         Mu = bsxfun(@rdivide,Mu,Mu_Loc_Int);
     end
     Mu_Loc_S = Scale_TDV .* Mu; % Scale TDV vector in plot 
-    for j = 1: N_Mode
+    for j = 1: N_Plot_Mode
         quiver3(hAx,...
                 Center(j,1),Center(j,2),Center(j,3),...
                 Mu_Loc_S(j,1),Mu_Loc_S(j,2),Mu_Loc_S(j,3),0,...
@@ -162,7 +195,7 @@ if Plot_Raman
         Alpha = bsxfun(@rdivide,Alpha,Alpha_Loc_Tr);
     end
 
-    for i = 1: N_Mode
+    for i = 1: N_Plot_Mode
         RamanM_Loc = reshape(Alpha(i,:),3,3);
         plot_Raman(hAx,RamanM_Loc,Center(i,:),Scale_Raman,N_mesh,Mode_colors(i,:))
     end

@@ -141,7 +141,7 @@ hModel     = handles.hModel;
 hF = hFunc_Model('PlotMolecule',hModel,eventdata,guidata(hModel));
 
 %% Call Update Figure function
-Fig_Output = Update_Modes_Figure(hF, GUI_Inputs, Structure, OneDSFG, hModel);
+Fig_Output = Update_Modes_Figure(hF, GUI_Inputs, Structure, OneDSFG);
 
 %% update handles
 handles.hF      = hF;

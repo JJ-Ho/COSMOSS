@@ -127,8 +127,12 @@ end
 handles.Structure = Structure;
 guidata(hObject,handles)
 
-function PlotMolecule(hObject, eventdata, handles)
-PlotXYZfiles_Acid(handles.Structure);
+function hF = PlotMolecule(hObject, eventdata, handles)
+%% Read GUI variables
+GUI_Struc = handles.GUI_Struc;
+GUI_Inputs = ParseGUI_TCO(GUI_Struc);
+
+hF = PlotXYZfiles_Acid(handles.Structure,GUI_Inputs);
 
 function PlotModes(hObject, eventdata, handles)
 Plot_Modes(handles.hModel);

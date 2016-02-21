@@ -10,3 +10,7 @@ O.NLFreq  = str2double(get(hGUI.NLFreq ,'String'));
 O.LFreq   = str2double(get(hGUI.LFreq  ,'String'));
 O.Anharm  = str2double(get(hGUI.Anharm ,'String'));
 O.L_Index =    str2num(get(hGUI.L_Index,'String'));
+
+% For molecule ploting ----------------------------------------------------
+O.Plot_Atoms  = get(hGUI.Plot_Atoms ,'Value' );
+O.Plot_Bonds  = get(hGUI.Plot_Bonds ,'Value' );

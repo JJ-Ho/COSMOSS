@@ -22,7 +22,7 @@ function varargout = Model_Betasheet_AmideI(varargin)
 
 % Edit the above text to modify the response to help Model_Betasheet_AmideI
 
-% Last Modified by GUIDE v2.5 07-Feb-2016 16:17:11
+% Last Modified by GUIDE v2.5 20-Feb-2016 16:34:09
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 0;
@@ -148,8 +148,12 @@ guidata(hObject,handles)
 
 disp('Structure file generated!')
 
-function PlotMolecule(hObject, eventdata, handles)
-Plot_Betasheet_AmideI(handles.Structure);
+function hF = PlotMolecule(hObject, eventdata, handles)
+% Read GUI variables
+GUI_Struc  = handles.GUI_Struc;
+GUI_Inputs = ParseGUI_Betasheet(GUI_Struc);
+
+hF = Plot_Betasheet_AmideI(handles.Structure,GUI_Inputs);
 
 function PlotModes(hObject, eventdata, handles)
 Plot_Modes(handles.hModel);

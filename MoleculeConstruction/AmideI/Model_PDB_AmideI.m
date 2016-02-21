@@ -135,8 +135,6 @@ guidata(hObject,handles)
 set(handles.GUI_Struc.PDB_Name,'String',FilesName)
 UpdateStructure(hObject, eventdata, handles)
 
-
-
 function UpdateStructure(hObject, eventdata, handles)
 %% Read GUI variables
 GUI_Struc  = handles.GUI_Struc;
@@ -172,8 +170,11 @@ guidata(hObject,handles)
 
 disp('Structure file generated!')
 
-function PlotMolecule(hObject, eventdata, handles)
-PlotXYZfiles_AmideI(handles.Structure)
+function hF = PlotMolecule(hObject, eventdata, handles)
+GUI_Struc  = handles.GUI_Struc;
+GUI_Inputs = ParseGUI_AmideI(GUI_Struc);
+
+hF = PlotXYZfiles_AmideI(handles.Structure,GUI_Inputs);
 
 function PlotModes(hObject, eventdata, handles)
 Plot_Modes(handles.hModel);

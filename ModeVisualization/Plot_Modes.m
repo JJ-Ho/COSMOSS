@@ -110,159 +110,43 @@ else
 end
 
 Structure = GUI_Data_hModel.Structure;
-OneDSFG = OneDSFG_Main(Structure,MainGUI_Inputs);
-
-Ex_Freq     = OneDSFG.H.Sort_Ex_Freq(2:end);
-Num_Ex_Mode = length(Ex_Freq);
-Ex_Ind      = (1:Num_Ex_Mode)';
-Ex_Mu       = squeeze(OneDSFG.Mu.Trans_Ex(1,2:end,:));
-Ex_Mu_Z     = Ex_Mu(:,3);
-Ex_Mu_Int   = sqrt(sum(Ex_Mu.^2,2));
-
-Ex_Alpha    = squeeze(OneDSFG.Alpha.Trans_Ex(1,2:end,:));
-Ex_Alpha_ZZ = Ex_Alpha(:,9);
-Ex_Alpha_Tr = sum(abs(Ex_Alpha(:,[1,5,9])),2); % take trace of abosolute value!
-
-Sig_Z_1D     =  Ex_Mu_Z    .*Ex_Alpha_ZZ;
-Sig_Z_2D     = (Ex_Mu_Z.^3).*Ex_Alpha_ZZ;
-
-Norm_1D    =  Ex_Mu_Int    .*Ex_Alpha_Tr;
-Norm_2D    = (Ex_Mu_Int.^3).*Ex_Alpha_Tr;
-
-% diaplay mode properties
-Mode_List = [Ex_Ind,...
-             Ex_Freq,...
-             Norm_1D,...
-             Norm_2D,...
-             Ex_Mu_Int,...
-             Ex_Alpha_Tr,...
-             Sig_Z_1D,...
-             Sig_Z_2D,...
-             Ex_Mu_Z,...
-             Ex_Alpha_ZZ,...
-             ];
+Modes     = Update_Modes_Table(Structure, MainGUI_Inputs);
 
 %% Update handles structure
-handles.hMain          = GUI_Data_hModel.hMain;
+handles.OneDSFG        = Modes.OneDSFG;
+handles.ModeList       = Modes.ModeList;
 handles.Structure      = Structure;
-handles.MianGUI_Inputs = MainGUI_Inputs;
-handles.OneDSFG        = OneDSFG;
+handles.hMain          = GUI_Data_hModel.hMain;
+% handles.MianGUI_Inputs = MainGUI_Inputs;
 guidata(hObject, handles);
 
 % update the list on hPlot_Exciton GUI
-set(handles.GUI_Modes.ModeList,'Data',Mode_List)
+set(handles.GUI_Modes.ModeList,'Data',Modes.ModeList)
 
 % call sorting to sort table with the same GUI setting
 uitable_SortCallback(hObject, eventdata, handles)
 
 function Update_Figure(hObject, eventdata, handles)
-%% Re-assign variable names of GUI Inputs
-GUI_handle  = handles.GUI_Modes;
-Mode_Ind    = str2num(GUI_handle.Mode_Ind.String);
-Mode_Type   = GUI_handle.Mode_Type.Value;
-Plot_TDV    = GUI_handle.Plot_TDV.Value;
-Scale_TDV   = str2double(GUI_handle.Scale_TDV.String);
-Plot_Raman  = GUI_handle.Plot_Raman.Value;
-Scale_Raman = str2double(GUI_handle.Scale_Raman.String);
-Normalize   = GUI_handle.Normalize.Value;
-
 %% Use Update Modes to update the structure and the corresponding Mu & Alpha 
 Update_Modes(hObject, eventdata, handles)
 handles = guidata(hObject);
 
-Structure = handles.Structure;
-OneDSFG   = handles.OneDSFG;
+GUI_Inputs = ParseGUI_Modes(handles);
+Structure  = handles.Structure;
+OneDSFG    = handles.OneDSFG;
+hModel     = handles.hModel;
 
-%% Calculate the exciton center
-Center_Loc = Structure.center;
+%% Draw molecule by calling the PlotMolecule function in each model
+[hFunc_Model,~,~] = StructureModel(Structure.StructModel);
+hF = hFunc_Model('PlotMolecule',hModel,eventdata,guidata(hModel));
 
-EigVecM   = OneDSFG.H.Sort_Ex_V;
-EigVecM   = EigVecM(2:end,2:end).^2; % get ride of ground state
-Center_Ex = EigVecM * Center_Loc;
-
-%% Switch type of plotting mode
-
-Num_Plot_Modes = length(Mode_Ind);
-
-switch Mode_Type
-    case 1
-        Center = Center_Loc(Mode_Ind,:);
-        Mu     = squeeze(OneDSFG.Mu.   Trans_Loc(1,Mode_Ind+1,:)); % shift by 1 to avoid ground state
-        Alpha  = squeeze(OneDSFG.Alpha.Trans_Loc(1,Mode_Ind+1,:));
-    case 2
-        Center = Center_Ex(Mode_Ind,:);
-        Mu     = squeeze(OneDSFG.Mu.   Trans_Ex(1,Mode_Ind+1,:)); % shift by 1 to avoid ground state
-        Alpha  = squeeze(OneDSFG.Alpha.Trans_Ex(1,Mode_Ind+1,:));
-end
-
-% permute the matix dimension for spectial case
-if Num_Plot_Modes == 1
-    Mu    = Mu';
-    Alpha = Alpha';
-end
-
-%% Plot molecule
-StructModel = Structure.StructModel;
-
-if eq(StructModel,5)
-    GUI_Data_Comb2  = guidata(handles.hModel);
-    GUI_Struc_Comb2 = GUI_Data_Comb2.GUI_Struc;
-    GUI_Inputs      = ParseGUI_Comb2(GUI_Struc_Comb2);
-    hF = PlotComb2(Structure,GUI_Inputs);
-else
-    [~,~,hPlotFunc] = StructureModel(StructModel);
-    hF = feval(hPlotFunc,Structure);
-end
-hAx = findobj(hF,'type','axes');
-hold on
-
-%% Generate distinguisable colors for modes
-if exist('distinguishable_colors','file')
-    UnWanted = [0,0,0;1,1,1;1,0,0;0,1,0;0,0,1];
-    Mode_colors = distinguishable_colors(Num_Plot_Modes,UnWanted);
-else
-    Mode_colors = [255,128,0]./256;
-end
-
-%% Plot Transition dipoles
-if Plot_TDV
-    if Normalize
-        % normalize to unit vector for direction comparison
-        Mu_Int = sqrt(sum(Mu.^2,2));
-        Mu = bsxfun(@rdivide,Mu,Mu_Int);
-    end
-    Mu_S = Scale_TDV .* Mu; % Scale TDV vector in plot 
-    for j = 1: Num_Plot_Modes
-        quiver3(hAx,...
-                Center(j,1),Center(j,2),Center(j,3),...
-                Mu_S(j,1),Mu_S(j,2),Mu_S(j,3),0,...
-                'LineWidth',2,...
-                'Color',Mode_colors(j,:));
-    end
-end
-
-%% plot Raman tensors
-if Plot_Raman
-    N_mesh   = 20;
-    if Normalize
-        % normalize to unit vector for direction comparison
-        Alpha_Tr = sum(abs(Alpha(:,[1,5,9])),2);
-        Alpha = bsxfun(@rdivide,Alpha,Alpha_Tr);
-    end
-
-    for i = 1: Num_Plot_Modes
-        RamanM = reshape(Alpha(i,:),3,3);
-        plot_Raman(hAx,RamanM,Center(i,:),Scale_Raman,N_mesh,Mode_colors(i,:))
-    end
-end
-hold off
-
-%% Figure setting
-Fig_Title = ['Mode #: ' GUI_handle.Mode_Ind.String ];
-hAx.Title.String = Fig_Title;
+%% Call Update Figure function
+Fig_Output = Update_Modes_Figure(hF, GUI_Inputs, Structure, OneDSFG, hModel);
 
 %% update handles
-handles.Mode_Ind = Mode_Ind;
+handles.hF      = hF;
+handles.Loc_Ind = Fig_Output.Loc_Ind;
+handles.Ex_Ind  = Fig_Output.Ex_Ind;
 guidata(hObject,handles)
 
 function uitable_CellSelectionCallback(hObject, eventdata, handles)

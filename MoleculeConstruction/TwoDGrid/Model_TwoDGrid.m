@@ -22,7 +22,7 @@ function varargout = Model_TwoDGrid(varargin)
 
 % Edit the above text to modify the response to help Model_TwoDGrid
 
-% Last Modified by GUIDE v2.5 08-Feb-2016 09:38:03
+% Last Modified by GUIDE v2.5 20-Feb-2016 17:06:11
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 0;
@@ -117,6 +117,8 @@ disp([FilesName,' loaded...'])
 handles.Gaussian_Input = Gaussian_Input;
 guidata(hObject,handles)
 
+%% update structure
+UpdateStructure(hObject, eventdata, handles)
 
 function UpdateStructure(hObject, eventdata, handles)
 %% Construct molecule
@@ -145,8 +147,12 @@ end
 handles.Structure = Structure;
 guidata(hObject,handles)
 
-function PlotMolecule(hObject, eventdata, handles)
-PlotXYZ_Grid(handles.Structure)
+function hF = PlotMolecule(hObject, eventdata, handles)
+%% Construct molecule
+GUI_Struc  = handles.GUI_Struc;
+GUI_Inputs = ParseGUI_TwoDGrid(GUI_Struc);
+
+hF = PlotXYZ_Grid(handles.Structure,GUI_Inputs);
 
 function PlotModes(hObject, eventdata, handles)
 Plot_Modes(handles.hModel);

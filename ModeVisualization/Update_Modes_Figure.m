@@ -155,7 +155,8 @@ hold on
 hold off
 
 %% Figure setting
-Fig_Title = ['Loc #: ', num2str(Loc_Ind ), '; Ex #: ', num2str(Ex_Ind ) ];
+% Fig_Title = ['Loc #: ', num2str(Loc_Ind ), '; Ex #: ', num2str(Ex_Ind ) ];
+Fig_Title = ['Ex #: ', num2str(Ex_Ind ) ];
 hAx.Title.String = Fig_Title;
 
 lightangle(0,90)

@@ -1,6 +1,6 @@
 function GUI = GUI_Plot_Modes(fig)
 %% Pre-setting
-Version = '1.0.1';
+Version = '1.0.2';
 
 %% Add base layout
 MainLayout = uix.VBoxFlex(...
@@ -24,9 +24,9 @@ set(MainLayout,'Heights',[-1,150,30])
 
 %% ModeListPanel
 ModeList = [0,0,0];
-cnames  = {'Index','Freq.','Norm 1D','Norm 2D','Mu Int','Tr[A]' ,'S_Z 1D','S_Z 2D','Mu z','A zz'};
-cformat = {'short', 'bank',   'bank',   'bank',  'bank',  'bank',  'bank',  'bank','bank','bank'};
-cwidth  = {     40,     50,       60,       60,      50,      50,      50,      60,    50,    50};
+cnames  = {'Index','Freq.','Norm 1D','Norm 2D','Mu Int','Norm[A]','S_Z 1D','S_Z 2D', 'Mu z', 'A zz'};
+cformat = {'short', 'bank',   'bank',   'bank',  'bank',   'bank', 'short', 'short','short','short'};
+cwidth  = {     40,     50,       60,       60,      50,       50,      70,      70,     70,     70};
 
 % cformat = {'short','bank' ,'short'   ,'short' ,'short' ,'short'  ,'short','short'};
 % cwidth  = {     40,     50,'auto'    ,'auto'  ,'auto'  ,'auto'   ,'auto' ,'auto' };
@@ -204,7 +204,7 @@ uicontrol('Parent', ButtonBox, ...
         
 uicontrol('Parent',ButtonBox,...
           'Style','text',...
-          'String',['Version: v',Version],...
+          'String',['Plot_Mode Version: v',Version],...
           'HorizontalAlignment','Center',...
           'units', 'normalized',...
           'fontunits', 'point', 'fontsize', 14);        

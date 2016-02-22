@@ -52,15 +52,18 @@ switch Draw_Type
     Disk_Thickness = 0.05;
     Disk_Thickness_Array = ones(2,1);
     
-    PatchFaceAlpha = 0.3;
-    F_Color = zeros(3);
+    PatchFaceAlpha = 1.0;
+    F_Color     = zeros(3);
+    Cir_F_Color = zeros(3);
     for j = 1:3
-        F_Color(j,:) = [1,0,0];
+        F_Color(j,:)     = [1,0,0];
+        Cir_F_Color(j,:) = [1,0,0];
         if eq(sign(SemiAxisL(j)),-1)
             F_Color(j,:) = [0,0,1];
+            Cir_F_Color(j,:) = [0,0,1];
         end
     end
-    Cir_F_Color = zeros(3);
+    
     
     
     [D_x, D_y, D_z] = cylinder(Disk_Thickness_Array,N_mesh);  

@@ -157,7 +157,9 @@ hold off
 %% Figure setting
 Fig_Title = ['Loc #: ', num2str(Loc_Ind ), '; Ex #: ', num2str(Ex_Ind ) ];
 hAx.Title.String = Fig_Title;
-lightangle(-45,30)
+
+lightangle(0,90)
+camlight
 
 %% Output
 Output.Loc_Ind = Loc_Ind;

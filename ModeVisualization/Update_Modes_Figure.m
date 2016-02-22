@@ -89,7 +89,8 @@ hold on
         Alpha_Loc   = squeeze(OneDSFG.Alpha.Trans_Loc(1,Loc_Ind+1,:));
 
         if Plot_EigenVec
-            Mu_Loc = bsxfun(@times,Mu_Loc,EigVecM(:,EigneVec_Ind));
+            Mu_Loc    = bsxfun(@times,   Mu_Loc,EigVecM(:,EigneVec_Ind));
+            Alpha_Loc = bsxfun(@times,Alpha_Loc,EigVecM(:,EigneVec_Ind));
         end
         
         Plot_Mu_Alpha(hAx,...
@@ -128,7 +129,7 @@ hold on
     %% Plot Mixing coefficients
     if Plot_EigenVec
        Mix_Coeft  = EigVecM(:,EigneVec_Ind);
-       [X0,Y0,Z0] = sphere;
+       [X0,Y0,Z0] = sphere(50);
        for k = 1:Structure.Num_Modes
            
            R_Scaling = 3;
@@ -156,6 +157,7 @@ hold off
 %% Figure setting
 Fig_Title = ['Loc #: ', num2str(Loc_Ind ), '; Ex #: ', num2str(Ex_Ind ) ];
 hAx.Title.String = Fig_Title;
+lightangle(-45,30)
 
 %% Output
 Output.Loc_Ind = Loc_Ind;

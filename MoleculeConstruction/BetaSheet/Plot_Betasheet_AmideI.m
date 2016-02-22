@@ -100,9 +100,10 @@ if Plot_Atoms
     plot3(Nitrogen_Pos(:,1),Nitrogen_Pos(:,2),Nitrogen_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','b','MarkerSize',10)
     %     plot3(CarbonA_Pos(:,1) ,CarbonA_Pos(:,2) ,CarbonA_Pos(:,3) ,'LineStyle','none','Marker','o','MarkerFaceColor','k','MarkerSize',10)
 
-    plot3(C_H_Pos(:,1),C_H_Pos(:,2),C_H_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','w','MarkerSize',10)
-    plot3(C_O_Pos(:,1),C_O_Pos(:,2),C_O_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','r','MarkerSize',10)
 end
+
+plot3(C_H_Pos(:,1),C_H_Pos(:,2),C_H_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','w','MarkerSize',10)
+plot3(C_O_Pos(:,1),C_O_Pos(:,2),C_O_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','r','MarkerSize',10)
 
 %% draws bonds
 if Plot_Bonds

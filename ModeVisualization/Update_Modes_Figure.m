@@ -162,6 +162,7 @@ hAx.Title.String = Fig_Title;
 lightangle(0,90)
 camlight
 
+view([-20,16])
 %% Output
 Output.Loc_Ind = Loc_Ind;
 Output.Ex_Ind  = Ex_Ind;

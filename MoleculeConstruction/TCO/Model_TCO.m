@@ -25,7 +25,7 @@ function varargout = Model_TCO(varargin)
 % Last Modified by GUIDE v2.5 01-Oct-2014 16:16:53
 
 % Begin initialization code - DO NOT EDIT
-gui_Singleton = 1;
+gui_Singleton = 0;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
                    'gui_OpeningFcn', @Model_TCO_OpeningFcn, ...
@@ -60,23 +60,29 @@ GUI_Struc = GUI_TCO(hObject);
 handles.GUI_Struc = GUI_Struc; % export GUI handles to handles
 
 % Get Main function's handles
-if nargin > 3
-    hMain = varargin{1};
-    handles.hMain = hMain;
+if nargin > 3    
+    if ishandle(varargin{1})
+       hMain = varargin{1};
+       Data_Main = guidata(hMain);
+
+       handles.hMain = hMain;
+       handles.Data_Main = Data_Main;
+       
+       % Reset Non-Label Frequency, anharmonicity, and F_min/F_Max to fit amideI mode
+       GUI_Main  = Data_Main.GUI_Main;
+       set(GUI_Main.NLFreq ,'String','1700')
+       set(GUI_Main.LFreq  ,'String','1680')
+       set(GUI_Main.Anharm ,'String','20')
+       set(GUI_Main.Beta_NN,'String','5')
+       set(GUI_Main.X_Min  ,'String','1650')
+       set(GUI_Main.X_Max  ,'String','1750')
+    end
+else
+    disp('Running Model_TCO in stand alone mode.')
 end
+
 % Update handles structure
 guidata(hObject, handles);
-
-% Reset Non-Label Frequency, anharmonicity, and F_min/F_Max to fit amideI mode
-Data_Main = guidata(handles.hMain);
-GUI_Main  = Data_Main.GUI_Main;
-
-set(GUI_Main.NLFreq ,'String','1700')
-set(GUI_Main.LFreq  ,'String','1680')
-set(GUI_Main.Anharm ,'String','20')
-set(GUI_Main.Beta_NN,'String','5')
-set(GUI_Main.X_Min  ,'String','1650')
-set(GUI_Main.X_Max  ,'String','1750')
 
 % Generate the default structure
 UpdateStructure(hObject, eventdata, handles)
@@ -96,44 +102,42 @@ function varargout = Model_TCO_OutputFcn(hObject, eventdata, handles)
 varargout{1} = handles.output;
 
 function UpdateStructure(hObject, eventdata, handles)
-
-GUI_Struc = handles.GUI_Struc;
-Data_Main = guidata(handles.hMain);
-GUI_Main  = Data_Main.GUI_Main;
-
 %% Read GUI variables
-Phi_D1        = str2double(get(GUI_Struc.Phi1  ,'String'));
-Psi_D1        = str2double(get(GUI_Struc.Psi1  ,'String'));
-Theta_D1      = str2double(get(GUI_Struc.Theta1,'String'));
-Phi_D2        = str2double(get(GUI_Struc.Phi2  ,'String'));
-Psi_D2        = str2double(get(GUI_Struc.Psi2  ,'String'));
-Theta_D2      = str2double(get(GUI_Struc.Theta2,'String'));
-Displacement  =    str2num(get(GUI_Struc.Trans ,'String'));
-
-NLFreq       = str2double(get(GUI_Main.NLFreq  ,'String'));
-Anharm       = str2double(get(GUI_Main.Anharm  ,'String'));
+GUI_Struc = handles.GUI_Struc;
+GUI_Inputs = ParseGUI_TCO(GUI_Struc);
 
 %% Construct molecule
-Structure = GetAcid('Phi_D1',Phi_D1,...
-                    'Psi_D1',Psi_D1,...
-                    'Theta_D1',Theta_D1,...
-                    'Phi_D2',Phi_D2,...
-                    'Psi_D2',Psi_D2,...
-                    'Theta_D2',Theta_D2,...
-                    'Displacement',Displacement,...
-                    'NLFreq',NLFreq,...
-                    'Anharm',Anharm);
+Structure = GetAcid(GUI_Inputs);
+
+% Export into Structure so it can be passsed around different GUIs
+Structure.StructModel = 1;                
 
 %% Export result to Main guidata
-Data_Main.Structure = Structure;
-guidata(handles.hMain,Data_Main)
+if isfield(handles,'hMain')
+    Data_Main = guidata(handles.hMain);
+    Data_Main.Structure = Structure;
+    guidata(handles.hMain,Data_Main)
+    
+    % change Name of Main GUI to help identifying which Structural Model is
+    % using
+    Model_Name    = handles.hModel.Name;
+    handles.hMain.Name = ['COSMOSS: ' Model_Name];
+end
 
+handles.Structure = Structure;
+guidata(hObject,handles)
 
-function PlotMolecule(hObject, eventdata, handles)
-Data_Main = guidata(handles.hMain);
-PlotXYZfiles_Acid(Data_Main.Structure)
+function hF = PlotMolecule(hObject, eventdata, handles)
+%% Read GUI variables
+GUI_Struc = handles.GUI_Struc;
+GUI_Inputs = ParseGUI_TCO(GUI_Struc);
 
+hF = PlotXYZfiles_Acid(handles.Structure,GUI_Inputs);
 
+function PlotModes(hObject, eventdata, handles)
+Plot_Modes(handles.hModel);
 
-
-
+function Export_Handle_Callback(hObject, eventdata, handles)
+% export handles back to work space
+assignin('base', 'hModel_TCO', handles)
+disp('Updated handles exported!')

@@ -24,8 +24,10 @@ function varargout = COSMOSS(varargin)
 
 % Last Modified by GUIDE v2.5 01-Oct-2014 15:09:19
 
-% initailize the path
-Initialization
+% check if path is added otherwise, initailize the path
+if ~eq(exist('TwoDSFG_Main','file'),2)
+    Initialization
+end
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -59,7 +61,7 @@ if or(nargout,CreatMainGUI)
         [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
     else
         hMain = gui_mainfcn(gui_State, varargin{:});   
-        varargout{1} = hMain;
+        %varargout{1} = hMain;
     end
 else
     gui_mainfcn(gui_State, varargin{:});
@@ -75,7 +77,6 @@ end
 % ------------------------------------------------------------------------
 % End initialization code - DO NOT EDIT
 
-
 % --- Executes just before COSMOSS is made visible.
 function COSMOSS_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
@@ -87,12 +88,11 @@ function COSMOSS_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for COSMOSS
 handles.output = hObject;
 
-% Update handles structure
-guidata(hObject, handles);
-
 % UIWAIT makes COSMOSS wait for user response (see UIRESUME)
 % uiwait(handles.Main);
 
+% Update handles structure
+guidata(hObject, handles);
 
 % --- Outputs from this function are returned to the command line.
 function varargout = COSMOSS_OutputFcn(hObject, eventdata, handles) 
@@ -106,17 +106,13 @@ varargout{1} = handles.output;
 
 function onListSelection(hObject, eventdata, handles)
 
-StructModel = get(handles.GUI_Main.StructListBox,'Value');
-switch StructModel
-    case 1
-        hStructure = Model_TCO(handles.hMain);
-    case 2 
-        hStructure = Model_PDB_AmideI(handles.hMain);
-    case 3
-        
-end
+StructModel          = get(handles.GUI_Main.StructListBox,'Value');
+[hModel,ModelList,~] = StructureModel(StructModel);
 
-handles.Structure.hStructure = hStructure;
+feval(hModel,handles.hMain);
+disp(['COSMOSS using model ' ModelList{StructModel}])
+
+% handles.Structure.hModel = hModel;
 guidata(hObject,handles)
 
 function FTIR_Callback(hObject, eventdata, handles)
@@ -172,7 +168,7 @@ if eq(GUI_Inputs.Sampling,1)
     Num_Modes = Structure.Num_Modes;
     Freq_Orig = Structure.freq;
     
-    StandardDiv = GUI_Inputs.FWHM/2*sqrt(2*log(2));
+    StandardDiv = GUI_Inputs.FWHM/(2*sqrt(2*log(2)));
     P_FlucCorr  = GUI_Inputs.P_FlucCorr/100; % turn percentage to number within 0~1
     
     TSTART = zeros(GUI_Inputs.Sample_Num,1,'uint64');
@@ -235,10 +231,10 @@ end
 %% Conv2D linshape and make figure
 
 CVL = Conv2D(SpectraGrid,GUI_Inputs);
-
+CVL.FilesName = Structure.FilesName; % pass filesname for figure title
 % Make figure
 % Plot2DIR(CVL,FreqRange,H,Mu_Ex,Daig_Cut)
-Plot2DIR(CVL,GUI_Inputs.FreqRange,H,Mu_Ex)
+Plot2DIR(CVL,GUI_Inputs);
 
 %% update TwoDIR_Response into guidata
 TwoDIR = Response;
@@ -272,7 +268,10 @@ if eq(GUI_Inputs.Sampling,1)
     SpecAccuNR2  = zeros(GridSize);
     SpecAccuNR3  = zeros(GridSize);
     
-    StandardDiv = GUI_Inputs.FWHM/2*sqrt(2*log(2));
+    Num_Modes = Structure.Num_Modes;
+    Freq_Orig = Structure.freq;
+    
+    StandardDiv = GUI_Inputs.FWHM/(2*sqrt(2*log(2)));
     P_FlucCorr  = GUI_Inputs.P_FlucCorr/100; % turn percentage to number within 0~1
     
     TSTART = zeros(GUI_Inputs.Sample_Num,1,'uint64');
@@ -281,10 +280,6 @@ if eq(GUI_Inputs.Sampling,1)
     for i = 1:GUI_Inputs.Sample_Num
         
         TSTART(i) = tic;
-        
-        % Sample structure with assigned fluctuation
-        Num_Modes = Structure.Num_Modes;
-        Freq_Orig = Structure.freq;
         
         % Add diagonal disorder
         Correlation_Dice = rand;
@@ -321,46 +316,30 @@ if eq(GUI_Inputs.Sampling,1)
     SpectraGrid.SpecAccuNR3  = SpecAccuNR3  ;
     
     Response = Tmp_Res;
-    
+
     Total_TIME = sum(TIME);
     disp(['Total time: ' num2str(Total_TIME)])
     
 else
     [SpectraGrid,Response] = TwoDSFG_Main(Structure,GUI_Inputs);
 end
-%% Covolution
+
+%% Covolution and make figure
 CVL = Conv2D(SpectraGrid,GUI_Inputs);
-  
-%% Plot 2DSFG spectra
-f = figure;
-set(f,'Unit','normalized') % use normalized scale
-CVLRS = -1.*real(CVL.selected);
-CVLRSN = CVLRS ./max(CVLRS(:));
-contour(GUI_Inputs.FreqRange,GUI_Inputs.FreqRange,CVLRSN,GUI_Inputs.Num_Contour,'LineWidth',2)
-% shading flat
-ax = get(f,'CurrentAxes');
-set(ax,'DataAspectRatio',[1 1 1])
-% Plot diagonal line
-hold on; plot(GUI_Inputs.FreqRange,GUI_Inputs.FreqRange); hold off
 
-% % Set colorbar
-% MAP = custom_cmap(Num_Contour);
-% colormap(MAP)
+CVL.FilesName = Structure.FilesName; % pass filesname for figure title
+Plot2DSFG(CVL,GUI_Inputs);
 
-colorbar
-Amp = max(abs(caxis));
-caxis([-Amp Amp])
-
-% Call pointer
-S.fh = f;
-S.ax = ax;
-Pointer_N(S)
 
 %% update TwoDSFG_Response into guidata
-TwoDSFG = Response;
+TwoDSFG             = Response;
 TwoDSFG.SpectraGrid = SpectraGrid;
+TwoDSFG.CVL         = CVL;
 
 handles.TwoDSFG = TwoDSFG;
 guidata(hObject,handles);
 
-
+function Export_Handle_Callback(hObject, eventdata, handles)
+% export handles back to work space
+assignin('base', 'hMain', handles)
+disp('Updated handles exported!')

@@ -25,7 +25,7 @@ function varargout = Model_PDB_AmideI(varargin)
 % Last Modified by GUIDE v2.5 01-Oct-2014 16:16:53
 
 % Begin initialization code - DO NOT EDIT
-gui_Singleton = 1;
+gui_Singleton = 0;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
                    'gui_OpeningFcn', @Model_PDB_AmideI_OpeningFcn, ...
@@ -56,27 +56,34 @@ function Model_PDB_AmideI_OpeningFcn(hObject, eventdata, handles, varargin)
 handles.output = hObject;
 
 % Call createInterface to create GUI elements
-StrucGUI = GUI_PDB_AmideI(hObject);
-handles.StrucGUI = StrucGUI; % export GUI handles to handles
-
-% Get Main function's handles
-if nargin > 3
-    hMain = varargin{1};
-    handles.hMain = hMain;
-end
-% Update handles structure
-guidata(hObject, handles);
+GUI_Struc = GUI_PDB_AmideI(hObject);
+handles.GUI_Struc = GUI_Struc; % export GUI handles to handles
 
 % Reset Non-Label Frequency, anharmonicity, and F_min/F_Max to fit amideI mode
-Data_Main = guidata(handles.hMain);
-hMainGUI  = Data_Main.GUI_Main;
+% check if run this GUI stand along
+if nargin > 3    
+    if ishandle(varargin{1}) 
+        hMain = varargin{1};
+        Data_Main = guidata(hMain);
+        
+        handles.hMain = hMain;
+        handles.Data_Main = Data_Main;
+        
+        % PRE ASSIGN VALUES TO SUBSTITUTE MAIN GUI VALUES
+        GUI_Main  = Data_Main.GUI_Main;
+        set(GUI_Main.NLFreq ,'String','1644')
+        set(GUI_Main.LFreq  ,'String','1604')
+        set(GUI_Main.Anharm ,'String','12')
+        set(GUI_Main.Beta_NN,'String','0.8')
+        set(GUI_Main.X_Min  ,'String','1550')
+        set(GUI_Main.X_Max  ,'String','1700')
+    end
+else
+    disp('Running Model_PDB_AmideI in stand alone mode.')    
+end
 
-set(hMainGUI.NLFreq ,'String','1644')
-set(hMainGUI.LFreq  ,'String','1604')
-set(hMainGUI.Anharm ,'String','12')
-set(hMainGUI.Beta_NN,'String','0.8')
-set(hMainGUI.X_Min  ,'String','1550')
-set(hMainGUI.X_Max  ,'String','1700')
+% Update handles structure
+guidata(hObject, handles);
 
 % UIWAIT makes Model_PDB_AmideI wait for user response (see UIRESUME)
 % uiwait(handles.Model_PDB_AmideI);
@@ -95,11 +102,11 @@ varargout{1} = handles.output;
 function LoadStructure(hObject, eventdata, handles)
 %% Get pdb file location 
 PWD = pwd;
-PDB_Path = [PWD, '/PDB_files/'];
+PDB_Path = [PWD, '/StructureFiles/PDB/'];
 
-[FilesName,PathName,FilterIndex] = uigetfile({'*.pdb','PDB file'; ...
-                                              '*,*','All Files'},...
-                                             'Select inputs',PDB_Path);
+[FilesName,PathName,~] = uigetfile({'*.pdb','PDB file'; ...
+                                    '*,*','All Files'},...
+                                    'Select inputs',PDB_Path);
 
 %% Parse molecule structure
 
@@ -124,43 +131,59 @@ handles.FilesName = FilesName;
 
 guidata(hObject,handles)
 
+%% Update PDB name and data to GUI
+set(handles.GUI_Struc.PDB_Name,'String',FilesName)
+UpdateStructure(hObject, eventdata, handles)
 
 function UpdateStructure(hObject, eventdata, handles)
-
-StrucGUI  = handles.StrucGUI;
-Data_Main = guidata(handles.hMain);
-hMainGUI  = Data_Main.GUI_Main;
-
 %% Read GUI variables
-Phi_D        = str2double(get(StrucGUI.Phi  ,'String'));
-Psi_D        = str2double(get(StrucGUI.Psi  ,'String'));
-Theta_D      = str2double(get(StrucGUI.Theta,'String'));
-
-NLFreq       = str2double(get(hMainGUI.NLFreq  ,'String'));
-Anharm       = str2double(get(hMainGUI.Anharm  ,'String'));
-
+GUI_Struc  = handles.GUI_Struc;
+GUI_Inputs = ParseGUI_AmideI(GUI_Struc);
+    
 %% Construct molecule
 Num_Atoms = handles.Num_Atoms;
 XYZ       = handles.XYZ;
 AtomName  = handles.AtomName;
 FilesName = handles.FilesName;
 
-Structure = GetAmideI(Num_Atoms,XYZ,AtomName,FilesName,...
-                      'Phi_D',Phi_D,...
-                      'Psi_D',Psi_D,...
-                      'Theta_D',Theta_D,...
-                      'NLFreq',NLFreq,...
-                      'Anharm',Anharm);
+Structure = GetAmideI(Num_Atoms,XYZ,AtomName,FilesName,GUI_Inputs);
+                  
+% Export into Structure so it can be passsed around different GUIs
+Structure.StructModel = 2;
 
 %% Export result to Main guidata
-Data_Main.Structure = Structure;
-guidata(handles.hMain,Data_Main)
 
+% check if this program run stand along
+if isfield(handles,'hMain')
+    Data_Main = guidata(handles.hMain);
+    Data_Main.Structure = Structure;
+    guidata(handles.hMain,Data_Main)
+    
+    % change Name of Main GUI to help identifying which Structural Model is
+    % using
+    Model_Name    = handles.hModel.Name;
+    handles.hMain.Name = ['COSMOSS: ' Model_Name];
+end
 
-function PlotMolecule(hObject, eventdata, handles)
-Data_Main = guidata(handles.hMain);
-PlotXYZfiles_AmideI(Data_Main.Structure)
+handles.Structure = Structure;
+guidata(hObject,handles)
 
+disp('Structure file generated!')
+
+function hF = PlotMolecule(hObject, eventdata, handles)
+GUI_Struc  = handles.GUI_Struc;
+GUI_Inputs = ParseGUI_AmideI(GUI_Struc);
+
+hF = PlotXYZfiles_AmideI(handles.Structure,GUI_Inputs);
+
+function PlotModes(hObject, eventdata, handles)
+Plot_Modes(handles.hModel);
+
+function Export_Handle_Callback(hObject, eventdata, handles)
+% export handles back to work space
+assignin('base', 'hModel_PDB_AmideI', handles)
+disp('Updated handles exported!')
+    
 
 
 

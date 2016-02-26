@@ -56,11 +56,11 @@ switch Draw_Type
     F_Color     = zeros(3);
     Cir_F_Color = zeros(3);
     for j = 1:3
-        F_Color(j,:)     = [1,0,0];
-        Cir_F_Color(j,:) = [1,0,0];
+        F_Color(j,:)     = [1,0,1];
+        Cir_F_Color(j,:) = [1,0,1];
         if eq(sign(SemiAxisL(j)),-1)
-            F_Color(j,:) = [0,0,1];
-            Cir_F_Color(j,:) = [0,0,1];
+            F_Color(j,:) = [0,1,1];
+            Cir_F_Color(j,:) = [0,1,1];
         end
     end
     

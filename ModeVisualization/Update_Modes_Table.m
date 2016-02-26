@@ -10,16 +10,16 @@ Ex_Freq     = OneDSFG.H.Sort_Ex_Freq(2:end);
 Num_Ex_Mode = length(Ex_Freq);
 Ex_Ind      = (1:Num_Ex_Mode)';
 Ex_Mu       = squeeze(OneDSFG.Mu.Trans_Ex(1,2:end,:));
-Ex_Mu_Z     = Ex_Mu(:,3);
+Ex_Mu_z     = Ex_Mu(:,3);
 Ex_Mu_Int   = sqrt(sum(Ex_Mu.^2,2));
 
 Ex_Alpha      = squeeze(OneDSFG.Alpha.Trans_Ex(1,2:end,:));
-Ex_Alpha_ZZ   = Ex_Alpha(:,9);
+Ex_Alpha_zz   = Ex_Alpha(:,9);
 % Ex_Alpha_Norm = sum(abs(Ex_Alpha(:,[1,5,9])),2); % take trace of abosolute value!
 Ex_Alpha_Norm = sqrt(sum(Ex_Alpha(:,:).^2,2)); % Norm defined in Silby's paper: JCP 1992, 97, 5607?5615.
 
-Sig_Z_1D     =  Ex_Mu_Z    .*Ex_Alpha_ZZ;
-Sig_Z_2D     = (Ex_Mu_Z.^3).*Ex_Alpha_ZZ;
+Sig_Z_1D     =  Ex_Mu_z    .*Ex_Alpha_zz;
+Sig_Z_2D     = (Ex_Mu_z.^3).*Ex_Alpha_zz;
 
 Norm_1D    =  Ex_Mu_Int    .*Ex_Alpha_Norm;
 Norm_2D    = (Ex_Mu_Int.^3).*Ex_Alpha_Norm;
@@ -33,8 +33,8 @@ ModeList = [ Ex_Ind,...
              Ex_Alpha_Norm,...
              Sig_Z_1D,...
              Sig_Z_2D,...
-             Ex_Mu_Z,...
-             Ex_Alpha_ZZ,...
+             Ex_Mu_z,...
+             Ex_Alpha_zz,...
              ];
 
 %% Output

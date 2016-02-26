@@ -31,14 +31,21 @@ O.P_Probe      = str2double(get(GUI_Main.P_Probe    ,'String'));
 O.P_Vis2D      = str2double(get(GUI_Main.P_Vis2D    ,'String'));
 O.P_Sig2D      = str2double(get(GUI_Main.P_Sig2D    ,'String'));
 % ------------------------------------------------------------------------
-  
+
+% For MF to LF ------------------------------------------------------------
+O.Avg_Phi      = str2double(get(GUI_Main.Avg_Phi    ,'String'));
+O.Avg_Theta    = str2double(get(GUI_Main.Avg_Theta  ,'String'));
+O.Avg_Psi      = str2double(get(GUI_Main.Avg_Psi    ,'String'));
 O.Avg_Rot      =            get(GUI_Main.Avg_Rot    ,'Value');
 O.Avg_Mirror   =            get(GUI_Main.Avg_Mirror ,'Value');
+% ------------------------------------------------------------------------
 
+% For Figures ------------------------------------------------------------
 O.Num_Contour  = str2double(get(GUI_Main.Num_Contour,'String'));
 O.PlotStick    =            get(GUI_Main.PlotStick  ,'Value');
 O.PlotNorm     =            get(GUI_Main.PlotNorm   ,'Value');
 O.PlotCursor   =            get(GUI_Main.PlotCursor ,'Value');
+% ------------------------------------------------------------------------
 
 %% Variable Need to be processed 
 O.F_Min     = str2double(get(GUI_Main.X_Min,'String'));

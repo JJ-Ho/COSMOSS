@@ -82,9 +82,8 @@ Plot_Bonds = INPUT.Results.Plot_Bonds;
 Plot_Axis  = INPUT.Results.Plot_Axis;
 
 %% Rotate the molecule to Lab frame
-
-XYZ_MF          = Structure.XYZ;
-Center_MF       = Structure.center;
+XYZ_MF    = Structure.XYZ;
+Center_MF = Structure.center;
 
 % Orientation = Orientation/180*pi; % turn to radius unit
 Avg_Phi_R   =   Avg_Phi/180*pi;
@@ -93,7 +92,7 @@ Avg_Theta_R = Avg_Theta/180*pi;
 
 R_MF_LF = R1_ZYZ_0(Avg_Phi_R,Avg_Psi_R,Avg_Theta_R);
 
-XYZ_LF = (R_MF_LF*XYZ_MF')';
+XYZ_LF    = (R_MF_LF*XYZ_MF')';
 Center_LF = (R_MF_LF*Center_MF')';
 
 %% Position info
@@ -154,7 +153,11 @@ hold on
         Lab_Frame = [1,0,0;
                      0,1,0;
                      0,0,1 ];
-        COA = [-3,-3,-3];
+                 
+        Box_Cornor = [hAx.XLim(1),hAx.YLim(1),hAx.ZLim(1)];
+        Box_length = [hAx.XLim(2),hAx.YLim(2),hAx.ZLim(2)] - [hAx.XLim(1),hAx.YLim(1),hAx.ZLim(1)];
+        COA = Box_Cornor + (0.1).*Box_length;
+        
         PlotRotMolFrame(hAx,Lab_Frame,R_MF_LF,COA)
     end
     

@@ -746,6 +746,7 @@ FPanelLayout = uix.VBox('Parent',FigurePanel,...
                       'Value',0,...
                       'units', 'normalized',...
                       'fontunits', 'point', 'fontsize', 14);
+          set(CheckBoxRaw2,'Widths',[-1,200])
                   
         CheckBoxRaw3 = uix.HBox('Parent',CheckBoxLayout,...
                                 'Padding', 3, 'Spacing', 3);              
@@ -843,7 +844,7 @@ FPanelLayout = uix.VBox('Parent',FigurePanel,...
             'fontunits', 'point', 'fontsize', 14);
     set(FHBox,'Widths',[-1,-1])
     
-set(FPanelLayout,'Heights',[-1,120])
+set(FPanelLayout,'Heights',[-1,130])
 
 
 %% output handles

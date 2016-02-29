@@ -41,10 +41,11 @@ O.Avg_Mirror   =            get(GUI_Main.Avg_Mirror ,'Value');
 % ------------------------------------------------------------------------
 
 % For Figures ------------------------------------------------------------
-O.Num_Contour  = str2double(get(GUI_Main.Num_Contour,'String'));
-O.PlotStick    =            get(GUI_Main.PlotStick  ,'Value');
-O.PlotNorm     =            get(GUI_Main.PlotNorm   ,'Value');
-O.PlotCursor   =            get(GUI_Main.PlotCursor ,'Value');
+O.Num_Contour  = str2double(get(GUI_Main.Num_Contour ,'String'));
+O.PlotStick    =            get(GUI_Main.PlotStick   ,'Value');
+O.PlotNorm     =            get(GUI_Main.PlotNorm    ,'Value');
+O.PlotCursor   =            get(GUI_Main.PlotCursor  ,'Value');
+O.IntegralArea =            get(GUI_Main.IntegralArea,'Value');
 % ------------------------------------------------------------------------
 
 %% Variable Need to be processed 

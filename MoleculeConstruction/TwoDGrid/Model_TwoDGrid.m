@@ -104,7 +104,8 @@ disp([FilesName,' loaded...'])
 handles.G09_Path = G09_Path;
 guidata(hObject,handles)
 
-%% update structure
+%% update structure and the file name on GUI
+set(handles.GUI_Struc.G09_FileName,'String',['G09 file: ', FilesName])
 UpdateStructure(hObject, eventdata, handles)
 
 function UpdateStructure(hObject, eventdata, handles)

@@ -105,9 +105,36 @@ hold on
         plot3(Hydrogen_Pos(:,1),Hydrogen_Pos(:,2),Hydrogen_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,1,1],'MarkerSize',10)
     end
     
+    %% figure setting 
+    hAx = findobj(hF,'type','axes');
+
+    LL = 5;
+    Orig_Box = [-LL,LL,-LL,LL,-LL,LL];
+
+    XMin = min( Orig_Box(1),Orig_Box(1)+ Displacement_LF(1));
+    XMax = max( Orig_Box(2),Orig_Box(2)+ Displacement_LF(1));
+    YMin = min( Orig_Box(3),Orig_Box(3)+ Displacement_LF(2));
+    YMax = max( Orig_Box(4),Orig_Box(4)+ Displacement_LF(2));
+    ZMin = min( Orig_Box(5),Orig_Box(5)+ Displacement_LF(3));
+    ZMax = max( Orig_Box(6),Orig_Box(6)+ Displacement_LF(3));
+
+    hAx.XLim = [XMin,XMax];
+    hAx.YLim = [YMin,YMax];
+    hAx.ZLim = [ZMin,ZMax];
+
+    rotate3d on
+    grid on
+
+
+    xlabel('X')
+    ylabel('Y')
+    zlabel('Z')
+
+    view([0,0])
+    
     %% Draw molecular and Lab frame
     if Plot_Axis
-        hAx = findobj(hF,'type','axes');
+        %hAx = findobj(hF,'type','axes');
         Lab_Frame = [1,0,0;
                      0,1,0;
                      0,0,1 ];
@@ -121,29 +148,4 @@ hold on
     
 hold off
 
-%% figure setting 
-hAx = findobj(hF,'type','axes');
 
-LL = 5;
-Orig_Box = [-LL,LL,-LL,LL,-LL,LL];
-
-XMin = min( Orig_Box(1),Orig_Box(1)+ Displacement_LF(1));
-XMax = max( Orig_Box(2),Orig_Box(2)+ Displacement_LF(1));
-YMin = min( Orig_Box(3),Orig_Box(3)+ Displacement_LF(2));
-YMax = max( Orig_Box(4),Orig_Box(4)+ Displacement_LF(2));
-ZMin = min( Orig_Box(5),Orig_Box(5)+ Displacement_LF(3));
-ZMax = max( Orig_Box(6),Orig_Box(6)+ Displacement_LF(3));
-
-hAx.XLim = [XMin,XMax];
-hAx.YLim = [YMin,YMax];
-hAx.ZLim = [ZMin,ZMax];
-
-rotate3d on
-grid on
-
-
-xlabel('X')
-ylabel('Y')
-zlabel('Z')
-
-view([0,0])

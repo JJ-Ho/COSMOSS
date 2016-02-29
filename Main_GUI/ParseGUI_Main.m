@@ -52,19 +52,10 @@ O.F_Min     = str2double(get(GUI_Main.X_Min,'String'));
 O.F_Max     = str2double(get(GUI_Main.X_Max,'String'));
 O.FreqRange = O.F_Min:O.F_Max;
 
-Coupling = get(GUI_Main.Coupling,'Value');
-switch Coupling
-    case 1
-        O.Coupling = 'NN_Mix_TDC';
-    case 2
-        O.Coupling = 'TDC';
-    case 3
-        O.Coupling = 'Cho_PB';
-    case 4 
-        O.Coupling = 'Cho_APB';
-    case 5
-        O.Coupling = 'TDC+Cho_APB';
-end
+% Coupling model
+CouplingModelIndex = get(GUI_Main.CouplingModelIndex,'Value');
+[~,CouplingList]   = Coupling('List','None');
+O.Coupling         = CouplingList{CouplingModelIndex};
 
 LineShape = get(GUI_Main.LineShape,'Value');
 switch LineShape

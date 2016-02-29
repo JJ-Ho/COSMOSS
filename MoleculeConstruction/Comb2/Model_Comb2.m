@@ -22,7 +22,7 @@ function varargout = Model_Comb2(varargin)
 
 % Edit the above text to modify the response to help hModel
 
-% Last Modified by GUIDE v2.5 08-Feb-2016 09:38:47
+% Last Modified by GUIDE v2.5 28-Feb-2016 23:01:03
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 0;
@@ -253,6 +253,8 @@ GUI_Struc = handles.GUI_Struc;
 GUI_Inputs = ParseGUI_Comb2(GUI_Struc);
 
 hF = PlotComb2(handles,GUI_Inputs);
+
+UpdateStructure(hObject, eventdata, handles)
 
 function PlotModes(hObject, eventdata, handles)
 Plot_Modes(handles.hModel);

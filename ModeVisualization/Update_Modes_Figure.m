@@ -91,7 +91,7 @@ Center_Loc_MF = Structure.center(Loc_Ind,:);
 
 EigVecM      = OneDSFG.H.Sort_Ex_V(2:end,2:end); % get ride of ground state
 EigVecM2     = EigVecM.^2;
-Center_Ex_MF = EigVecM2*Center_Loc_MF;
+Center_Ex_MF = EigVecM2*(Structure.center);
 Center_Ex_MF = Center_Ex_MF(Ex_Ind,:);
 
 % Transition dipole

@@ -39,8 +39,32 @@ PlotCursor  = INPUT.Results.PlotCursor;
 %% Main
 hF = figure;
 
-CVLRS = real(CVL.selected);
-contour(FreqRange,FreqRange,CVLRS,Num_Contour,'LineWidth',2)
+
+if strcmp(CVL.Lineshape,'None')
+    % plot stick spectrum
+    imagesc(FreqRange,FreqRange,CVL.selected_No_Conv)
+    set(gca,'Ydir','normal')
+    
+    % Set colorbar
+    colorbar
+    StickC_Map = load('CoolBlack');
+    colormap(StickC_Map.MAP) 
+    Amp = max(abs(CVL.selected_No_Conv(:)));
+    caxis([-Amp,Amp])
+else
+    % plot convoluted spectrum
+    CVLRS = real(CVL.selected);
+    contour(FreqRange,FreqRange,CVLRS,Num_Contour,'LineWidth',2)
+    % Normalization
+    % CVLRSN = CVLRS ./max(abs(CVLRS(:)));
+    % contour(GUI_Inputs.FreqRange,GUI_Inputs.FreqRange,CVLRSN,GUI_Inputs.Num_Contour,'LineWidth',2)
+    
+    % Set colorbar
+    colorbar
+    colormap('jet')    
+    Amp = max(abs(CVLRS(:)));
+    caxis([-Amp,Amp])
+end
 
 % Plot diagonal line
 hold on; plot(FreqRange,FreqRange); hold off
@@ -54,12 +78,6 @@ hAx.XLabel.String = 'Probe (cm^{-1})';
 hAx.YLabel.String = 'Pump (cm^{-1})';
 
 shading flat
-
-% Set colorbar
-colorbar
-colormap('jet')
-Amp = max(abs(caxis));
-caxis([-Amp Amp])
 
 if PlotCursor
     % Call pointer

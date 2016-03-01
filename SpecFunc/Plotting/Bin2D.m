@@ -73,8 +73,8 @@ pumpNR3 = round(NR3(:,1));
 probNR3 = round(NR3(:,3));
 
 %% R1
-[R1waste1 PumpR1Ref]= ndgrid(ones(NumResR1,1),FreqRange);
-[R1waste2 ProbR1Ref]= ndgrid(ones(NumResR1,1),FreqRange);
+[~,PumpR1Ref]= ndgrid(ones(NumResR1,1),FreqRange);
+[~,ProbR1Ref]= ndgrid(ones(NumResR1,1),FreqRange);
 
 PumpR1MinusRef = bsxfun(@plus,PumpR1Ref,pumpR1)'; % since the pump freq is negative
 ProbR1MinusRef = bsxfun(@minus,ProbR1Ref,probR1);
@@ -89,8 +89,8 @@ SpecAccuR1 = PumpR1Logic*ProbAndResponseR1;
 % NormSpecAccuR1 = SpecAccuR1./max(abs(SpecAccuR1(:)));
 
 %% R2
-[R2waste1 PumpR2Ref]= ndgrid(ones(NumResR2,1),FreqRange);
-[R2waste2 ProbR2Ref]= ndgrid(ones(NumResR2,1),FreqRange);
+[~,PumpR2Ref]= ndgrid(ones(NumResR2,1),FreqRange);
+[~,ProbR2Ref]= ndgrid(ones(NumResR2,1),FreqRange);
 
 PumpR2MinusRef = bsxfun(@plus,PumpR2Ref,pumpR2)'; % since the pump freq is negative
 ProbR2MinusRef = bsxfun(@minus,ProbR2Ref,probR2);
@@ -105,8 +105,8 @@ SpecAccuR2 = PumpR2Logic*ProbAndResponseR2;
 % NormSpecAccuR2 = SpecAccuR2./max(abs(SpecAccuR2(:)));
 
 %% R3
-[R3waste1 PumpR3Ref]= ndgrid(ones(NumResR3,1),FreqRange);
-[R3waste2 ProbR3Ref]= ndgrid(ones(NumResR3,1),FreqRange);
+[~,PumpR3Ref]= ndgrid(ones(NumResR3,1),FreqRange);
+[~,ProbR3Ref]= ndgrid(ones(NumResR3,1),FreqRange);
 
 PumpR3MinusRef = bsxfun(@plus,PumpR3Ref,pumpR3)'; % since the pump freq is negative
 ProbR3MinusRef = bsxfun(@minus,ProbR3Ref,probR3);
@@ -121,8 +121,8 @@ SpecAccuR3 = PumpR3Logic*ProbAndResponseR3;
 % NormSpecAccuR3 = SpecAccuR3./max(abs(SpecAccuR3(:)));
 
 %% NR1
-[NR1waste1 PumpNR1Ref]= ndgrid(ones(NumResNR1,1),FreqRange);
-[NR1waste2 ProbNR1Ref]= ndgrid(ones(NumResNR1,1),FreqRange);
+[~,PumpNR1Ref]= ndgrid(ones(NumResNR1,1),FreqRange);
+[~,ProbNR1Ref]= ndgrid(ones(NumResNR1,1),FreqRange);
 
 PumpNR1MinusRef = bsxfun(@minus,PumpNR1Ref,pumpNR1)'; % since the pump freq is positive
 ProbNR1MinusRef = bsxfun(@minus,ProbNR1Ref,probNR1);
@@ -137,8 +137,8 @@ SpecAccuNR1 = PumpNR1Logic*ProbAndResponseNR1;
 % NormSpecAccuNR1 = SpecAccuNR1./max(abs(SpecAccuNR1(:)));
 
 %% NR2
-[NR2waste1 PumpNR2Ref]= ndgrid(ones(NumResNR2,1),FreqRange);
-[NR2waste2 ProbNR2Ref]= ndgrid(ones(NumResNR2,1),FreqRange);
+[~,PumpNR2Ref]= ndgrid(ones(NumResNR2,1),FreqRange);
+[~,ProbNR2Ref]= ndgrid(ones(NumResNR2,1),FreqRange);
 
 PumpNR2MinusRef = bsxfun(@minus,PumpNR2Ref,pumpNR2)'; % since the pump freq is positive
 ProbNR2MinusRef = bsxfun(@minus,ProbNR2Ref,probNR2);
@@ -153,8 +153,8 @@ SpecAccuNR2 = PumpNR2Logic*ProbAndResponseNR2;
 % NormSpecAccuNR2 = SpecAccuNR2./max(abs(SpecAccuNR2(:)));
 
 %% NR3
-[NR3waste1 PumpNR3Ref]= ndgrid(ones(NumResNR3,1),FreqRange);
-[NR3waste2 ProbNR3Ref]= ndgrid(ones(NumResNR3,1),FreqRange);
+[~,PumpNR3Ref]= ndgrid(ones(NumResNR3,1),FreqRange);
+[~,ProbNR3Ref]= ndgrid(ones(NumResNR3,1),FreqRange);
 
 PumpNR3MinusRef = bsxfun(@minus,PumpNR3Ref,pumpNR3)'; % since the pump freq is positive
 ProbNR3MinusRef = bsxfun(@minus,ProbNR3Ref,probNR3);

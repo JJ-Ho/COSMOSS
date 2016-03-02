@@ -10,10 +10,20 @@ Ex_Freq     = OneDSFG.H.Sort_Ex_Freq(2:end);
 Num_Ex_Mode = length(Ex_Freq);
 Ex_Ind      = (1:Num_Ex_Mode)';
 Ex_Mu       = squeeze(OneDSFG.Mu.Trans_Ex(1,2:end,:));
+% permute the matix dimension for spectial case
+if eq(Num_Ex_Mode,1)
+    Ex_Mu     = Ex_Mu';
+end
+
 Ex_Mu_z     = Ex_Mu(:,3);
 Ex_Mu_Int   = sqrt(sum(Ex_Mu.^2,2));
 
 Ex_Alpha      = squeeze(OneDSFG.Alpha.Trans_Ex(1,2:end,:));
+% permute the matix dimension for spectial case
+if eq(Num_Ex_Mode,1)
+    Ex_Alpha     = Ex_Alpha';
+end
+
 Ex_Alpha_zz   = Ex_Alpha(:,9);
 Ex_Alpha_Norm = sqrt(sum(Ex_Alpha(:,:).^2,2)); % Norm defined in Silby's paper: JCP 1992, 97, 5607?5615.
 

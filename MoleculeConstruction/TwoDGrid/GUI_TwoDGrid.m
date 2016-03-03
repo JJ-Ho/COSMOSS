@@ -1,6 +1,6 @@
 function GUI = GUI_TwoDGrid(fig)
 %% Pre-setting
-Version = '1.0.1';
+Version = '1.0.2';
 
 %% Add base layout
 MainLayout = uix.VBoxFlex(...
@@ -223,7 +223,7 @@ TwoDGridPanelLayout = uix.HBox('Parent',TwoDGridPanel,...
         'fontunits', 'point', 'fontsize', 14);
     
     
-set(TwoDGridPanelLayout,'Widths',[60,-2,-2])
+set(TwoDGridPanelLayout,'Widths',[50,120,-1])
 
 %% Labeling panel
 LabelPanelLayout = uix.HBoxFlex('Parent',LabelPanel,...

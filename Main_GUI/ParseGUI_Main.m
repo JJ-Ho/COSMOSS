@@ -8,7 +8,7 @@ O.Beta_NN      = str2double(get(GUI_Main.Beta_NN    ,'String'));
 O.LineWidth    = str2double(get(GUI_Main.LineWidth  ,'String'));
 O.Sampling     =            get(GUI_Main.Sampling   ,'Value');
 O.Sample_Num   = str2double(get(GUI_Main.Sample_Num ,'String'));
-O.FWHM         = str2double(get(GUI_Main.FWHM       ,'String')); 
+O.FWHM         =    str2num(get(GUI_Main.FWHM       ,'String')); 
 O.P_FlucCorr   = str2double(get(GUI_Main.P_FlucCorr ,'String')); 
 
 % For 1D ------------------------------------------------------------------

@@ -168,12 +168,11 @@ if eq(GUI_Inputs.Sampling,1)
     Num_Modes = Structure.Num_Modes;
     Freq_Orig = Structure.freq;
     
-    StandardDiv = GUI_Inputs.FWHM/(2*sqrt(2*log(2)));
+    StandardDiv = GUI_Inputs.FWHM./(2*sqrt(2*log(2)));
     P_FlucCorr  = GUI_Inputs.P_FlucCorr/100; % turn percentage to number within 0~1
     
     TSTART = zeros(GUI_Inputs.Sample_Num,1,'uint64');
     TIME   = zeros(GUI_Inputs.Sample_Num,1);
-    
     
     for i = 1:GUI_Inputs.Sample_Num
         
@@ -183,9 +182,9 @@ if eq(GUI_Inputs.Sampling,1)
         Correlation_Dice = rand;
 
         if Correlation_Dice < P_FlucCorr
-            Fluctuation = StandardDiv.*randn(1,1)*ones(Num_Modes,1);
+            Fluctuation = StandardDiv'.*(randn(1,1).*ones(Num_Modes,1));
         else 
-            Fluctuation = StandardDiv.*randn(Num_Modes,1); 
+            Fluctuation = StandardDiv'.*randn(Num_Modes,1); 
         end
         Structure.freq = Freq_Orig + Fluctuation;
        
@@ -271,7 +270,7 @@ if eq(GUI_Inputs.Sampling,1)
     Num_Modes = Structure.Num_Modes;
     Freq_Orig = Structure.freq;
     
-    StandardDiv = GUI_Inputs.FWHM/(2*sqrt(2*log(2)));
+    StandardDiv = GUI_Inputs.FWHM./(2*sqrt(2*log(2)));
     P_FlucCorr  = GUI_Inputs.P_FlucCorr/100; % turn percentage to number within 0~1
     
     TSTART = zeros(GUI_Inputs.Sample_Num,1,'uint64');
@@ -285,9 +284,9 @@ if eq(GUI_Inputs.Sampling,1)
         Correlation_Dice = rand;
 
         if Correlation_Dice < P_FlucCorr
-            Fluctuation = StandardDiv.*randn(1,1)*ones(Num_Modes,1);
+            Fluctuation = StandardDiv'.*(randn(1,1).*ones(Num_Modes,1));
         else 
-            Fluctuation = StandardDiv.*randn(Num_Modes,1); 
+            Fluctuation = StandardDiv'.*randn(Num_Modes,1); 
         end
         Structure.freq = Freq_Orig + Fluctuation;
         

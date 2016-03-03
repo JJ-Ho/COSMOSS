@@ -46,6 +46,7 @@ O.PlotStick    =            get(GUI_Main.PlotStick   ,'Value');
 O.PlotNorm     =            get(GUI_Main.PlotNorm    ,'Value');
 O.PlotCursor   =            get(GUI_Main.PlotCursor  ,'Value');
 O.IntegralArea =            get(GUI_Main.IntegralArea,'Value');
+O.CMAP_Index   =            get(GUI_Main.CMAP_Index  ,'Value');
 % ------------------------------------------------------------------------
 
 %% Variable Need to be processed 

@@ -12,11 +12,13 @@ INPUT.KeepUnmatched = 1;
 defaultFreqRange   = 1600:1800;
 defaultNum_Contour = 20;
 defaultPlotCursor  = 0;
+defaultCMAP_Index  = 1;
 
 % add Optional inputs / Parameters
 addOptional(INPUT,'FreqRange'  ,defaultFreqRange);
 addOptional(INPUT,'Num_Contour',defaultNum_Contour);
 addOptional(INPUT,'PlotCursor' ,defaultPlotCursor);
+addOptional(INPUT,'CMAP_Index' ,defaultCMAP_Index);
 
 parse(INPUT,GUI_Inputs_C{:});
 
@@ -24,6 +26,7 @@ parse(INPUT,GUI_Inputs_C{:});
 FreqRange   = INPUT.Results.FreqRange;
 Num_Contour = INPUT.Results.Num_Contour;
 PlotCursor  = INPUT.Results.PlotCursor;
+CMAP_Index  = INPUT.Results.CMAP_Index;
 
 %% Main
 hF = figure;
@@ -49,7 +52,8 @@ else
     
     % Set colorbar
     colorbar
-    colormap('jet')    
+    CMAP = SelectColormap(CMAP_Index);
+    colormap(CMAP)    
     Amp = max(abs(CVLRS(:)));
     caxis([-Amp,Amp])
 end

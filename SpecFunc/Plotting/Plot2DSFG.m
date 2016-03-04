@@ -1,4 +1,4 @@
-function hF = Plot2DSFG(CVL,GUI_Inputs)
+function hF = Plot2DSFG(hF,CVL,GUI_Inputs)
 
 %% Inputs parser
 GUI_Inputs_C      = fieldnames(GUI_Inputs);
@@ -29,7 +29,8 @@ PlotCursor  = INPUT.Results.PlotCursor;
 CMAP_Index  = INPUT.Results.CMAP_Index;
 
 %% Main
-hF = figure;
+hAx = findobj(hF,'type','axes');
+cla(hAx)
 
 if strcmp(CVL.Lineshape,'None')
     % plot stick spectrum

@@ -251,6 +251,11 @@ function TwoDSFG_Callback(hObject, eventdata, handles)
 %% Read GUI
 GUI_Inputs = ParseGUI_Main(handles);
 
+DynamicUpdate = handles.GUI_Main.DynamicUpdate.Value;
+if DynamicUpdate
+    hF = figure;
+end
+
 %% Calculate TwoD response
 Structure = handles.Structure;
 
@@ -278,6 +283,12 @@ if eq(GUI_Inputs.Sampling,1)
     
     for i = 1:GUI_Inputs.Sample_Num
         
+        DynamicUpdate = handles.GUI_Main.DynamicUpdate.Value;
+        UpdateStatus  = handles.GUI_Main.UpdateStatus.Value;
+        if and(~eq(i,1), and(eq(DynamicUpdate,1),~eq(UpdateStatus,1)))
+            break
+        end
+        
         TSTART(i) = tic;
         
         % Add diagonal disorder
@@ -303,18 +314,28 @@ if eq(GUI_Inputs.Sampling,1)
         
         TIME(i) = toc(TSTART(i));
         disp(['Run ' num2str(i) ' finished within '  num2str(TIME(i)) '...'])
+        
+        SpectraGrid.Rephasing    = Rephasing    ;
+        SpectraGrid.NonRephasing = NonRephasing ;
+        SpectraGrid.SpecAccuR1   = SpecAccuR1   ;
+        SpectraGrid.SpecAccuR2   = SpecAccuR2   ;
+        SpectraGrid.SpecAccuR3   = SpecAccuR3   ;
+        SpectraGrid.SpecAccuNR1  = SpecAccuNR1  ;
+        SpectraGrid.SpecAccuNR2  = SpecAccuNR2  ;
+        SpectraGrid.SpecAccuNR3  = SpecAccuNR3  ;
+        Response = Tmp_Res;
+        
+        while ~eq(DynamicUpdate,0)
+            CVL = Conv2D(SpectraGrid,GUI_Inputs);
+            CVL.FilesName = [Structure.FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title
+            Plot2DSFG(hF,CVL,GUI_Inputs);
+            drawnow
+            DynamicUpdate = 0;
+        end
+        
     end
     
-    SpectraGrid.Rephasing    = Rephasing    ;
-    SpectraGrid.NonRephasing = NonRephasing ;
-    SpectraGrid.SpecAccuR1   = SpecAccuR1   ;
-    SpectraGrid.SpecAccuR2   = SpecAccuR2   ;
-    SpectraGrid.SpecAccuR3   = SpecAccuR3   ;
-    SpectraGrid.SpecAccuNR1  = SpecAccuNR1  ;
-    SpectraGrid.SpecAccuNR2  = SpecAccuNR2  ;
-    SpectraGrid.SpecAccuNR3  = SpecAccuNR3  ;
     
-    Response = Tmp_Res;
 
     Total_TIME = sum(TIME);
     disp(['Total time: ' num2str(Total_TIME)])
@@ -324,9 +345,10 @@ else
 end
 
 %% Covolution and make figure
+hF_final = figure;
 CVL = Conv2D(SpectraGrid,GUI_Inputs);
 CVL.FilesName = Structure.FilesName; % pass filesname for figure title
-Plot2DSFG(CVL,GUI_Inputs);
+Plot2DSFG(hF_final,CVL,GUI_Inputs);
 
 %% update TwoDSFG_Response into guidata
 TwoDSFG             = Response;

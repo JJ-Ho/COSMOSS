@@ -2,14 +2,16 @@ function O = ParseGUI_Main(handles)
 %% Get GUI inputs
 GUI_Main = handles.GUI_Main;
 
-O.Label_Index  =    str2num(get(GUI_Main.LIndex     ,'String'));
-O.Label_Freq   = str2double(get(GUI_Main.LFreq      ,'String'));
-O.Beta_NN      = str2double(get(GUI_Main.Beta_NN    ,'String'));
-O.LineWidth    = str2double(get(GUI_Main.LineWidth  ,'String'));
-O.Sampling     =            get(GUI_Main.Sampling   ,'Value');
-O.Sample_Num   = str2double(get(GUI_Main.Sample_Num ,'String'));
-O.FWHM         =    str2num(get(GUI_Main.FWHM       ,'String')); 
-O.P_FlucCorr   = str2double(get(GUI_Main.P_FlucCorr ,'String')); 
+O.Label_Index   =    str2num(get(GUI_Main.LIndex       ,'String'));
+O.Label_Freq    = str2double(get(GUI_Main.LFreq        ,'String'));
+O.Beta_NN       = str2double(get(GUI_Main.Beta_NN      ,'String'));
+O.LineWidth     = str2double(get(GUI_Main.LineWidth    ,'String'));
+O.Sampling      =            get(GUI_Main.Sampling     ,'Value');
+O.Sample_Num    = str2double(get(GUI_Main.Sample_Num   ,'String'));
+O.FWHM          =    str2num(get(GUI_Main.FWHM         ,'String')); 
+O.P_FlucCorr    = str2double(get(GUI_Main.P_FlucCorr   ,'String')); 
+O.DynamicUpdate =            get(GUI_Main.DynamicUpdate,'Value');
+O.UpdateStatus  =            get(GUI_Main.UpdateStatus ,'Value');
 
 % For 1D ------------------------------------------------------------------
 O.P_IR         = str2double(get(GUI_Main.P_IR       ,'String'));

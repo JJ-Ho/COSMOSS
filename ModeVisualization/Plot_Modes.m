@@ -136,6 +136,15 @@ Structure  = handles.Structure;
 OneDSFG    = handles.OneDSFG;
 hModel     = handles.hModel;
 
+% Read the Molecule frame to Lab frame orientation from COSMOSS
+hMain = handles.hMain;
+GUI_Data_Main = guidata(hMain);
+GUI_Inputs_Main = ParseGUI_Main(GUI_Data_Main);
+% Pass the MF-LB Eular angles to Plotting function
+GUI_Inputs.Avg_Phi   = GUI_Inputs_Main.Avg_Phi;
+GUI_Inputs.Avg_Theta = GUI_Inputs_Main.Avg_Theta;
+GUI_Inputs.Avg_Psi   = GUI_Inputs_Main.Avg_Psi;
+
 %% Draw molecule by calling the PlotMolecule function in each model
 [hFunc_Model,~,~] = StructureModel(Structure.StructModel);
 hF = hFunc_Model('PlotMolecule',hModel,eventdata,guidata(hModel));

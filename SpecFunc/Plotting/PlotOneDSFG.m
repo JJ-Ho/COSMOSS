@@ -31,36 +31,39 @@ INPUT = inputParser;
 INPUT.KeepUnmatched = 1;
 
 % Default values
-defaultPlotStick   = 1;
-defaultPlotNorm    = 1;
-defaultF_Min       = 1600;
-defaultF_Max       = 1800;
-defaultLineWidth   = 5;
-defaultSignal_Type = 'Hetero';
-defaultLineShape   = 'G';
-defaultPlotCursor  = 0;
+defaultPlotStick    = 1;
+defaultPlotNorm     = 1;
+defaultF_Min        = 1600;
+defaultF_Max        = 1800;
+defaultLineWidth    = 5;
+defaultSignal_Type  = 'Hetero';
+defaultLineShape    = 'G';
+defaultPlotCursor   = 0;
+defaultIntegralArea = 1;
 
 % add Optional inputs / Parameters
-addOptional(INPUT,'PlotStick'  ,defaultPlotStick);
-addOptional(INPUT,'PlotNorm'   ,defaultPlotNorm);
-addOptional(INPUT,'F_Min'      ,defaultF_Min);
-addOptional(INPUT,'F_Max'      ,defaultF_Max);
-addOptional(INPUT,'LineWidth'  ,defaultLineWidth);
-addOptional(INPUT,'Signal_Type',defaultSignal_Type);
-addOptional(INPUT,'LineShape'  ,defaultLineShape);
-addOptional(INPUT,'PlotCursor' ,defaultPlotCursor);
+addOptional(INPUT,'PlotStick'   ,defaultPlotStick);
+addOptional(INPUT,'PlotNorm'    ,defaultPlotNorm);
+addOptional(INPUT,'F_Min'       ,defaultF_Min);
+addOptional(INPUT,'F_Max'       ,defaultF_Max);
+addOptional(INPUT,'LineWidth'   ,defaultLineWidth);
+addOptional(INPUT,'Signal_Type' ,defaultSignal_Type);
+addOptional(INPUT,'LineShape'   ,defaultLineShape);
+addOptional(INPUT,'PlotCursor'  ,defaultPlotCursor);
+addOptional(INPUT,'IntegralArea',defaultIntegralArea);
 
 parse(INPUT,GUI_Inputs_C{:});
 
 % Re-assign variable names
-PlotStick   = INPUT.Results.PlotStick;
-PlotNorm    = INPUT.Results.PlotNorm;
-F_Min       = INPUT.Results.F_Min;
-F_Max       = INPUT.Results.F_Max;
-LineWidth   = INPUT.Results.LineWidth;
-Signal_Type = INPUT.Results.Signal_Type;
-LineShape   = INPUT.Results.LineShape;
-PlotCursor  = INPUT.Results.PlotCursor;
+PlotStick    = INPUT.Results.PlotStick;
+PlotNorm     = INPUT.Results.PlotNorm;
+F_Min        = INPUT.Results.F_Min;
+F_Max        = INPUT.Results.F_Max;
+LineWidth    = INPUT.Results.LineWidth;
+Signal_Type  = INPUT.Results.Signal_Type;
+LineShape    = INPUT.Results.LineShape;
+PlotCursor   = INPUT.Results.PlotCursor;
+IntegralArea = INPUT.Results.IntegralArea;
 
 %% Plot 1DSFG spectra  
 Num_Modes = OneDSFG.Num_Modes;
@@ -154,11 +157,17 @@ else
     title(Title_String,'FontSize',16);    
 end
 
+if IntegralArea
+    % integrate the curve area
+    Area = trapz(spec_range,abs(PlotY));
+    uicontrol(hF,...
+              'style','text',...
+              'Position',[100,100,100,25],...
+              'String',['IA = ' num2str(Area)],...
+              'FontSize',14);
 
-% integrate the curve area
-% Area = trapz(spec_range,abs(PlotY));
-% StickSum = sum(Stick);
-% Title = [Signal_Type_Title, ', IA: ' num2str(Area), ',  Stick sum: ', num2str(StickSum)];
-% title(Title,'FontSize',16);
-
+    % StickSum = sum(Stick);
+    % Title = [Signal_Type_Title, ', IA: ' num2str(Area), ',  Stick sum: ', num2str(StickSum)];
+    % title(Title,'FontSize',16);
+end
 

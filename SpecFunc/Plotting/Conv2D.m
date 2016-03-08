@@ -128,19 +128,26 @@ CVL.Lineshape = LineShape;
 % CVL.NR = fft2(fftshift(lnshpt_N.*(NRt)));
 
 % frequency domain 2D convolution
-CVL.R  = conv2(Re_phasing_Res,lnshpf_R,'same');
-CVL.NR = conv2(NR_phasing_Res,lnshpf_N,'same');
-
+CVL.R   = conv2(Re_phasing_Res,lnshpf_R,'same');
+CVL.NR  = conv2(NR_phasing_Res,lnshpf_N,'same');
 CVL.sum = CVL.R + CVL.NR;
+
+% Not convoluted sticks
+CVL.R_No_Conv   = Re_phasing_Res;
+CVL.NR_No_Conv  = NR_phasing_Res;
+CVL.sum_No_Conv = Re_phasing_Res + NR_phasing_Res;
 
 % Output selected SpecType
 switch SpecType
     case 'Abs'
         CVL.selected = CVL.sum;
+        CVL.selected_No_Conv = CVL.sum_No_Conv;
     case 'R'
         CVL.selected = CVL.R;
+        CVL.selected_No_Conv = CVL.R_No_Conv;
     case 'NR'
         CVL.selected = CVL.NR;
+        CVL.selected_No_Conv = CVL.NR_No_Conv;
 end
 
 

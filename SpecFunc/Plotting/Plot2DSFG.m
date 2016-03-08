@@ -1,4 +1,4 @@
-function hF = Plot2DSFG(CVL,GUI_Inputs)
+function hF = Plot2DSFG(hF,CVL,GUI_Inputs)
 
 %% Inputs parser
 GUI_Inputs_C      = fieldnames(GUI_Inputs);
@@ -12,11 +12,13 @@ INPUT.KeepUnmatched = 1;
 defaultFreqRange   = 1600:1800;
 defaultNum_Contour = 20;
 defaultPlotCursor  = 0;
+defaultCMAP_Index  = 1;
 
 % add Optional inputs / Parameters
 addOptional(INPUT,'FreqRange'  ,defaultFreqRange);
 addOptional(INPUT,'Num_Contour',defaultNum_Contour);
 addOptional(INPUT,'PlotCursor' ,defaultPlotCursor);
+addOptional(INPUT,'CMAP_Index' ,defaultCMAP_Index);
 
 parse(INPUT,GUI_Inputs_C{:});
 
@@ -24,34 +26,37 @@ parse(INPUT,GUI_Inputs_C{:});
 FreqRange   = INPUT.Results.FreqRange;
 Num_Contour = INPUT.Results.Num_Contour;
 PlotCursor  = INPUT.Results.PlotCursor;
+CMAP_Index  = INPUT.Results.CMAP_Index;
 
 %% Main
-hF = figure;
+hAx = findobj(hF,'type','axes');
+cla(hAx)
 
-CVLRS = -1.*real(CVL.selected);
 if strcmp(CVL.Lineshape,'None')
     % plot stick spectrum
-    imagesc(FreqRange,FreqRange,CVLRS)
-    StickC_Map = load('CoolBlack');
-    %StickC_Map = load('JetBlack');
-    colormap(StickC_Map.MAP)
+    imagesc(FreqRange,FreqRange,CVL.selected_No_Conv)
     set(gca,'Ydir','normal')
     
-    
-%     % bar style
-%     bar3(CVLRS)
-%     LabelTick = FreqRange(1):10:FreqRange(end);
-%     set(gca, 'XTickLabel', LabelTick)
-%     set(gca, 'YTickLabel', LabelTick)
-%     set(gca, 'DataAspectRatio',[1,1,1E4])
-
+    % Set colorbar
+    colorbar
+    StickC_Map = load('CoolBlack');
+    colormap(StickC_Map.MAP) 
+    Amp = max(abs(CVL.selected_No_Conv(:)));
+    caxis([-Amp,Amp])
 else
     % plot convoluted spectrum
+    CVLRS = -1.*real(CVL.selected);
     contour(FreqRange,FreqRange,CVLRS,Num_Contour,'LineWidth',2)
     % Normalization
     % CVLRSN = CVLRS ./max(abs(CVLRS(:)));
     % contour(GUI_Inputs.FreqRange,GUI_Inputs.FreqRange,CVLRSN,GUI_Inputs.Num_Contour,'LineWidth',2)
     
+    % Set colorbar
+    colorbar
+    CMAP = SelectColormap(CMAP_Index);
+    colormap(CMAP)    
+    Amp = max(abs(CVLRS(:)));
+    caxis([-Amp,Amp])
 end
 
 % Plot diagonal line
@@ -65,11 +70,6 @@ hAx.FontSize = 14;
 hAx.XLabel.String = 'Probe (cm^{-1})';
 hAx.YLabel.String = 'Pump (cm^{-1})';
 
-% Set colorbar
-colormap('jet')
-colorbar
-Amp = max(abs(caxis));
-caxis([-Amp Amp])
 
 if PlotCursor
     % Call pointer

@@ -90,41 +90,39 @@ function varargout = Model_TwoDGrid_OutputFcn(hObject, eventdata, handles)
 varargout{1} = handles.output;
 
 function LoadG09(hObject, eventdata, handles)
-%% read Monomer structural orientation on Model GUI
-GUI_Struc = handles.GUI_Struc;
-
-Ang_Phi     =    str2double(get(GUI_Struc.Ang_Phi     ,'String'));
-Ang_Psi     =    str2double(get(GUI_Struc.Ang_Psi     ,'String'));
-Ang_Theta   =    str2double(get(GUI_Struc.Ang_Theta   ,'String'));
-
-RR = [Ang_Phi,Ang_Psi,Ang_Theta];
-RR = RR./180*pi; % turn to radius unit
-
-%% Call ReadG09Input
+%% Call uigetfile for G09 path
 PWD = pwd;
-G09_Path = [PWD, '/StructureFiles/G09/'];
+G09_default_folder = [PWD, '/StructureFiles/G09/'];
 
 [FilesName,PathName,~] = uigetfile({'*.txt','Formatted G09 output'; ...
                                     '*,*','All Files'},...
-                                    'Select inputs',G09_Path);
-
-Gaussian_Input = ReadG09Input([PathName FilesName],RR);
+                                    'Select inputs',G09_default_folder);
+    
+G09_Path = [PathName FilesName];                             
 disp([FilesName,' loaded...'])
-
-%% Export the Gaussian frequency and anharmonicity to GUI?
-
 %% Export to Model handles
-handles.Gaussian_Input = Gaussian_Input;
+handles.G09_Path = G09_Path;
 guidata(hObject,handles)
 
-%% update structure
+%% update structure and the file name on GUI
+set(handles.GUI_Struc.G09_FileName,'String',['G09 file: ', FilesName])
 UpdateStructure(hObject, eventdata, handles)
 
 function UpdateStructure(hObject, eventdata, handles)
-%% Construct molecule
+% retreive GUI inputs
 GUI_Struc  = handles.GUI_Struc;
 GUI_Inputs = ParseGUI_TwoDGrid(GUI_Struc);
-Gaussian_Input = handles.Gaussian_Input;
+
+%% Load selected G09 file
+Ang_Phi    = GUI_Inputs.Ang_Phi;
+Ang_Psi    = GUI_Inputs.Ang_Psi;
+Ang_Theta  = GUI_Inputs.Ang_Theta;
+Eular_MF_D = [Ang_Phi,Ang_Psi,Ang_Theta];
+Eular_MF_R = Eular_MF_D./180*pi; % turn to radius unit
+
+Gaussian_Input = ReadG09Input(handles.G09_Path,Eular_MF_R);
+
+%% Construct molecule
 Structure      = ConstructGrid(Gaussian_Input,GUI_Inputs);
 
 % Export into Structure so it can be passsed around different GUIs
@@ -148,9 +146,21 @@ handles.Structure = Structure;
 guidata(hObject,handles)
 
 function hF = PlotMolecule(hObject, eventdata, handles)
-%% Construct molecule
+%% Update structure
+UpdateStructure(hObject, eventdata, handles)
+
+%% Read GUI
 GUI_Struc  = handles.GUI_Struc;
 GUI_Inputs = ParseGUI_TwoDGrid(GUI_Struc);
+
+% Read the Molecule frame to Lab frame orientation from COSMOSS
+hMain = handles.hMain;
+GUI_Data_Main = guidata(hMain);
+GUI_Inputs_Main = ParseGUI_Main(GUI_Data_Main);
+% Pass the MF-LB Eular angles to Plotting function
+GUI_Inputs.Avg_Phi   = GUI_Inputs_Main.Avg_Phi;
+GUI_Inputs.Avg_Theta = GUI_Inputs_Main.Avg_Theta;
+GUI_Inputs.Avg_Psi   = GUI_Inputs_Main.Avg_Psi;
 
 hF = PlotXYZ_Grid(handles.Structure,GUI_Inputs);
 

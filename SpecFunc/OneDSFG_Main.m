@@ -30,8 +30,11 @@ INPUT.KeepUnmatched = 1;
 
 % Default values
 defaultCoupling     = 'TDC';
-defaultAvg_Option   = 1;
-defaultMirror_Plane = 1;
+defaultAvg_Phi      = 0;
+defaultAvg_Theta    = 0;
+defaultAvg_Psi      = 0;
+defaultAvg_Rot      = 1;
+defaultAvg_Mirror   = 1;
 defaultA_IR         = 90;
 defaultA_Vis        = 90;
 defaultA_Sum        = 90;
@@ -42,8 +45,11 @@ defaultBeta_NN      = 0.8;
 
 % add Optional inputs / Parameters
 addOptional(INPUT,'Coupling'    ,defaultCoupling);
-addOptional(INPUT,'Avg_Option'  ,defaultAvg_Option);
-addOptional(INPUT,'Mirror_Plane',defaultMirror_Plane);
+addOptional(INPUT,'Avg_Phi'     ,defaultAvg_Phi);
+addOptional(INPUT,'Avg_Theta'   ,defaultAvg_Theta);
+addOptional(INPUT,'Avg_Psi'     ,defaultAvg_Psi);
+addOptional(INPUT,'Avg_Rot'     ,defaultAvg_Rot);
+addOptional(INPUT,'Avg_Mirror'  ,defaultAvg_Mirror);
 addOptional(INPUT,'A_IR'        ,defaultA_IR);
 addOptional(INPUT,'A_Vis'       ,defaultA_Vis);
 addOptional(INPUT,'A_Sum'       ,defaultP_Sum);
@@ -57,8 +63,11 @@ parse(INPUT,GUI_Inputs_C{:});
 % Re-assign variable names
 
 Coupling     = INPUT.Results.Coupling;
-Avg_Option   = INPUT.Results.Avg_Option;
-Mirror_Plane = INPUT.Results.Mirror_Plane;
+Avg_Phi      = INPUT.Results.Avg_Phi;
+Avg_Theta    = INPUT.Results.Avg_Theta;
+Avg_Psi      = INPUT.Results.Avg_Psi;
+Avg_Rot      = INPUT.Results.Avg_Rot;
+Avg_Mirror   = INPUT.Results.Avg_Mirror;
 A_IR         = INPUT.Results.A_IR;
 A_Vis        = INPUT.Results.A_Vis;
 A_Sum        = INPUT.Results.A_Sum;
@@ -68,18 +77,6 @@ P_Sum        = INPUT.Results.P_Sum;
 Beta_NN      = INPUT.Results.Beta_NN;
 
 %% Call OneExcitonH to calculate H,mu and alpha under exciton basis
-
-% Construct one exciton Hamiltonian
-% switch Coupling
-%     case 1
-%         Coupling = 'TDC';
-%     case 2
-%         Coupling = 'Zero';
-%     case 3
-%         Coupling = 'NN';
-%     case 4 
-%         Coupling = 'NN_Mix_TDC';
-% end
 
 H = ExcitonH(Structure_Data,'ExMode','OneEx','Coupling',Coupling,'Beta_NN',Beta_NN);
 
@@ -104,32 +101,24 @@ end
 
 %% Decide what kinds of ensemble average
 
-% Read orientation inputs from GUI
-% Phi_D   = str2double(get(handles.Mol_Phi  ,'String'));
-% Psi_D   = str2double(get(handles.Mol_Psi  ,'String'));
-% Theta_D = str2double(get(handles.Mol_Theta,'String'));
-Phi_D = 0;
-Psi_D = 0;
-Theta_D = 0;
-
 % Orientation = Orientation/180*pi; % turn to radius unit
-Phi_R   = Phi_D/180*pi;
-Psi_R   = Psi_D/180*pi;
-Theta_R = Theta_D/180*pi;
+Avg_Phi_R   =   Avg_Phi/180*pi;
+Avg_Psi_R   =   Avg_Psi/180*pi;
+Avg_Theta_R = Avg_Theta/180*pi;
 
-switch Avg_Option
+switch Avg_Rot
         
     case 1 %'Phi' C_Inf
 
-        R_Avg = R3_ZYZ_1(Psi_R,Theta_R);
+        R_Avg = R3_ZYZ_1(Avg_Psi_R,Avg_Theta_R);
         
     case 2 %'Psi'
 
-        R_Avg = R3_ZYZ_2(Phi_R,Theta_R);
+        R_Avg = R3_ZYZ_2(Avg_Phi_R,Avg_Theta_R);
         
     case 3 %'{Phi,Psi}'
 
-        R_Avg = R3_ZYZ_12(Theta_R);
+        R_Avg = R3_ZYZ_12(Avg_Theta_R);
         
     case 4 %'Isotropic'
         
@@ -137,7 +126,7 @@ switch Avg_Option
     
     case 5 %'No Average'
        
-        R_Avg = R3_ZYZ_0(Phi_R,Psi_R,Theta_R);
+        R_Avg = R3_ZYZ_0(Avg_Phi_R,Avg_Psi_R,Avg_Theta_R);
     
         
     otherwise
@@ -145,7 +134,7 @@ switch Avg_Option
 end
 
 % Decide Mirror planes
-switch Mirror_Plane
+switch Avg_Mirror
     
     case 1 % no mirror plane
         V = [1;1;1];

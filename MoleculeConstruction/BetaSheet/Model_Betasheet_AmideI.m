@@ -153,6 +153,15 @@ function hF = PlotMolecule(hObject, eventdata, handles)
 GUI_Struc  = handles.GUI_Struc;
 GUI_Inputs = ParseGUI_Betasheet(GUI_Struc);
 
+% Read the Molecule frame to Lab frame orientation from COSMOSS
+hMain = handles.hMain;
+GUI_Data_Main = guidata(hMain);
+GUI_Inputs_Main = ParseGUI_Main(GUI_Data_Main);
+% Pass the MF-LB Eular angles to Plotting function
+GUI_Inputs.Avg_Phi   = GUI_Inputs_Main.Avg_Phi;
+GUI_Inputs.Avg_Theta = GUI_Inputs_Main.Avg_Theta;
+GUI_Inputs.Avg_Psi   = GUI_Inputs_Main.Avg_Psi;
+
 hF = Plot_Betasheet_AmideI(handles.Structure,GUI_Inputs);
 
 function PlotModes(hObject, eventdata, handles)

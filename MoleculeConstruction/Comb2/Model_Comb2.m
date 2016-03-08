@@ -22,7 +22,7 @@ function varargout = Model_Comb2(varargin)
 
 % Edit the above text to modify the response to help hModel
 
-% Last Modified by GUIDE v2.5 08-Feb-2016 09:38:47
+% Last Modified by GUIDE v2.5 28-Feb-2016 23:01:03
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 0;
@@ -120,12 +120,14 @@ StrucData2     = StrucGUI_Data2.Structure;
 Data_Main = handles.Data_Main;
 %% Retreive GUI inputs
 GUI_Inputs = ParseGUI_Comb2(GUI_Struc);
-Trans_X   = GUI_Inputs.Trans_X;
-Trans_Y   = GUI_Inputs.Trans_Y;
-Trans_Z   = GUI_Inputs.Trans_Z;
-Rot_Phi   = GUI_Inputs.Rot_Phi/180*pi;
-Rot_Psi   = GUI_Inputs.Rot_Psi/180*pi;
-Rot_Theta = GUI_Inputs.Rot_Theta/180*pi;
+
+Conc_Scaling = GUI_Inputs.Conc_Scaling;
+Trans_X      = GUI_Inputs.Trans_X;
+Trans_Y      = GUI_Inputs.Trans_Y;
+Trans_Z      = GUI_Inputs.Trans_Z;
+Rot_Phi      = GUI_Inputs.Rot_Phi/180*pi;
+Rot_Psi      = GUI_Inputs.Rot_Psi/180*pi;
+Rot_Theta    = GUI_Inputs.Rot_Theta/180*pi;
 
 TransV = [Trans_X,Trans_Y,Trans_Z];
 % RM = R1_ZYZ_0(Rot_Phi,Rot_Psi,Rot_Theta);
@@ -152,18 +154,18 @@ M_Center = [Center1_0; Center2_T];
 TDV1 = StrucData1.mu;
 TDV2 = StrucData2.mu;
 
-TDV2_R = (RM*TDV2')';
+TDV2_R = Conc_Scaling .* (RM*TDV2')';
 
 M_TDV = [TDV1;TDV2_R];
 
 % alpha matrix
 Raman_Matrix1 = StrucData1.alpha_matrix;
 Raman_Matrix2 = StrucData2.alpha_matrix;
-Num_Modes2     = StrucData2.Num_Modes;
+Num_Modes2    = StrucData2.Num_Modes;
 
 Raman_Matrix2_R = zeros(size(Raman_Matrix2));
 for i=1:Num_Modes2
-    Raman_Matrix2_R(i,:,:) = RM*squeeze(Raman_Matrix2(i,:,:))*RM';
+    Raman_Matrix2_R(i,:,:) = Conc_Scaling .* RM*squeeze(Raman_Matrix2(i,:,:))*RM';
 end
 
 M_Raman_Matrix = cat(1,Raman_Matrix1,Raman_Matrix2_R);
@@ -253,6 +255,8 @@ GUI_Struc = handles.GUI_Struc;
 GUI_Inputs = ParseGUI_Comb2(GUI_Struc);
 
 hF = PlotComb2(handles,GUI_Inputs);
+
+UpdateStructure(hObject, eventdata, handles)
 
 function PlotModes(hObject, eventdata, handles)
 Plot_Modes(handles.hModel);

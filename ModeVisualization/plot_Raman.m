@@ -53,18 +53,14 @@ switch Draw_Type
     Disk_Thickness_Array = ones(2,1);
     
     PatchFaceAlpha = 1.0;
-    F_Color     = zeros(3);
-    Cir_F_Color = zeros(3);
+    F_Color     = bsxfun(@times,ones(3),[1,0,1]);
+    Cir_F_Color = bsxfun(@times,ones(3),[1,0,1]);
     for j = 1:3
-        F_Color(j,:)     = [1,0,0];
-        Cir_F_Color(j,:) = [1,0,0];
         if eq(sign(SemiAxisL(j)),-1)
-            F_Color(j,:) = [0,0,1];
-            Cir_F_Color(j,:) = [0,0,1];
+                F_Color(j,:) = [0,1,1];
+            Cir_F_Color(j,:) = [0,1,1];
         end
     end
-    
-    
     
     [D_x, D_y, D_z] = cylinder(Disk_Thickness_Array,N_mesh);  
     % XY disk
@@ -88,7 +84,7 @@ switch Draw_Type
         'EdgeAlpha',0.2,...
         'FaceColor',Cir_F_Color(1,:),...
         'FaceAlpha',1);
-    patch(Trans_Dxy_XM',Trans_Dxy_YM',Trans_Dxy_ZM',F_Color(1,:),...
+    patch(Trans_Dxy_XM',Trans_Dxy_YM',Trans_Dxy_ZM',F_Color(3,:),...
           'FaceLighting','gouraud',...
           'FaceAlpha',PatchFaceAlpha)
     
@@ -105,7 +101,7 @@ switch Draw_Type
         'EdgeAlpha',0.2,...
         'FaceColor',Cir_F_Color(2,:),...
         'FaceAlpha',1);
-    patch(Trans_Dyz_XM',Trans_Dyz_YM',Trans_Dyz_ZM',F_Color(2,:),...
+    patch(Trans_Dyz_XM',Trans_Dyz_YM',Trans_Dyz_ZM',F_Color(1,:),...
           'FaceLighting','gouraud',...
           'FaceAlpha',PatchFaceAlpha)
     
@@ -121,7 +117,7 @@ switch Draw_Type
         'EdgeAlpha',0.2,...
         'FaceColor',Cir_F_Color(3,:),...
         'FaceAlpha',1);
-    patch(Trans_Dzx_XM',Trans_Dzx_YM',Trans_Dzx_ZM',F_Color(3,:),...
+    patch(Trans_Dzx_XM',Trans_Dzx_YM',Trans_Dzx_ZM',F_Color(2,:),...
           'FaceLighting','gouraud',...
           'FaceAlpha',PatchFaceAlpha)
     

@@ -50,20 +50,20 @@ close(hF2)
 hold on 
 
 % plot the XYZ axis of the second structure
-Scale = 2;
-Axis2_0 = [1,0,0;0,1,0;0,0,1];
-Axis2_R = RM*Axis2_0 .* Scale;
-
-Origin   = bsxfun(@times,COM2,[1,1,1]');
-
-CMatrix = [1,0,0;0,1,0;0,0,1];
-
-for i = 1:3
-quiver3(Origin(i,1),Origin(i,2),Origin(i,3),...
-        Axis2_R(i,1),Axis2_R(i,2),Axis2_R(i,3),0,...
-        'LineWidth',5,...
-        'Color',CMatrix(i,:));
-end  
+% Scale = 2;
+% Axis2_0 = [1,0,0;0,1,0;0,0,1];
+% Axis2_R = RM*Axis2_0 .* Scale;
+% 
+% Origin   = bsxfun(@times,COM2,[1,1,1]');
+% 
+% CMatrix = [1,0,0;0,1,0;0,0,1];
+% 
+% for i = 1:3
+% quiver3(Origin(i,1),Origin(i,2),Origin(i,3),...
+%         Axis2_R(i,1),Axis2_R(i,2),Axis2_R(i,3),0,...
+%         'LineWidth',5,...
+%         'Color',CMatrix(i,:));
+% end  
     
 
 hold off

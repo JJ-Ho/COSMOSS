@@ -123,7 +123,7 @@ Eular_MF_R = Eular_MF_D./180*pi; % turn to radius unit
 Gaussian_Input = ReadG09Input(handles.G09_Path,Eular_MF_R);
 
 %% Construct molecule
-Structure      = ConstructGrid(Gaussian_Input,GUI_Inputs);
+Structure = ConstructGrid(Gaussian_Input,GUI_Inputs);
 
 % Export into Structure so it can be passsed around different GUIs
 Structure.StructModel = 3;

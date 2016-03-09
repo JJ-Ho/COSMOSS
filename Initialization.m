@@ -17,3 +17,6 @@ addpath(ModeVisualization);
 
 Main_GUIs = genpath([Current_path '/Main_GUI']);
 addpath(Main_GUIs);
+
+ServerVersion = genpath([Current_path '/ServerVersion']);
+addpath(ServerVersion);

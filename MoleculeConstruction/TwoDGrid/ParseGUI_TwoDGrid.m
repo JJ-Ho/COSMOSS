@@ -1,12 +1,13 @@
 function O = ParseGUI_TwoDGrid(hGUI)
 
 % For Monomer -------------------------------------------------------------
-O.Ang_Phi     =    str2double(get(hGUI.Ang_Phi     ,'String'));
-O.Ang_Psi     =    str2double(get(hGUI.Ang_Psi     ,'String'));
-O.Ang_Theta   =    str2double(get(hGUI.Ang_Theta   ,'String'));
-O.Delta_Phi   =    str2double(get(hGUI.Delta_Phi   ,'String'));
-O.Delta_Psi   =    str2double(get(hGUI.Delta_Psi   ,'String'));
-O.Delta_Theta =    str2double(get(hGUI.Delta_Theta ,'String'));
+O.Ang_Phi      =    str2double(get(hGUI.Ang_Phi     ,'String'));
+O.Ang_Psi      =    str2double(get(hGUI.Ang_Psi     ,'String'));
+O.Ang_Theta    =    str2double(get(hGUI.Ang_Theta   ,'String'));
+O.Delta_Phi    =    str2double(get(hGUI.Delta_Phi   ,'String'));
+O.Delta_Psi    =    str2double(get(hGUI.Delta_Psi   ,'String'));
+O.Delta_Theta  =    str2double(get(hGUI.Delta_Theta ,'String'));
+O.Monomer_Axes =               get(hGUI.Monomer_Axes,'Value');
 % -------------------------------------------------------------------------
 
 % For 2D Grid -------------------------------------------------------------
@@ -23,6 +24,7 @@ O.Anharm  = str2double(get(hGUI.Anharm ,'String'));
 O.L_Index =    str2num(get(hGUI.L_Index,'String'));
 
 % For molecule ploting ----------------------------------------------------
-O.Plot_Atoms  = get(hGUI.Plot_Atoms ,'Value' );
-O.Plot_Bonds  = get(hGUI.Plot_Bonds ,'Value' );
-O.Plot_Axis   = get(hGUI.Plot_Axis  ,'Value' );
+O.Plot_Atoms   = get(hGUI.Plot_Atoms  ,'Value' );
+O.Plot_Bonds   = get(hGUI.Plot_Bonds  ,'Value' );
+O.Plot_Axis    = get(hGUI.Plot_Axis   ,'Value' );
+O.Plot_Lattice = get(hGUI.Plot_Lattice,'Value' );

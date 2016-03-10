@@ -8,29 +8,32 @@ INPUT = inputParser;
 INPUT.KeepUnmatched = 1;
 
 % Default values
-defaultAvg_Phi    = 0;
-defaultAvg_Theta  = 0;
-defaultAvg_Psi    = 0;
-defaultPlot_Atoms = 1;
-defaultPlot_Bonds = 1;
-defaultPlot_Axis  = 1;
+defaultAvg_Phi      = 0;
+defaultAvg_Theta    = 0;
+defaultAvg_Psi      = 0;
+defaultPlot_Atoms   = 1;
+defaultPlot_Bonds   = 1;
+defaultPlot_Axis    = 1;
+defaultPlot_Lattice = 1;
 
 % Add optional inputs to inputparser object
-addOptional(INPUT,'Avg_Phi'   ,defaultAvg_Phi);
-addOptional(INPUT,'Avg_Theta' ,defaultAvg_Theta);
-addOptional(INPUT,'Avg_Psi'   ,defaultAvg_Psi);
-addOptional(INPUT,'Plot_Atoms',defaultPlot_Atoms);
-addOptional(INPUT,'Plot_Bonds',defaultPlot_Bonds);
-addOptional(INPUT,'Plot_Axis' ,defaultPlot_Axis);
+addOptional(INPUT,'Avg_Phi'     ,defaultAvg_Phi);
+addOptional(INPUT,'Avg_Theta'   ,defaultAvg_Theta);
+addOptional(INPUT,'Avg_Psi'     ,defaultAvg_Psi);
+addOptional(INPUT,'Plot_Atoms'  ,defaultPlot_Atoms);
+addOptional(INPUT,'Plot_Bonds'  ,defaultPlot_Bonds);
+addOptional(INPUT,'Plot_Axis'   ,defaultPlot_Axis);
+addOptional(INPUT,'Plot_Lattice',defaultPlot_Lattice);
 
 parse(INPUT,GUI_Inputs_C{:});
 
-Avg_Phi    = INPUT.Results.Avg_Phi;
-Avg_Theta  = INPUT.Results.Avg_Theta;
-Avg_Psi    = INPUT.Results.Avg_Psi;
-Plot_Atoms = INPUT.Results.Plot_Atoms;
-Plot_Bonds = INPUT.Results.Plot_Bonds;
-Plot_Axis  = INPUT.Results.Plot_Axis;
+Avg_Phi      = INPUT.Results.Avg_Phi;
+Avg_Theta    = INPUT.Results.Avg_Theta;
+Avg_Psi      = INPUT.Results.Avg_Psi;
+Plot_Atoms   = INPUT.Results.Plot_Atoms;
+Plot_Bonds   = INPUT.Results.Plot_Bonds;
+Plot_Axis    = INPUT.Results.Plot_Axis;
+Plot_Lattice = INPUT.Results.Plot_Lattice;
 
 %% Rotate the molecule to Lab frame
 XYZ_MF    = Structure.XYZ;
@@ -88,6 +91,29 @@ hold on
         PlotRotMolFrame(hAx,Lab_Frame,R_MF_LF,COA)
     end
     
+    %% Draw lattice, for MBA now
+    if Plot_Lattice
+        N_Vec1 = Structure.N_Vec1;
+        N_Vec2 = Structure.N_Vec2;
+        Vec_1  = Structure.Vec_1;
+        Vec_2  = Structure.Vec_2;
+        L_Vec1 = norm(Vec_1);
+        L_Vec2 = norm(Vec_2);
+
+
+        XYZ_Tmp = reshape(XYZ_LF,[],N_Vec1*N_Vec2,3);
+        XYZ_S   = squeeze(XYZ_Tmp(13,:,:));
+
+        Conn_V1_Max = Connectivity(XYZ_S,'BondLength',L_Vec1+0.1);
+        Conn_V1_Min = Connectivity(XYZ_S,'BondLength',L_Vec1-0.1);
+        Conn_V1 = and(Conn_V1_Max,~Conn_V1_Min);
+
+        Conn_V2_Max = Connectivity(XYZ_S,'BondLength',L_Vec2+0.1);
+        Conn_V2_Min = Connectivity(XYZ_S,'BondLength',L_Vec2-0.1);
+        Conn_V2 = and(Conn_V2_Max,~Conn_V2_Min);
+
+        gplot3(or(Conn_V1,Conn_V2),XYZ_S,'Color',[0,1,0],'LineWidth',2)
+    end
     hold off
 
 %% Figure options

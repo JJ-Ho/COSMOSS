@@ -22,7 +22,7 @@ function varargout = Model_TwoDGrid(varargin)
 
 % Edit the above text to modify the response to help Model_TwoDGrid
 
-% Last Modified by GUIDE v2.5 20-Feb-2016 17:06:11
+% Last Modified by GUIDE v2.5 10-Mar-2016 15:45:44
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 0;
@@ -114,13 +114,20 @@ GUI_Struc  = handles.GUI_Struc;
 GUI_Inputs = ParseGUI_TwoDGrid(GUI_Struc);
 
 %% Load selected G09 file
-Ang_Phi    = GUI_Inputs.Ang_Phi;
-Ang_Psi    = GUI_Inputs.Ang_Psi;
-Ang_Theta  = GUI_Inputs.Ang_Theta;
-Eular_MF_D = [Ang_Phi,Ang_Psi,Ang_Theta];
-Eular_MF_R = Eular_MF_D./180*pi; % turn to radius unit
+Ang_Phi      = GUI_Inputs.Ang_Phi;
+Ang_Psi      = GUI_Inputs.Ang_Psi;
+Ang_Theta    = GUI_Inputs.Ang_Theta;
+Eular_MF_D   = [Ang_Phi,Ang_Psi,Ang_Theta];
+Eular_MF_R   = Eular_MF_D./180*pi; % turn to radius unit
 
-Gaussian_Input = ReadG09Input(handles.G09_Path,Eular_MF_R,'MolFrame','YZ');
+Monomer_Axes = GUI_Inputs.Monomer_Axes;
+switch Monomer_Axes
+    case 1
+        MolFrame_Convention = 'XZ';
+    case 2
+        MolFrame_Convention = 'YZ';
+end
+Gaussian_Input = ReadG09Input(handles.G09_Path,Eular_MF_R,'MolFrame',MolFrame_Convention);
 
 %% Construct molecule
 Structure      = ConstructGrid(Gaussian_Input,GUI_Inputs);

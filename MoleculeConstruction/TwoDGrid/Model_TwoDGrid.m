@@ -120,7 +120,7 @@ Ang_Theta  = GUI_Inputs.Ang_Theta;
 Eular_MF_D = [Ang_Phi,Ang_Psi,Ang_Theta];
 Eular_MF_R = Eular_MF_D./180*pi; % turn to radius unit
 
-Gaussian_Input = ReadG09Input(handles.G09_Path,Eular_MF_R);
+Gaussian_Input = ReadG09Input(handles.G09_Path,Eular_MF_R,'MolFrame','YZ');
 
 %% Construct molecule
 Structure      = ConstructGrid(Gaussian_Input,GUI_Inputs);

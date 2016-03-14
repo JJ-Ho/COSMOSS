@@ -135,10 +135,12 @@ RM = Rx(Rot_Phi)*Ry(Rot_Psi)*Rz(Rot_Theta);
 
 %% Shift the center of mass of each structure to origin
 Center1 = StrucData1.center;
-COM1 = sum(Center1,1)./size(Center1,1);
+% COM1 = sum(Center1,1)./size(Center1,1);
+COM1 = [0,0,0];
 
 Center2 = StrucData2.center;
-COM2 = sum(Center2,1)./size(Center2,1);
+% COM2 = sum(Center2,1)./size(Center2,1);
+COM2 = [0,0,0];
 
 %% Move the second molecule and merge
 % Center 

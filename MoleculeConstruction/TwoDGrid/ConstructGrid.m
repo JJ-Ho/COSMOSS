@@ -187,3 +187,7 @@ Output.Num_Modes    = Num_Modes;
 Output.XYZ          = XYZ_Grid;
 Output.FilesName    = Grid_FilesName;
 Output.Monomer      = Gaussian_Input;
+Output.N_Vec1       = N_1;
+Output.N_Vec2       = N_2;
+Output.Vec_1        = Vec_1;
+Output.Vec_2        = Vec_2;

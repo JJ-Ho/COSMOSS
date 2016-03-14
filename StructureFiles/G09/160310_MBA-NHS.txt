@@ -1,0 +1,111 @@
+% MBA-NHS (used to called pMBA)
+% 
+%
+% Anharmonic Freq: /home/jho/Projects/Gaussian_jobs/160309_MBA-NHS/opt
+% TDV, Raman Tensor: /home/jho/Projects/Gaussian_jobs/160309_MBA-NHS/freq
+% 
+% For detail check: "160310 DFT MBA-HNS" in Evernote
+%
+% Mode #62 (#11 in reverse sequence) is the Carbonyl mode on Ester, (E)
+% Mode #61 (#12 in reverse sequence) is the Carbonyl mode on NHS, (N)
+% Mode #60 (#13 in reverse sequence) is the ring mode, (R)
+%
+% 
+% Latest update 16/03/14
+% ------------------------------------------------------------------------
+
+[Atom_Num] 26
+[Mode_Num] 1
+
+% XYZ, from std input of Freq output file
+[Atom] S   -5.585788   -0.018372    0.426721
+[Atom] C   -3.838635   -0.003800    0.092009
+[Atom] H   -5.994549    0.053665   -0.854972
+[Atom] C   -3.313612    0.052472   -1.205462
+[Atom] C   -1.941636    0.060176   -1.398250
+[Atom] C   -1.068669    0.012158   -0.305129
+[Atom] C   -1.595229   -0.044454    0.991606
+[Atom] C   -2.967401   -0.052360    1.188033
+[Atom] H   -3.974706    0.090002   -2.063165
+[Atom] H   -1.526679    0.103393   -2.397527
+[Atom] H   -0.929683   -0.082128    1.843124
+[Atom] H   -3.365201   -0.095792    2.195197
+[Atom] C    0.378263    0.023497   -0.588472
+[Atom] O    0.908650    0.064031   -1.659905
+[Atom] O    1.116278   -0.020665    0.608038
+[Atom] N    2.471124   -0.014107    0.397642
+[Atom] C    3.186585   -1.201256    0.201931
+[Atom] C    4.632807   -0.772779   -0.006508
+[Atom] O    2.715788   -2.304351    0.209158
+[Atom] C    4.633287    0.767721    0.042455
+[Atom] H    4.969915   -1.171979   -0.964450
+[Atom] H    5.247172   -1.230395    0.771102
+[Atom] C    3.187697    1.182804    0.280336
+[Atom] H    4.968519    1.226593   -0.889065
+[Atom] H    5.249586    1.175007    0.846058
+[Atom] O    2.717986    2.283391    0.361133
+
+
+
+% Define New Molecule Orientation
+%  S atom (index 1) at origin
+%  T1 => Z axis
+%  T2 => X-Z plane
+%
+% Use S-C as Z, benzene plane as ZX plane
+%
+% Orientation    Center Z_I Z_F XY_I XY_F
+[Orientation]       1    1    2    8   12
+
+% Transition Dipole Vector (TDV) from Gaussian w anharmonic  correction
+[TDV] E 1.12598E+01 -6.39530E-01  1.30671E+01
+%[TDV] N 6.56947E-02  2.61294E+01  9.65430E-01
+%[TDV] R 1.42064E+01 -8.22890E-02  2.10177E+00
+
+% Raman tensor com from polarizability deriaion of gaussian job [XX XY XZ YX YY YZ ZX ZY ZZ]
+%[Raman] E  -0.464474E+01  0.351191E-01 -0.903649E+00 0.351191E-01  0.478585E+00  0.348447E-01 -0.903649E+00  0.348447E-01 -0.518300E+00
+%[Raman] N  -0.306622E-01 -0.946851E-01 -0.981493E-02 -0.946851E-01 -0.378310E-02  0.410693E-01 -0.981493E-02  0.410693E-01 -0.295128E-03
+%[Raman] R  -0.610220E+01  0.381334E-01 -0.962768E+00  0.381334E-01  0.526407E-01 -0.264239E-01 -0.962768E+00 -0.264239E-01  0.648623E+00
+
+
+% IR/Raman intensity
+[Int_Harm]   IR    E 297.94264678
+[Int_Harm]   Raman E   2.59293506
+%[Int_Harm]   IR    N 683.68353689
+%[Int_Harm]   Raman N   0.00219335
+%[Int_Harm]   IR    R   4.72337645
+%[Int_Harm]   Raman R   2.59293506
+
+
+[Int_AnHarm] IR    E 163.05409439
+[Int_AnHarm] Raman E   1.42201067
+%[Int_AnHarm] IR    N 454.75552935
+%[Int_AnHarm] Raman N   0.00396456
+%[Int_AnHarm] IR    R 143.20318582
+%[Int_AnHarm] Raman R   3.71449488
+
+
+
+% Anharmonic Corretion 
+[AnharmCorrect] yes
+
+% for B3LYP/6311Gdp
+[FreqScaleFactor] 0.9614
+% [FreqScaleFactor] 1
+
+
+% Eigen mode frequencies, anharmonic corrected
+% Fundamental
+[Freq] E 1797.043 
+%[Freq] N 1796.071 
+%[Freq] R 1598.772
+
+% Overtone
+[Freq] 2E 3575.506
+% [Freq] 2N 3571.777
+% [Freq] 2R 3200.380
+
+% Combination
+% [Freq] NE 3586.819
+% [Freq] RE 3395.805
+% [Freq] RN 3389.974

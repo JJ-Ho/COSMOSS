@@ -1,6 +1,12 @@
 % Template of Server_2DSFG running script
 % This template scan the vertical distance between MBA and R5S3 betasheet
 
+%% Initialization Script
+COSMOSS_path = '/home/jho/Projects/2DSFG_FGAIL_SAM/COSMOSS';
+genpath(COSMOSS_path);
+addpath(COSMOSS_path);
+
+
 %% Manual Inputs 
 % Relative orientaiton
 Conc_Scaling = 1;

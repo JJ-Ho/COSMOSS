@@ -32,66 +32,66 @@ GUI_Inputs_C(:,2) = struct2cell(GUI_Inputs);
 GUI_Inputs_C      = GUI_Inputs_C';
 
 INPUT = inputParser;
-INPUT.KeepUnmatched = 1;
+INPUT.KeepUnmatched = true;
 
 % Default values
-defaultFreqRange   = 1650:1750;
-defaultCoupling    = 'TDC'; 
-defaultBeta_NN     = 0.8; % 0.8 cm-1 according to Lauren's PNAS paper (doi/10.1073/pnas.1117704109); that originate from Min Cho's paper (doi:10.1063/1.1997151)
-defaultAvg_Phi     = 0;
-defaultAvg_Theta   = 0;
-defaultAvg_Psi     = 0;
-defaultAvg_Rot     = 1;
-defaultAvg_Mirror  = 1;
-defaultA_Pump      = 90;
-defaultA_Probe     = 90;
-defaultA_Vis2D     = 90;
-defaultA_Sig2D     = 90;
-defaultP_Pump1     = 0;
-defaultP_Pump2     = 0;
-defaultP_Probe     = 0;
-defaultP_Vis2D     = 0;
-defaultP_Sig2D     = 0;
+defaultFreqRange    = 1650:1750;
+defaultCouplingType = 'TDC'; 
+defaultBeta_NN      = 0.8; % 0.8 cm-1 according to Lauren's PNAS paper (doi/10.1073/pnas.1117704109); that originate from Min Cho's paper (doi:10.1063/1.1997151)
+defaultAvg_Phi      = 0;
+defaultAvg_Theta    = 0;
+defaultAvg_Psi      = 0;
+defaultAvg_Rot      = 1;
+defaultAvg_Mirror   = 1;
+defaultA_Pump       = 90;
+defaultA_Probe      = 90;
+defaultA_Vis2D      = 90;
+defaultA_Sig2D      = 90;
+defaultP_Pump1      = 0;
+defaultP_Pump2      = 0;
+defaultP_Probe      = 0;
+defaultP_Vis2D      = 0;
+defaultP_Sig2D      = 0;
 
-addOptional(INPUT,'FreqRange'  ,defaultFreqRange);
-addOptional(INPUT,'Beta_NN'    ,defaultBeta_NN);
-addOptional(INPUT,'Avg_Phi'    ,defaultAvg_Phi);
-addOptional(INPUT,'Avg_Theta'  ,defaultAvg_Theta);
-addOptional(INPUT,'Avg_Psi'    ,defaultAvg_Psi);
-addOptional(INPUT,'Avg_Rot'    ,defaultAvg_Rot);
-addOptional(INPUT,'Avg_Mirror' ,defaultAvg_Mirror);
-addOptional(INPUT,'A_Pump'     ,defaultA_Pump);
-addOptional(INPUT,'A_Probe'    ,defaultA_Probe);
-addOptional(INPUT,'A_Vis2D'    ,defaultA_Vis2D);
-addOptional(INPUT,'A_Sig2D'    ,defaultA_Sig2D);
-addOptional(INPUT,'P_Pump1'    ,defaultP_Pump1);
-addOptional(INPUT,'P_Pump2'    ,defaultP_Pump2);
-addOptional(INPUT,'P_Probe'    ,defaultP_Probe);
-addOptional(INPUT,'P_Vis2D'    ,defaultP_Vis2D);
-addOptional(INPUT,'P_Sig2D'    ,defaultP_Sig2D);
-addOptional(INPUT,'Coupling'   ,defaultCoupling);
+addOptional(INPUT,'FreqRange'   ,defaultFreqRange);
+addOptional(INPUT,'Beta_NN'     ,defaultBeta_NN);
+addOptional(INPUT,'Avg_Phi'     ,defaultAvg_Phi);
+addOptional(INPUT,'Avg_Theta'   ,defaultAvg_Theta);
+addOptional(INPUT,'Avg_Psi'     ,defaultAvg_Psi);
+addOptional(INPUT,'Avg_Rot'     ,defaultAvg_Rot);
+addOptional(INPUT,'Avg_Mirror'  ,defaultAvg_Mirror);
+addOptional(INPUT,'A_Pump'      ,defaultA_Pump);
+addOptional(INPUT,'A_Probe'     ,defaultA_Probe);
+addOptional(INPUT,'A_Vis2D'     ,defaultA_Vis2D);
+addOptional(INPUT,'A_Sig2D'     ,defaultA_Sig2D);
+addOptional(INPUT,'P_Pump1'     ,defaultP_Pump1);
+addOptional(INPUT,'P_Pump2'     ,defaultP_Pump2);
+addOptional(INPUT,'P_Probe'     ,defaultP_Probe);
+addOptional(INPUT,'P_Vis2D'     ,defaultP_Vis2D);
+addOptional(INPUT,'P_Sig2D'     ,defaultP_Sig2D);
+addOptional(INPUT,'CouplingType',defaultCouplingType);
 
 
 parse(INPUT,GUI_Inputs_C{:});
 
 % Reassign Variable names
-FreqRange   = INPUT.Results.FreqRange;
-Coupling    = INPUT.Results.Coupling;
-Beta_NN     = INPUT.Results.Beta_NN;
-Avg_Phi     = INPUT.Results.Avg_Phi;
-Avg_Theta   = INPUT.Results.Avg_Theta;
-Avg_Psi     = INPUT.Results.Avg_Psi;
-A_Pump      = INPUT.Results.A_Pump;
-A_Probe     = INPUT.Results.A_Probe;
-A_Vis2D     = INPUT.Results.A_Vis2D;
-A_Sig2D     = INPUT.Results.A_Sig2D;
-P_Pump1     = INPUT.Results.P_Pump1;
-P_Pump2     = INPUT.Results.P_Pump2;
-P_Probe     = INPUT.Results.P_Probe;
-P_Vis2D     = INPUT.Results.P_Vis2D;
-P_Sig2D     = INPUT.Results.P_Sig2D;
-Avg_Rot     = INPUT.Results.Avg_Rot;
-Avg_Mirror  = INPUT.Results.Avg_Mirror;
+FreqRange    = INPUT.Results.FreqRange;
+CouplingType = INPUT.Results.CouplingType;
+Beta_NN      = INPUT.Results.Beta_NN;
+Avg_Phi      = INPUT.Results.Avg_Phi;
+Avg_Theta    = INPUT.Results.Avg_Theta;
+Avg_Psi      = INPUT.Results.Avg_Psi;
+A_Pump       = INPUT.Results.A_Pump;
+A_Probe      = INPUT.Results.A_Probe;
+A_Vis2D      = INPUT.Results.A_Vis2D;
+A_Sig2D      = INPUT.Results.A_Sig2D;
+P_Pump1      = INPUT.Results.P_Pump1;
+P_Pump2      = INPUT.Results.P_Pump2;
+P_Probe      = INPUT.Results.P_Probe;
+P_Vis2D      = INPUT.Results.P_Vis2D;
+P_Sig2D      = INPUT.Results.P_Sig2D;
+Avg_Rot      = INPUT.Results.Avg_Rot;
+Avg_Mirror   = INPUT.Results.Avg_Mirror; 
 
 %% Correct the units
 
@@ -117,7 +117,7 @@ P_Sig2D = P_Sig2D/180*pi;
 
 H = ExcitonH(PDB_Data,...
              'ExMode'  ,'TwoEx',...
-             'Coupling',Coupling,...
+             'CouplingType',CouplingType,...
              'Beta_NN' ,Beta_NN);
 
 Mu    = MuAlphaGen(PDB_Data,H,'Mode','Mu');

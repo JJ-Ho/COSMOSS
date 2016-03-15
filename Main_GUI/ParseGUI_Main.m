@@ -59,7 +59,7 @@ O.FreqRange = O.F_Min:O.F_Max;
 % Coupling model
 CouplingModelIndex = get(GUI_Main.CouplingModelIndex,'Value');
 [~,CouplingList]   = Coupling('List','None');
-O.Coupling         = CouplingList{CouplingModelIndex};
+O.CouplingType     = CouplingList{CouplingModelIndex};
 
 LineShape = get(GUI_Main.LineShape,'Value');
 switch LineShape

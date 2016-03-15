@@ -26,10 +26,10 @@ GUI_Inputs_C(:,2) = struct2cell(GUI_Inputs);
 GUI_Inputs_C      = GUI_Inputs_C';
 
 INPUT = inputParser;
-INPUT.KeepUnmatched = 1;
+INPUT.KeepUnmatched = true;
 
 % Default values
-defaultCoupling     = 'TDC';
+defaultCouplingType = 'TDC';
 defaultAvg_Phi      = 0;
 defaultAvg_Theta    = 0;
 defaultAvg_Psi      = 0;
@@ -44,7 +44,7 @@ defaultP_Sum        = 90;
 defaultBeta_NN      = 0.8;
 
 % add Optional inputs / Parameters
-addOptional(INPUT,'Coupling'    ,defaultCoupling);
+addOptional(INPUT,'CouplingType',defaultCouplingType);
 addOptional(INPUT,'Avg_Phi'     ,defaultAvg_Phi);
 addOptional(INPUT,'Avg_Theta'   ,defaultAvg_Theta);
 addOptional(INPUT,'Avg_Psi'     ,defaultAvg_Psi);
@@ -62,7 +62,7 @@ parse(INPUT,GUI_Inputs_C{:});
 
 % Re-assign variable names
 
-Coupling     = INPUT.Results.Coupling;
+CouplingType = INPUT.Results.CouplingType;
 Avg_Phi      = INPUT.Results.Avg_Phi;
 Avg_Theta    = INPUT.Results.Avg_Theta;
 Avg_Psi      = INPUT.Results.Avg_Psi;
@@ -78,7 +78,7 @@ Beta_NN      = INPUT.Results.Beta_NN;
 
 %% Call OneExcitonH to calculate H,mu and alpha under exciton basis
 
-H = ExcitonH(Structure_Data,'ExMode','OneEx','Coupling',Coupling,'Beta_NN',Beta_NN);
+H = ExcitonH(Structure_Data,'ExMode','OneEx','CouplingType',CouplingType,'Beta_NN',Beta_NN);
 
 Ex_Freq = H.Sort_Ex_Freq;
 
@@ -186,16 +186,16 @@ EJLabFrame(:,1) = JLabFrame(:,1);
 EJLabFrame(:,2) = (E*JLabFrame(:,2:end)')';
 
 %% Output
-OneDSFG.H          = H;
-OneDSFG.Mu         = Mu;
-OneDSFG.Alpha      = Alpha;
-OneDSFG.Num_Modes  = Num_Modes;
-OneDSFG.MolFrame   = ResMolFrame;
-OneDSFG.R_Avg      = R_Avg;
-OneDSFG.LabFrame   = ResLabFrame;
-OneDSFG.Jones      = J;
-OneDSFG.JLabFrame  = JLabFrame;
-OneDSFG.E          = E;
-OneDSFG.EJLabFrame = EJLabFrame;
-OneDSFG.FilesName  = Structure_Data.FilesName;
-OneDSFG.Coupling   = Coupling;
+OneDSFG.H            = H;
+OneDSFG.Mu           = Mu;
+OneDSFG.Alpha        = Alpha;
+OneDSFG.Num_Modes    = Num_Modes;
+OneDSFG.MolFrame     = ResMolFrame;
+OneDSFG.R_Avg        = R_Avg;
+OneDSFG.LabFrame     = ResLabFrame;
+OneDSFG.Jones        = J;
+OneDSFG.JLabFrame    = JLabFrame;
+OneDSFG.E            = E;
+OneDSFG.EJLabFrame   = EJLabFrame;
+OneDSFG.FilesName    = Structure_Data.FilesName;
+OneDSFG.CouplingType = CouplingType;

@@ -35,43 +35,43 @@ GUI_Inputs_C(:,2) = struct2cell(GUI_Inputs);
 GUI_Inputs_C      = GUI_Inputs_C';
 
 INPUT = inputParser;
-INPUT.KeepUnmatched = 1;
+INPUT.KeepUnmatched = true;
 
 % Default values
-defaultLabel_Index = 'Non';
-defaultLabel_Freq  = 1700;
-defaultPlotStick   = 1;
-defaultCoupling    = 'TDC';
-defaultBeta_NN     = 0.8;
-defaultF_Min       = 1600;
-defaultF_Max       = 1800;
-defaultLineWidth   = 5;
-defaultPlotCursor  = 0;
-defaultLineShape   = 'G';
+defaultLabel_Index  = 'Non';
+defaultLabel_Freq   = 1700;
+defaultPlotStick    = 1;
+defaultCouplingType = 'TDC';
+defaultBeta_NN      = 0.8;
+defaultF_Min        = 1600;
+defaultF_Max        = 1800;
+defaultLineWidth    = 5;
+defaultPlotCursor   = 0;
+defaultLineShape    = 'G';
 
 % add Optional inputs / Parameters
-addOptional(INPUT,'Label_Index',defaultLabel_Index);
-addOptional(INPUT,'Label_Freq' ,defaultLabel_Freq);
-addOptional(INPUT,'PlotStick'  ,defaultPlotStick);
-addOptional(INPUT,'Coupling'   ,defaultCoupling);
-addOptional(INPUT,'Beta_NN'    ,defaultBeta_NN);
-addOptional(INPUT,'F_Min'      ,defaultF_Min);
-addOptional(INPUT,'F_Max'      ,defaultF_Max);
-addOptional(INPUT,'LineWidth'  ,defaultLineWidth);
-addOptional(INPUT,'PlotCursor' ,defaultPlotCursor);
-addOptional(INPUT,'LineShape'  ,defaultLineShape);
+addOptional(INPUT,'Label_Index' ,defaultLabel_Index);
+addOptional(INPUT,'Label_Freq'  ,defaultLabel_Freq);
+addOptional(INPUT,'PlotStick'   ,defaultPlotStick);
+addOptional(INPUT,'CouplingType',defaultCouplingType);
+addOptional(INPUT,'Beta_NN'     ,defaultBeta_NN);
+addOptional(INPUT,'F_Min'       ,defaultF_Min);
+addOptional(INPUT,'F_Max'       ,defaultF_Max);
+addOptional(INPUT,'LineWidth'   ,defaultLineWidth);
+addOptional(INPUT,'PlotCursor'  ,defaultPlotCursor);
+addOptional(INPUT,'LineShape'   ,defaultLineShape);
 
 parse(INPUT,GUI_Inputs_C{:});
 
 % Re-assign variable names
-PlotStick   = INPUT.Results.PlotStick;
-Coupling    = INPUT.Results.Coupling;
-Beta_NN     = INPUT.Results.Beta_NN;
-F_Min       = INPUT.Results.F_Min;
-F_Max       = INPUT.Results.F_Max;
-LineWidth   = INPUT.Results.LineWidth;
-PlotCursor  = INPUT.Results.PlotCursor;
-LineShape   = INPUT.Results.LineShape;
+PlotStick    = INPUT.Results.PlotStick;
+CouplingType = INPUT.Results.CouplingType;
+Beta_NN      = INPUT.Results.Beta_NN;
+F_Min        = INPUT.Results.F_Min;
+F_Max        = INPUT.Results.F_Max;
+LineWidth    = INPUT.Results.LineWidth;
+PlotCursor   = INPUT.Results.PlotCursor;
+LineShape    = INPUT.Results.LineShape;
 
 %% Main
 
@@ -82,7 +82,7 @@ Num_Modes = PDB_Data.Num_Modes;
 %     PDB_Data.freq(Label_Index) = Label_Freq.*ones(size(Label_Index));
 % end
 
-H = ExcitonH(PDB_Data,'ExMode','OneEx','Coupling',Coupling,'Beta_NN',Beta_NN);
+H = ExcitonH(PDB_Data,'ExMode','OneEx','CouplingType',CouplingType,'Beta_NN',Beta_NN);
 
 Freq01Ex = H.Sort_Ex_Freq;
 
@@ -151,7 +151,7 @@ if PlotCursor
 else
     FilesName     = PDB_Data.FilesName;
     FilesName_Reg = regexprep(FilesName,'\_','\\_');
-    Coupling_Reg  = regexprep(Coupling,'\_','\\_');
+    Coupling_Reg  = regexprep(CouplingType,'\_','\\_');
     Title_String  = ['FTIR, ',FilesName_Reg,', Coupling:',Coupling_Reg];
     title(Title_String,'FontSize',16);    
 end

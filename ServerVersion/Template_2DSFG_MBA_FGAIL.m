@@ -2,9 +2,28 @@
 % This template scan the vertical distance between MBA and R5S3 betasheet
 
 %% Initialization Script
+% Initialization Script
 COSMOSS_path = '/home/jho/Projects/2DSFG_FGAIL_SAM/COSMOSS';
-genpath(COSMOSS_path);
 addpath(COSMOSS_path);
+
+% Add path to SubFunctions
+SpectalFunctions = genpath([COSMOSS_path '/SpecFunc']);
+addpath(SpectalFunctions);
+
+MoleculeConstruction = genpath([COSMOSS_path '/MoleculeConstruction']);
+addpath(MoleculeConstruction);
+
+StructureFiles = genpath([COSMOSS_path '/StructureFiles']);
+addpath(StructureFiles);
+
+ModeVisualization = genpath([COSMOSS_path '/ModeVisualization']);
+addpath(ModeVisualization);
+
+Main_GUIs = genpath([COSMOSS_path '/Main_GUI']);
+addpath(Main_GUIs);
+
+ServerVersion = genpath([COSMOSS_path '/ServerVersion']);
+addpath(ServerVersion);
 
 
 %% Manual Inputs 

@@ -151,7 +151,7 @@ if PlotCursor
 else
     FilesName     = OneDSFG.FilesName;
     FilesName_Reg = regexprep(FilesName,'\_','\\_');
-    Coupling      = OneDSFG.Coupling;
+    Coupling      = OneDSFG.CouplingType;
     Coupling_Reg  = regexprep(Coupling,'\_','\\_');
     Title_String  = [Signal_Type_Title, '-SFG ',FilesName_Reg,', Coupling:',Coupling_Reg];
     title(Title_String,'FontSize',16);    

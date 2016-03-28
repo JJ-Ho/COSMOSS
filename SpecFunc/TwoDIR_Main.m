@@ -218,6 +218,5 @@ Response.BinNR1 = EJNAR1;
 Response.BinNR2 = EJNAR2;
 Response.BinNR3 = EJNAR3;
 
-Signal_Column = 4; % the first 3 column is freqs 
-SpectraGrid = Bin2D(Response,FreqRange,Signal_Column);
+SpectraGrid = Bin2D(Response,FreqRange);
 

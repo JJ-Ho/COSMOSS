@@ -9,8 +9,8 @@ Output.FreqRange = Output.F_Min:Output.F_Max;
 CouplingModelIndex = 1; %VALUE, popmenu selection%
 [~,CouplingList]   = Coupling('List','None');
 
-Output.Coupling = CouplingList{CouplingModelIndex};
-Output.Beta_NN  = 0.8; %NUMBER, cm^-1%
+Output.CouplingType = CouplingList{CouplingModelIndex};
+Output.Beta_NN      = 0.8; %NUMBER, cm^-1%
 % ------------------------------------------------------------------------
 
 % For Diagonal Disorder ---------------------------------------------------

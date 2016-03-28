@@ -37,18 +37,18 @@ Rot_Psi      = 0;
 Rot_Theta    = 0;
 
 % Main part
-Coupling   = 'TDC+Cho_APB';
-Sampling   = 1;
-Sample_Num = 200;
-FWHM       = 30;
+CouplingType = 'TDC+Cho_APB';
+Sampling     = 1;
+Sample_Num   = 200;
+FWHM         = 30;
 
 %% Load default Inputs and Change default Inputs with Manual Inputs
 Main_Input     = Standard_Main_Input;
 
-Main_Input.Coupling   = Coupling;
-Main_Input.Sampling   = Sampling;
-Main_Input.Sample_Num = Sample_Num;
-Main_Input.FWHM       = FWHM;
+Main_Input.CouplingType = CouplingType;
+Main_Input.Sampling     = Sampling;
+Main_Input.Sample_Num   = Sample_Num;
+Main_Input.FWHM         = FWHM;
 
 %% Structural loading and construction
 Tmp1 = load('MBA_XPS_Grid_5x4');
@@ -68,18 +68,21 @@ GUI_Inputs.Rot_Theta    = Rot_Theta/180*pi;
 Structure = Comb2(StrucData1,StrucData2,GUI_Inputs);
 
 %% For parfor version used
-matlabpool close force local
-matlabpool open local 8
+% matlabpool close force local
+% matlabpool open local 8
 
 %% Call Server_2DSFG
 [SpectraGrid,Response] = Server_2DSFG(Structure,Main_Input);
 %% Ouputs
 Output.SpectraGrid = SpectraGrid;
 Output.Response    = Response;
+Output.Structure   = Structure;
+Output.GUI_Inputs  = GUI_Inputs;
+Output.Main_Input  = Main_Input;
 
 SaveName = ['MBA_FGAIL_Y_',num2str(Trans_Y),'_Z_',num2str(Trans_Z)];
 save(SaveName,'Output')
 
-matlabpool close
+% matlabpool close
 
 

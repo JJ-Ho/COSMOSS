@@ -67,10 +67,16 @@ GUI_Inputs.Rot_Theta    = Rot_Theta/180*pi;
 
 Structure = Comb2(StrucData1,StrucData2,GUI_Inputs);
 
+%% For parfor version used
+matlabpool close force local
+matlabpool open local 8
+
 %% Call Server_2DSFG
 [SpectraGrid,Response] = Server_2DSFG(Structure,Main_Input);
 %% Ouputs
 SaveName = ['MBA_FGAIL_Y_',num2str(Trans_Y),'_Z_',num2str(Trans_Z)];
 save(SaveName,'Output')
+
+matlabpool close
 
 

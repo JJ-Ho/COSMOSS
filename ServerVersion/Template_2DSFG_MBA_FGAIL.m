@@ -74,6 +74,9 @@ matlabpool open local 8
 %% Call Server_2DSFG
 [SpectraGrid,Response] = Server_2DSFG(Structure,Main_Input);
 %% Ouputs
+Output.SpectraGrid = SpectraGrid;
+Output.Response    = Response;
+
 SaveName = ['MBA_FGAIL_Y_',num2str(Trans_Y),'_Z_',num2str(Trans_Z)];
 save(SaveName,'Output')
 

@@ -44,7 +44,7 @@ if eq(GUI_Inputs.Sampling,1)
         
         TSTART(i) = tic;
                 
-        Tmp_SG = TwoDSFG_Main(Structure_Fluc(i),GUI_Inputs);
+        [Tmp_SG,Tmp_Res] = TwoDSFG_Main(Structure_Fluc(i),GUI_Inputs);
         
         Rephasing(:,:,i)    = Tmp_SG.Rephasing   ;
         NonRephasing(:,:,i) = Tmp_SG.NonRephasing;
@@ -69,7 +69,7 @@ if eq(GUI_Inputs.Sampling,1)
         SpectraGrid.SpecAccuNR2  = sum(SpecNR2,3)     ;
         SpectraGrid.SpecAccuNR3  = sum(SpecNR3,3)     ;
         
-        Response = 'Not Saved';
+        Response = Tmp_Res;
     
 else
     [SpectraGrid,Response] = TwoDSFG_Main(Structure,GUI_Inputs);

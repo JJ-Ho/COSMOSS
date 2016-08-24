@@ -128,7 +128,7 @@ Structure.TwistV = BB.TwistV;
 Structure.RotV   = [GUI_Inputs.Phi_D,GUI_Inputs.Psi_D,GUI_Inputs.Theta_D];
 
 % Export into Structure so it can be passsed around different GUIs
-Structure.StructModel = 4;
+Structure.StructModel = 2;
 
 %% Export result to Main guidata
 % check if this program run stand along

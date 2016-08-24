@@ -170,7 +170,8 @@ CurrentRowInd = CurrentCell(:,1)';
 Mode_Ind_Str = num2str(TableData(CurrentRowInd,1)');
 
 % Update the Mode index on GUI
-set(handles.GUI_Modes.Mode_Ind,'String', Mode_Ind_Str);
+set(handles.GUI_Modes.Loc_Ind,'String', Mode_Ind_Str);
+set(handles.GUI_Modes.Ex_Ind,'String', Mode_Ind_Str);
 
 %% update handles
 handles.Mode_Ind_Str = Mode_Ind_Str;

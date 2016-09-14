@@ -2,6 +2,7 @@ function [hModel, ModelList, hPlotFunc] = StructureModel(StructModel)
 %% List 
 ModelList = {'1:Two Coupled Oscillators',...
              '2:Ideal Betasheet',...
+             '3:PDB_AmideI',...
              };
 %% Run Models
 
@@ -23,6 +24,9 @@ switch StructModel
     case 2
         hModel     = @Model_Betasheet_AmideI;
         hPlotFunc  = @Plot_Betasheet_AmideI;
+    case 3
+        hModel     = @Model_PDB_AmideI;
+        hPlotFunc  = @PlotXYZfiles_AmideI;
     otherwise
         hModel     = 'Non';
         hPlotFunc  = 'Non';

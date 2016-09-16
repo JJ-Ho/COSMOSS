@@ -113,7 +113,7 @@ Structure = GUI_Data_hModel.Structure;
 Modes     = Update_Modes_Table(Structure, MainGUI_Inputs);
 
 %% Update handles structure
-handles.OneDSFG        = Modes.OneDSFG;
+handles.FTIR           = Modes.FTIR;
 handles.ModeList       = Modes.ModeList;
 handles.Structure      = Structure;
 handles.hMain          = GUI_Data_hModel.hMain;
@@ -133,7 +133,7 @@ handles = guidata(hObject);
 
 GUI_Inputs = ParseGUI_Modes(handles);
 Structure  = handles.Structure;
-OneDSFG    = handles.OneDSFG;
+OneDSFG    = handles.FTIR;
 hModel     = handles.hModel;
 
 % Read the Molecule frame to Lab frame orientation from COSMOSS

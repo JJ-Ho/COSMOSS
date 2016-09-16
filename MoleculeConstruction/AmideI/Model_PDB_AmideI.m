@@ -149,7 +149,7 @@ FilesName = handles.FilesName;
 Structure = GetAmideI(Num_Atoms,XYZ,AtomName,FilesName,GUI_Inputs);
                   
 % Export into Structure so it can be passsed around different GUIs
-Structure.StructModel = 2;
+Structure.StructModel = 3;
 
 %% Export result to Main guidata
 

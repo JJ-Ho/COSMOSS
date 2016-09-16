@@ -99,8 +99,8 @@ Mu_Loc_MF     = squeeze(OneDSFG.Mu.Trans_Loc(1,Loc_Ind+1,:)); % shift by 1 to av
 Mu_Ex_MF      = squeeze(OneDSFG.Mu. Trans_Ex(1, Ex_Ind+1,:)); % shift by 1 to avoid ground state
 
 % Raman Tensor
-Alpha_Loc_MF  = squeeze(OneDSFG.Alpha.Trans_Loc(1,Loc_Ind+1,:));
-Alpha_Ex_MF   = squeeze(OneDSFG.Alpha. Trans_Ex(1, Ex_Ind+1,:));
+% Alpha_Loc_MF  = squeeze(OneDSFG.Alpha.Trans_Loc(1,Loc_Ind+1,:));
+% Alpha_Ex_MF   = squeeze(OneDSFG.Alpha. Trans_Ex(1, Ex_Ind+1,:));
 
 %% lab frame
 % permute the matix dimension for spectial case
@@ -121,19 +121,19 @@ Mu_Loc_LF = (R_MF_LF*Mu_Loc_MF')';
 Mu_Ex_LF  = (R_MF_LF*Mu_Ex_MF')';
 
 % Raman tensor
-AlphaM_Loc_MF = reshape(Alpha_Loc_MF,N_Loc_Mode,3,3);
-AlphaM_Loc_LF = zeros(size(AlphaM_Loc_MF));
-for Loc_i = 1:N_Loc_Mode
-    AlphaM_Loc_LF(Loc_i,:,:)  = R_MF_LF*squeeze(AlphaM_Loc_MF(Loc_i,:,:))/(R_MF_LF);
-end
-Alpha_Loc_LF = reshape(AlphaM_Loc_LF,N_Loc_Mode,9);
-
-AlphaM_Ex_MF = reshape(Alpha_Ex_MF,N_Ex_Mode,3,3);
-AlphaM_Ex_LF = zeros(size(AlphaM_Ex_MF));
-for Ex_i = 1:N_Ex_Mode
-    AlphaM_Ex_LF(Ex_i,:,:)  = R_MF_LF*squeeze(AlphaM_Ex_MF(Ex_i,:,:))/(R_MF_LF);
-end
-Alpha_Ex_LF = reshape(AlphaM_Ex_LF,N_Ex_Mode,9);
+% AlphaM_Loc_MF = reshape(Alpha_Loc_MF,N_Loc_Mode,3,3);
+% AlphaM_Loc_LF = zeros(size(AlphaM_Loc_MF));
+% for Loc_i = 1:N_Loc_Mode
+%     AlphaM_Loc_LF(Loc_i,:,:)  = R_MF_LF*squeeze(AlphaM_Loc_MF(Loc_i,:,:))/(R_MF_LF);
+% end
+% Alpha_Loc_LF = reshape(AlphaM_Loc_LF,N_Loc_Mode,9);
+% 
+% AlphaM_Ex_MF = reshape(Alpha_Ex_MF,N_Ex_Mode,3,3);
+% AlphaM_Ex_LF = zeros(size(AlphaM_Ex_MF));
+% for Ex_i = 1:N_Ex_Mode
+%     AlphaM_Ex_LF(Ex_i,:,:)  = R_MF_LF*squeeze(AlphaM_Ex_MF(Ex_i,:,:))/(R_MF_LF);
+% end
+% Alpha_Ex_LF = reshape(AlphaM_Ex_LF,N_Ex_Mode,9);
 
 %% Retreive Axes from input figure with molecule plotted 
 hAx = findobj(hF,'type','axes');
@@ -167,12 +167,9 @@ hold on
                       N_Ex_Mode,...
                       Center_Ex_LF,...
                       Mu_Ex_LF,...
-                      Alpha_Ex_LF,...
                       Ex_Mode_colors,...
                       Plot_TDV,...
                       Scale_TDV,...
-                      Plot_Raman,...
-                      Scale_Raman,...
                       Normalize)
     end
 
@@ -218,7 +215,7 @@ Output.Loc_Ind = Loc_Ind;
 Output.Ex_Ind  = Ex_Ind;
 
 
-function Plot_Mu_Alpha(hAx,N_Plot_Mode,Center,Mu,Alpha,Mode_colors,Plot_TDV,Scale_TDV,Plot_Raman,Scale_Raman,Normalize)
+function Plot_Mu_Alpha(hAx,N_Plot_Mode,Center,Mu,Mode_colors,Plot_TDV,Scale_TDV,Normalize)
 % Plot Transition dipoles
 if Plot_TDV
     if Normalize
@@ -237,17 +234,17 @@ if Plot_TDV
 end
 
 % plot Raman tensors
-if Plot_Raman
-    N_mesh   = 20;
-    if Normalize
-        % normalize to unit vector for direction comparison
-        Alpha_Norm = sqrt(sum(Alpha(:,:).^2,2)); % Norm defined in Silby's paper: JCP 1992, 97, 5607?5615.
-        Alpha = bsxfun(@rdivide,Alpha,Alpha_Norm);
-    end
-
-    for i = 1: N_Plot_Mode
-        RamanM_Loc = reshape(Alpha(i,:),3,3);
-        plot_Raman(hAx,RamanM_Loc,Center(i,:),Scale_Raman,N_mesh,Mode_colors(i,:))
-    end
-end
+% if Plot_Raman
+%     N_mesh   = 20;
+%     if Normalize
+%         % normalize to unit vector for direction comparison
+%         Alpha_Norm = sqrt(sum(Alpha(:,:).^2,2)); % Norm defined in Silby's paper: JCP 1992, 97, 5607?5615.
+%         Alpha = bsxfun(@rdivide,Alpha,Alpha_Norm);
+%     end
+% 
+%     for i = 1: N_Plot_Mode
+%         RamanM_Loc = reshape(Alpha(i,:),3,3);
+%         plot_Raman(hAx,RamanM_Loc,Center(i,:),Scale_Raman,N_mesh,Mode_colors(i,:))
+%     end
+% end
 

@@ -17,6 +17,7 @@ function [Beta,CouplingList] = Coupling(StrucInfo,CoupleType)
 
 %% List for COSMOSS GUI and matching popmenu value-name pair
 CouplingList = {'TDC',...
+                'NN_Mix_TDC',...
                 'NN_Mix_TDC_Betasheet',...
                 'Cho_PB',...
                 'Cho_APB',...
@@ -27,6 +28,25 @@ if isstruct(StrucInfo)
     switch CoupleType
         case 'TDC'
             Beta = Coupling_TDC(StrucInfo);
+            
+        case 'NN_Mix_TDC'
+            Beta    = Coupling_TDC(StrucInfo);
+            
+            CutOff_D = 4; % Ang
+            
+            N_Modes = StrucInfo.Num_Modes;
+            Center  = StrucInfo.center;
+            
+            [StateIndex1,StateIndex2] = ndgrid(1:N_Modes); % SI1 => I; SI2 => J
+            ModeDistVec = Center(StateIndex1(:),:) - Center(StateIndex2(:),:); % aka R
+            ModeDist    = sqrt(sum(abs(ModeDistVec).^2,2)); % Got to have abs, or otherwise will have imaginary part
+
+            ModePair_Sub = [StateIndex1(:),StateIndex2(:)];
+            NN_Logic     = and(lt(ModeDist,CutOff_D),gt(ModeDist,0.1));
+            NN_Pair_Sub  = ModePair_Sub(NN_Logic,:);
+            NN_Pair_Ind  = sub2ind(size(Beta),NN_Pair_Sub(:,1),NN_Pair_Sub(:,2));
+            
+            Beta(NN_Pair_Ind) = StrucInfo.Beta_NN;
             
         case 'NN_Mix_TDC_Betasheet'
             % this is for betasheet only

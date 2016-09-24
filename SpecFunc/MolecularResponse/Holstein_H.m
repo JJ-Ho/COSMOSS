@@ -6,12 +6,12 @@
 
 %% options
 % molecule parameters
-NV = 2; % NUmber of maximun vibrational quata
-w0 =2000;
+NV = 3; % NUmber of maximun vibrational quata
+w0 =1600;
 Lambda = 0.57;
-J12 = 300;
+J12 = 250;
 D = 0;
-w0_0 = 18000;
+w0_0 = 10000;
 
 
 % figure
@@ -19,7 +19,7 @@ PlotStick = 1;
 LineShape = 'L';
 LineWidth = 1000;
 F_Min = 0000;
-F_Max = 50000;
+F_Max = 30000;
 
 
 %% Construct local mode basis
@@ -69,7 +69,8 @@ B2_n = (ones(size(WV2))*sqrt(WV2)'      ) .* B2_n_Ind .* V1_overlap;
 % H4: D + w0-0 + Lambda^2*w0
 
 % H1
-H1 = w0 * blkdiag(B1_p*B1_n,B2_p*B2_n);
+Bpn = B1_p*B1_n+B2_p*B2_n;
+H1 = w0 * blkdiag(Bpn,Bpn);
 
 % H2
 H2 = Lambda * w0 * blkdiag(B1_p+B1_n,B2_p+B2_n);
@@ -118,7 +119,7 @@ end
 IntM = sum(Trans_Ex.^2,3);
 IntMx = Trans_Ex(:,:,1).^2;
 IntMy = Trans_Ex(:,:,2).^2;
-IntMz = Trans_Ex(:,:,3).^2;
+IntM = Trans_Ex(:,:,3).^2;
 mu_OneD = IntMz(2:end,1);
 freq_OneD = Sort_Ex_Freq(2:end);
 

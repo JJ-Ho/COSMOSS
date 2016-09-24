@@ -16,10 +16,10 @@ w0_0 = 10000;
 
 % figure
 PlotStick = 1;
-LineShape = 'L';
-LineWidth = 1000;
-F_Min = 0000;
-F_Max = 30000;
+LineShape = 'G';
+LineWidth = 500;
+F_Min = 8000;
+F_Max = 20000;
 
 
 %% Construct local mode basis
@@ -96,7 +96,7 @@ Ex_Freq = diag(D_Full);
  
 %% Construct Transiton matrix
 mu1 = [0,0,1];
-mu2 = [1,0,0];
+mu2 = [0,0,1];
 
 Trans_Monent1 = bsxfun(@times,ones(NS,1),mu1);
 Trans_Monent2 = bsxfun(@times,ones(NS,1),mu2);
@@ -119,7 +119,7 @@ end
 IntM = sum(Trans_Ex.^2,3);
 IntMx = Trans_Ex(:,:,1).^2;
 IntMy = Trans_Ex(:,:,2).^2;
-IntM = Trans_Ex(:,:,3).^2;
+IntMz = Trans_Ex(:,:,3).^2;
 mu_OneD = IntMz(2:end,1);
 freq_OneD = Sort_Ex_Freq(2:end);
 

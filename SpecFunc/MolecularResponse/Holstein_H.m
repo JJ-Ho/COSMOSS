@@ -4,8 +4,26 @@
 % electronic exicted state for each monomer. 
 % Ref: Kistler, K. A.; Pochas, C. M.; Yamagata, H. JPCB, 2011, 116, 77?86.
 
+%% options
+% molecule parameters
+NV = 2; % NUmber of maximun vibrational quata
+w0 =2000;
+Lambda = 0.57;
+J12 = 300;
+D = 0;
+w0_0 = 18000;
+
+
+% figure
+PlotStick = 1;
+LineShape = 'L';
+LineWidth = 1000;
+F_Min = 0000;
+F_Max = 50000;
+
+
 %% Construct local mode basis
-NV = 1; % NUmber of maximun vibrational quata
+
 NS = (NV+2)*(NV+1)/2; % number of state
 
 [W1,W2] = ndgrid(NV+1:-1:1,1:NV+1);
@@ -50,12 +68,6 @@ B2_n = (ones(size(WV2))*sqrt(WV2)'      ) .* B2_n_Ind .* V1_overlap;
 % H3: J12*(|1><2| + |2><1|)
 % H4: D + w0-0 + Lambda^2*w0
 
-w0 =1600;
-Lambda = 0.57;
-J12 = 300;
-D = 0;
-w0_0 = 10000;
-
 % H1
 H1 = w0 * blkdiag(B1_p*B1_n,B2_p*B2_n);
 
@@ -72,6 +84,77 @@ H4 = (D+w0_0+Lambda^2*w0).*eye(size(H1));
 
 H = blkdiag(0,H1+H2+H3+H4);
 
+%% Diagonalize H
+% note: the eiganvector V_Full(:,i) has been already normalized.
+[V_Full,D_Full] = eig(H);
+Ex_Freq = diag(D_Full);
+
+% sort eiganvalue form small to big and reorder the eiganvectors
+[Sort_Ex_Freq,Indx] = sort(Ex_Freq);
+ Sort_Ex_V          = V_Full(:,Indx);
+ 
+%% Construct Transiton matrix
+mu1 = [0,0,1];
+mu2 = [1,0,0];
+
+Trans_Monent1 = bsxfun(@times,ones(NS,1),mu1);
+Trans_Monent2 = bsxfun(@times,ones(NS,1),mu2);
+
+Trans_Loc = zeros([size(H),3]);
+Trans_Loc(1,   2:  NS+1,:) = Trans_Monent1;
+Trans_Loc(1,NS+2:2*NS+1,:) = Trans_Monent2;
+Trans_Loc(   2:  NS+1,1,:) = Trans_Monent1;
+Trans_Loc(NS+2:2*NS+1,1,:) = Trans_Monent2;
 
 
+Trans_Ex = zeros([size(H),3]);
+% [Improve], maybe able to do more sophisticated
+for C_mu=1:3
+    Trans_Ex(:,:,C_mu) = Sort_Ex_V'*Trans_Loc(:,:,C_mu)*Sort_Ex_V;
+end
 
+
+%% Make figure
+IntM = sum(Trans_Ex.^2,3);
+IntMx = Trans_Ex(:,:,1).^2;
+IntMy = Trans_Ex(:,:,2).^2;
+IntMz = Trans_Ex(:,:,3).^2;
+mu_OneD = IntMz(2:end,1);
+freq_OneD = Sort_Ex_Freq(2:end);
+
+Num_Modes = length(freq_OneD);
+
+hF = figure; hold on
+
+if eq(PlotStick,1)
+    line([freq_OneD';freq_OneD'],[zeros(1,Num_Modes);mu_OneD'])
+end
+
+% Get Frequency axis range
+spec_range = F_Min:F_Max;
+
+spec_array1 = bsxfun(@times,ones(Num_Modes,length(spec_range)),spec_range);
+spec_array2 = bsxfun(@minus,spec_array1,freq_OneD);
+
+switch LineShape 
+    case 'G' % Gaussian
+        LineShape = exp(-(spec_array2.^2)./(LineWidth^2));
+        CVL = bsxfun(@times,LineShape,mu_OneD); 
+        CVL_Total = sum(CVL,1);
+    case 'L' % Lorentzain 
+        LineWidth = LineWidth/2;
+        LineShape = LineWidth./((spec_array2.^2)+(LineWidth^2));
+        CVL = bsxfun(@times,LineShape,mu_OneD); 
+        CVL_Total = sum(CVL,1); 
+    case 'KK'
+        disp('KK is not support for FTIR...')
+        CVL_Total = zeros(size(spec_range));
+end
+
+
+% Normalize the convoluted lineshape to maximum stick height.
+Norm = max(abs(mu_OneD(:)))./max(abs(CVL_Total));
+CVL_Total = CVL_Total.*Norm;
+
+plot(spec_range,CVL_Total,'-')
+hold off

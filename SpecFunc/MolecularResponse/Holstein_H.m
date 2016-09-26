@@ -7,19 +7,19 @@
 %% options
 % molecule parameters
 NV = 3; % NUmber of maximun vibrational quata
-w0 =1600;
-Lambda = 0.57;
-J12 = 250;
-D = 0;
-w0_0 = 10000;
+w0 =1400;
+Lambda = sqrt(0.57);
+J12 = 0;
+D = -100;
+w0_0 = 19000;
 
 
 % figure
 PlotStick = 1;
-LineShape = 'G';
-LineWidth = 500;
-F_Min = 8000;
-F_Max = 20000;
+LS = 'L';
+LineWidth = 0.4*w0;
+F_Min = 15000;
+F_Max = 30000;
 
 
 %% Construct local mode basis
@@ -48,6 +48,10 @@ V2_qn_diff = V2_Ind1 - V2_Ind2;
 % prep nuclear wavefunction overlape matrix
 V1_overlap = ~(V1_qn_diff);
 V2_overlap = ~(V2_qn_diff);
+
+% % FC using shifted parabolic approxi.
+% V1_overlap = 1./sqrt(factorial(abs(V1_qn_diff))).*exp(-Lambda.^2./2).*Lambda.^(abs(V1_qn_diff));
+% V2_overlap = 1./sqrt(factorial(abs(V2_qn_diff))).*exp(-Lambda.^2./2).*Lambda.^(abs(V2_qn_diff)); 
 
 % Creation/Anihilation operator for |1> state 
 B1_p_Ind = ~(V1_qn_diff-1);
@@ -95,11 +99,19 @@ Ex_Freq = diag(D_Full);
  Sort_Ex_V          = V_Full(:,Indx);
  
 %% Construct Transiton matrix
-mu1 = [0,0,1];
-mu2 = [0,0,1];
+mu1 = [1,1,0]./sqrt(2);
+mu2 = [1,-1,0]./sqrt(2);
 
-Trans_Monent1 = bsxfun(@times,ones(NS,1),mu1);
-Trans_Monent2 = bsxfun(@times,ones(NS,1),mu2);
+% considerign FC bt <g|v1,v2>
+V1G_overlap = 1./sqrt(factorial(abs(WV1))).*exp(-Lambda.^2./2).*Lambda.^(WV1);
+V2G_overlap = 1./sqrt(factorial(abs(WV2))).*exp(-Lambda.^2./2).*Lambda.^(WV2); 
+
+Vib_overlap = V1G_overlap.*V2G_overlap;
+% Vib_overlap = ones(NS,1);
+
+Trans_Monent1 = bsxfun(@times,Vib_overlap,mu1);
+Trans_Monent2 = bsxfun(@times,Vib_overlap,mu2);
+
 
 Trans_Loc = zeros([size(H),3]);
 Trans_Loc(1,   2:  NS+1,:) = Trans_Monent1;
@@ -114,22 +126,23 @@ for C_mu=1:3
     Trans_Ex(:,:,C_mu) = Sort_Ex_V'*Trans_Loc(:,:,C_mu)*Sort_Ex_V;
 end
 
-
+%% ad hoc for FC progressin 
+% QN1 = [0,1,0,2,0,1,3,0,2,1];
+% QN2 = [0,0,1,0,2,1,0,3,1,2];
+% V1G_overlap = 1./sqrt(factorial(abs(QN1))).*exp(-Lambda.^2./2).*Lambda.^(QN1);
+% V2G_overlap = 1./sqrt(factorial(abs(QN2))).*exp(-Lambda.^2./2).*Lambda.^(QN2);
+% Vib_overlap = V1G_overlap.*V2G_overlap;
+% Vib_overlap = [Vib_overlap;Vib_overlap];
+% Vib_overlap = Vib_overlap(:);
 %% Make figure
-IntM = sum(Trans_Ex.^2,3);
-IntMx = Trans_Ex(:,:,1).^2;
-IntMy = Trans_Ex(:,:,2).^2;
-IntMz = Trans_Ex(:,:,3).^2;
-mu_OneD = IntMz(2:end,1);
+IntM = sum(Trans_Ex(2:end,1,:).^2,3);
+IntMx = Trans_Ex(2:end,1,1).^2;
+IntMy = Trans_Ex(2:end,1,2).^2;
+IntMz = Trans_Ex(2:end,1,3).^2;
+
 freq_OneD = Sort_Ex_Freq(2:end);
 
 Num_Modes = length(freq_OneD);
-
-hF = figure; hold on
-
-if eq(PlotStick,1)
-    line([freq_OneD';freq_OneD'],[zeros(1,Num_Modes);mu_OneD'])
-end
 
 % Get Frequency axis range
 spec_range = F_Min:F_Max;
@@ -137,25 +150,41 @@ spec_range = F_Min:F_Max;
 spec_array1 = bsxfun(@times,ones(Num_Modes,length(spec_range)),spec_range);
 spec_array2 = bsxfun(@minus,spec_array1,freq_OneD);
 
-switch LineShape 
+switch LS
     case 'G' % Gaussian
         LineShape = exp(-(spec_array2.^2)./(LineWidth^2));
-        CVL = bsxfun(@times,LineShape,mu_OneD); 
-        CVL_Total = sum(CVL,1);
     case 'L' % Lorentzain 
         LineWidth = LineWidth/2;
         LineShape = LineWidth./((spec_array2.^2)+(LineWidth^2));
-        CVL = bsxfun(@times,LineShape,mu_OneD); 
-        CVL_Total = sum(CVL,1); 
-    case 'KK'
-        disp('KK is not support for FTIR...')
-        CVL_Total = zeros(size(spec_range));
 end
 
 
-% Normalize the convoluted lineshape to maximum stick height.
-Norm = max(abs(mu_OneD(:)))./max(abs(CVL_Total));
-CVL_Total = CVL_Total.*Norm;
+hF = figure; hold on
 
-plot(spec_range,CVL_Total,'-')
+%% X 
+if eq(PlotStick,1)
+    line([freq_OneD';freq_OneD'],[zeros(1,Num_Modes);IntMx'],'Color','b')
+end
+CVLx = bsxfun(@times,LineShape,IntMx); 
+CVLx_Total = sum(CVLx,1);
+CVLx_Total = CVLx_Total.*max(abs(IntMx(:)))./max(abs(CVLx_Total));
+plot(spec_range,CVLx_Total,'b-')
+
+%% Y
+if eq(PlotStick,1)
+    line([freq_OneD';freq_OneD'],[zeros(1,Num_Modes);IntMy'],'Color','r')
+end
+
+CVLy = bsxfun(@times,LineShape,IntMy); 
+CVLy_Total = sum(CVLy,1);
+CVLy_Total = CVLy_Total.*max(abs(IntMy(:)))./max(abs(CVLy_Total)); 
+plot(spec_range,CVLy_Total,'r-')
+
+%% total
+CVL = bsxfun(@times,LineShape,IntM); 
+CVL_Total = sum(CVL,1);
+CVL_Total = CVL_Total.*max(abs(IntM(:)))./max(abs(CVL_Total)); 
+plot(spec_range,CVL_Total,'k-')
+
+
 hold off

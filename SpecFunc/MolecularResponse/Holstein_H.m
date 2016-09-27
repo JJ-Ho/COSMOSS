@@ -9,18 +9,26 @@
 NV = 3; % NUmber of maximun vibrational quata
 w0 =1400;
 Lambda = sqrt(0.57);
-J12 = 371;
+J12 = 100;
 D = -100;
 w0_0 = 19000;
 
+% Transition dipole in local mode
+% mu1 = [1,1,0]./sqrt(2);
+% mu2 = [1,-1,0]./sqrt(2);
+mu1 = [1,0,0];
+mu2 = [1,0,0];
 
 % figure
 PlotStick = 1;
 LS = 'L';
 LineWidth = 0.4*w0;
-F_Min = 15000;
+F_Min = 16000;
 F_Max = 30000;
 
+%% Construct dimer
+% beta version: run the Model_TCO in stand alone mode then extract
+% structural info from exported handles
 
 %% Construct local mode basis
 
@@ -99,8 +107,6 @@ Ex_Freq = diag(D_Full);
  Sort_Ex_V          = V_Full(:,Indx);
  
 %% Construct Transiton matrix
-mu1 = [1,1,0]./sqrt(2);
-mu2 = [1,-1,0]./sqrt(2);
 
 % considerign FC bt <g|v1,v2>
 V1G_overlap = 1./sqrt(factorial(abs(WV1))).*(-Lambda).^(WV1).*exp(-Lambda.^2./2);
@@ -126,14 +132,6 @@ for C_mu=1:3
     Trans_Ex(:,:,C_mu) = Sort_Ex_V'*Trans_Loc(:,:,C_mu)*Sort_Ex_V;
 end
 
-%% ad hoc for FC progressin 
-% QN1 = [0,1,0,2,0,1,3,0,2,1];
-% QN2 = [0,0,1,0,2,1,0,3,1,2];
-% V1G_overlap = 1./sqrt(factorial(abs(QN1))).*exp(-Lambda.^2./2).*Lambda.^(QN1);
-% V2G_overlap = 1./sqrt(factorial(abs(QN2))).*exp(-Lambda.^2./2).*Lambda.^(QN2);
-% Vib_overlap = V1G_overlap.*V2G_overlap;
-% Vib_overlap = [Vib_overlap;Vib_overlap];
-% Vib_overlap = Vib_overlap(:);
 %% Make figure
 IntM = sum(Trans_Ex(2:end,1,:).^2,3);
 IntMx = Trans_Ex(2:end,1,1).^2;
@@ -184,7 +182,7 @@ plot(spec_range,CVLy_Total,'r-')
 CVL = bsxfun(@times,LineShape,IntM); 
 CVL_Total = sum(CVL,1);
 CVL_Total = CVL_Total.*max(abs(IntM(:)))./max(abs(CVL_Total)); 
-plot(spec_range,CVL_Total,'k-')
+plot(spec_range,CVL_Total,'k:','linewidth',2)
 
 
 hold off

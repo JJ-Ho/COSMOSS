@@ -9,7 +9,7 @@
 NV = 3; % NUmber of maximun vibrational quata
 w0 =1400;
 Lambda = sqrt(0.57);
-J12 = 0;
+J12 = 371;
 D = -100;
 w0_0 = 19000;
 
@@ -103,8 +103,8 @@ mu1 = [1,1,0]./sqrt(2);
 mu2 = [1,-1,0]./sqrt(2);
 
 % considerign FC bt <g|v1,v2>
-V1G_overlap = 1./sqrt(factorial(abs(WV1))).*exp(-Lambda.^2./2).*Lambda.^(WV1);
-V2G_overlap = 1./sqrt(factorial(abs(WV2))).*exp(-Lambda.^2./2).*Lambda.^(WV2); 
+V1G_overlap = 1./sqrt(factorial(abs(WV1))).*(-Lambda).^(WV1).*exp(-Lambda.^2./2);
+V2G_overlap = 1./sqrt(factorial(abs(WV2))).*(-Lambda).^(WV2).*exp(-Lambda.^2./2); 
 
 Vib_overlap = V1G_overlap.*V2G_overlap;
 % Vib_overlap = ones(NS,1);

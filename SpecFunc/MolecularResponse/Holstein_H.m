@@ -9,7 +9,7 @@
 NV = 3; % NUmber of maximun vibrational quata
 w0 =1400;
 Lambda = sqrt(0.57);
-J12 = 100;
+J12 = 1.5*w0;
 D = -100;
 w0_0 = 19000;
 
@@ -17,15 +17,18 @@ w0_0 = 19000;
 % mu1 = [1,1,0]./sqrt(2);
 % mu2 = [1,-1,0]./sqrt(2);
 mu1 = [1,0,0];
-mu2 = [1,0,0];
+mu2 = [0,1,0];
+
 
 % figure
 PlotStick = 1;
 LS = 'L';
 LineWidth = 0.4*w0;
-F_Min = 16000;
+F_Min = 12000;
 F_Max = 30000;
 
+TitleString = ['J12 = ',num2str(J12/w0),' x w0', ', [0,90]'];
+SaveName    = ['w0_',num2str(w0),'_J12_',num2str(J12),'_0_90'];
 %% Construct dimer
 % beta version: run the Model_TCO in stand alone mode then extract
 % structural info from exported handles
@@ -186,3 +189,12 @@ plot(spec_range,CVL_Total,'k:','linewidth',2)
 
 
 hold off
+
+%% Figure adjustment
+hAx = findobj(hF,'Type','Axes');
+hAx.Title.String = TitleString;
+hAx.FontSize = 16;
+hAx.XGrid = 'on';
+hAx.YGrid = 'on';
+
+saveas (hF,SaveName,'png')

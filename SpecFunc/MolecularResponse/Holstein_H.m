@@ -1,37 +1,48 @@
+function Output = Holstein_H(P)
+
 % Holstein-like Hamiltonian 
 % This hamiltonian consist of a dimer system compose of identical monomer. 
 % This system only invole 1 electronic state 1 vibrational state on the 1st
 % electronic exicted state for each monomer. 
 % Ref: Kistler, K. A.; Pochas, C. M.; Yamagata, H. JPCB, 2011, 116, 77?86.
 
-%% options
-% molecule parameters
-NV = 3; % NUmber of maximun vibrational quata
-w0 =1400;
-Lambda = sqrt(0.57);
-J12 = 1.5*w0;
-D = -100;
-w0_0 = 19000;
+%% Debug
+% % molecule parameters
+% NV = 3; % NUmber of maximun vibrational quata
+% w0 =1400;
+% Lambda = sqrt(0.57);
+% J12 = 0.5*w0;
+% D = -100;
+% w0_0 = 15500;
+% theta1 = -0; % angle of local mode electronic transition dipole in degee 
+% theta2 =  0;
+% 
+% % figure options
+% LS = 'L';
+% LineWidth = 40;
+% F_Min = 400;
+% F_Max = 800;
+% PlotStick = 1;
 
-% Transition dipole in local mode
-% mu1 = [1,1,0]./sqrt(2);
-% mu2 = [1,-1,0]./sqrt(2);
-mu1 = [1,0,0];
-mu2 = [0,1,0];
+% TitleString = ['J12 = ',num2str(J12/w0),' x w0, ',num2str(abs(theta2-theta1)),' degrees'];
+% SaveName    = ['w0_',num2str(w0),'_J12_',num2str(J12),'_',num2str(theta1),'_',num2str(theta2)];
 
+%% Read Inputs
+NV        = P.NV;
+w0        = P.w0;
+Lambda    = P.Lambda;
+J12       = P.J12;
+D         = P.D;
+w0_0      = P.w0_0;
+theta1    = P.theta1;
+theta2    = P.theta2;
 
-% figure
-PlotStick = 1;
-LS = 'L';
-LineWidth = 0.4*w0;
-F_Min = 12000;
-F_Max = 30000;
+LS        = P.LS;
+LineWidth = P.LineWidth;
+F_Min     = P.F_Min;
+F_Max     = P.F_Max;
+PlotStick = P.PlotStick;
 
-TitleString = ['J12 = ',num2str(J12/w0),' x w0', ', [0,90]'];
-SaveName    = ['w0_',num2str(w0),'_J12_',num2str(J12),'_0_90'];
-%% Construct dimer
-% beta version: run the Model_TCO in stand alone mode then extract
-% structural info from exported handles
 
 %% Construct local mode basis
 
@@ -111,12 +122,15 @@ Ex_Freq = diag(D_Full);
  
 %% Construct Transiton matrix
 
+% Transition dipole in local mode
+mu1 = [cosd(theta1),sind(theta1),0];
+mu2 = [cosd(theta2),sind(theta2),0];
+
 % considerign FC bt <g|v1,v2>
 V1G_overlap = 1./sqrt(factorial(abs(WV1))).*(-Lambda).^(WV1).*exp(-Lambda.^2./2);
 V2G_overlap = 1./sqrt(factorial(abs(WV2))).*(-Lambda).^(WV2).*exp(-Lambda.^2./2); 
 
 Vib_overlap = V1G_overlap.*V2G_overlap;
-% Vib_overlap = ones(NS,1);
 
 Trans_Monent1 = bsxfun(@times,Vib_overlap,mu1);
 Trans_Monent2 = bsxfun(@times,Vib_overlap,mu2);
@@ -135,13 +149,15 @@ for C_mu=1:3
     Trans_Ex(:,:,C_mu) = Sort_Ex_V'*Trans_Loc(:,:,C_mu)*Sort_Ex_V;
 end
 
-%% Make figure
+%% Line shape convolution
 IntM = sum(Trans_Ex(2:end,1,:).^2,3);
 IntMx = Trans_Ex(2:end,1,1).^2;
 IntMy = Trans_Ex(2:end,1,2).^2;
 IntMz = Trans_Ex(2:end,1,3).^2;
 
 freq_OneD = Sort_Ex_Freq(2:end);
+% unit conversion from cm-1 to nm
+freq_OneD = 1E7./freq_OneD;
 
 Num_Modes = length(freq_OneD);
 
@@ -160,41 +176,17 @@ switch LS
 end
 
 
-hF = figure; hold on
-
-%% X 
-if eq(PlotStick,1)
-    line([freq_OneD';freq_OneD'],[zeros(1,Num_Modes);IntMx'],'Color','b')
-end
-CVLx = bsxfun(@times,LineShape,IntMx); 
-CVLx_Total = sum(CVLx,1);
-CVLx_Total = CVLx_Total.*max(abs(IntMx(:)))./max(abs(CVLx_Total));
-plot(spec_range,CVLx_Total,'b-')
-
-%% Y
-if eq(PlotStick,1)
-    line([freq_OneD';freq_OneD'],[zeros(1,Num_Modes);IntMy'],'Color','r')
-end
-
-CVLy = bsxfun(@times,LineShape,IntMy); 
-CVLy_Total = sum(CVLy,1);
-CVLy_Total = CVLy_Total.*max(abs(IntMy(:)))./max(abs(CVLy_Total)); 
-plot(spec_range,CVLy_Total,'r-')
-
-%% total
 CVL = bsxfun(@times,LineShape,IntM); 
 CVL_Total = sum(CVL,1);
-CVL_Total = CVL_Total.*max(abs(IntM(:)))./max(abs(CVL_Total)); 
-plot(spec_range,CVL_Total,'k:','linewidth',2)
+% CVL_Total = CVL_Total.*max(abs(IntM(:)))./max(abs(CVL_Total)); 
+CVL_Total = CVL_Total./max(abs(CVL_Total)); 
 
+%% Output
+Output.X     = spec_range;
+Output.Y     = CVL_Total;
+Output.Modes = freq_OneD;
+Output.IntM  = IntM;
+Output.IntMx = IntMx;
+Output.IntMy = IntMy;
+Output.IntMz = IntMz;
 
-hold off
-
-%% Figure adjustment
-hAx = findobj(hF,'Type','Axes');
-hAx.Title.String = TitleString;
-hAx.FontSize = 16;
-hAx.XGrid = 'on';
-hAx.YGrid = 'on';
-
-saveas (hF,SaveName,'png')

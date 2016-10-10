@@ -37,29 +37,32 @@ INPUT = inputParser;
 INPUT.KeepUnmatched = 1;
 
 % Default values
-defaultAvg_Phi    = 0;
-defaultAvg_Theta  = 0;
-defaultAvg_Psi    = 0;
-defaultPlot_Atoms = 1;
-defaultPlot_Bonds = 1;
-defaultPlot_Axis  = 1;
+defaultAvg_Phi        = 0;
+defaultAvg_Theta      = 0;
+defaultAvg_Psi        = 0;
+defaultPlot_Atoms     = 1;
+defaultPlot_Bonds     = 1;
+defaultPlot_Axis      = 1;
+defaultPlot_SideChain = 0;
 
 % Add optional inputs to inputparser object
-addOptional(INPUT,'Avg_Phi'   ,defaultAvg_Phi);
-addOptional(INPUT,'Avg_Theta' ,defaultAvg_Theta);
-addOptional(INPUT,'Avg_Psi'   ,defaultAvg_Psi);
-addOptional(INPUT,'Plot_Atoms',defaultPlot_Atoms);
-addOptional(INPUT,'Plot_Bonds',defaultPlot_Bonds);
-addOptional(INPUT,'Plot_Axis' ,defaultPlot_Axis);
+addOptional(INPUT,'Avg_Phi'        ,defaultAvg_Phi);
+addOptional(INPUT,'Avg_Theta'      ,defaultAvg_Theta);
+addOptional(INPUT,'Avg_Psi'        ,defaultAvg_Psi);
+addOptional(INPUT,'Plot_Atoms'     ,defaultPlot_Atoms);
+addOptional(INPUT,'Plot_Bonds'     ,defaultPlot_Bonds);
+addOptional(INPUT,'Plot_Axis'      ,defaultPlot_Axis);
+addOptional(INPUT,'Plot_SideChain' ,defaultPlot_SideChain);
 
 parse(INPUT,GUI_Inputs_C{:});
 
-Avg_Phi    = INPUT.Results.Avg_Phi;
-Avg_Theta  = INPUT.Results.Avg_Theta;
-Avg_Psi    = INPUT.Results.Avg_Psi;
-Plot_Atoms = INPUT.Results.Plot_Atoms;
-Plot_Bonds = INPUT.Results.Plot_Bonds;
-Plot_Axis  = INPUT.Results.Plot_Axis;
+Avg_Phi        = INPUT.Results.Avg_Phi;
+Avg_Theta      = INPUT.Results.Avg_Theta;
+Avg_Psi        = INPUT.Results.Avg_Psi;
+Plot_Atoms     = INPUT.Results.Plot_Atoms;
+Plot_Bonds     = INPUT.Results.Plot_Bonds;
+Plot_Axis      = INPUT.Results.Plot_Axis;
+Plot_SideChain = INPUT.Results.Plot_SideChain;
 
 %% Main
 XYZ_MF    = Structure.XYZ;
@@ -79,14 +82,23 @@ Center_LF = (R_MF_LF*Center_MF')';
 Carbon_Pos   = XYZ_LF(Structure.AtomSerNo(:,1),:);
 Oxygen_Pos   = XYZ_LF(Structure.AtomSerNo(:,2),:);
 Nitrogen_Pos = XYZ_LF(Structure.AtomSerNo(:,3),:);
+CarbonA_Pos  = XYZ_LF(Structure.AtomSerNo(:,4),:);
+BB_Pos       = [Carbon_Pos;Oxygen_Pos;Nitrogen_Pos;CarbonA_Pos];
 
 hF = figure; 
 hold on
 
     %% draw bonds
     if Plot_Bonds
-        Conn = Connectivity(XYZ_LF);
-        gplot3(Conn,XYZ_LF);
+        if Plot_SideChain
+            XYZ_bond = XYZ_LF;
+        else
+            XYZ_bond = BB_Pos;
+        end
+        
+        Conn = Connectivity(XYZ_bond);
+        gplot3(Conn,XYZ_bond);
+
     end
     
     %% Draw atoms

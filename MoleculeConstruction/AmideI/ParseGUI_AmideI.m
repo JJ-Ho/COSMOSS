@@ -12,6 +12,7 @@ O.Anharm  = str2double(get(hGUI.Anharm ,'String'));
 O.L_Index =    str2num(get(hGUI.L_Index,'String'));
 
 % For molecule ploting ----------------------------------------------------
-O.Plot_Atoms  = get(hGUI.Plot_Atoms ,'Value' );
-O.Plot_Bonds  = get(hGUI.Plot_Bonds ,'Value' );
-O.Plot_Axis   = get(hGUI.Plot_Axis  ,'Value' );
+O.Plot_Atoms      = get(hGUI.Plot_Atoms ,'Value' );
+O.Plot_Bonds      = get(hGUI.Plot_Bonds ,'Value' );
+O.Plot_Axis       = get(hGUI.Plot_Axis  ,'Value' );
+O.Plot_SideChain  = get(hGUI.Plot_SideChain ,'Value' );

@@ -11,4 +11,8 @@ t4 = cos(Phi);
 t5 = cos(Theta);
 t6 = sin(Psi);
 t7 = sin(Theta);
-R1 = reshape([-t3.*t6+t2.*t4.*t5,-t4.*t6-t2.*t3.*t5,-t2.*t7,t2.*t3+t4.*t5.*t6,t2.*t4-t3.*t5.*t6,-t6.*t7,t4.*t7,-t3.*t7,t5],[3, 3]);
+% R1 = reshape([-t3.*t6+t2.*t4.*t5,-t4.*t6-t2.*t3.*t5,-t2.*t7,t2.*t3+t4.*t5.*t6,t2.*t4-t3.*t5.*t6,-t6.*t7,t4.*t7,-t3.*t7,t5],[3, 3]);
+
+% modify so the function can take array input 2016/10/11
+R1 = reshape([-t3.*t6+t2.*t4.*t5,-t4.*t6-t2.*t3.*t5,-t2.*t7,t2.*t3+t4.*t5.*t6,t2.*t4-t3.*t5.*t6,-t6.*t7,t4.*t7,-t3.*t7,t5],[],3,3);
+R1 = permute(R1,[2,3,1]);

@@ -1,15 +1,17 @@
-function hF = Plot2DIR(CVL,GUI_Inputs)
+function hF = Plot2DIR(hF,CVL,GUI_Inputs)
 % 
 % This function plot 2DIR and other information
 
 % ------- Version log -----------------------------------------------------
 %  
+% Ver. 1.2  161013  Add handle of figure for dynamic updates
+% 
 % Ver. 1.1  141014  Use Pointer_N instead of Pointer for normailized unit
 % 
 % Ver. 1.0  140723  Isolated from "TwoDIR_Main.m"
 % 
 % ------------------------------------------------------------------------
-% Copyright Jia-Jung Ho, 2014
+% Copyright Jia-Jung Ho, 2014-2016
 
 %% Inputs parser
 GUI_Inputs_C      = fieldnames(GUI_Inputs);
@@ -40,8 +42,8 @@ PlotCursor  = INPUT.Results.PlotCursor;
 CMAP_Index  = INPUT.Results.CMAP_Index;
 
 %% Main
-hF = figure;
-
+hAx = findobj(hF,'type','axes');
+cla(hAx)
 
 if strcmp(CVL.Lineshape,'None')
     % plot stick spectrum

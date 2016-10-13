@@ -126,7 +126,7 @@ GUI_Inputs = ParseGUI_Main(handles);
 FTIR = PlotFTIR(handles.Structure,GUI_Inputs);
 
 %% Convolve line shape
-% Plot1D(FTIR,GUI_Inputs);
+Plot1D(FTIR,GUI_Inputs);
 
 %% Update FTIR data into guidata 
 % handles.GUI_Inputs = GUI_Inputs;

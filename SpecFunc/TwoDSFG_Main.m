@@ -20,9 +20,7 @@ function  [SpectraGrid,Response] = TwoDSFG_Main(PDB_Data,GUI_Inputs)
 % Copyright Jia-Jung Ho, 2014
 
 %% -Degub------------------------------------------
-% clear all
-% 
-% PDB_Data = GetAcid;
+% PDB_Data = Structure;
 % GUI_Inputs.debug = 1;
 % %-Degub------------------------------------------
 

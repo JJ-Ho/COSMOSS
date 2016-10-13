@@ -91,7 +91,7 @@ if PlotCursor
 else
     FilesName     = CVL.FilesName;
     FilesName_Reg = regexprep(FilesName,'\_','\\_');
-    Coupling      = GUI_Inputs.Coupling;
+    Coupling      = GUI_Inputs.CouplingType;
     Coupling_Reg  = regexprep(Coupling,'\_','\\_');
     Title_String  = ['2DIR ',FilesName_Reg,', Coupling:',Coupling_Reg];
     title(Title_String,'FontSize',16); 

@@ -351,7 +351,6 @@ CVL = Conv2D(SpectraGrid,GUI_Inputs);
 CVL.FilesName = Structure.FilesName; % pass filesname for figure title
 Plot2DSFG(hF_final,CVL,GUI_Inputs);
 
-
 %% update TwoDSFG_Response into guidata
 TwoDSFG             = Response;
 TwoDSFG.SpectraGrid = SpectraGrid;

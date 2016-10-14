@@ -169,7 +169,9 @@ XArray = 1:t_max;
 O = zeros(length(XArray),3);
 
 hF = figure;
+SY = 25;
 hAx_Spec = subplot(1,2,1);
+hAx_Spec.YLim = [-SY,SY];
 
 L = 20;
 hAx_Mol = subplot(1,2,2);
@@ -204,6 +206,7 @@ while(t<t_max)
     SFG_Data.Response1D = ResponseGrid;
     
     Plot1D(hAx_Spec,SFG_Data,GUI_Inputs);
+    hAx_Spec.YLim = [-SY,SY];
     
     % Draw molecule
     XYZ_0 = Structure.XYZ;

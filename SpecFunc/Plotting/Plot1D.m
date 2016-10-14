@@ -32,7 +32,7 @@ INPUT.KeepUnmatched = 1;
 
 % Default values
 defaultPlotStick    = 1;
-defaultPlotNorm     = 1;
+defaultPlotNorm     = 0;
 % defaultF_Min        = 1600;
 % defaultF_Max        = 1800;
 defaultLineWidth    = 5;

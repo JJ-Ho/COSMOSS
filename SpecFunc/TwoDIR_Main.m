@@ -22,9 +22,7 @@ function  [SpectraGrid,Response] = TwoDIR_Main(PDB_Data,GUI_Inputs)
 % Copyright Jia-Jung Ho, 2014
 
 %% -Degub------------------------------------------
-% clear all
-% 
-% PDB_Data = GetAcid;
+% PDB_Data = Structure;
 % GUI_Inputs.debug = 1;
 % %-Degub------------------------------------------
 
@@ -104,7 +102,8 @@ Mu_Ex        = Mu.Trans_Ex;
 
 %% Generate Feynman pathway for 2DSFG
 Num_Modes = PDB_Data.Num_Modes;
-Response  = Feynman_2DIR_kron(Num_Modes,Sort_Ex_Freq,Mu_Ex);
+% Response  = Feynman_2DIR_kron(Num_Modes,Sort_Ex_Freq,Mu_Ex);
+Response  = Feynman_2DIR_Vec(Num_Modes,Sort_Ex_Freq,Mu_Ex);
 Response.H  = H;
 Response.Mu = Mu;
 

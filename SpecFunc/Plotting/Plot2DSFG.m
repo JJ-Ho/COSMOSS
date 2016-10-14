@@ -31,7 +31,7 @@ CMAP_Index  = INPUT.Results.CMAP_Index;
 %% Main
 hAx = findobj(hF,'type','axes');
 cla(hAx)
-
+axes(hAx)
 if strcmp(CVL.Lineshape,'None')
     % plot stick spectrum
     imagesc(FreqRange,FreqRange,CVL.selected_No_Conv)

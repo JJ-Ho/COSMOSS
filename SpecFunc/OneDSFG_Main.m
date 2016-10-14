@@ -42,6 +42,7 @@ defaultP_IR         = 90;
 defaultP_Vis        = 90;
 defaultP_Sum        = 90;
 defaultBeta_NN      = 0.8;
+defaultFreqRange    = 1650:1750;
 
 % add Optional inputs / Parameters
 addOptional(INPUT,'CouplingType',defaultCouplingType);
@@ -57,6 +58,7 @@ addOptional(INPUT,'P_IR'        ,defaultP_IR);
 addOptional(INPUT,'P_Vis'       ,defaultP_Vis);
 addOptional(INPUT,'P_Sum'       ,defaultA_Sum);
 addOptional(INPUT,'Beta_NN'     ,defaultBeta_NN);
+addOptional(INPUT,'FreqRange'   ,defaultFreqRange);
 
 parse(INPUT,GUI_Inputs_C{:});
 
@@ -75,6 +77,7 @@ P_IR         = INPUT.Results.P_IR;
 P_Vis        = INPUT.Results.P_Vis;
 P_Sum        = INPUT.Results.P_Sum;
 Beta_NN      = INPUT.Results.Beta_NN;
+FreqRange    = INPUT.Results.FreqRange;
 
 %% Call OneExcitonH to calculate H,mu and alpha under exciton basis
 
@@ -95,7 +98,7 @@ Num_Modes = Structure_Data.Num_Modes;
 ResMolFrame = zeros(Num_Modes,3^3+1);
 
 for N = 1:Num_Modes
-    ResMolFrame(N,1)     = Ex_Freq(N+1);
+    ResMolFrame(N,1)     = round(Ex_Freq(N+1)); % binned to 1 cm^-1
     ResMolFrame(N,2:end) = kron(squeeze(Alpha_Ex(N+1,1,:)),squeeze(Mu_Ex(1,N+1,:)));
 end
 
@@ -185,6 +188,9 @@ EJLabFrame  = zeros(size(JLabFrame,1),1); % Only one signal compose of all polar
 EJLabFrame(:,1) = JLabFrame(:,1);
 EJLabFrame(:,2) = (E*JLabFrame(:,2:end)')';
 
+%% Bin signal
+AccuGrid = Bin1D(EJLabFrame(:,1),EJLabFrame(:,2),FreqRange);
+
 %% Output
 OneDSFG.H            = H;
 OneDSFG.Mu           = Mu;
@@ -199,3 +205,6 @@ OneDSFG.E            = E;
 OneDSFG.EJLabFrame   = EJLabFrame;
 OneDSFG.FilesName    = Structure_Data.FilesName;
 OneDSFG.CouplingType = CouplingType;
+OneDSFG.SpecType     = 'SFG';
+OneDSFG.Response1D   = AccuGrid;
+OneDSFG.freq_OneD    = FreqRange;

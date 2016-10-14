@@ -66,6 +66,7 @@ muEx_Vec = muEx(2:Num_Modes+1,1,:);
 
 Freq01Ex = H.Sort_Ex_Freq;
 freq_OneD = Freq01Ex(2:Num_Modes+1);
+freq_OneD = round(freq_OneD); % bin the fre to 1cm^-1
 
 mu2_OneD = sum(muEx_Vec.^2,3); % E-field of FTIR signal is mu^2 base on feynmann duagram! 
 

@@ -119,10 +119,65 @@ function FTIR_Callback(hObject, eventdata, handles)
 % hObject    handle to PlotFTIR (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
 GUI_Inputs = ParseGUI_Main(handles);
-FTIR = FTIR_Main(handles.Structure,GUI_Inputs);
-Plot1D(FTIR,GUI_Inputs);
+Structure = handles.Structure;
+
+hF = figure;
+
+if eq(GUI_Inputs.Sampling,1)
+    % Pre-allocate
+    Num_Modes  = Structure.Num_Modes;
+    Freq_Orig  = Structure.freq;
+    Response1D = zeros(Num_Modes,1);
+    
+    
+    StandardDiv = GUI_Inputs.FWHM./(2*sqrt(2*log(2)));
+    P_FlucCorr  = GUI_Inputs.P_FlucCorr/100; % turn percentage to number within 0~1
+    
+    TSTART = zeros(GUI_Inputs.Sample_Num,1,'uint64');
+    TIME   = zeros(GUI_Inputs.Sample_Num,1);
+    
+    for i = 1:GUI_Inputs.Sample_Num
+        DynamicUpdate = handles.GUI_Main.DynamicUpdate.Value;
+        UpdateStatus  = handles.GUI_Main.UpdateStatus.Value;
+        if and(~eq(i,1), and(eq(DynamicUpdate,1),~eq(UpdateStatus,1)))
+            break
+        end
+        
+        TSTART(i) = tic;
+        % Add diagonal disorder
+        Correlation_Dice = rand;
+
+        if Correlation_Dice < P_FlucCorr
+            Fluctuation = StandardDiv'.*(randn(1,1).*ones(Num_Modes,1));
+        else 
+            Fluctuation = StandardDiv'.*randn(Num_Modes,1); 
+        end
+        Structure.freq = Freq_Orig + Fluctuation;
+        FTIR = FTIR_Main(Structure,GUI_Inputs);
+        
+        % recursive part
+        Response1D = Response1D + FTIR.Response1D; % note freq is binned and sported, so direct addition work
+        FTIR.Response1D = Response1D;
+        
+        TIME(i) = toc(TSTART(i));
+        disp(['Run ' num2str(i) ' finished within '  num2str(TIME(i)) '...'])
+        
+        while ~eq(DynamicUpdate,0)
+            FTIR.FilesName = [Structure.FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title
+            Plot1D(hF,FTIR,GUI_Inputs);
+            drawnow
+            DynamicUpdate = 0;
+        end
+    end
+    
+        Total_TIME = sum(TIME);
+        disp(['Total time: ' num2str(Total_TIME)])
+        
+else
+    FTIR = FTIR_Main(Structure,GUI_Inputs);
+    Plot1D(hF,FTIR,GUI_Inputs);
+end
 
 %% Update FTIR data into guidata 
 handles.FTIR       = FTIR;
@@ -132,10 +187,65 @@ function SFG_Callback(hObject, eventdata, handles)
 % hObject    handle to PlotSFG (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
 GUI_Inputs = ParseGUI_Main(handles);
-OneDSFG    = OneDSFG_Main(handles.Structure,GUI_Inputs);
-Plot1D(OneDSFG,GUI_Inputs);
+Structure = handles.Structure;
+
+hF = figure;
+
+if eq(GUI_Inputs.Sampling,1)
+    % Pre-allocate
+    Num_Modes  = Structure.Num_Modes;
+    Freq_Orig  = Structure.freq;
+    Response1D = zeros(Num_Modes,1);
+    
+    
+    StandardDiv = GUI_Inputs.FWHM./(2*sqrt(2*log(2)));
+    P_FlucCorr  = GUI_Inputs.P_FlucCorr/100; % turn percentage to number within 0~1
+    
+    TSTART = zeros(GUI_Inputs.Sample_Num,1,'uint64');
+    TIME   = zeros(GUI_Inputs.Sample_Num,1);
+    
+    for i = 1:GUI_Inputs.Sample_Num
+        DynamicUpdate = handles.GUI_Main.DynamicUpdate.Value;
+        UpdateStatus  = handles.GUI_Main.UpdateStatus.Value;
+        if and(~eq(i,1), and(eq(DynamicUpdate,1),~eq(UpdateStatus,1)))
+            break
+        end
+        
+        TSTART(i) = tic;
+        % Add diagonal disorder
+        Correlation_Dice = rand;
+
+        if Correlation_Dice < P_FlucCorr
+            Fluctuation = StandardDiv'.*(randn(1,1).*ones(Num_Modes,1));
+        else 
+            Fluctuation = StandardDiv'.*randn(Num_Modes,1); 
+        end
+        Structure.freq = Freq_Orig + Fluctuation;
+        OneDSFG = OneDSFG_Main(Structure,GUI_Inputs);
+        
+        % recursive part
+        Response1D = Response1D + OneDSFG.Response1D; % note freq is binned and sported, so direct addition work
+        OneDSFG.Response1D = Response1D;
+        
+        TIME(i) = toc(TSTART(i));
+        disp(['Run ' num2str(i) ' finished within '  num2str(TIME(i)) '...'])
+        
+        while ~eq(DynamicUpdate,0)
+            OneDSFG.FilesName = [Structure.FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title
+            Plot1D(hF,OneDSFG,GUI_Inputs);
+            drawnow
+            DynamicUpdate = 0;
+        end
+    end
+    
+        Total_TIME = sum(TIME);
+        disp(['Total time: ' num2str(Total_TIME)])
+        
+else
+    OneDSFG = OneDSFG_Main(Structure,GUI_Inputs);
+    Plot1D(hF,OneDSFG,GUI_Inputs);
+end
 
 %% Update share data
 handles.OneDSFG = OneDSFG;

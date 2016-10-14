@@ -95,7 +95,7 @@ Num_Modes = Structure_Data.Num_Modes;
 ResMolFrame = zeros(Num_Modes,3^3+1);
 
 for N = 1:Num_Modes
-    ResMolFrame(N,1)     = Ex_Freq(N+1);
+    ResMolFrame(N,1)     = round(Ex_Freq(N+1)); % binned to 1 cm^-1
     ResMolFrame(N,2:end) = kron(squeeze(Alpha_Ex(N+1,1,:)),squeeze(Mu_Ex(1,N+1,:)));
 end
 
@@ -200,3 +200,5 @@ OneDSFG.EJLabFrame   = EJLabFrame;
 OneDSFG.FilesName    = Structure_Data.FilesName;
 OneDSFG.CouplingType = CouplingType;
 OneDSFG.SpecType     = 'SFG';
+OneDSFG.Response1D   = EJLabFrame(:,2);
+OneDSFG.freq_OneD    = EJLabFrame(:,1);

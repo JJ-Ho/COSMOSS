@@ -126,9 +126,10 @@ hF = figure;
 
 if eq(GUI_Inputs.Sampling,1)
     % Pre-allocate
+    GridSize   = length(GUI_Inputs.FreqRange);
     Num_Modes  = Structure.Num_Modes;
     Freq_Orig  = Structure.freq;
-    Response1D = zeros(Num_Modes,1);
+    Response1D = zeros(GridSize,1);
     
     
     StandardDiv = GUI_Inputs.FWHM./(2*sqrt(2*log(2)));
@@ -194,9 +195,10 @@ hF = figure;
 
 if eq(GUI_Inputs.Sampling,1)
     % Pre-allocate
+    GridSize   = length(GUI_Inputs.FreqRange);
     Num_Modes  = Structure.Num_Modes;
     Freq_Orig  = Structure.freq;
-    Response1D = zeros(Num_Modes,1);
+    Response1D = zeros(GridSize,1);
     
     
     StandardDiv = GUI_Inputs.FWHM./(2*sqrt(2*log(2)));

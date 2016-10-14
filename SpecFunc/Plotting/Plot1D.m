@@ -85,36 +85,34 @@ axes(hAx)
 hold on
 % Get Frequency axis range 
 spec_range = F_Min:F_Max;
+N_Grid = length(spec_range);
 
 % plot baseline
 line([spec_range(1);spec_range(end)],[0;0],'Color',[1,0,0])
 
-spec_array1 = bsxfun(@times,ones(Num_Modes,length(spec_range)),spec_range);
-spec_array2 = bsxfun(@minus,spec_array1,Res_Freq);
+% spec_array1 = bsxfun(@times,ones(Num_Modes,length(spec_range)),spec_range);
+% spec_array2 = bsxfun(@minus,spec_array1,Res_Freq);
+spec_array = (1:N_Grid) - ceil(N_Grid/2);
 
 switch LineShape 
     case 'G' % Gaussian
-        LineShape = 1i*exp(-(spec_array2.^2)./(LineWidth^2));
-        CVL = bsxfun(@times,LineShape,Response1D); 
-        CVL_Total = sum(CVL,1);
+        LineShape = 1i*exp(-(spec_array.^2)./(LineWidth^2));
+        %CVL = bsxfun(@times,LineShape,Response1D); 
+        %CVL_Total = sum(CVL,1);
     case 'L' % Lorentzain 
         LineWidth = LineWidth/2;
-        LineShape = spec_array2./((spec_array2.^2)+(LineWidth^2)) + 1i*LineWidth./(spec_array2.^2+LineWidth^2);
-        CVL = bsxfun(@times,LineShape,Response1D); 
-        CVL_Total = sum(CVL,1);
+        LineShape = spec_array./((spec_array.^2)+(LineWidth^2)) + 1i*LineWidth./(spec_array.^2+LineWidth^2);
+        %CVL = bsxfun(@times,LineShape,Response1D); 
+        %CVL_Total = sum(CVL,1);
     case 'KK' % K-K use K-K relation to generate Re part
         LineWidth = LineWidth/2;
-        LineShape = (1/pi)*(LineWidth)./(spec_array2.^2+(LineWidth)^2);
-        Im = bsxfun(@times,LineShape,Response1D); 
-        Im_Total = sum(Im,1);
-        
-        Re = kkimbook2(spec_range,Im_Total,1);
-
-        CVL_Total = 1i*Im_Total + Re;       
+        Im = (1/pi)*(LineWidth)./(spec_array.^2+(LineWidth)^2);
+        Re = kkimbook2(spec_range,Im,1);
+        LineShape = Im+Re;
+        %CVL_Total = 1i*Im_Total + Re;       
 end
 
-% CVL = bsxfun(@times,LineShape,Response1DSFG); 
-% CVL_Toatl = sum(CVL,1);
+CVL_Total = conv(Response1D,LineShape,'same');
 
 switch Signal_Type
     case 'Hetero' % heterodyne
@@ -136,7 +134,7 @@ end
 
 
 if eq(PlotStick,1)
-    line([Res_Freq';Res_Freq'],[zeros(1,Num_Modes);Stick'],'Tag','Stick');
+    line([Res_Freq;Res_Freq],[zeros(1,N_Grid);Stick'],'Tag','Stick');
     %plot(Res_1DSFG_Freq,Response1DSFG,'rx')
 end
 

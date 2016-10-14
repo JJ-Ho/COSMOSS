@@ -41,18 +41,20 @@ INPUT.KeepUnmatched = true;
 % Default values
 defaultCouplingType = 'TDC';
 defaultBeta_NN      = 0.8;
+defaultFreqRange    = 1650:1750;
 
 
 % add Optional inputs / Parameters
 addOptional(INPUT,'CouplingType',defaultCouplingType);
 addOptional(INPUT,'Beta_NN'     ,defaultBeta_NN);
+addOptional(INPUT,'FreqRange'   ,defaultFreqRange);
 
 parse(INPUT,GUI_Inputs_C{:});
 
 % Re-assign variable names
 CouplingType = INPUT.Results.CouplingType;
 Beta_NN      = INPUT.Results.Beta_NN;
-
+FreqRange    = INPUT.Results.FreqRange;
 
 %% Main
 Num_Modes = PDB_Data.Num_Modes;
@@ -70,11 +72,14 @@ freq_OneD = round(freq_OneD); % bin the fre to 1cm^-1
 
 mu2_OneD = sum(muEx_Vec.^2,3); % E-field of FTIR signal is mu^2 base on feynmann duagram! 
 
+%% Bin signal
+AccuGrid = Bin1D(freq_OneD,mu2_OneD,FreqRange);
+
 
 %% Output
 Output.Num_Modes    = Num_Modes;
-Output.Response1D   = mu2_OneD;
-Output.freq_OneD    = freq_OneD;
+Output.Response1D   = AccuGrid;
+Output.freq_OneD    = FreqRange;
 Output.SpecType     = 'FTIR';
 Output.FilesName    = PDB_Data.FilesName;
 Output.CouplingType = CouplingType;

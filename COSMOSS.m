@@ -120,16 +120,11 @@ function FTIR_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-%% Read GUI
 GUI_Inputs = ParseGUI_Main(handles);
-
-FTIR = PlotFTIR(handles.Structure,GUI_Inputs);
-
-%% Convolve line shape
+FTIR = FTIR_Main(handles.Structure,GUI_Inputs);
 Plot1D(FTIR,GUI_Inputs);
 
 %% Update FTIR data into guidata 
-% handles.GUI_Inputs = GUI_Inputs;
 handles.FTIR       = FTIR;
 guidata(hObject,handles)
 
@@ -140,9 +135,9 @@ function SFG_Callback(hObject, eventdata, handles)
 
 GUI_Inputs = ParseGUI_Main(handles);
 OneDSFG    = OneDSFG_Main(handles.Structure,GUI_Inputs);
-PlotOneDSFG(OneDSFG,GUI_Inputs);
+Plot1D(OneDSFG,GUI_Inputs);
 
-% Update share data
+%% Update share data
 handles.OneDSFG = OneDSFG;
 guidata(hObject,handles);
 

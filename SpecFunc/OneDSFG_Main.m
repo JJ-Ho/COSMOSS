@@ -199,3 +199,4 @@ OneDSFG.E            = E;
 OneDSFG.EJLabFrame   = EJLabFrame;
 OneDSFG.FilesName    = Structure_Data.FilesName;
 OneDSFG.CouplingType = CouplingType;
+OneDSFG.SpecType     = 'SFG';

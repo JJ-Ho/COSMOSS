@@ -163,7 +163,7 @@ SFG_Data.CouplingType = CouplingType;
 
 %% Aqurire Orientation and generate response 
 t=1;
-t_max = 500;
+t_max = 100;
 SampleRate = 20; % Hz
 XArray = 1:t_max;
 O = zeros(length(XArray),3);
@@ -182,6 +182,7 @@ view(hAx_Mol,[131,27])
 rotate3d(hAx_Mol,'on')
 
 
+
 m = mobiledev;
 
 m.SampleRate = SampleRate;
@@ -191,6 +192,7 @@ m.Logging = 1;
 pause(1)
 
 while(t<t_max)
+    TSTART1 = tic;
     pause(1/SampleRate)
     
     [Read,T_Read] = orientlog(m);
@@ -208,7 +210,11 @@ while(t<t_max)
     Plot1D(hAx_Spec,SFG_Data,GUI_Inputs);
     hAx_Spec.YLim = [-SY,SY];
     
+    TIME1 = toc(TSTART1);
+    
     % Draw molecule
+    TSTART2 = tic;
+    
     XYZ_0 = Structure.XYZ;
     XYZ_0 = bsxfun(@minus,XYZ_0,sum(XYZ_0,1)./size(XYZ_0,1));
     
@@ -243,7 +249,11 @@ while(t<t_max)
     hAx_Mol.ZLim = [-L,L];
     drawnow
     
-    t = t+1
+    t = t +1;
+    TIME2 = toc(TSTART2);
+    disp([num2str(t) '-th loop finished...'])
+    disp(['Calculation ' num2str(t) ' finished within '  num2str(TIME1) '...'])
+    disp(['Drawing ' num2str(t) ' finished within '  num2str(TIME2) '!'])
 end
 
 m.Logging = 0;

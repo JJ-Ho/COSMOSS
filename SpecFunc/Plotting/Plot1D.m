@@ -136,7 +136,7 @@ end
 
 
 if eq(PlotStick,1)
-    line([Res_Freq;Res_Freq],[zeros(1,N_Grid);Stick'],'Tag','Stick');
+    line([Res_Freq;Res_Freq],[zeros(1,N_Grid);Stick']);
     %plot(Res_1DSFG_Freq,Response1DSFG,'rx')
 end
 

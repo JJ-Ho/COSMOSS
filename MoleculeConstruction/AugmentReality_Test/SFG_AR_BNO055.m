@@ -174,6 +174,9 @@ hAx_Mol = subplot(1,2,2);
 hAx_Mol.XLim = [-L,L];
 hAx_Mol.YLim = [-L,L];
 hAx_Mol.ZLim = [-L,L];
+hAx_Mol.XLabel.String = 'X';
+hAx_Mol.YLabel.String = 'Y';
+hAx_Mol.ZLabel.String = 'Z';
 view(hAx_Mol,[131,27])
 rotate3d(hAx_Mol,'on')
 
@@ -227,7 +230,7 @@ while(toc<t_max)
     V_Quad(i,:) = V_Quad(i,:)./norm(V_Quad(i,:));
     
     % Spectrum genration
-    R3_Mol2Lab = R3_Quad(V_Quad(i,1),V_Quad(i,2),V_Quad(i,3),V_Quad(i,4));
+    R3_Mol2Lab = R3_Quad(V_Quad(i,1),-V_Quad(i,2),-V_Quad(i,3),-V_Quad(i,4));
     
     Response = E*J*R3_Mol2Lab*Beta_Mol';
     ResponseGrid = Bin1D(Ex_Freq,Response,FreqRange);
@@ -243,7 +246,7 @@ while(toc<t_max)
     XYZ_0 = Structure.XYZ;
     XYZ_0 = bsxfun(@minus,XYZ_0,sum(XYZ_0,1)./size(XYZ_0,1));
     
-    R1_Mol2Lab = R1_Quad(V_Quad(i,1),V_Quad(i,2),V_Quad(i,3),V_Quad(i,4));
+    R1_Mol2Lab = R1_Quad(V_Quad(i,1),-V_Quad(i,2),-V_Quad(i,3),-V_Quad(i,4));
     XYZ_1 = (R1_Mol2Lab*XYZ_0')';
     
     Carbon_Pos   = XYZ_1(Structure.AtomSerNo(:,1),:);

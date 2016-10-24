@@ -123,6 +123,7 @@ GUI_Inputs = ParseGUI_Main(handles);
 Structure = handles.Structure;
 
 hF = figure;
+hAx = axes;
 
 if eq(GUI_Inputs.Sampling,1)
     % Pre-allocate
@@ -166,7 +167,7 @@ if eq(GUI_Inputs.Sampling,1)
         
         while ~eq(DynamicUpdate,0)
             FTIR.FilesName = [Structure.FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title
-            Plot1D(hF,FTIR,GUI_Inputs);
+            Plot1D(hAx,FTIR,GUI_Inputs);
             drawnow
             DynamicUpdate = 0;
         end
@@ -177,7 +178,7 @@ if eq(GUI_Inputs.Sampling,1)
         
 else
     FTIR = FTIR_Main(Structure,GUI_Inputs);
-    Plot1D(hF,FTIR,GUI_Inputs);
+    Plot1D(hAx,FTIR,GUI_Inputs);
 end
 
 %% Update FTIR data into guidata 
@@ -192,6 +193,7 @@ GUI_Inputs = ParseGUI_Main(handles);
 Structure = handles.Structure;
 
 hF = figure;
+hAx = axes;
 
 if eq(GUI_Inputs.Sampling,1)
     % Pre-allocate
@@ -235,7 +237,7 @@ if eq(GUI_Inputs.Sampling,1)
         
         while ~eq(DynamicUpdate,0)
             OneDSFG.FilesName = [Structure.FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title
-            Plot1D(hF,OneDSFG,GUI_Inputs);
+            Plot1D(hAx,OneDSFG,GUI_Inputs);
             drawnow
             DynamicUpdate = 0;
         end
@@ -246,7 +248,7 @@ if eq(GUI_Inputs.Sampling,1)
         
 else
     OneDSFG = OneDSFG_Main(Structure,GUI_Inputs);
-    Plot1D(hF,OneDSFG,GUI_Inputs);
+    Plot1D(hAx,OneDSFG,GUI_Inputs);
 end
 
 %% Update share data

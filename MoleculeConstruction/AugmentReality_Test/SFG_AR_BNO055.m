@@ -4,7 +4,8 @@ close all
 
 GUI_Inputs.debug = '1';
 GUI_Inputs.FreqRange = 1600:1700;
-GUI_Inputs.CouplingType = 'NN_Mix_TDC';
+% GUI_Inputs.CouplingType = 'NN_Mix_TDC';
+GUI_Inputs.CouplingType = 'Cho_APB';
 GUI_Inputs.Beta_NN = 0.8;
 
 %% Inputs parser
@@ -182,7 +183,11 @@ rotate3d(hAx_Mol,'on')
 
 
 %% Create serial object for Arduino
-s = serial('/dev/tty.usbmodem1421'); % change the COM Port number as needed
+[~,Port] = unix('ls /dev/tty.usb*');
+Port(Port==10) = []; % remove neline in unix, in Windows us "13"
+% s = serial('/dev/tty.usbmodem1421'); % change the COM Port number as needed
+% s = serial('/dev/tty.usbmodemFA131'); % change the COM Port number as needed
+s = serial(Port);
 s.BaudRate = 115200;
 % Connect the serial port to Arduino
 try
@@ -280,6 +285,7 @@ while(toc<t_max)
     disp([num2str(i) '-th loop finished...'])
 end
 
+%% close communication
 fclose(s);
 delete(s)
 clear s;

@@ -170,7 +170,9 @@ CurrentRowInd = CurrentCell(:,1)';
 Mode_Ind_Str = num2str(TableData(CurrentRowInd,1)');
 
 % Update the Mode index on GUI
-set(handles.GUI_Modes.Mode_Ind,'String', Mode_Ind_Str);
+handles.GUI_Modes.Loc_Ind.String = Mode_Ind_Str;
+handles.GUI_Modes.Ex_Ind.String = Mode_Ind_Str;
+handles.GUI_Modes.EigneVec_Ind.String = Mode_Ind_Str;
 
 %% update handles
 handles.Mode_Ind_Str = Mode_Ind_Str;
@@ -184,7 +186,13 @@ function uitable_SortCallback(hObject, eventdata, handles)
 TableData = handles.GUI_Modes.ModeList.Data;
 SortColumn = handles.GUI_Modes.SortInd.Value;
 
-[~,SortInd] = sort(abs(TableData(:,SortColumn)),'descend');
+if eq(SortColumn,1) 
+    % for sorting index
+    [~,SortInd] = sort(abs(TableData(:,SortColumn)),'ascend');
+else
+    [~,SortInd] = sort(abs(TableData(:,SortColumn)),'descend');
+end
+
 SortedData = TableData(SortInd,:);
 
 % Update Table on GUI

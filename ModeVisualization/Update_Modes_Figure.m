@@ -252,8 +252,8 @@ if Plot_Raman
     end
 
     for i = 1: N_Plot_Mode
-        RamanM_Loc = reshape(Alpha(i,:),3,3);
-        plot_Raman(hAx,RamanM_Loc,Center(i,:),Scale_Raman,N_mesh,Mode_colors(i,:))
+        RamanM = reshape(Alpha(i,:),3,3);
+        plot_Raman(hAx,RamanM,Center(i,:),Scale_Raman,N_mesh,Mode_colors(i,:))
     end
 end
 

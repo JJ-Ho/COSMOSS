@@ -76,7 +76,6 @@ end
 Loc_Mode_colors = Mode_colors(           1:        N_Loc_Mode,:);
 Ex_Mode_colors  = Mode_colors(N_Loc_Mode+1:Total_N_Plot_Modes,:);
 
-
 %% Rotate from molecule frame to lab frame
 
 % Orientation = Orientation/180*pi; % turn to radius unit
@@ -205,14 +204,21 @@ hold on
 hold off
 
 %% Figure setting
-% Fig_Title = ['Loc #: ', num2str(Loc_Ind ), '; Ex #: ', num2str(Ex_Ind ) ];
-Fig_Title = ['Ex #: ', num2str(Ex_Ind ) ];
+% Inherent the molecular plot title
+Fig_Title = hAx.Title.String;
+
+Mode_Ind_Str  = sprintf('#%d', Ex_Ind);
+Mode_Freq_Str = sprintf(', @%6.2f cm^{-1}' ,OneDSFG.H.Sort_Ex_Freq(Ex_Ind +1));
+Scaling_Str   = sprintf(', S\\mu= %2.1f, S\\alpha= %2.1f',Scale_TDV,Scale_Raman);
+
+Fig_Title{length(Fig_Title)+1} = [Mode_Ind_Str, Mode_Freq_Str, Scaling_Str];
 hAx.Title.String = Fig_Title;
 
 lightangle(0,90)
 camlight
 
 view([-20,16])
+
 %% Output
 Output.Loc_Ind = Loc_Ind;
 Output.Ex_Ind  = Ex_Ind;

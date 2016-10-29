@@ -32,41 +32,44 @@ INPUT.KeepUnmatched = 1;
 
 % Default values
 defaultPlotStick    = 1;
-defaultPlotNorm     = 1;
-defaultF_Min        = 1600;
-defaultF_Max        = 1800;
+defaultPlotNorm     = 0;
+% defaultF_Min        = 1600;
+% defaultF_Max        = 1800;
 defaultLineWidth    = 5;
 defaultSignal_Type  = 'Hetero';
-defaultLineShape    = 'G';
+defaultLineShape    = 'L';
 defaultPlotCursor   = 0;
-defaultIntegralArea = 1;
+defaultIntegralArea = 0;
+defaultFreqRange    = 1650:1750;
 
 % add Optional inputs / Parameters
 addOptional(INPUT,'PlotStick'   ,defaultPlotStick);
 addOptional(INPUT,'PlotNorm'    ,defaultPlotNorm);
-addOptional(INPUT,'F_Min'       ,defaultF_Min);
-addOptional(INPUT,'F_Max'       ,defaultF_Max);
+% addOptional(INPUT,'F_Min'       ,defaultF_Min);
+% addOptional(INPUT,'F_Max'       ,defaultF_Max);
 addOptional(INPUT,'LineWidth'   ,defaultLineWidth);
 addOptional(INPUT,'Signal_Type' ,defaultSignal_Type);
 addOptional(INPUT,'LineShape'   ,defaultLineShape);
 addOptional(INPUT,'PlotCursor'  ,defaultPlotCursor);
 addOptional(INPUT,'IntegralArea',defaultIntegralArea);
+addOptional(INPUT,'FreqRange'   ,defaultFreqRange);
 
 parse(INPUT,GUI_Inputs_C{:});
 
 % Re-assign variable names
 PlotStick    = INPUT.Results.PlotStick;
 PlotNorm     = INPUT.Results.PlotNorm;
-F_Min        = INPUT.Results.F_Min;
-F_Max        = INPUT.Results.F_Max;
+% F_Min        = INPUT.Results.F_Min;
+% F_Max        = INPUT.Results.F_Max;
 LineWidth    = INPUT.Results.LineWidth;
 Signal_Type  = INPUT.Results.Signal_Type;
 LineShape    = INPUT.Results.LineShape;
 PlotCursor   = INPUT.Results.PlotCursor;
 IntegralArea = INPUT.Results.IntegralArea;
+FreqRange    = INPUT.Results.FreqRange;
 
 %% Determine spectrum type  
-Num_Modes = OneD_Data.Num_Modes;
+%Num_Modes = OneD_Data.Num_Modes;
 
 switch OneD_Data.SpecType
     case 'FTIR'
@@ -83,11 +86,10 @@ axes(hAx)
 
 hold on
 % Get Frequency axis range 
-spec_range = F_Min:F_Max;
-N_Grid = length(spec_range);
+N_Grid = length(FreqRange);
 
 % plot baseline
-line([spec_range(1);spec_range(end)],[0;0],'Color',[1,0,0])
+line([FreqRange(1);FreqRange(end)],[0;0],'Color',[1,0,0])
 
 % spec_array1 = bsxfun(@times,ones(Num_Modes,length(spec_range)),spec_range);
 % spec_array2 = bsxfun(@minus,spec_array1,Res_Freq);
@@ -106,7 +108,7 @@ switch LineShape
     case 'KK' % K-K use K-K relation to generate Re part
         LineWidth = LineWidth/2;
         Im = (1/pi)*(LineWidth)./(spec_array.^2+(LineWidth)^2);
-        Re = kkimbook2(spec_range,Im,1);
+        Re = kkimbook2(FreqRange,Im,1);
         LineShape = Im+Re;
         %CVL_Total = 1i*Im_Total + Re;       
 end
@@ -133,19 +135,20 @@ end
 
 
 if eq(PlotStick,1)
-    line([Res_Freq;Res_Freq],[zeros(1,N_Grid);Stick'],'Tag','Stick');
+    line([Res_Freq;Res_Freq],[zeros(1,N_Grid);Stick']);
     %plot(Res_1DSFG_Freq,Response1DSFG,'rx')
 end
 
-plot(spec_range,PlotY,'-','LineWidth',2)
+plot(FreqRange,PlotY,'-','LineWidth',2)
 hold off
 
 %% figure setting 
+hAx.Units = 'normalized'; % use normalized scale
 hF = hAx.Parent;
 hF.Units = 'normalized'; % use normalized scale
-hAx = hF.CurrentAxes;
+
 hAx.FontSize = 14;
-hAx.XLim = [spec_range(1),spec_range(end)];
+hAx.XLim = [FreqRange(1),FreqRange(end)];
 hAx.XLabel.String = 'cm^{-1}';
 
 if PlotCursor
@@ -164,7 +167,7 @@ end
 
 if IntegralArea
     % integrate the curve area
-    Area = trapz(spec_range,abs(PlotY));
+    Area = trapz(FreqRange,abs(PlotY));
     uicontrol(hF,...
               'style','text',...
               'Position',[100,100,100,25],...

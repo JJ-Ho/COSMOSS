@@ -1,30 +1,29 @@
-% function plot_Raman(hAx,Raman,Center,RT_scale,N_mesh,F_Color)
+function plot_Raman(hAx,Raman,Center,RT_scale,N_mesh,F_Color)
 %% debug
-hF =figure;
-hAx = axes;
-Raman = [1,0,0;0,-5,0;0,0,10];
+% clear all
+% hF =figure;
+% hAx = axes;
+% % Raman = [1,0,0;0,-5,0;0,0,10];
 % Raman = [5.5,0,-4.5;0,-5,0;-4.5,0,5.5];
-Center = [0,0,0];
-RT_scale = 1;
-N_mesh = 20;
-F_Color = [1,0,0];
+% Center = [0,0,0];
+% RT_scale = 1;
+% N_mesh = 20;
+% F_Color = [1,0,0];
 
 %% draw Raman tensor
 
 % Draw_Type = 'Ball';
-Draw_Type = 'Disk';
+% Draw_Type = 'Disk';
 % Draw_Type = 'Arrow';
+Draw_Type = 'HyperE';
 
-Orig_Frame = [1,0,0;0,1,0;0,0,1]';
     
 % Extract ellipsoid info from Raman tensor
 [V,D] = eig(Raman);
 SemiAxisL = RT_scale.*diag(D);
-%E_Axis    = V;
-RM = Euler_Rot(V,Orig_Frame); % Rotation Matrix
-RM = eye(3); %% debug
+RM = V; % Rotational matrix
 
-% hold on
+
 switch Draw_Type
     case 'Ball'
         %% Plot single ellipsoid
@@ -68,11 +67,13 @@ switch Draw_Type
     [D_x, D_y, D_z] = cylinder(Disk_Thickness_Array,N_mesh);  
     % XY disk
     Dxy = [   SemiAxisL(1).*D_x(:),   SemiAxisL(2).*D_y(:), Disk_Thickness.*D_z(:)];
-    % XY disk
+    % YZ disk
     Dyz = [ Disk_Thickness.*D_z(:),   SemiAxisL(2).*D_y(:),   SemiAxisL(3).*D_x(:)];
+    %Dyz = [ Disk_Thickness.*D_y(:),   SemiAxisL(2).*D_z(:),   SemiAxisL(3).*D_x(:)];
     % XY disk
     Dzx = [   SemiAxisL(1).*D_x(:), Disk_Thickness.*D_z(:),   SemiAxisL(3).*D_y(:)];
     
+    hold on
     % rotation / translation and plot the disks
     Rot_Dxy = (RM*Dxy')';
     Rot_Dxy_XM = reshape(Rot_Dxy(:,1),2,N_mesh+1);
@@ -121,11 +122,12 @@ switch Draw_Type
     patch(Trans_Dzx_XM',Trans_Dzx_YM',Trans_Dzx_ZM',F_Color(3,:),...
           'FaceLighting','gouraud',...
           'FaceAlpha',PatchFaceAlpha)
+    hold off
     
     case 'Arrow'
         %% Plot three 3D arrows with color representing sign
         Axes_Scale = abs(SemiAxisL)';
-        Principle_Axes = bsxfun(@times,Axes_Scale,V');
+        Principle_Axes = bsxfun(@times,V,Axes_Scale);
         
         % Color of arrow
         ColorOrder = zeros(6,3);
@@ -150,13 +152,46 @@ switch Draw_Type
         
         set(hAx,'ColorOrder',ColorOrder)
         arrow3(Arror_Orig,Arrow_End,'o2',Arror_W,Arror_H)
+        
+    case 'HyperE'
+        N_Grid = 100;
+
+        phi   = linspace(0,2*pi,N_Grid);
+        theta = linspace(-pi/2,pi/2,N_Grid);
+        [Phi,Theta] = meshgrid(phi,theta);
+
+        T = Theta(:);
+        P = Phi(:);
+        V1 = [cos(T).*cos(P),cos(T).*sin(P),sin(T)];
+        V2 = V1;
+        %V2 = [-sin(T).*cos(P),-sin(T).*sin(P),cos(T)]; % for cross polarization
+
+        Rho = sum((V1*Raman).*V2,2);
+        Rho = reshape(Rho,size(Theta));
+
+        [X,Y,Z] = sph2cart(Phi,Theta,abs(Rho));
+        X = X + Center(1);
+        Y = Y + Center(2);
+        Z = Z + Center(3);
+        colormap('cool')
+        
+        caxis([-1,1])
+        hSurf = surf(X,Y,Z,sign(Rho)); % colormapping sign only
+        
+        Transparency = 0.3;
+        hSurf.EdgeColor = 'interp';
+        hSurf.FaceAlpha = Transparency;
+        hSurf.EdgeAlpha = Transparency;
 end
-% hold off
 
 %% debug
-axis equal
-view([40,20]) 
-lightangle(-45,30)
-hAx.XLabel.String = 'x';
-hAx.YLabel.String = 'y';
-hAx.ZLabel.String = 'z';
+% axis equal
+% view([40,20]) 
+% lightangle(-45,30)
+% hAx.XLabel.String = 'x';
+% hAx.YLabel.String = 'y';
+% hAx.ZLabel.String = 'z';
+% hAx.Box = 'on';
+% hAx.XLim = [-10,10];
+% hAx.YLim = [-5,5];
+% hAx.ZLim = [-10,10];

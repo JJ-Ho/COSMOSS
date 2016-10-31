@@ -134,7 +134,7 @@ for Ex_i = 1:N_Ex_Mode
 end
 Alpha_Ex_LF = reshape(AlphaM_Ex_LF,N_Ex_Mode,9);
 
-%% Retreive Axes from input figure with molecule plotted 
+%% Retreive Axes from input figure with molecule plotted
 hAx = findobj(hF,'type','axes');
 hold on
 

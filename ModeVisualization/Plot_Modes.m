@@ -127,10 +127,7 @@ set(handles.GUI_Modes.ModeList,'Data',Modes.ModeList)
 uitable_SortCallback(hObject, eventdata, handles)
 
 function Update_Figure(hObject, eventdata, handles)
-%% Use Update Modes to update the structure and the corresponding Mu & Alpha 
-Update_Modes(hObject, eventdata, handles)
-handles = guidata(hObject);
-
+%% Gather necessary inputs
 GUI_Inputs = ParseGUI_Modes(handles);
 Structure  = handles.Structure;
 OneDSFG    = handles.OneDSFG;

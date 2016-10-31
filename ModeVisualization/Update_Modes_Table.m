@@ -26,7 +26,6 @@ if eq(Num_Ex_Mode,1)
     Ex_Alpha     = Ex_Alpha';
 end
 
-Ex_Alpha_zz   = Ex_Alpha(:,9);
 Ex_Alpha_Norm = sqrt(sum(Ex_Alpha(:,:).^2,2)); % Norm defined in Silby's paper: JCP 1992, 97, 5607?5615.
 
 % Diagonalze Raman Tensor so I can look at their priciple values

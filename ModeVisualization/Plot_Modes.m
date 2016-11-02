@@ -22,7 +22,7 @@ function varargout = Plot_Modes(varargin)
 
 % Edit the above text to modify the response to help Plot_Modes
 
-% Last Modified by GUIDE v2.5 10-Feb-2016 16:58:08
+% Last Modified by GUIDE v2.5 01-Nov-2016 23:52:13
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 0;
@@ -151,8 +151,7 @@ Fig_Output = Update_Modes_Figure(hF, GUI_Inputs, Structure, OneDSFG);
 
 %% update handles
 handles.hF      = hF;
-handles.Loc_Ind = Fig_Output.Loc_Ind;
-handles.Ex_Ind  = Fig_Output.Ex_Ind;
+handles.Mu_Alpha_Ind = Fig_Output.Mu_Alpha_Ind;
 guidata(hObject,handles)
 
 function uitable_CellSelectionCallback(hObject, eventdata, handles)
@@ -167,8 +166,7 @@ CurrentRowInd = CurrentCell(:,1)';
 Mode_Ind_Str = num2str(TableData(CurrentRowInd,1)');
 
 % Update the Mode index on GUI
-handles.GUI_Modes.Loc_Ind.String = Mode_Ind_Str;
-handles.GUI_Modes.Ex_Ind.String = Mode_Ind_Str;
+handles.GUI_Modes.Mu_Alpha_Ind.String = Mode_Ind_Str;
 handles.GUI_Modes.EigneVec_Ind.String = Mode_Ind_Str;
 
 %% update handles

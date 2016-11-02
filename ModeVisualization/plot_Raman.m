@@ -1,4 +1,4 @@
-function plot_Raman(hAx,Raman,Center,RT_scale,N_mesh,F_Color)
+function plot_Raman(hAx,Raman,Center,RT_scale,N_mesh,F_Color,Raman_Type)
 %% debug
 % clear all
 % hF =figure;
@@ -9,46 +9,46 @@ function plot_Raman(hAx,Raman,Center,RT_scale,N_mesh,F_Color)
 % RT_scale = 1;
 % N_mesh = 20;
 % F_Color = [1,0,0];
+% Raman_Type = 1;
 
-%% draw Raman tensor
-
-% Draw_Type = 'Ball';
-% Draw_Type = 'Disk';
-% Draw_Type = 'Arrow';
-Draw_Type = 'HyperE';
-
-    
+%% draw Raman tensor    
 % Extract ellipsoid info from Raman tensor
 [V,D] = eig(Raman);
 SemiAxisL = RT_scale.*diag(D);
 RM = V; % Rotational matrix
 
 
-switch Draw_Type
-    case 'Ball'
-        %% Plot single ellipsoid
-        % generate ellipsoid coordinate in Original Frame 
-        [Ex0, Ey0, Ez0] = ellipsoid(0,0,0,SemiAxisL(1),SemiAxisL(2),SemiAxisL(3),N_mesh);
-        OrigE = [Ex0(:),Ey0(:),Ez0(:)]; 
-
-        % rotation
-        Rot_XYZ = (RM*OrigE')';
-        Rot_XM = reshape(Rot_XYZ(:,1),N_mesh+1,N_mesh+1);
-        Rot_YM = reshape(Rot_XYZ(:,2),N_mesh+1,N_mesh+1);
-        Rot_ZM = reshape(Rot_XYZ(:,3),N_mesh+1,N_mesh+1);
-
-        % translation 
-        Trans_XM = Rot_XM + Center(1);
-        Trans_YM = Rot_YM + Center(2);
-        Trans_ZM = Rot_ZM + Center(3);
-
-        surf(hAx,Trans_XM,Trans_YM,Trans_ZM,...
-            'LineStyle','-',...
-            'EdgeAlpha',0.2,...
-            'FaceColor',F_Color,...
-            'FaceAlpha',0.2);
-
-    case 'Disk'
+switch Raman_Type
+    case 1 %'Arrow'
+        %% Plot three 3D arrows with color representing sign
+        Axes_Scale = abs(SemiAxisL)';
+        Principle_Axes = bsxfun(@times,V,Axes_Scale);
+        
+        % Color of arrow
+        ColorOrder = zeros(6,3);
+        for i = 1:3
+            if sign(SemiAxisL(i)) > 0
+                ColorOrder(i,:) = [1,0,0];
+                ColorOrder(i+3,:) = [1,0,0];
+            else
+                ColorOrder(i,:) = [0,0,1];
+                ColorOrder(i+3,:) = [0,0,1];
+            end
+        end
+        
+        % Arror head
+        Axes_Scale_N = Axes_Scale./max(Axes_Scale);
+        Arror_W = 2*sqrt(Axes_Scale_N);
+        Arror_H = 2*Arror_W;
+        
+        Arrow_End = [Principle_Axes,-Principle_Axes]'; % double side arrow
+        Arror_Orig = bsxfun(@times,Center,ones(6,1));
+        
+        
+        set(hAx,'ColorOrder',ColorOrder)
+        arrow3(Arror_Orig,Arrow_End,'o2',Arror_W,Arror_H)
+        
+    case 2 %'Disk'
         %% Plot three ellipse disk
         Disk_Thickness = 0.05;
         Disk_Thickness_Array = ones(2,1);
@@ -124,36 +124,31 @@ switch Draw_Type
           'FaceAlpha',PatchFaceAlpha)
     hold off
     
-    case 'Arrow'
-        %% Plot three 3D arrows with color representing sign
-        Axes_Scale = abs(SemiAxisL)';
-        Principle_Axes = bsxfun(@times,V,Axes_Scale);
-        
-        % Color of arrow
-        ColorOrder = zeros(6,3);
-        for i = 1:3
-            if sign(SemiAxisL(i)) > 0
-                ColorOrder(i,:) = [1,0,0];
-                ColorOrder(i+3,:) = [1,0,0];
-            else
-                ColorOrder(i,:) = [0,0,1];
-                ColorOrder(i+3,:) = [0,0,1];
-            end
-        end
-        
-        % Arror head
-        Axes_Scale_N = Axes_Scale./max(Axes_Scale);
-        Arror_W = 2*sqrt(Axes_Scale_N);
-        Arror_H = 2*Arror_W;
-        
-        Arrow_End = [Principle_Axes,-Principle_Axes]'; % double side arrow
-        Arror_Orig = bsxfun(@times,Center,ones(6,1));
-        
-        
-        set(hAx,'ColorOrder',ColorOrder)
-        arrow3(Arror_Orig,Arrow_End,'o2',Arror_W,Arror_H)
-        
-    case 'HyperE'
+    case 3 %'Ellipsoid'
+        %% Plot single ellipsoid
+        % generate ellipsoid coordinate in Original Frame 
+        [Ex0, Ey0, Ez0] = ellipsoid(0,0,0,SemiAxisL(1),SemiAxisL(2),SemiAxisL(3),N_mesh);
+        OrigE = [Ex0(:),Ey0(:),Ez0(:)]; 
+
+        % rotation
+        Rot_XYZ = (RM*OrigE')';
+        Rot_XM = reshape(Rot_XYZ(:,1),N_mesh+1,N_mesh+1);
+        Rot_YM = reshape(Rot_XYZ(:,2),N_mesh+1,N_mesh+1);
+        Rot_ZM = reshape(Rot_XYZ(:,3),N_mesh+1,N_mesh+1);
+
+        % translation 
+        Trans_XM = Rot_XM + Center(1);
+        Trans_YM = Rot_YM + Center(2);
+        Trans_ZM = Rot_ZM + Center(3);
+
+        surf(hAx,Trans_XM,Trans_YM,Trans_ZM,...
+            'LineStyle','-',...
+            'EdgeAlpha',0.2,...
+            'FaceColor',F_Color,...
+            'FaceAlpha',0.2);
+     
+    case 4 %'HyperE'
+        %% Plot hyper ellipsoid so that the radius = E'*Alpha*E
         N_Grid = 100;
 
         phi   = linspace(0,2*pi,N_Grid);

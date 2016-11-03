@@ -6,7 +6,8 @@ Frame_scale = 5;
 Lab_Frame_S = Frame_scale.*Lab_Frame;
 Mol_Frame_S  = (R_MF_LF\Lab_Frame_S')'; % inverse rotation for axes
 
-hold(hAx,'on')
+% note: hold on/off will be applied before/after calling this function
+% hold(hAx,'on') 
 % Lab Frame
 % X
 quiver3(hAx, COA(1)        ,COA(2)        ,COA(3),...
@@ -47,4 +48,4 @@ quiver3(hAx, COA(1)        ,COA(2)        ,COA(3),...
         'LineStyle','--',...
         'Color',[0,0,1]);
     
-hold(hAx,'off')
+% hold(hAx,'off')

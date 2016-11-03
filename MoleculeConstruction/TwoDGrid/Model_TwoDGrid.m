@@ -100,6 +100,7 @@ G09_default_folder = [PWD, '/StructureFiles/G09/'];
     
 G09_Path = [PathName FilesName];                             
 disp([FilesName,' loaded...'])
+
 %% Export to Model handles
 handles.G09_Path = G09_Path;
 guidata(hObject,handles)

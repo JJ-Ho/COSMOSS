@@ -182,14 +182,12 @@ end
 
 Raman_Rot_Vec = reshape(Raman_Rot,[9,Mode_Num])';
 
-
 %% Intensity scaling of IR and Raman
 
 Int_Harm.IR      = textscan(fid,'[Int_Harm]   IR    %s %f',Mode_Num,'commentStyle','%');
 Int_Harm.Raman   = textscan(fid,'[Int_Harm]   Raman %s %f',Mode_Num,'commentStyle','%');
 Int_AnHarm.IR    = textscan(fid,'[Int_AnHarm] IR    %s %f',Mode_Num,'commentStyle','%');
 Int_AnHarm.Raman = textscan(fid,'[Int_AnHarm] Raman %s %f',Mode_Num,'commentStyle','%');
-
 
 %% Frequency Part
 % Toggle of Anharmonic correction
@@ -227,6 +225,7 @@ Freq.Overtone    = FreqScaleFactor*Overtone;
 Freq.Combination = FreqScaleFactor*Combination;
 
 fclose(fid);
+
 %% Formate Output
 
 P.FName           = FName;

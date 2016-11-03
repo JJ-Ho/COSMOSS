@@ -1,10 +1,12 @@
-function P = ReadG09Input(FName,RR,varargin)
+function P = ReadG09Input(FName,varargin)
 % 
 % Given a input file name "FName", this script can parse XYZ, mu and alpha
 % variables and generate parsed input structure "P"
 % 
 
 % ------- Version log ----------------------------------------------------
+% 
+% V2.0  161103  Move molecule frame ratation transform out of ReadG09Input 
 % 
 % V1.1  150426  Copy from 2DSFG_Ester project
 %               Update debug part
@@ -19,8 +21,7 @@ function P = ReadG09Input(FName,RR,varargin)
 % clear all
 % close all
 % clc
-% FName = '140903_MMB.txt';
-% RR = [0,0,0];
+% FName = '131029_MBA.txt';
 % varargin = {'MolFrame','XZ',...
 %             };
 % ------------------------------------------
@@ -75,91 +76,40 @@ Conn=Conn|Conn';
 Orientation = textscan(fid,'[Orientation] %f %f %f %f %f',1,'commentStyle','%','CollectOutput',1);
 Orientation = cell2mat(Orientation);
 
-% Considering the case that we want to rotate alone mu instead of molecule 
-% in this case the [orientation] will be 0,0,0,0,0
-if any(Orientation)    
+Center = XYZ_Orig(Orientation(1),:);
+Vec_Z  = XYZ_Orig(Orientation(3),:) - XYZ_Orig(Orientation(2),:);
+Z = Vec_Z/norm(Vec_Z);
+Vec_XZ = XYZ_Orig(Orientation(5),:) - XYZ_Orig(Orientation(4),:);
+Vec_XZ = Vec_XZ/norm(Vec_XZ);
 
-    Center = XYZ_Orig(Orientation(1),:);
-    Vec_Z  = XYZ_Orig(Orientation(3),:) - XYZ_Orig(Orientation(2),:);
-    Z = Vec_Z/norm(Vec_Z);
-    Vec_XZ = XYZ_Orig(Orientation(5),:) - XYZ_Orig(Orientation(4),:);
-    Vec_XZ = Vec_XZ/norm(Vec_XZ);
+XYZ_T = bsxfun(@minus,XYZ_Orig,Center);
 
-    XYZ_T = bsxfun(@minus,XYZ_Orig,Center);
+Y = cross(Z,Vec_XZ);
+Y = Y/norm(Y);
+X = cross(Y,Z);
+X = X/norm(X);
 
-    Y = cross(Z,Vec_XZ);
-    Y = Y/norm(Y);
-    X = cross(Y,Z);
-    X = X/norm(X);
+Mol_Frame=zeros(3,3);
+Mol_Frame(:,1) = X;
+Mol_Frame(:,2) = Y;
+Mol_Frame(:,3) = Z;
+New_Frame = eye(3);
+R_Total = Euler_Rot(New_Frame,Mol_Frame);
 
-    Mol_Frame=zeros(3,3);
-    Mol_Frame(:,1) = X;
-    Mol_Frame(:,2) = Y;
-    Mol_Frame(:,3) = Z;
-    New_Frame = eye(3);
-    ERot = Euler_Rot(New_Frame,Mol_Frame);
-
-    % Rotate molecule definition from X-Z plane to Y-Z plane
-    if strcmp(MolFrame,'YZ')
-        R_XZ2YZ = R1_ZYZ_0(-pi/2,0,0);
-        ERot = R_XZ2YZ*ERot; 
-    end
-    
-    R_Asigned = R1_ZYZ_0(RR(1),RR(2),RR(3));
-    R_Total   = R_Asigned*ERot;
-    
-    XYZ_T_R = (R_Total*XYZ_T')';
-    
-    % Mu Vector Part
-    % Unrotated Transition Dipole Vector (mu)
-    TDV_Orig = textscan(fid,'[TDV] %s %f %f %f',Mode_Num,'CollectOutput',1,'commentStyle','%');
-    TDV_Orig = TDV_Orig{2};
-    % Rotated Transition Dipole Vector
-    TDV_Rot = (R_Total*TDV_Orig')';
-    
-else
-    % if all element of orientation are zeros => rotate transition dipole 
-    ring_ind = 1:6;
-    Center = sum(XYZ_Orig(ring_ind,:),1)./length(ring_ind);
-    XYZ_T = bsxfun(@minus,XYZ_Orig,Center);
-    
-    % Read-in Vector sequence: [Vec_Seq] VecZ VecXZ
-    Vec_Seq = textscan(fid,'[Vec_Seq] %d %d',1,'CollectOutput',1,'commentStyle','%');
-    Vec_Seq = cell2mat(Vec_Seq);
-    
-    % Unrotated Transition Dipole Vector (mu)
-    TDV_Orig = textscan(fid,'[TDV] %s %f %f %f',Mode_Num,'CollectOutput',1,'commentStyle','%');
-    TDV_Orig = TDV_Orig{2};
-
-    Vec_Z  = TDV_Orig(Vec_Seq(1),:);
-    Z = Vec_Z/norm(Vec_Z);
-    Vec_XZ = TDV_Orig(Vec_Seq(2),:);
-    Vec_XZ = Vec_XZ/norm(Vec_XZ);
-    
-    Y = cross(Z,Vec_XZ);
-    Y = Y/norm(Y);
-    X = cross(Y,Z);
-    X = X/norm(X);
-    
-    Mol_Frame=zeros(3,3);
-    Mol_Frame(:,1) = X;
-    Mol_Frame(:,2) = Y;
-    Mol_Frame(:,3) = Z;
-    New_Frame = eye(3);
-    ERot = Euler_Rot(New_Frame,Mol_Frame);
-    
-    % Rotate molecule definition from X-Z plane to Y-Z plane
-    if strcmp(MolFrame,'YZ')
-        R_XZ2YZ = R1_ZYZ_0(-pi/2,0,0);
-        ERot = R_XZ2YZ*ERot; 
-    end
-    
-    R_Asigned = R1_ZYZ_0(Orientation(1),Orientation(2),Orientation(3));
-    R_Total   = R_Asigned*ERot;
-    
-    XYZ_T_R = (R_Total*XYZ_T')';  
-    TDV_Rot = (R_Total*TDV_Orig')';
+% Rotate molecule definition from X-Z plane to Y-Z plane
+if strcmp(MolFrame,'YZ')
+    R_XZ2YZ = R1_ZYZ_0(-pi/2,0,0);
+    R_Total = R_XZ2YZ*R_Total; 
 end
+
+XYZ_T_R = (R_Total*XYZ_T')';
+
+% Mu Vector Part
+% Unrotated Transition Dipole Vector (mu)
+TDV_Orig = textscan(fid,'[TDV] %s %f %f %f',Mode_Num,'CollectOutput',1,'commentStyle','%');
+TDV_Orig = TDV_Orig{2};
+% Rotated Transition Dipole Vector
+TDV_Rot = (R_Total*TDV_Orig')';
 
 %% Alpha Vector Part
 % Unrotated Raman Tensor (alpha)
@@ -242,8 +192,7 @@ P.Int_Harm.IR     = Int_Harm.IR{2}   ;
 P.Int_Harm.Raman  = Int_Harm.Raman{2};
 P.Int_AnHarm.IR   = Int_AnHarm.IR{2}   ;
 P.Int_AnHarm.Raman= Int_AnHarm.Raman{2};
-P.ERot            = ERot;
-P.R_Asigned       = R_Asigned;
+P.R_Total         = R_Total;
 P.Trans           = Center;
 
 P.Orig.XYZ              = XYZ_Orig;

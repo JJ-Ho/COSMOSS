@@ -102,10 +102,12 @@ hold on
                      0,1,0;
                      0,0,1 ];
                  
-        Box_Cornor = [hAx.XLim(1),hAx.YLim(1),hAx.ZLim(1)];
-        Box_length = [hAx.XLim(2),hAx.YLim(2),hAx.ZLim(2)] - [hAx.XLim(1),hAx.YLim(1),hAx.ZLim(1)];
-        COA = Box_Cornor + (0.1).*Box_length;
+        % put axis orgin near drawing box conor
+        %Box_Cornor = [hAx.XLim(1),hAx.YLim(1),hAx.ZLim(1)];
+        %Box_length = [hAx.XLim(2),hAx.YLim(2),hAx.ZLim(2)] - [hAx.XLim(1),hAx.YLim(1),hAx.ZLim(1)];
+        %COA = Box_Cornor + (0.1).*Box_length;
         
+        COA = [0,0,0]; % place Center of Axis at origin
         PlotRotMolFrame(hAx,Lab_Frame,R_MF_LF,COA)
     end
     

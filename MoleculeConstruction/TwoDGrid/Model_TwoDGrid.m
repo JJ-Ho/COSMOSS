@@ -128,7 +128,7 @@ switch Monomer_Axes
     case 2
         MolFrame_Convention = 'YZ';
 end
-Gaussian_Input = ReadG09Input(handles.G09_Path,Eular_MF_R,'MolFrame',MolFrame_Convention);
+Gaussian_Input = ReadG09Input(handles.G09_Path,'MolFrame',MolFrame_Convention);
 
 %% Construct molecule
 Structure = ConstructGrid(Gaussian_Input,GUI_Inputs);

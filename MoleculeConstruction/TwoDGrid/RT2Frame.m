@@ -1,4 +1,10 @@
 function Output = RT2Frame(S_Info)
+% This function transform structural and mode related information from 
+% original coordinate frame (G09 simulation frame) to molecule frame so
+% that rotatable bond align with z axis. This function take the atomic
+% index from formatted G)( output file or GUI inputs to define the new
+% origin and axes in molecule frame. Roatatonal average of these molecule
+% information in an optional action. 
 
 %% Process Inputs
 XYZ      = S_Info.XYZ;

@@ -89,7 +89,7 @@ hold on
     
     %% Draw atoms
     if Plot_Atoms
-        plot3(Center_LF(:,1)    ,Center_LF(:,2)    ,Center_LF(:,3)   ,'LineStyle','none','Marker','d','MarkerFaceColor','w')
+        plot3(Center_LF(:,1)    ,Center_LF(:,2)    ,Center_LF(:,3)   ,'LineStyle','none','Marker','d','MarkerFaceColor','w','MarkerSize',15)
         plot3(Carbon_Pos(:,1)   ,Carbon_Pos(:,2)   ,Carbon_Pos(:,3)  ,'LineStyle','none','Marker','o','MarkerFaceColor','k','MarkerSize',10)
         plot3(O_Double_Pos(:,1) ,O_Double_Pos(:,2) ,O_Double_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','r','MarkerSize',10)
         plot3(O_Single_Pos(:,1) ,O_Single_Pos(:,2) ,O_Single_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','r','MarkerSize',10)

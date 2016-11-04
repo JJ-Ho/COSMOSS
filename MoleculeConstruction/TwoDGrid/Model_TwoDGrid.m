@@ -130,37 +130,29 @@ GUI_Inputs = ParseGUI_TwoDGrid(GUI_Struc);
 G09_Output = handles.G09_Output;
 
 % update the mol frame info into G09_Output
-GUI_Mol_Frame.Center_Ind = GUI_Inputs.MF_Center;
-GUI_Mol_Frame.Z_i_Ind    = GUI_Inputs.MF_Zi;
-GUI_Mol_Frame.Z_f_Ind    = GUI_Inputs.MF_Zf;
-GUI_Mol_Frame.XY_i_Ind   = GUI_Inputs.MF_XYi;
-GUI_Mol_Frame.XY_f_Ind   = GUI_Inputs.MF_XYf;
+GUI_MF_Info.Center_Ind = GUI_Inputs.MF_Center;
+GUI_MF_Info.Z_i_Ind    = GUI_Inputs.MF_Zi;
+GUI_MF_Info.Z_f_Ind    = GUI_Inputs.MF_Zf;
+GUI_MF_Info.XY_i_Ind   = GUI_Inputs.MF_XYi;
+GUI_MF_Info.XY_f_Ind   = GUI_Inputs.MF_XYf;
+GUI_MF_Info.Frame_Type = GUI_Inputs.Frame_Type;
+GUI_MF_Info.BondAvg    = GUI_Inputs.BondAvg;
 
-% Read frame type
-switch GUI_Inputs.Monomer_Axes
-    case 1
-        Frame_Type = 'XZ';
-    case 2
-        Frame_Type = 'YZ';
-end
-GUI_Mol_Frame.Frame_Type = Frame_Type;
+GUI_LF_Info.LF_Phi   = GUI_Inputs.LF_Phi./180*pi;
+GUI_LF_Info.LF_Psi   = GUI_Inputs.LF_Psi./180*pi;
+GUI_LF_Info.LF_Theta = GUI_Inputs.LF_Theta./180*pi;
 
-G09_Output.Mol_Frame     = GUI_Mol_Frame;
+% update the molecule frame info into G09_Output
+G09_Output.MF_Info = GUI_MF_Info;
+G09_Output.LF_Info = GUI_LF_Info;
 
 %% Rot/Trans the raw ouput of G09 to molecule frame ane deal with rotatable bond average 
-% Rotate the G09 input structre to defined molecule frame
-Monomer = RT2Frame(G09_Output);
-
-%-- Pause at here --%
-
-% Ang_Phi      = GUI_Inputs.Ang_Phi;
-% Ang_Psi      = GUI_Inputs.Ang_Psi;
-% Ang_Theta    = GUI_Inputs.Ang_Theta;
-% Eular_MF_D   = [Ang_Phi,Ang_Psi,Ang_Theta];
-% Eular_MF_R   = Eular_MF_D./180*pi; % turn to radius unit
+% Rotate the structre in G09 simulation frame to defined molecule frame and
+% do bond rotational average if selected. 
+Monomer = Rot2MF(G09_Output);
 
 %% Construct molecule
-Structure = ConstructGrid(Monomer.MF,GUI_Inputs);
+Structure = ConstructGrid(Monomer.LF,GUI_Inputs);
 
 % Export into Structure so it can be passsed around different GUIs
 Structure.StructModel = 3;
@@ -179,6 +171,8 @@ if isfield(handles,'hMain')
     handles.hMain.Name = ['COSMOSS: ' Model_Name];
 end
 
+handles.G09_Output = G09_Output;
+handles.Monomer    = Monomer;
 handles.Structure  = Structure;
 handles.GUI_Inputs = GUI_Inputs;
 guidata(hObject,handles)
@@ -209,3 +203,17 @@ function Export_Handle_Callback(hObject, eventdata, handles)
 % export handles back to work space
 assignin('base', 'hModel_TwoDGrid', handles)
 disp('Updated handles exported!')
+
+function Replace_Convention_Label(hObject, eventdata, handles)
+% retreive GUI inputs
+GUI_Struc  = handles.GUI_Struc;
+Frame_Type = GUI_Struc.Frame_Type.Value;
+
+switch Frame_Type
+    case 1 %Frame_Type = 'XZ';
+        GUI_Struc.MF_XYi_text.String = 'XZ_i Ind.:';
+        GUI_Struc.MF_XYf_text.String = 'XZ_f Ind.:';
+    case 2 %Frame_Type = 'YZ';
+        GUI_Struc.MF_XYi_text.String = 'YZ_i Ind.:';
+        GUI_Struc.MF_XYf_text.String = 'YZ_f Ind.:';
+end

@@ -1,4 +1,4 @@
-function Output = ConstructGrid(Gaussian_Input,GUI_Inputs)
+function Output = ConstructGrid(Monomer,GUI_Inputs)
 %% ConstructGrid
 
 % ------- Version log -----------------------------------------------------
@@ -70,10 +70,11 @@ Mute_Ind    = INPUT.Results.Mute_Ind   ;
 
 %% Read G09 structure and reassign variables
 
-XYZ_G09       = Gaussian_Input.XYZ;
-Atom_Num_G09  = Gaussian_Input.Atom_Num;
-mu_Mol_G09    = Gaussian_Input.TDV;
-alpha_Mol_G09 = Gaussian_Input.Raman;
+XYZ_G09       = Monomer.XYZ;
+Atom_Num_G09  = Monomer.Atom_Num;
+mu_Mol_G09    = Monomer.TDV;
+alpha_Mol_G09 = Monomer.Raman;
+Center_Ind    = Monomer.Center_Ind;
 %Freq_G09      = Gaussian_Input.Freq;
 
 % % shift monomer to origin
@@ -87,8 +88,8 @@ alpha_Mol_G09 = Gaussian_Input.Raman;
 
 Num_Modes = N_1*N_2;
 
-Phi_Fluc   = Delta_Phi*randn(Num_Modes,1)  ./180*pi;
-Psi_Fluc   = Delta_Psi*randn(Num_Modes,1)  ./180*pi;
+Phi_Fluc   =   Delta_Phi*randn(Num_Modes,1)./180*pi;
+Psi_Fluc   =   Delta_Psi*randn(Num_Modes,1)./180*pi;
 Theta_Fluc = Delta_Theta*randn(Num_Modes,1)./180*pi;
 
 %% Creating Translation Copy
@@ -103,7 +104,7 @@ for j = 1:N_2
 
         if any(Mute_Ind == i+(j-1)*N_1)
             % Mute some molecule in the grid
-            XYZ_Grid_M(:,:,i,j)      = zeros(Atom_Num_G09,3);
+            XYZ_Grid_M(:,:,i,j)        = zeros(Atom_Num_G09,3);
             mu_Sim(i+(j-1)*N_1,:,:)    = zeros(3,1);
             alpha_Sim(i+(j-1)*N_1,:,:) = zeros(3,3);
         else     
@@ -148,9 +149,9 @@ XYZ_Grid = reshape(permute(XYZ_Grid_M,[1,3,4,2]),[],3);
 % axis equal
 
 %% Create Translational copy of Center
-C_Atom_Ind = 7;
+%C_Atom_Ind = 7;
 
-Center_M = XYZ_Grid_M(C_Atom_Ind,:,:,:);
+Center_M = sum(XYZ_Grid_M(Center_Ind,:,:,:),1);
 Center = reshape(permute(Center_M,[1,3,4,2]),[],3);
 
 %% Define Mode frequency and anharmonicity
@@ -186,7 +187,7 @@ Output.AtomSerNo    = AtomSerNo;
 Output.Num_Modes    = Num_Modes;
 Output.XYZ          = XYZ_Grid;
 Output.FilesName    = Grid_FilesName;
-Output.Monomer      = Gaussian_Input;
+Output.Monomer      = Monomer;
 Output.N_Vec1       = N_1;
 Output.N_Vec2       = N_2;
 Output.Vec_1        = Vec_1;

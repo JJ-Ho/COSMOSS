@@ -208,6 +208,14 @@ camlight
 
 view([-20,16])
 
+% deal with box size
+axis tight;
+ExtScal = 0.2;
+hAx.XLim = hAx.XLim + ExtScal*sum(hAx.XLim.*[-1,1])*[-1,1];
+hAx.YLim = hAx.YLim + ExtScal*sum(hAx.YLim.*[-1,1])*[-1,1];
+hAx.ZLim = hAx.ZLim + ExtScal*sum(hAx.ZLim.*[-1,1])*[-1,1];
+hAx.DataAspectRatio = [1,1,1];
+
 %% Output
 Output.Mu_Alpha_Ind = Mu_Alpha_Ind;
 

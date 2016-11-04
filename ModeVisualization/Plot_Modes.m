@@ -162,10 +162,6 @@ OneDSFG    = handles.OneDSFG;
 hModel     = handles.hModel;
 
 function uitable_CellSelectionCallback(hObject, eventdata, handles)
-% hObject    handle to uitable1 (see GCBO)
-% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.TABLE)
-% handles    structure with handles and user data (see GUIDATA)
-
 TableData = handles.GUI_Modes.ModeList.Data;
 
 CurrentCell = eventdata.Indices;
@@ -181,10 +177,6 @@ handles.Mode_Ind_Str = Mode_Ind_Str;
 guidata(hObject,handles)
 
 function uitable_SortCallback(hObject, eventdata, handles)
-% hObject    handle to uitable1 (see GCBO)
-% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.TABLE)
-% handles    structure with handles and user data (see GUIDATA)
-
 TableData = handles.GUI_Modes.ModeList.Data;
 SortColumn = handles.GUI_Modes.SortInd.Value;
 

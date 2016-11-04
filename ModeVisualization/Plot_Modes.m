@@ -113,7 +113,7 @@ Structure = GUI_Data_hModel.Structure;
 Modes     = Update_Modes_Table(Structure, MainGUI_Inputs);
 
 %% Update handles structure
-handles.OneDSFG        = Modes.OneDSFG;
+handles.FTIR           = Modes.FTIR;
 handles.ModeList       = Modes.ModeList;
 handles.Structure      = Structure;
 handles.hMain          = GUI_Data_hModel.hMain;
@@ -133,8 +133,17 @@ handles = guidata(hObject);
 
 GUI_Inputs = ParseGUI_Modes(handles);
 Structure  = handles.Structure;
-OneDSFG    = handles.OneDSFG;
+OneDSFG    = handles.FTIR;
 hModel     = handles.hModel;
+
+% Read the Molecule frame to Lab frame orientation from COSMOSS
+hMain = handles.hMain;
+GUI_Data_Main = guidata(hMain);
+GUI_Inputs_Main = ParseGUI_Main(GUI_Data_Main);
+% Pass the MF-LB Eular angles to Plotting function
+GUI_Inputs.Avg_Phi   = GUI_Inputs_Main.Avg_Phi;
+GUI_Inputs.Avg_Theta = GUI_Inputs_Main.Avg_Theta;
+GUI_Inputs.Avg_Psi   = GUI_Inputs_Main.Avg_Psi;
 
 %% Draw molecule by calling the PlotMolecule function in each model
 [hFunc_Model,~,~] = StructureModel(Structure.StructModel);
@@ -161,7 +170,8 @@ CurrentRowInd = CurrentCell(:,1)';
 Mode_Ind_Str = num2str(TableData(CurrentRowInd,1)');
 
 % Update the Mode index on GUI
-set(handles.GUI_Modes.Mode_Ind,'String', Mode_Ind_Str);
+set(handles.GUI_Modes.Loc_Ind,'String', Mode_Ind_Str);
+set(handles.GUI_Modes.Ex_Ind,'String', Mode_Ind_Str);
 
 %% update handles
 handles.Mode_Ind_Str = Mode_Ind_Str;

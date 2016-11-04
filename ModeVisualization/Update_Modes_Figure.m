@@ -8,6 +8,9 @@ INPUT = inputParser;
 INPUT.KeepUnmatched = 1;
 
 % Default values
+defaultAvg_Phi    = 0;
+defaultAvg_Theta  = 0;
+defaultAvg_Psi    = 0;
 defaultPlot_Loc       = 0;
 defaultLoc_Ind        = [];
 defaultPlot_Ex        = 0;
@@ -22,6 +25,9 @@ defaultEigneVec_Ind   = [];
 
 
 % add options
+addOptional(INPUT,'Avg_Phi'   ,defaultAvg_Phi);
+addOptional(INPUT,'Avg_Theta' ,defaultAvg_Theta);
+addOptional(INPUT,'Avg_Psi'   ,defaultAvg_Psi);
 addOptional(INPUT,'Plot_Loc'      , defaultPlot_Loc      );
 addOptional(INPUT,'Loc_Ind'       , defaultLoc_Ind       );
 addOptional(INPUT,'Plot_Ex'       , defaultPlot_Ex       );
@@ -37,6 +43,9 @@ addOptional(INPUT,'EigneVec_Ind'  , defaultEigneVec_Ind  );
 parse(INPUT,GUI_Inputs_C{:});
 
 % Reassign Variable names
+Avg_Phi    = INPUT.Results.Avg_Phi;
+Avg_Theta  = INPUT.Results.Avg_Theta;
+Avg_Psi    = INPUT.Results.Avg_Psi;
 Plot_Loc       = INPUT.Results.Plot_Loc      ;
 Loc_Ind        = INPUT.Results.Loc_Ind       ;
 Plot_Ex        = INPUT.Results.Plot_Ex       ;
@@ -48,7 +57,6 @@ Scale_Raman    = INPUT.Results.Scale_Raman   ;
 Normalize      = INPUT.Results.Normalize     ;
 Plot_EigenVec  = INPUT.Results.Plot_EigenVec ;
 EigneVec_Ind   = INPUT.Results.EigneVec_Ind  ;
-
 
 %% Generate distinguisable colors for modes
 if Plot_EigenVec
@@ -69,12 +77,63 @@ Loc_Mode_colors = Mode_colors(           1:        N_Loc_Mode,:);
 Ex_Mode_colors  = Mode_colors(N_Loc_Mode+1:Total_N_Plot_Modes,:);
 
 
-%% Calculate the exciton center
-Center_Loc = Structure.center;
+%% Rotate from molecule frame to lab frame
 
-EigVecM   = OneDSFG.H.Sort_Ex_V(2:end,2:end); % get ride of ground state
-EigVecM2  = EigVecM.^2; 
-Center_Ex = EigVecM2 * Center_Loc;
+% Orientation = Orientation/180*pi; % turn to radius unit
+Avg_Phi_R   =   Avg_Phi/180*pi;
+Avg_Psi_R   =   Avg_Psi/180*pi;
+Avg_Theta_R = Avg_Theta/180*pi;
+R_MF_LF     = R1_ZYZ_0(Avg_Phi_R,Avg_Psi_R,Avg_Theta_R);
+
+%% molecular frame
+% center
+Center_Loc_MF = Structure.center(Loc_Ind,:);
+
+EigVecM      = OneDSFG.H.Sort_Ex_V(2:end,2:end); % get ride of ground state
+EigVecM2     = EigVecM.^2;
+Center_Ex_MF = EigVecM2*(Structure.center);
+Center_Ex_MF = Center_Ex_MF(Ex_Ind,:);
+
+% Transition dipole
+Mu_Loc_MF     = squeeze(OneDSFG.Mu.Trans_Loc(1,Loc_Ind+1,:)); % shift by 1 to avoid ground state
+Mu_Ex_MF      = squeeze(OneDSFG.Mu. Trans_Ex(1, Ex_Ind+1,:)); % shift by 1 to avoid ground state
+
+% Raman Tensor
+% Alpha_Loc_MF  = squeeze(OneDSFG.Alpha.Trans_Loc(1,Loc_Ind+1,:));
+% Alpha_Ex_MF   = squeeze(OneDSFG.Alpha. Trans_Ex(1, Ex_Ind+1,:));
+
+%% lab frame
+% permute the matix dimension for spectial case
+if eq(N_Loc_Mode,1)
+    Mu_Loc_MF = Mu_Loc_MF';
+end
+
+if eq(N_Ex_Mode,1)
+    Mu_Ex_MF = Mu_Ex_MF';
+end
+
+% center
+Center_Loc_LF = (R_MF_LF*Center_Loc_MF')';
+Center_Ex_LF  = (R_MF_LF*Center_Ex_MF')';
+
+% transition dipole
+Mu_Loc_LF = (R_MF_LF*Mu_Loc_MF')';
+Mu_Ex_LF  = (R_MF_LF*Mu_Ex_MF')';
+
+% Raman tensor
+% AlphaM_Loc_MF = reshape(Alpha_Loc_MF,N_Loc_Mode,3,3);
+% AlphaM_Loc_LF = zeros(size(AlphaM_Loc_MF));
+% for Loc_i = 1:N_Loc_Mode
+%     AlphaM_Loc_LF(Loc_i,:,:)  = R_MF_LF*squeeze(AlphaM_Loc_MF(Loc_i,:,:))/(R_MF_LF);
+% end
+% Alpha_Loc_LF = reshape(AlphaM_Loc_LF,N_Loc_Mode,9);
+% 
+% AlphaM_Ex_MF = reshape(Alpha_Ex_MF,N_Ex_Mode,3,3);
+% AlphaM_Ex_LF = zeros(size(AlphaM_Ex_MF));
+% for Ex_i = 1:N_Ex_Mode
+%     AlphaM_Ex_LF(Ex_i,:,:)  = R_MF_LF*squeeze(AlphaM_Ex_MF(Ex_i,:,:))/(R_MF_LF);
+% end
+% Alpha_Ex_LF = reshape(AlphaM_Ex_LF,N_Ex_Mode,9);
 
 %% Retreive Axes from input figure with molecule plotted 
 hAx = findobj(hF,'type','axes');
@@ -83,21 +142,16 @@ hold on
     %% Plot local modes
     if Plot_Loc
         
-        N_Plot_Mode = length(Loc_Ind);
-        Center_Loc  = Center_Loc(Loc_Ind,:);
-        Mu_Loc      = squeeze(OneDSFG.Mu.   Trans_Loc(1,Loc_Ind+1,:)); % shift by 1 to avoid ground state
-        Alpha_Loc   = squeeze(OneDSFG.Alpha.Trans_Loc(1,Loc_Ind+1,:));
-
         if Plot_EigenVec
-            Mu_Loc    = bsxfun(@times,   Mu_Loc,EigVecM(:,EigneVec_Ind));
-            Alpha_Loc = bsxfun(@times,Alpha_Loc,EigVecM(:,EigneVec_Ind));
+            Mu_Loc_LF    = bsxfun(@times,   Mu_Loc_LF,EigVecM(:,EigneVec_Ind));
+            Alpha_Loc_LF = bsxfun(@times,Alpha_Loc_LF,EigVecM(:,EigneVec_Ind));
         end
         
         Plot_Mu_Alpha(hAx,...
-                      N_Plot_Mode,...
-                      Center_Loc,...
-                      Mu_Loc,...
-                      Alpha_Loc,...
+                      N_Loc_Mode,...
+                      Center_Loc_LF,...
+                      Mu_Loc_LF,...
+                      Alpha_Loc_LF,...
                       Loc_Mode_colors,...
                       Plot_TDV,...
                       Scale_TDV,...
@@ -108,21 +162,14 @@ hold on
 
     %% Plot Exciton modes
     if Plot_Ex
-        N_Plot_Mode = length(Ex_Ind);
-        Center_Ex   = Center_Ex(Ex_Ind,:);
-        Mu_Ex       = squeeze(OneDSFG.Mu.   Trans_Ex(1,Ex_Ind+1,:)); % shift by 1 to avoid ground state
-        Alpha_Ex    = squeeze(OneDSFG.Alpha.Trans_Ex(1,Ex_Ind+1,:));
         
         Plot_Mu_Alpha(hAx,...
-                      N_Plot_Mode,...
-                      Center_Ex,...
-                      Mu_Ex,...
-                      Alpha_Ex,...
+                      N_Ex_Mode,...
+                      Center_Ex_LF,...
+                      Mu_Ex_LF,...
                       Ex_Mode_colors,...
                       Plot_TDV,...
                       Scale_TDV,...
-                      Plot_Raman,...
-                      Scale_Raman,...
                       Normalize)
     end
 
@@ -143,9 +190,9 @@ hold on
            end
            
            surf(hAx,...
-                RR.*X0 + Center_Loc(k,1),...
-                RR.*Y0 + Center_Loc(k,2),...
-                RR.*Z0 + Center_Loc(k,3),...
+                RR.*X0 + Center_Loc_LF(k,1),...
+                RR.*Y0 + Center_Loc_LF(k,2),...
+                RR.*Z0 + Center_Loc_LF(k,3),...
                 'FaceColor',F_Color,...
                 'FaceAlpha',0.5,...
                 'LineStyle','none')
@@ -168,13 +215,7 @@ Output.Loc_Ind = Loc_Ind;
 Output.Ex_Ind  = Ex_Ind;
 
 
-function Plot_Mu_Alpha(hAx,N_Plot_Mode,Center,Mu,Alpha,Mode_colors,Plot_TDV,Scale_TDV,Plot_Raman,Scale_Raman,Normalize)
-% permute the matix dimension for spectial case
-if N_Plot_Mode == 1
-    Mu    = Mu';
-    Alpha = Alpha';
-end
-
+function Plot_Mu_Alpha(hAx,N_Plot_Mode,Center,Mu,Mode_colors,Plot_TDV,Scale_TDV,Normalize)
 % Plot Transition dipoles
 if Plot_TDV
     if Normalize
@@ -193,17 +234,17 @@ if Plot_TDV
 end
 
 % plot Raman tensors
-if Plot_Raman
-    N_mesh   = 20;
-    if Normalize
-        % normalize to unit vector for direction comparison
-        Alpha_Loc_Tr = sum(abs(Alpha(:,[1,5,9])),2);
-        Alpha = bsxfun(@rdivide,Alpha,Alpha_Loc_Tr);
-    end
-
-    for i = 1: N_Plot_Mode
-        RamanM_Loc = reshape(Alpha(i,:),3,3);
-        plot_Raman(hAx,RamanM_Loc,Center(i,:),Scale_Raman,N_mesh,Mode_colors(i,:))
-    end
-end
+% if Plot_Raman
+%     N_mesh   = 20;
+%     if Normalize
+%         % normalize to unit vector for direction comparison
+%         Alpha_Norm = sqrt(sum(Alpha(:,:).^2,2)); % Norm defined in Silby's paper: JCP 1992, 97, 5607?5615.
+%         Alpha = bsxfun(@rdivide,Alpha,Alpha_Norm);
+%     end
+% 
+%     for i = 1: N_Plot_Mode
+%         RamanM_Loc = reshape(Alpha(i,:),3,3);
+%         plot_Raman(hAx,RamanM_Loc,Center(i,:),Scale_Raman,N_mesh,Mode_colors(i,:))
+%     end
+% end
 

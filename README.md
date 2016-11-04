@@ -15,7 +15,7 @@ base on coupled oscillator model. For now COSMOSS can be used to simulate:<br />
 
 <p>The supported molecule structure including:<br />
 1. Two coupled oscillators<br />
-2. PDB_AmideI<br />
+2. ideal Betasheet<br />
 This code is design to be used for other molecules as well. You can generate your interested molecule<br />
 and their spectra. Please check sub-function in &quot;MoleculeConstruction&quot; folder for more infomation.</p>
 
@@ -24,7 +24,7 @@ and their spectra. Please check sub-function in &quot;MoleculeConstruction&quot;
 --------------------------------------------------------------------------------------------<br />
 Note:<br />
 The GUI portion is created base on the &quot;GUI Layout Toolbox&quot; wrote by David Sampson.<br />
-For this version (v0.6) you have to install this tool box to use COSMOSS. In near future,<br />
+For this version (v1.2.5) you have to install this tool box to use COSMOSS. In near future,<br />
 the Matlab default GUI layout will be supported, too.</p>
 
 <p>Further information about GUI Layout Tool box can be found in: <br/>

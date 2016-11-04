@@ -126,7 +126,7 @@ set(handles.GUI_Modes.ModeList,'Data',Modes.ModeList)
 % call sorting to sort table with the same GUI setting
 uitable_SortCallback(hObject, eventdata, handles)
 
-function Update_Figure(hObject, eventdata, handles)
+function Update_TDV_Raman(hObject, eventdata, handles)
 %% Gather necessary inputs
 GUI_Inputs = ParseGUI_Modes(handles);
 Structure  = handles.Structure;
@@ -153,6 +153,13 @@ Fig_Output = Update_Modes_Figure(hF, GUI_Inputs, Structure, OneDSFG);
 handles.hF      = hF;
 handles.Mu_Alpha_Ind = Fig_Output.Mu_Alpha_Ind;
 guidata(hObject,handles)
+
+function Update_Response(hObject, eventdata, handles)
+%% Gather necessary inputs
+GUI_Inputs = ParseGUI_Modes(handles);
+Structure  = handles.Structure;
+OneDSFG    = handles.OneDSFG;
+hModel     = handles.hModel;
 
 function uitable_CellSelectionCallback(hObject, eventdata, handles)
 % hObject    handle to uitable1 (see GCBO)

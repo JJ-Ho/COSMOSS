@@ -1,10 +1,13 @@
-function P = ReadG09Input(FName,varargin)
+function P = ReadG09Input(FName)
 % 
 % Given a input file name "FName", this script can parse XYZ, mu and alpha
 % variables and generate parsed input structure "P"
 % 
 
 % ------- Version log ----------------------------------------------------
+% 
+% V2.1  161103  Move out the rotation action to XYZ, TDV, Raman; only read 
+%               and report the molecular frame axis definition 
 % 
 % V2.0  161103  Move molecule frame ratation transform out of ReadG09Input 
 % 
@@ -22,26 +25,24 @@ function P = ReadG09Input(FName,varargin)
 % close all
 % clc
 % FName = '131029_MBA.txt';
-% varargin = {'MolFrame','XZ',...
-%             };
 % ------------------------------------------
 
 %% Input part
-
-Inputs = inputParser;
-
-% Default values
-defaultMolFrame   = 'XZ'; 
-expectedMolFrame   = {'XZ','YZ'};
-
-% Add optional inputs to inputparser object
-addParamValue(Inputs,'MolFrame',defaultMolFrame,...
-                 @(x) any(validatestring(x,expectedMolFrame)));
-
-parse(Inputs,varargin{:});
-
-% Reassign Variable names
-MolFrame   = Inputs.Results.MolFrame;
+% 
+% Inputs = inputParser;
+% 
+% % Default values
+% defaultMolFrame   = 'XZ'; 
+% expectedMolFrame   = {'XZ','YZ'};
+% 
+% % Add optional inputs to inputparser object
+% addParamValue(Inputs,'MolFrame',defaultMolFrame,...
+%                  @(x) any(validatestring(x,expectedMolFrame)));
+% 
+% parse(Inputs,varargin{:});
+% 
+% % Reassign Variable names
+% MolFrame   = Inputs.Results.MolFrame;
 
 %% Start to read inputs
 fid = fopen(FName);
@@ -54,90 +55,71 @@ Mode_Num = cell2mat(textscan(fid,'[Mode_Num] %d',1,'commentStyle','%'));
 Atom = textscan(fid,'[Atom] %s %f %f %f',Atom_Num,'CollectOutput',1,'commentStyle','%');
 
 Atom_Name = Atom{1}; % Atom symbel
-XYZ_Orig = Atom{2};  % Unrotated molecule xyz. Already a array since 'CollectOutput'
+XYZ = Atom{2};  % Unrotated molecule xyz. Already a array since 'CollectOutput'
 
-% Connectivity
-[n,m] = ndgrid(1:Atom_Num);
-T1=XYZ_Orig(m(:),:)-XYZ_Orig(n(:),:);
-T2=sqrt(sum(T1.^2,2));
-Distance_matrix=reshape(T2,Atom_Num,Atom_Num);
-lower=tril(Distance_matrix,-1);
-[a,b]=find(lower<1.6 & lower>0);
-C_index=[a,b];
-Conn=false(Atom_Num);
-Conn(C_index(:,1)+(C_index(:,2)-1)*Atom_Num)=true;
+% % Connectivity
+% [n,m] = ndgrid(1:Atom_Num);
+% T1=XYZ(m(:),:)-XYZ(n(:),:);
+% T2=sqrt(sum(T1.^2,2));
+% Distance_matrix=reshape(T2,Atom_Num,Atom_Num);
+% lower=tril(Distance_matrix,-1);
+% [a,b]=find(lower<1.6 & lower>0);
+% C_index=[a,b];
+% Conn=false(Atom_Num);
+% Conn(C_index(:,1)+(C_index(:,2)-1)*Atom_Num)=true;
+% 
+% Conn(13,3) = 1; % Add S-C connection for Ester
+% 
+% Conn=Conn|Conn';
 
-Conn(13,3) = 1; % Add S-C connection for Ester
-
-Conn=Conn|Conn';
-
-%% Molecular orientation part + Mu part
+%% Read Definition of molecule frame axis
 % [Orientation]  Center Z_I Z_F XZ_I XZ_F
 Orientation = textscan(fid,'[Orientation] %f %f %f %f %f',1,'commentStyle','%','CollectOutput',1);
 Orientation = cell2mat(Orientation);
 
-Center = XYZ_Orig(Orientation(1),:);
-Vec_Z  = XYZ_Orig(Orientation(3),:) - XYZ_Orig(Orientation(2),:);
-Z = Vec_Z/norm(Vec_Z);
-Vec_XZ = XYZ_Orig(Orientation(5),:) - XYZ_Orig(Orientation(4),:);
-Vec_XZ = Vec_XZ/norm(Vec_XZ);
+Center_Ind = Orientation(1);
+Z_i_Ind    = Orientation(2);
+Z_f_Ind    = Orientation(3);
+XY_i_Ind   = Orientation(4);
+XY_f_Ind   = Orientation(5);
 
-XYZ_T = bsxfun(@minus,XYZ_Orig,Center);
+Mol_Frame.Center_Ind = Center_Ind;
+Mol_Frame.Z_i_Ind    = Z_i_Ind;
+Mol_Frame.Z_f_Ind    = Z_f_Ind;
+Mol_Frame.XY_i_Ind   = XY_i_Ind;
+Mol_Frame.XY_f_Ind   = XY_f_Ind;
+Mol_Frame.Frame_Type = 'XZ';
 
-Y = cross(Z,Vec_XZ);
-Y = Y/norm(Y);
-X = cross(Y,Z);
-X = X/norm(X);
-
-Mol_Frame=zeros(3,3);
-Mol_Frame(:,1) = X;
-Mol_Frame(:,2) = Y;
-Mol_Frame(:,3) = Z;
-New_Frame = eye(3);
-R_Total = Euler_Rot(New_Frame,Mol_Frame);
-
-% Rotate molecule definition from X-Z plane to Y-Z plane
-if strcmp(MolFrame,'YZ')
-    R_XZ2YZ = R1_ZYZ_0(-pi/2,0,0);
-    R_Total = R_XZ2YZ*R_Total; 
-end
-
-XYZ_T_R = (R_Total*XYZ_T')';
-
-% Mu Vector Part
+%% Mu Vector Part
 % Unrotated Transition Dipole Vector (mu)
-TDV_Orig = textscan(fid,'[TDV] %s %f %f %f',Mode_Num,'CollectOutput',1,'commentStyle','%');
-TDV_Orig = TDV_Orig{2};
-% Rotated Transition Dipole Vector
-TDV_Rot = (R_Total*TDV_Orig')';
+TDV = textscan(fid,'[TDV] %s %f %f %f',Mode_Num,'CollectOutput',1,'commentStyle','%');
+TDV = TDV{2};
 
 %% Alpha Vector Part
 % Unrotated Raman Tensor (alpha)
-Raman_Orig = textscan(fid,'[Raman] %s %f %f %f %f %f %f %f %f %f',Mode_Num,'CollectOutput',1,'commentStyle','%');
-Raman_Matrix = reshape((Raman_Orig{2})',[3,3,Mode_Num]);
-
-% Rotated Raman Tensor
-Raman_Rot = zeros(size(Raman_Matrix));
-for i = 1:Mode_Num
-    Raman_Rot(:,:,i) = R_Total*squeeze(Raman_Matrix(:,:,i))*R_Total';
-end
-
-% Vectorize Raman tensor with following convention
+% 
+% Vector version
+% [Aixx Aixy Aixz Aiyx Aiyy Aiyz Aizx Aizy Aizz]
+% 
+% Matrix representation
 % [ Aixx Aixy Aixz ] 
 % [ Aiyx Aiyy Aiyz ]
 % [ Aizx Aizy Aizz ]
 % 
-% [Aixx Aiyx Aizx Aixy Aiyy Aizy Aixz Aiyz Aizz]
-% 
-
-Raman_Rot_Vec = reshape(Raman_Rot,[9,Mode_Num])';
+Raman = textscan(fid,'[Raman] %s %f %f %f %f %f %f %f %f %f',Mode_Num,'CollectOutput',1,'commentStyle','%');
+Raman_Matrix = reshape((Raman{2})',[3,3,Mode_Num]);
+Raman_Matrix = permute(Raman_Matrix,[2,1,3]);
 
 %% Intensity scaling of IR and Raman
-
 Int_Harm.IR      = textscan(fid,'[Int_Harm]   IR    %s %f',Mode_Num,'commentStyle','%');
 Int_Harm.Raman   = textscan(fid,'[Int_Harm]   Raman %s %f',Mode_Num,'commentStyle','%');
 Int_AnHarm.IR    = textscan(fid,'[Int_AnHarm] IR    %s %f',Mode_Num,'commentStyle','%');
 Int_AnHarm.Raman = textscan(fid,'[Int_AnHarm] Raman %s %f',Mode_Num,'commentStyle','%');
+
+Int_Harm.IR     = Int_Harm.IR{2}   ;
+Int_Harm.Raman  = Int_Harm.Raman{2};
+Int_AnHarm.IR   = Int_AnHarm.IR{2}   ;
+Int_AnHarm.Raman= Int_AnHarm.Raman{2};
 
 %% Frequency Part
 % Toggle of Anharmonic correction
@@ -177,29 +159,14 @@ Freq.Combination = FreqScaleFactor*Combination;
 fclose(fid);
 
 %% Formate Output
-
-P.FName           = FName;
-P.Atom_Num        = Atom_Num;
-P.Mode_Num        = Mode_Num;
-P.Atom_Name       = Atom_Name;
-P.Conn            = Conn;
-P.XYZ             = XYZ_T_R;
-P.Freq            = Freq;
-P.TDV             = TDV_Rot;
-P.Raman           = Raman_Rot;
-P.RamanVec        = Raman_Rot_Vec;
-P.Int_Harm.IR     = Int_Harm.IR{2}   ;
-P.Int_Harm.Raman  = Int_Harm.Raman{2};
-P.Int_AnHarm.IR   = Int_AnHarm.IR{2}   ;
-P.Int_AnHarm.Raman= Int_AnHarm.Raman{2};
-P.R_Total         = R_Total;
-P.Trans           = Center;
-
-P.Orig.XYZ              = XYZ_Orig;
-P.Orig.TDV              = TDV_Orig;
-P.Orig.Raman            = Raman_Orig;
-P.Orig.Freq.Fundamental = Fundamental;
-P.Orig.Freq.Overtone    = Overtone;
-P.Orig.Freq.Combination = Combination;
-
-
+P.FName        = FName;
+P.Atom_Num     = Atom_Num;
+P.Mode_Num     = Mode_Num;
+P.Atom_Name    = Atom_Name;
+P.Freq         = Freq;
+P.XYZ          = XYZ;
+P.TDV          = TDV;
+P.Raman        = Raman_Matrix;
+P.Int_Harm     = Int_Harm;
+P.Int_AnHarm   = Int_AnHarm;
+P.Mol_Frame    = Mol_Frame;

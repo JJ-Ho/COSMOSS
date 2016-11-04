@@ -22,7 +22,7 @@ function varargout = Model_TwoDGrid(varargin)
 
 % Edit the above text to modify the response to help Model_TwoDGrid
 
-% Last Modified by GUIDE v2.5 10-Mar-2016 15:45:44
+% Last Modified by GUIDE v2.5 03-Nov-2016 18:18:13
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 0;
@@ -90,6 +90,9 @@ function varargout = Model_TwoDGrid_OutputFcn(hObject, eventdata, handles)
 varargout{1} = handles.output;
 
 function LoadG09(hObject, eventdata, handles)
+%% retreive GUI handles
+GUI_Struc  = handles.GUI_Struc;
+
 %% Call uigetfile for G09 path
 PWD = pwd;
 G09_default_folder = [PWD, '/StructureFiles/G09/'];
@@ -101,37 +104,63 @@ G09_default_folder = [PWD, '/StructureFiles/G09/'];
 G09_Path = [PathName FilesName];                             
 disp([FilesName,' loaded...'])
 
+%% Load selected G09 file
+G09_Output = ReadG09Input(G09_Path);
+G09_Output.G09_Path = G09_Path;
+
 %% Export to Model handles
-handles.G09_Path = G09_Path;
+handles.G09_Output = G09_Output;
 guidata(hObject,handles)
 
 %% update structure and the file name on GUI
-set(handles.GUI_Struc.G09_FileName,'String',['G09 file: ', FilesName])
+handles.hModel.Name = ['Model_2DGrid: ', FilesName];
+% update mol frame Atom index
+GUI_Struc.MF_Center.String = num2str(G09_Output.Mol_Frame.Center_Ind);
+GUI_Struc.MF_Zi.String     = num2str(G09_Output.Mol_Frame.Z_i_Ind);
+GUI_Struc.MF_Zf.String     = num2str(G09_Output.Mol_Frame.Z_f_Ind);
+GUI_Struc.MF_XYi.String    = num2str(G09_Output.Mol_Frame.XY_i_Ind);
+GUI_Struc.MF_XYf.String    = num2str(G09_Output.Mol_Frame.XY_f_Ind);
+
 UpdateStructure(hObject, eventdata, handles)
 
 function UpdateStructure(hObject, eventdata, handles)
 % retreive GUI inputs
 GUI_Struc  = handles.GUI_Struc;
 GUI_Inputs = ParseGUI_TwoDGrid(GUI_Struc);
+G09_Output = handles.G09_Output;
 
-%% Load selected G09 file
-Ang_Phi      = GUI_Inputs.Ang_Phi;
-Ang_Psi      = GUI_Inputs.Ang_Psi;
-Ang_Theta    = GUI_Inputs.Ang_Theta;
-Eular_MF_D   = [Ang_Phi,Ang_Psi,Ang_Theta];
-Eular_MF_R   = Eular_MF_D./180*pi; % turn to radius unit
+% update the mol frame info into G09_Output
+GUI_Mol_Frame.Center_Ind = GUI_Inputs.MF_Center;
+GUI_Mol_Frame.Z_i_Ind    = GUI_Inputs.MF_Zi;
+GUI_Mol_Frame.Z_f_Ind    = GUI_Inputs.MF_Zf;
+GUI_Mol_Frame.XY_i_Ind   = GUI_Inputs.MF_XYi;
+GUI_Mol_Frame.XY_f_Ind   = GUI_Inputs.MF_XYf;
 
-Monomer_Axes = GUI_Inputs.Monomer_Axes;
-switch Monomer_Axes
+% Read frame type
+switch GUI_Inputs.Monomer_Axes
     case 1
-        MolFrame_Convention = 'XZ';
+        Frame_Type = 'XZ';
     case 2
-        MolFrame_Convention = 'YZ';
+        Frame_Type = 'YZ';
 end
-Gaussian_Input = ReadG09Input(handles.G09_Path,'MolFrame',MolFrame_Convention);
+GUI_Mol_Frame.Frame_Type = Frame_Type;
+
+G09_Output.Mol_Frame     = GUI_Mol_Frame;
+
+%% Rot/Trans the raw ouput of G09 to molecule frame ane deal with rotatable bond average 
+% Rotate the G09 input structre to defined molecule frame
+Monomer = RT2Frame(G09_Output);
+
+%-- Pause at here --%
+
+% Ang_Phi      = GUI_Inputs.Ang_Phi;
+% Ang_Psi      = GUI_Inputs.Ang_Psi;
+% Ang_Theta    = GUI_Inputs.Ang_Theta;
+% Eular_MF_D   = [Ang_Phi,Ang_Psi,Ang_Theta];
+% Eular_MF_R   = Eular_MF_D./180*pi; % turn to radius unit
 
 %% Construct molecule
-Structure = ConstructGrid(Gaussian_Input,GUI_Inputs);
+Structure = ConstructGrid(Monomer.MF,GUI_Inputs);
 
 % Export into Structure so it can be passsed around different GUIs
 Structure.StructModel = 3;
@@ -150,7 +179,8 @@ if isfield(handles,'hMain')
     handles.hMain.Name = ['COSMOSS: ' Model_Name];
 end
 
-handles.Structure = Structure;
+handles.Structure  = Structure;
+handles.GUI_Inputs = GUI_Inputs;
 guidata(hObject,handles)
 
 function hF = PlotMolecule(hObject, eventdata, handles)

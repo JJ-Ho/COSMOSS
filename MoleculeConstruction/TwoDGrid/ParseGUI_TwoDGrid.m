@@ -1,6 +1,12 @@
 function O = ParseGUI_TwoDGrid(hGUI)
 
 % For Monomer -------------------------------------------------------------
+O.MF_Center    =       str2num(get(hGUI.MF_Center   ,'String'));
+O.MF_Zi        =    str2double(get(hGUI.MF_Zi       ,'String'));
+O.MF_Zf        =    str2double(get(hGUI.MF_Zf       ,'String'));
+O.MF_XYi       =    str2double(get(hGUI.MF_XYi      ,'String'));
+O.MF_XYf       =    str2double(get(hGUI.MF_XYf      ,'String'));
+
 O.Ang_Phi      =    str2double(get(hGUI.Ang_Phi     ,'String'));
 O.Ang_Psi      =    str2double(get(hGUI.Ang_Psi     ,'String'));
 O.Ang_Theta    =    str2double(get(hGUI.Ang_Theta   ,'String'));

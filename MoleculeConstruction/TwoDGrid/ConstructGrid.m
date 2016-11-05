@@ -1,6 +1,6 @@
 function Output = ConstructGrid(Monomer,GUI_Inputs)
-%% ConstructGrid
-
+% ConstructGrid
+%
 % ------- Version log -----------------------------------------------------
 % 
 % Ver. 1.1  150426  Copy from 2DSFG_Ester project
@@ -10,7 +10,7 @@ function Output = ConstructGrid(Monomer,GUI_Inputs)
 % Ver. 1.0  140903  Modify from GetAcid.m 
 % 
 % ------------------------------------------------------------------------
-% Copyright Jia-Jung Ho, 2014
+% Copyright Jia-Jung Ho, 2014-2016
 
 %% Debug input part
 % clear all

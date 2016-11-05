@@ -164,7 +164,8 @@ if Mu_Alpha_Plot
                   Normalize)
 
 end
-    %% Plot Mixing coefficients
+
+%% Plot Mixing coefficients
     if Plot_EigenVec
        Mix_Coeft  = EigVecM(:,EigneVec_Ind);
        [X0,Y0,Z0] = sphere(50);
@@ -203,8 +204,8 @@ Scaling_Str   = sprintf(', S\\mu= %2.1f, S\\alpha= %2.1f',TDV_Scale,Raman_Scale)
 Fig_Title{length(Fig_Title)+1} = [Mode_Ind_Str, Mode_Freq_Str, Scaling_Str];
 hAx.Title.String = Fig_Title;
 
-lightangle(0,90)
-camlight
+% lightangle(0,90)
+% camlight
 
 view([-20,16])
 
@@ -218,7 +219,6 @@ hAx.DataAspectRatio = [1,1,1];
 
 %% Output
 Output.Mu_Alpha_Ind = Mu_Alpha_Ind;
-
 
 function Plot_Mu_Alpha(hAx,N_Plot_Mode,Center,Mu,Alpha,Mode_colors,TDV_Plot,TDV_Scale,Plot_Raman,Raman_Scale,Raman_Type,Normalize)
 % Plot Transition dipoles

@@ -124,7 +124,7 @@ GUI_Struc.MF_XYf.String    = num2str(G09_Output.Mol_Frame.XY_f_Ind);
 UpdateStructure(hObject, eventdata, handles)
 
 function UpdateStructure(hObject, eventdata, handles)
-% retreive GUI inputs
+%% retreive GUI inputs
 GUI_Struc  = handles.GUI_Struc;
 GUI_Inputs = ParseGUI_TwoDGrid(GUI_Struc);
 G09_Output = handles.G09_Output;
@@ -147,11 +147,12 @@ G09_Output.MF_Info = GUI_MF_Info;
 G09_Output.LF_Info = GUI_LF_Info;
 
 %% Rot/Trans the raw ouput of G09 to molecule frame ane deal with rotatable bond average 
-% Rotate the structre in G09 simulation frame to defined molecule frame and
-% do bond rotational average if selected. 
-Monomer = Rot2MF(G09_Output);
+% Rotate the structre from G09 simulation frame to defined molecule frame 
+% then do bond rotational average if selected. Finally rotate molecule into 
+% lab frame so the monomer is ready to form 2D grid.
+Monomer = R_GF2LF(G09_Output);
 
-%% Construct molecule
+%% Construct 2D grid
 Structure = ConstructGrid(Monomer.LF,GUI_Inputs);
 
 % Export into Structure so it can be passsed around different GUIs

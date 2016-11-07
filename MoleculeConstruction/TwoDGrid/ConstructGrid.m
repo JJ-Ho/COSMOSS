@@ -73,7 +73,7 @@ Mute_Ind    = INPUT.Results.Mute_Ind   ;
 XYZ_G09       = Monomer.XYZ;
 Atom_Num_G09  = Monomer.Atom_Num;
 mu_Mol_G09    = Monomer.TDV;
-alpha_Mol_G09 = Monomer.Raman;
+alpha_Mol_G09 = Monomer.Raman_M;
 Center_Ind    = Monomer.Center_Ind;
 %Freq_G09      = Gaussian_Input.Freq;
 

@@ -72,9 +72,11 @@ XYZ_T_R = (Rot_Total_XYZ*XYZ_T')';
 %% Rotate the TDV and Raman tensor accordingly
 % Determine if doing bond rotational average around z axis of mol. frame
 if BondAvg
-   R_Bond_Avg = R1_ZYZ_1(0,0);
+   R_Bond_Avg   = R1_ZYZ_1(0,0);
+   R_Bond_Avg_2 = R2_ZYZ_1(0,0);
 else
-   R_Bond_Avg = eye(3); 
+   R_Bond_Avg   = eye(3); 
+   R_Bond_Avg_2 = eye(9);
 end
 
 % Total rotation matrix, include bond average
@@ -84,21 +86,36 @@ Rot_Total_mode = Rot2LF*R_Bond_Avg*Rot2MF;
 TDV_Rot = (Rot_Total_mode*TDV')';
 
 % Coordination tranfrom of Raman tensor from mol. frame to lab frame
-Raman_Rot = zeros(size(Raman));
-for i = 1:Mode_Num
-    Raman_Rot(:,:,i) = Rot_Total_mode*squeeze(Raman(:,:,i))*Rot_Total_mode';
-end
+% Raman_Rot = zeros(size(Raman));
+% for i = 1:Mode_Num
+%     Raman_Rot(:,:,i) = Rot_Total_mode*squeeze(Raman(:,:,i))*Rot_Total_mode';
+% end
+
+% kron(Aij,Bkl) = Cik,jl
+Rot2MF_2 = kron(Rot2MF,Rot2MF);
+Rot2LF_2 = kron(Rot2LF,Rot2LF);
+Rot_Total_mode_2 = Rot2LF_2*R_Bond_Avg_2*Rot2MF_2;
+
+Raman_V = reshape(Raman,9,[]);
+Raman_Rot_V = Rot_Total_mode_2*Raman_V;
+Raman_Rot_V(abs(Raman_Rot_V)<1E-10) = 0; % remove numerical error
+
+Raman_Rot_M = reshape(Raman_Rot_V,3,3,[]);
 
 %% Output
 Output.LF            = S_Info;
 Output.LF.Center_Ind = Center_Ind;
 Output.LF.XYZ        = XYZ_T_R;
 Output.LF.TDV        = TDV_Rot;
-Output.LF.Raman      = Raman_Rot;
+Output.LF.Raman_M    = Raman_Rot_M;
+Output.LF.Raman_V    = Raman_Rot_V;
 
 Output.Orig = S_Info;
 
-Output.Transformation.C_G09_Frame = C_G09_Frame;
-Output.Transformation.Rot2MF      = Rot2MF;
-Output.Transformation.Rot2LF      = Rot2LF;
-Output.Transformation.R_Bond_Avg  = R_Bond_Avg;
+Output.Transformation.C_G09_Frame  = C_G09_Frame;
+Output.Transformation.Rot2MF       = Rot2MF;
+Output.Transformation.Rot2LF       = Rot2LF;
+Output.Transformation.Rot2MF_2     = Rot2MF_2;
+Output.Transformation.Rot2LF_2     = Rot2LF_2;
+Output.Transformation.R_Bond_Avg   = R_Bond_Avg;
+Output.Transformation.R_Bond_Avg_2 = R_Bond_Avg_2;

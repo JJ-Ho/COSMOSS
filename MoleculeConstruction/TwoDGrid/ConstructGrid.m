@@ -73,7 +73,7 @@ Mute_Ind    = INPUT.Results.Mute_Ind   ;
 XYZ_G09       = Monomer.XYZ;
 Atom_Num_G09  = Monomer.Atom_Num;
 mu_Mol_G09    = Monomer.TDV;
-alpha_Mol_G09 = Monomer.Raman_M;
+alpha_Mol_G09 = Monomer.Raman_V;
 Center_Ind    = Monomer.Center_Ind;
 %Freq_G09      = Gaussian_Input.Freq;
 
@@ -96,8 +96,7 @@ Theta_Fluc = Delta_Theta*randn(Num_Modes,1)./180*pi;
 XYZ_Grid_M = zeros(Atom_Num_G09,3,N_1,N_2);
 
 mu_Sim    = zeros(Num_Modes,3);
-alpha_Sim = zeros(Num_Modes,3,3);
-
+alpha_Sim = zeros(Num_Modes,9);
 
 for j = 1:N_2
     for i = 1:N_1
@@ -105,20 +104,24 @@ for j = 1:N_2
         if any(Mute_Ind == i+(j-1)*N_1)
             % Mute some molecule in the grid
             XYZ_Grid_M(:,:,i,j)        = zeros(Atom_Num_G09,3);
-            mu_Sim(i+(j-1)*N_1,:,:)    = zeros(3,1);
-            alpha_Sim(i+(j-1)*N_1,:,:) = zeros(3,3);
+            mu_Sim(i+(j-1)*N_1,:)    = zeros(3,1);
+            alpha_Sim(i+(j-1)*N_1,:) = zeros(9,1);
         else     
             % Add random orientation fluctuation
-            R_Fluc = R1_ZYZ_0(Phi_Fluc(i+(j-1)*N_1),Psi_Fluc(i+(j-1)*N_1),Theta_Fluc(i+(j-1)*N_1));
+            Phi_Ind = Phi_Fluc(i+(j-1)*N_1);
+            Psi_Ind = Psi_Fluc(i+(j-1)*N_1);
+            Theta_Ind = Theta_Fluc(i+(j-1)*N_1);
+            R1_Fluc = R1_ZYZ_0(Phi_Ind,Psi_Ind,Theta_Ind);
+            R2_Fluc = R2_ZYZ_0(Phi_Ind,Psi_Ind,Theta_Ind);
 
             % XYZ
-            XYZ_R  = (R_Fluc*XYZ_G09')'; % apply random fluctuation 
+            XYZ_R  = (R1_Fluc*XYZ_G09')'; % apply random fluctuation 
             TransV = (i-1)*Vec_1 + (j-1)*Vec_2;
             XYZ_Grid_M(:,:,i,j) = bsxfun(@plus,XYZ_R,TransV);
 
             % Mu & Alpha
-               mu_Sim(i+(j-1)*N_1,:,:) = (R_Fluc*mu_Mol_G09')';
-            alpha_Sim(i+(j-1)*N_1,:,:) =  R_Fluc*alpha_Mol_G09*R_Fluc';
+               mu_Sim(i+(j-1)*N_1,:) = (R1_Fluc * mu_Mol_G09'   )'; % note    mu_Mol_G09 = [N_Mode*3]
+            alpha_Sim(i+(j-1)*N_1,:) = (R2_Fluc * alpha_Mol_G09 )'; % note alpha_Mol_G09 = [9*N_Mode]
         end
     end
 end
@@ -174,15 +177,15 @@ for jj = 1:Num_Modes
 end
 
 %% Deal with files name 
-Grid_FilesName = [ 'Ester_Grid_V1' num2str(N_1) 'V2' num2str(N_2)];
+Grid_FilesName = [ '2D_Grid_V1' num2str(N_1) 'V2' num2str(N_2)];
 
 %% Output Structure
 Output.center       = Center;
 Output.freq         = Loc_Freq;
 Output.anharm       = Anharm;
 Output.mu           = mu_Sim;
-Output.alpha        = reshape(alpha_Sim,[Num_Modes,9]); % non-reduced alpha "vector"
-Output.alpha_matrix = alpha_Sim;
+Output.alpha        = alpha_Sim; % non-reduced alpha "vector"
+Output.alpha_matrix = reshape(alpha_Sim,[Num_Modes,3,3]);
 Output.AtomSerNo    = AtomSerNo;
 Output.Num_Modes    = Num_Modes;
 Output.XYZ          = XYZ_Grid;

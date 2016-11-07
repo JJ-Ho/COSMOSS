@@ -11,7 +11,7 @@ function Output = R_GF2LF(S_Info)
 XYZ      = S_Info.XYZ;
 TDV      = S_Info.TDV;
 Raman    = S_Info.Raman;
-Mode_Num = S_Info.Mode_Num;
+%Mode_Num = S_Info.Mode_Num;
 
 
 MF_Info = S_Info.MF_Info;

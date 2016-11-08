@@ -3,6 +3,9 @@ function  OneDSFG = OneDSFG_Main(Structure_Data,GUI_Inputs)
 
 % ------- Version log -----------------------------------------------------
 % 
+% Ver. 2.0  161108  Vectorized version, separate frequency from calculated
+%                   response matrix
+% 
 % Ver. 1.3  140922  Add input parser back
 % 
 % Ver. 1.2  140607  Delete input parser
@@ -95,19 +98,19 @@ Alpha_Ex = Alpha.Trans_Ex;
 %% Generate Molecular frame SFG Responses
 Num_Modes = Structure_Data.Num_Modes;
 
-ResMolFrame = zeros(Num_Modes,3^3+1);
+% vectorized version
+Alpha_Ex = squeeze(Alpha_Ex(2:Num_Modes+1,1,:))'; %=> [9*N]
+Mu_Ex    = squeeze(   Mu_Ex(1,2:Num_Modes+1,:))'; %=> [3*N]
+[Mu_Ind,Alpha_Ind] = ndgrid(1:3,1:9);
 
-for N = 1:Num_Modes
-    ResMolFrame(N,1)     = round(Ex_Freq(N+1)); % binned to 1 cm^-1
-    ResMolFrame(N,2:end) = kron(squeeze(Alpha_Ex(N+1,1,:)),squeeze(Mu_Ex(1,N+1,:)));
-end
+ResLF = Alpha_Ex(Alpha_Ind,:).* Mu_Ex(Mu_Ind,:); %=> [27*N]
+Ex_Freq = Ex_Freq(2:Num_Modes+1); % => [N*1]
 
 %% Decide what kinds of ensemble average
-
-% Orientation = Orientation/180*pi; % turn to radius unit
-Avg_Phi_R   =   Avg_Phi/180*pi;
-Avg_Psi_R   =   Avg_Psi/180*pi;
-Avg_Theta_R = Avg_Theta/180*pi;
+% need to eplain more this section
+Avg_Phi_R   = 0;
+Avg_Psi_R   = 0;
+Avg_Theta_R = 0;
 
 switch Avg_Rot
         
@@ -156,12 +159,7 @@ switch Avg_Mirror
         Mirror_Mask = and(Sigma_X,Sigma_Y);
 end
 
-%% Applied ensemble avergae on Responses in molecular frame
-
-ResLabFrame  = zeros(size(ResMolFrame));
-
-ResLabFrame(:,1) = ResMolFrame(:,1); 
-ResLabFrame(:,2:end) = (bsxfun(@times,R_Avg*ResMolFrame(:,2:end)',Mirror_Mask))';
+ResLF_Avg = bsxfun(@times,R_Avg*ResLF,Mirror_Mask); %=> [27*N]
 
 %% Jones Matrix convert XYZ to PS frame
 % 
@@ -172,37 +170,31 @@ A_IR  =  A_IR/180*pi;
 A_Vis = A_Vis/180*pi;
 A_Sum = A_Sum/180*pi;
 
-J = JonesRef3(A_Sum,A_Vis,A_IR);
+J = JonesRef3(A_Sum,A_Vis,A_IR); % => [27,8]
 
-JLabFrame  = zeros(size(ResLabFrame,1),9); % 9 = 1 freq + 2^3 (ppp - sss) of signal
-
-JLabFrame(:,1)      = ResLabFrame(:,1);
-JLabFrame(:,2:end)  = (J*ResLabFrame(:,2:end)')';
+J_ResLF_Avg = J * ResLF_Avg; % => [8,N]
 
 %% E part, Plarization of each incident beams
 
-E = EPolar3(P_Sum,P_Vis,P_IR);
+E = EPolar3(P_Sum,P_Vis,P_IR); % => [8,1]
 
-EJLabFrame  = zeros(size(JLabFrame,1),1); % Only one signal compose of all polarization combination
-
-EJLabFrame(:,1) = JLabFrame(:,1);
-EJLabFrame(:,2) = (E*JLabFrame(:,2:end)')';
+E_J_ResLF_Avg = E * J_ResLF_Avg; % => [1,N]
 
 %% Bin signal
-AccuGrid = Bin1D(EJLabFrame(:,1),EJLabFrame(:,2),FreqRange);
+AccuGrid = Bin1D(Ex_Freq,E_J_ResLF_Avg,FreqRange);
 
 %% Output
 OneDSFG.H            = H;
 OneDSFG.Mu           = Mu;
 OneDSFG.Alpha        = Alpha;
 OneDSFG.Num_Modes    = Num_Modes;
-OneDSFG.MolFrame     = ResMolFrame;
+OneDSFG.MolFrame     = ResLF;
 OneDSFG.R_Avg        = R_Avg;
-OneDSFG.LabFrame     = ResLabFrame;
+OneDSFG.LabFrame     = ResLF_Avg;
 OneDSFG.Jones        = J;
-OneDSFG.JLabFrame    = JLabFrame;
+OneDSFG.JLabFrame    = J_ResLF_Avg;
 OneDSFG.E            = E;
-OneDSFG.EJLabFrame   = EJLabFrame;
+OneDSFG.EJLabFrame   = E_J_ResLF_Avg;
 OneDSFG.FilesName    = Structure_Data.FilesName;
 OneDSFG.CouplingType = CouplingType;
 OneDSFG.SpecType     = 'SFG';

@@ -152,7 +152,7 @@ XYZ_Grid = reshape(permute(XYZ_Grid_M,[1,3,4,2]),[],3);
 % axis equal
 
 %% Create Translational copy of Center
-%C_Atom_Ind = 7;
+Center_Ind = 7;
 
 Center_M = sum(XYZ_Grid_M(Center_Ind,:,:,:),1);
 Center = reshape(permute(Center_M,[1,3,4,2]),[],3);

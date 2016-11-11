@@ -109,7 +109,7 @@ G09_Output = ReadG09Input(G09_Path);
 G09_Output.G09_Path = G09_Path;
 
 %% Export to Model handles
-handles.G09_Output = G09_Output;
+handles.Structure.G09_Output = G09_Output;
 guidata(hObject,handles)
 
 %% update structure and the file name on GUI
@@ -127,7 +127,7 @@ function UpdateStructure(hObject, eventdata, handles)
 %% retreive GUI inputs
 GUI_Struc  = handles.GUI_Struc;
 GUI_Inputs = ParseGUI_TwoDGrid(GUI_Struc);
-G09_Output = handles.G09_Output;
+G09_Output = handles.Structure.G09_Output;
 
 % update the mol frame info into G09_Output
 GUI_MF_Info.Center_Ind = GUI_Inputs.MF_Center;
@@ -172,8 +172,7 @@ if isfield(handles,'hMain')
     handles.hMain.Name = ['COSMOSS: ' Model_Name];
 end
 
-handles.G09_Output = G09_Output;
-handles.Monomer    = Monomer;
+Structure.G09_Output = G09_Output;
 handles.Structure  = Structure;
 handles.GUI_Inputs = GUI_Inputs;
 guidata(hObject,handles)

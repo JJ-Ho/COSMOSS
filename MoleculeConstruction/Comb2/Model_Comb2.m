@@ -107,6 +107,36 @@ handles.hStruc2    = hStruc2;
 handles.hPlotFunc2 = hPlotFunc2;
 guidata(hObject,handles)
 
+function LoadStructure(hObject, eventdata, handles)
+%% load previously saved comb2 output
+PWD = pwd;
+PDB_Path = [PWD, '/StructureFiles/Comb2/'];
+
+[FilesName,PathName,~] = uigetfile({'*.mat','Comb2 output'; ...
+                                    '*,*','All Files'},...
+                                    'Select inputs',PDB_Path);
+S = load([PathName FilesName]);
+S = S.Structure;
+
+%% Call sub-model GUIs 
+% construct the 1st model
+StructModel1 = S.StrucData1.StructModel;
+[hStructure1,~,hPlotFunc1] = StructureModel(StructModel1);
+hStruc1 = feval(hStructure1,handles.hMain);
+
+% construct the 2nd model
+StructModel2 = S.StrucData2.StructModel;
+[hStructure2,~,hPlotFunc2] = StructureModel(StructModel2);
+hStruc2 = feval(hStructure2,handles.hMain);
+
+%% export to guidata
+handles.Structure  = S;
+handles.hStruc1    = hStruc1;
+handles.hPlotFunc1 = hPlotFunc1;
+handles.hStruc2    = hStruc2;
+handles.hPlotFunc2 = hPlotFunc2;
+guidata(hObject,handles)
+
 function UpdateStructure(hObject, eventdata, handles)
 GUI_Struc = handles.GUI_Struc;
 

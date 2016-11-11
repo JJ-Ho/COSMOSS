@@ -59,7 +59,7 @@ handles.output = hObject;
 GUI_Struc = GUI_TwoDGrid(hObject);
 handles.GUI_Struc = GUI_Struc; % export GUI handles to handles
 
-% Get Main function's handles
+% Get Main (upper level) function's handles
 if nargin > 3    
     if ishandle(varargin{1}) 
        hMain = varargin{1};
@@ -67,6 +67,10 @@ if nargin > 3
 
        handles.hMain = hMain;
        handles.Data_Main = Data_Main;
+    else
+        if strcmp(varargin{1},'Comb2_Mode')
+            disp('Running Model_TwoDGrid as a sub GUI of Comb2')
+        end
     end
 else
     disp('Running Model_TwoDGrid in stand alone mode.')    
@@ -87,7 +91,8 @@ function varargout = Model_TwoDGrid_OutputFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Get default command line output from handles structure
-varargout{1} = handles.output;
+% varargout{1} = handles.output;
+varargout{1} = handles; % export the whole guidata instead of GUI base figure handle.
 
 function LoadG09(hObject, eventdata, handles)
 %% retreive GUI handles
@@ -159,23 +164,18 @@ Structure = ConstructGrid(Monomer.LF,GUI_Inputs);
 Structure.StructModel = 3;
 
 %% Export result to Main guidata
-
-% check if this program run stand along, if not push Structure info to Main
-if isfield(handles,'hMain')
-    Data_Main = guidata(handles.hMain);
-    Data_Main.Structure = Structure;
-    guidata(handles.hMain,Data_Main)
-    
-    % change Name of Main GUI to help identifying which Structural Model is
-    % using
-    Model_Name    = handles.hModel.Name;
-    handles.hMain.Name = ['COSMOSS: ' Model_Name];
-end
-
+% include G09 ouput to structure
 Structure.G09_Output = G09_Output;
+% update handles
 handles.Structure  = Structure;
 handles.GUI_Inputs = GUI_Inputs;
 guidata(hObject,handles)
+
+% update to other GUIs
+Export2GUIs(handles)
+
+disp('Structure file generated!')
+
 
 function hF = PlotMolecule(hObject, eventdata, handles)
 %% Update structure
@@ -185,14 +185,21 @@ UpdateStructure(hObject, eventdata, handles)
 GUI_Struc  = handles.GUI_Struc;
 GUI_Inputs = ParseGUI_TwoDGrid(GUI_Struc);
 
+%- This part is obsolete, since the lab frame ensemble avg should not take
+%  orientation inputs, will be removed later
 % Read the Molecule frame to Lab frame orientation from COSMOSS
-hMain = handles.hMain;
-GUI_Data_Main = guidata(hMain);
-GUI_Inputs_Main = ParseGUI_Main(GUI_Data_Main);
-% Pass the MF-LB Eular angles to Plotting function
-GUI_Inputs.Avg_Phi   = GUI_Inputs_Main.Avg_Phi;
-GUI_Inputs.Avg_Theta = GUI_Inputs_Main.Avg_Theta;
-GUI_Inputs.Avg_Psi   = GUI_Inputs_Main.Avg_Psi;
+% hMain = handles.hMain;
+% GUI_Data_Main = guidata(hMain);
+% GUI_Inputs_Main = ParseGUI_Main(GUI_Data_Main);
+% % Pass the MF-LB Eular angles to Plotting function
+% GUI_Inputs.Avg_Phi   = GUI_Inputs_Main.Avg_Phi;
+% GUI_Inputs.Avg_Theta = GUI_Inputs_Main.Avg_Theta;
+% GUI_Inputs.Avg_Psi   = GUI_Inputs_Main.Avg_Psi;
+
+GUI_Inputs.Avg_Phi   = 0;
+GUI_Inputs.Avg_Theta = 0;
+GUI_Inputs.Avg_Psi   = 0;
+%--------------------------------------------------------------------------
 
 hF = PlotXYZ_Grid(handles.Structure,GUI_Inputs);
 

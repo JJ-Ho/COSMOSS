@@ -98,7 +98,7 @@ function varargout = Model_Betasheet_AmideI_OutputFcn(hObject, eventdata, handle
 % handles    structure with handles and user data (see GUIDATA)
 
 % Get default command line output from handles structure
-varargout{1} = handles.output;
+varargout{1} = handles;
 
 function UpdateStructure(hObject, eventdata, handles)
 %% Read GUI variables
@@ -131,20 +131,11 @@ Structure.RotV   = [GUI_Inputs.Phi_D,GUI_Inputs.Psi_D,GUI_Inputs.Theta_D];
 Structure.StructModel = 4;
 
 %% Export result to Main guidata
-% check if this program run stand along
-if isfield(handles,'hMain')
-    Data_Main = guidata(handles.hMain);
-    Data_Main.Structure = Structure;
-    guidata(handles.hMain,Data_Main)
-    
-    % change Name of Main GUI to help identifying which Structural Model is
-    % using
-    Model_Name    = handles.hModel.Name;
-    handles.hMain.Name = ['COSMOSS: ' Model_Name];
-end
-
 handles.Structure = Structure;
 guidata(hObject,handles)
+
+% update to other GUIs
+Export2GUIs(handles)
 
 disp('Structure file generated!')
 
@@ -153,14 +144,21 @@ function hF = PlotMolecule(hObject, eventdata, handles)
 GUI_Struc  = handles.GUI_Struc;
 GUI_Inputs = ParseGUI_Betasheet(GUI_Struc);
 
+%- This part is obsolete, since the lab frame ensemble avg should not take
+%  orientation inputs, will be removed later
 % Read the Molecule frame to Lab frame orientation from COSMOSS
-hMain = handles.hMain;
-GUI_Data_Main = guidata(hMain);
-GUI_Inputs_Main = ParseGUI_Main(GUI_Data_Main);
-% Pass the MF-LB Eular angles to Plotting function
-GUI_Inputs.Avg_Phi   = GUI_Inputs_Main.Avg_Phi;
-GUI_Inputs.Avg_Theta = GUI_Inputs_Main.Avg_Theta;
-GUI_Inputs.Avg_Psi   = GUI_Inputs_Main.Avg_Psi;
+% hMain = handles.hMain;
+% GUI_Data_Main = guidata(hMain);
+% GUI_Inputs_Main = ParseGUI_Main(GUI_Data_Main);
+% % Pass the MF-LB Eular angles to Plotting function
+% GUI_Inputs.Avg_Phi   = GUI_Inputs_Main.Avg_Phi;
+% GUI_Inputs.Avg_Theta = GUI_Inputs_Main.Avg_Theta;
+% GUI_Inputs.Avg_Psi   = GUI_Inputs_Main.Avg_Psi;
+
+GUI_Inputs.Avg_Phi   = 0;
+GUI_Inputs.Avg_Theta = 0;
+GUI_Inputs.Avg_Psi   = 0;
+%--------------------------------------------------------------------------
 
 hF = Plot_Betasheet_AmideI(handles.Structure,GUI_Inputs);
 

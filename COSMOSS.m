@@ -107,10 +107,15 @@ varargout{1} = handles.output;
 function onListSelection(hObject, eventdata, handles)
 
 StructModel          = get(handles.GUI_Main.StructListBox,'Value');
-[hModel,ModelList,~] = StructureModel(StructModel);
+[fhModel,ModelList,~] = StructureModel(StructModel);
 
-feval(hModel,handles.hMain);
+guidata_Model = feval(fhModel,handles.hMain);
 disp(['COSMOSS using model ' ModelList{StructModel}])
+
+%- Data push to sub GUI test ----------------
+% guidata_Model.Test = 'Test';
+% guidata(guidata_Model.hModel,guidata_Model)
+%- Data push to sub GUI test ----------------
 
 % handles.Structure.hModel = hModel;
 guidata(hObject,handles)

@@ -1,6 +1,6 @@
 function GUI = GUI_Comb2(fig)
 %% Pre-setting
-Version = '1.0.1';
+Version = '1.1.0';
 
 %% Ask for avalible models
 [~,StructureModelList,~] = StructureModel(0);

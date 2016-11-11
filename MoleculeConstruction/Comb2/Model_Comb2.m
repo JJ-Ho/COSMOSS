@@ -81,17 +81,24 @@ function varargout = Model_Comb2_OutputFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Get default command line output from handles structure
-varargout{1} = handles.output;
+varargout{1} = handles;
 
 function Struc1(hObject, eventdata, handles)
 
 GUI_Struc = handles.GUI_Struc;
 StructModel    = get(GUI_Struc.StructBox1,'Value');
-[hStructure1,~,hPlotFunc1] = StructureModel(StructModel);
+[fhStructure1,~,hPlotFunc1] = StructureModel(StructModel);
 
-hStruc1 = feval(hStructure1,handles.hMain);
+guidata_Struc1 = feval(fhStructure1,'Comb2_Mode');
 
-handles.hStruc1    = hStruc1;
+% pass handles of comb2 to sub-GUI so when click update stracture in
+% sub-GUI, it knows where to push data to.
+guidata_Struc1.hComb2 = handles.hModel;
+guidata_Struc1.Comb2_Order = 1;
+guidata(guidata_Struc1.hModel,guidata_Struc1)
+
+% update guidata in comb2 and export 
+handles.hStruc1    = guidata_Struc1.hModel;
 handles.hPlotFunc1 = hPlotFunc1;
 guidata(hObject,handles)
 
@@ -99,11 +106,17 @@ function Struc2(hObject, eventdata, handles)
 
 GUI_Struc = handles.GUI_Struc;
 StructModel    = get(GUI_Struc.StructBox2,'Value');
-[hStructure2,~,hPlotFunc2] = StructureModel(StructModel);
+[fhStructure2,~,hPlotFunc2] = StructureModel(StructModel);
 
-hStruc2 = feval(hStructure2,handles.hMain);
+guidata_Struc2 = feval(fhStructure2,'Comb2_Mode');
 
-handles.hStruc2    = hStruc2;
+% pass handles of comb2 to sub-GUI so when click update stracture in
+% sub-GUI, it knows where to push data to.
+guidata_Struc2.hComb2 = handles.hModel;
+guidata_Struc2.Comb2_Order = 2;
+guidata(guidata_Struc2.hModel,guidata_Struc2)
+
+handles.hStruc2    = guidata_Struc2.hModel;
 handles.hPlotFunc2 = hPlotFunc2;
 guidata(hObject,handles)
 
@@ -147,7 +160,6 @@ StrucGUI_Data2 = guidata(hStruc2);
 StrucData1     = StrucGUI_Data1.Structure;
 StrucData2     = StrucGUI_Data2.Structure;
 
-Data_Main = handles.Data_Main;
 %% Retreive GUI inputs
 GUI_Inputs = ParseGUI_Comb2(GUI_Struc);
 
@@ -268,19 +280,12 @@ Structure.StructModel = 5;
 
 %% export back to handles and Main GUI if any
 handles.Structure   = Structure;
-
-Data_Main.Structure = Structure;
-handles.Data_Main   = Data_Main;
-
-if isfield(handles,'hMain')
-    guidata(handles.hMain,Data_Main)
-        
-    % change Name of Main GUI to help identifying which Structural Model is
-    % using
-    Model_Name    = handles.hModel.Name;
-    handles.hMain.Name = ['COSMOSS: ' Model_Name];
-end
 guidata(hObject,handles)
+
+% update to other GUIs
+Export2GUIs(handles)
+
+disp('Structure file generated!')
 
 function hF = PlotMolecule(hObject, eventdata, handles)
 GUI_Struc = handles.GUI_Struc;

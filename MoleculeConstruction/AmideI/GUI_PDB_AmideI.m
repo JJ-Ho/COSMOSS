@@ -1,6 +1,6 @@
 function GUI = GUI_PDB_AmideI(fig) 
 %% Pre-setting
-Version = '1.0.1';
+Version = '1.1.0';
 
 %% Add base layout
 MainLayout = uix.VBoxFlex(...

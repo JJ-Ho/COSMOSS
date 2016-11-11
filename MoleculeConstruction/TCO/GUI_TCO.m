@@ -1,6 +1,6 @@
 function GUI = GUI_TCO(fig) 
 %% Pre-setting
-Version = '1.0.0';
+Version = '1.1.0';
 
 %% Add base layout
 MainLayout = uix.VBoxFlex(...

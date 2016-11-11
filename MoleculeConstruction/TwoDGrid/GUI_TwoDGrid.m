@@ -1,6 +1,6 @@
 function GUI = GUI_TwoDGrid(fig)
 %% Pre-setting
-Version = '1.2.0';
+Version = '1.2.1';
 
 %% Add base layout
 MainLayout = uix.VBoxFlex(...

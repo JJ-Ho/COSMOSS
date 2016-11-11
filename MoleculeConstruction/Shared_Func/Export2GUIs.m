@@ -18,15 +18,17 @@ if isfield(handles,'hComb2')
     
     % update model specific plotting function
     StructModel = handles.Structure.StructModel;
-    [~,~,hPlotFunc] = StructureModel(StructModel);
-    
+    [~,~,hPlotFunc,~] = StructureModel(StructModel);
+        
     switch handles.Comb2_Order
         case 1
             Data_Comb2.hStruc1    = handles.hModel;
             Data_Comb2.hPlotFunc1 = hPlotFunc;
+            Data_Comb2.GUI_FieldName1 = handles.GUI_FieldName;
         case 2
             Data_Comb2.hStruc2    = handles.hModel;
             Data_Comb2.hPlotFunc2 = hPlotFunc;
+            Data_Comb2.GUI_FieldName2 = handles.GUI_FieldName;
     end
     
     guidata(handles.hComb2,Data_Comb2);

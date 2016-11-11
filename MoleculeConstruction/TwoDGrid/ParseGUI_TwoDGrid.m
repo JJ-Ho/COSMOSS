@@ -1,4 +1,4 @@
-function O = ParseGUI_TwoDGrid(hGUI)
+function [O,T] = ParseGUI_TwoDGrid(hGUI)
 
 % For Monomer -------------------------------------------------------------
 O.Frame_Type   =               get(hGUI.Frame_Type  ,'Value');
@@ -38,3 +38,43 @@ O.Plot_Axis       = get(hGUI.Plot_Axis      ,'Value' );
 O.Plot_Lattice    = get(hGUI.Plot_Lattice   ,'Value' );
 O.Plot_Atom_Index = get(hGUI.Plot_Atom_Index,'Value' );
 % -------------------------------------------------------------------------
+
+%% Export field name for each parameter
+% For Monomer -------------------------------------------------------------
+T.Frame_Type   =  'Value'; 
+T.MF_Center    = 'String';
+T.MF_Zi        = 'String';
+T.MF_Zf        = 'String';
+T.MF_XYi       = 'String';
+T.MF_XYf       = 'String';
+T.BondAvg      =  'Value';
+T.LF_Phi       = 'String';
+T.LF_Psi       = 'String';
+T.LF_Theta     = 'String';
+% -------------------------------------------------------------------------
+
+% For 2D Grid -------------------------------------------------------------
+T.Delta_Phi   = 'String';
+T.Delta_Psi   = 'String';
+T.Delta_Theta = 'String';
+T.Vec_1       = 'String';
+T.Vec_2       = 'String';
+T.N_1         = 'String';
+T.N_2         = 'String';
+% -------------------------------------------------------------------------
+
+% For Local Mode frequencies ----------------------------------------------
+T.NLFreq  = 'String';
+T.LFreq   = 'String';
+T.Anharm  = 'String';
+T.L_Index = 'String';
+% -------------------------------------------------------------------------
+
+% For molecule ploting ----------------------------------------------------
+T.Plot_Atoms      = 'Value';
+T.Plot_Bonds      = 'Value';
+T.Plot_Axis       = 'Value';
+T.Plot_Lattice    = 'Value';
+T.Plot_Atom_Index = 'Value';
+% -------------------------------------------------------------------------
+

@@ -114,6 +114,12 @@ Structure.StructModel = 1;
 
 %% Export result to Main guidata
 handles.Structure = Structure;
+
+% include FieldName of GUI Inputs
+[~,~,~,hGUIParser] = StructureModel(Structure.StructModel);
+[~,GUI_FieldName] = hGUIParser(GUI_Struc);
+handles.GUI_FieldName = GUI_FieldName;
+
 guidata(hObject,handles)
 
 % update to other GUIs

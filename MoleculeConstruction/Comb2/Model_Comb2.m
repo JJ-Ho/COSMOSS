@@ -85,40 +85,94 @@ varargout{1} = handles;
 
 function Struc1(hObject, eventdata, handles)
 
-GUI_Struc = handles.GUI_Struc;
-StructModel    = get(GUI_Struc.StructBox1,'Value');
+if isfield(handles,'LoadStructModel')
+    StructModel = handles.LoadStructModel;
+else
+    GUI_Struc   = handles.GUI_Struc;
+    StructModel = get(GUI_Struc.StructBox1,'Value');
+end 
+
 [fhStructure1,~,hPlotFunc1] = StructureModel(StructModel);
 
 guidata_Struc1 = feval(fhStructure1,'Comb2_Mode');
 
 % pass handles of comb2 to sub-GUI so when click update stracture in
 % sub-GUI, it knows where to push data to.
-guidata_Struc1.hComb2 = handles.hModel;
+guidata_Struc1.hComb2      = handles.hModel;
 guidata_Struc1.Comb2_Order = 1;
+guidata_Struc1.Structure   = handles.Structure;
 guidata(guidata_Struc1.hModel,guidata_Struc1)
+
+% Update the GUI inputs if Load Structure 
+if isfield(handles,'LoadStructModel')
+    hGUI = guidata_Struc1.GUI_Struc;
+    GUI_Tag  = fieldnames(handles.GUI_Inputs1);
+    GUI_Type = struct2cell(handles.GUI_FieldName1);
+    GUI_Para = struct2cell(handles.GUI_Inputs1);
+
+    %ParseGUI_Comb2(hGUI,GUI_Tag,GUI_Para);
+    for i = 1:length(GUI_Tag)
+        if strcmp(GUI_Type{i},'String')
+            hGUI.(GUI_Tag{i}).(GUI_Type{i}) = num2str(GUI_Para{i});
+        else
+            hGUI.(GUI_Tag{i}).(GUI_Type{i}) = GUI_Para{i};
+        end
+    end
+end
 
 % update guidata in comb2 and export 
 handles.hStruc1    = guidata_Struc1.hModel;
 handles.hPlotFunc1 = hPlotFunc1;
 guidata(hObject,handles)
 
+% update Structure in sub-GUI
+hSubGUI = guidata_Struc1.hModel;
+fhStructure1('UpdateStructure',hSubGUI,eventdata,guidata(hSubGUI));
+
 function Struc2(hObject, eventdata, handles)
 
-GUI_Struc = handles.GUI_Struc;
-StructModel    = get(GUI_Struc.StructBox2,'Value');
+if isfield(handles,'LoadStructModel')
+    StructModel = handles.LoadStructModel;
+else
+    GUI_Struc   = handles.GUI_Struc;
+    StructModel = get(GUI_Struc.StructBox2,'Value');
+end 
+
 [fhStructure2,~,hPlotFunc2] = StructureModel(StructModel);
 
 guidata_Struc2 = feval(fhStructure2,'Comb2_Mode');
 
 % pass handles of comb2 to sub-GUI so when click update stracture in
 % sub-GUI, it knows where to push data to.
-guidata_Struc2.hComb2 = handles.hModel;
+guidata_Struc2.hComb2      = handles.hModel;
 guidata_Struc2.Comb2_Order = 2;
+guidata_Struc2.Structure   = handles.Structure;
 guidata(guidata_Struc2.hModel,guidata_Struc2)
+
+% Update the GUI inputs if Load Structure 
+if isfield(handles,'LoadStructModel')
+    hGUI = guidata_Struc2.GUI_Struc;
+    GUI_Tag  = fieldnames(handles.GUI_Inputs2);
+    GUI_Type = struct2cell(handles.GUI_FieldName2);
+    GUI_Para = struct2cell(handles.GUI_Inputs2);
+
+    %ParseGUI_Comb2(hGUI,GUI_Tag,GUI_Para);
+    for i = 1:length(GUI_Tag)
+        if strcmp(GUI_Type{i},'String')
+            hGUI.(GUI_Tag{i}).(GUI_Type{i}) = num2str(GUI_Para{i});
+        else
+            hGUI.(GUI_Tag{i}).(GUI_Type{i}) = GUI_Para{i};
+        end
+    end
+end
 
 handles.hStruc2    = guidata_Struc2.hModel;
 handles.hPlotFunc2 = hPlotFunc2;
 guidata(hObject,handles)
+
+% update Structure in sub-GUI
+hSubGUI = guidata_Struc2.hModel;
+fhStructure2('UpdateStructure',hSubGUI,eventdata,guidata(hSubGUI));
 
 function LoadStructure(hObject, eventdata, handles)
 %% load previously saved comb2 output
@@ -128,28 +182,87 @@ PDB_Path = [PWD, '/StructureFiles/Comb2/'];
 [FilesName,PathName,~] = uigetfile({'*.mat','Comb2 output'; ...
                                     '*,*','All Files'},...
                                     'Select inputs',PDB_Path);
-S = load([PathName FilesName]);
-S = S.Structure;
+L = load([PathName FilesName]);
+
+Structure   = L.Structure;
+GUI_Inputs0 = L.GUI_Inputs0;
+GUI_Inputs1 = L.GUI_Inputs1;
+GUI_Inputs2 = L.GUI_Inputs2;
+
+GUI_FieldName0 = L.GUI_FieldName0;
+GUI_FieldName1 = L.GUI_FieldName1;
+GUI_FieldName2 = L.GUI_FieldName2;
+
+%% Update GUI front end in Comb2
+hGUI = handles.GUI_Struc;
+GUI_Tag  = fieldnames(GUI_Inputs0);
+GUI_Type = struct2cell(GUI_FieldName0);
+GUI_Para = struct2cell(GUI_Inputs0);
+
+%ParseGUI_Comb2(hGUI,GUI_Tag,GUI_Para);
+for i = 1:length(GUI_Tag)
+    if strcmp(GUI_Type{i},'String')
+        hGUI.(GUI_Tag{i}).(GUI_Type{i}) = num2str(GUI_Para{i});
+    else
+        hGUI.(GUI_Tag{i}).(GUI_Type{i}) = GUI_Para{i};
+    end
+end
 
 %% Call sub-model GUIs 
 % construct the 1st model
-StructModel1 = S.StrucData1.StructModel;
-[hStructure1,~,hPlotFunc1] = StructureModel(StructModel1);
-hStruc1 = feval(hStructure1,handles.hMain);
+handles.LoadStructModel = Structure.StrucData1.StructModel;
+handles.GUI_Inputs1     = GUI_Inputs1;
+handles.GUI_FieldName1  = GUI_FieldName1;
+handles.Structure       = Structure.StrucData1;
+Struc1(hObject, eventdata, handles)
 
 % construct the 2nd model
-StructModel2 = S.StrucData2.StructModel;
-[hStructure2,~,hPlotFunc2] = StructureModel(StructModel2);
-hStruc2 = feval(hStructure2,handles.hMain);
+handles.LoadStructModel = Structure.StrucData2.StructModel;
+handles.GUI_Inputs2     = GUI_Inputs2;
+handles.GUI_FieldName2  = GUI_FieldName2;
+handles.Structure       = Structure.StrucData2;
+Struc2(hObject, eventdata, handles)
 
 %% export to guidata
-handles.Structure  = S;
-handles.hStruc1    = hStruc1;
-handles.hPlotFunc1 = hPlotFunc1;
-handles.hStruc2    = hStruc2;
-handles.hPlotFunc2 = hPlotFunc2;
+handles.Structure  = Structure;
 guidata(hObject,handles)
 
+% update Structure in sub-GUI 
+% for some reason UpdateStructure does not see handles.hStruc1 paased
+% after excuted the UpdateStructure in sub-GUIs
+% UpdateStructure(hObject, eventdata, guidata(hObject))
+
+function SaveStructure(hObject, eventdata, handles)
+%% Collecting outputs
+% GUI inputs from both sub GUIs
+hStruc1 = handles.hStruc1;
+hStruc2 = handles.hStruc2;
+GUI_Data1 = guidata(hStruc1);
+GUI_Data2 = guidata(hStruc2);
+
+GUI_Inputs0 =   handles.GUI_Inputs;
+GUI_Inputs1 = GUI_Data1.GUI_Inputs;
+GUI_Inputs2 = GUI_Data2.GUI_Inputs;
+
+Output.Structure   = handles.Structure;
+Output.GUI_Inputs0 = GUI_Inputs0;
+Output.GUI_Inputs1 = GUI_Inputs1;
+Output.GUI_Inputs2 = GUI_Inputs2;
+
+Output.GUI_FieldName0 = handles.GUI_FieldName;
+Output.GUI_FieldName1 = handles.GUI_FieldName1;
+Output.GUI_FieldName2 = handles.GUI_FieldName2;
+
+%% Determine path and save
+PWD = pwd;
+PDB_Path = [PWD, '/StructureFiles/Comb2/'];
+
+[FilesName,PathName,~] = uiputfile({'*.mat','Comb2 output'; ...
+                                    '*,*','All Files'},...
+                                    'Select inputs',PDB_Path);
+
+save([PathName FilesName],'-struct','Output')
+                                                                
 function UpdateStructure(hObject, eventdata, handles)
 GUI_Struc = handles.GUI_Struc;
 
@@ -279,7 +392,14 @@ Structure.StrucData2  = StrucData2;
 Structure.StructModel = 5;
 
 %% export back to handles and Main GUI if any
+handles.GUI_Inputs  = GUI_Inputs;
 handles.Structure   = Structure;
+
+% include FieldName of GUI Inputs
+[~,~,~,hGUIParser] = StructureModel(Structure.StructModel);
+[~,GUI_FieldName] = hGUIParser(GUI_Struc);
+handles.GUI_FieldName = GUI_FieldName;
+
 guidata(hObject,handles)
 
 % update to other GUIs

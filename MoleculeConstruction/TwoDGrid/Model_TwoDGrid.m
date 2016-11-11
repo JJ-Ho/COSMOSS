@@ -166,6 +166,12 @@ Structure.StructModel = 3;
 %% Export result to Main guidata
 % include G09 ouput to structure
 Structure.G09_Output = G09_Output;
+
+% include FieldName of GUI Inputs
+[~,~,~,hGUIParser] = StructureModel(Structure.StructModel);
+[~,GUI_FieldName] = hGUIParser(GUI_Struc);
+handles.GUI_FieldName = GUI_FieldName;
+
 % update handles
 handles.Structure  = Structure;
 handles.GUI_Inputs = GUI_Inputs;

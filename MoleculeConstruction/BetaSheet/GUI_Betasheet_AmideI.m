@@ -1,6 +1,6 @@
 function GUI = GUI_Betasheet_AmideI(fig) 
 %% Pre-setting
-Version = '1.1.0';
+Version = '1.1.1';
 
 %% Add base layout
 MainLayout = uix.VBoxFlex(...

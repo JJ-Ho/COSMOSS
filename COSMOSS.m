@@ -1,3 +1,4 @@
+% ^ GUI Skeleton ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function varargout = COSMOSS(varargin)
 % COSMOSS MATLAB code for COSMOSS.fig
 %      COSMOSS, by itself, creates a new COSMOSS or raises the existing
@@ -24,111 +25,96 @@ function varargout = COSMOSS(varargin)
 
 % Last Modified by GUIDE v2.5 01-Oct-2014 15:09:19
 
-% check if path is added otherwise, initailize the path
-if ~eq(exist('TwoDSFG_Main','file'),2)
-    Initialization
-end
-
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
                    'gui_OpeningFcn', @COSMOSS_OpeningFcn, ...
                    'gui_OutputFcn',  @COSMOSS_OutputFcn, ...
-                   'gui_LayoutFcn',  [], ...
+                   'gui_LayoutFcn',  @GUI_Base_COSMOSS, ...
                    'gui_Callback',   []);
                
-%- Check if GUI Layout Tool box exist ------------------------------------
-T = ver;
-UseLayoutToolBox = any(strcmp(cellstr(char(T.Name)), 'GUI Layout Toolbox'));
-
-if and(UseLayoutToolBox,~nargin)
-    gui_State.gui_LayoutFcn = @GUI_COSMOSS_Base;
-    CreatMainGUI = 1;
-else
-    CreatMainGUI = 0;
-end
-% ------------------------------------------------------------------------   
 
 if nargin && ischar(varargin{1})
     gui_State.gui_Callback = str2func(varargin{1});
 end
 
-% and(UseLayoutToolBox,any(isempty(gui_State.gui_Callback)))
-
-if or(nargout,CreatMainGUI)
-    if nargin
-        [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
-    else
-        hMain = gui_mainfcn(gui_State, varargin{:});   
-        %varargout{1} = hMain;
-    end
+if nargout
+    [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
 else
     gui_mainfcn(gui_State, varargin{:});
 end
-
-%- Call createInterface to create GUI elements and update handles ---------
-if and(UseLayoutToolBox,~nargin)
-    GUI_Main = GUI_COSMOSS(hMain);
-    handles.hMain    = hMain;
-    handles.GUI_Main = GUI_Main; % export GUI handles to handles
-    guidata(hMain, handles);
-end
-% ------------------------------------------------------------------------
 % End initialization code - DO NOT EDIT
 
-% --- Executes just before COSMOSS is made visible.
-function COSMOSS_OpeningFcn(hObject, eventdata, handles, varargin)
+function COSMOSS_OpeningFcn(hCOSMOSS, eventdata, GUI_data, varargin)
 % This function has no output args, see OutputFcn.
-% hObject    handle to figure
+% hCOSMOSS   handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+% GUIdata    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to COSMOSS (see VARARGIN)
 
-% Choose default command line output for COSMOSS
-handles.output = hObject;
+% check if path is added otherwise, initailize the path
+if ~eq(exist('TwoDSFG_Main','file'),2)
+    Initialization
+end
 
-% UIWAIT makes COSMOSS wait for user response (see UIRESUME)
-% uiwait(handles.Main);
+%- Check if GUI Layout Tool box exist ------------------------------------
+T = ver;
+UseLayoutToolBox = any(strcmp(cellstr(char(T.Name)), 'GUI Layout Toolbox'));
 
-% Update handles structure
-guidata(hObject, handles);
+if UseLayoutToolBox
+    hGUIs = GUI_COSMOSS(hCOSMOSS);
+else
+    diap('Please install GUI Layout toolbox...')
+    return
+end
+% ------------------------------------------------------------------------   
 
-% --- Outputs from this function are returned to the command line.
-function varargout = COSMOSS_OutputFcn(hObject, eventdata, handles) 
+% Prep necessary data to be export
+GUI_data.hCOSMOSS = hCOSMOSS; 
+GUI_data.hGUIs    = hGUIs; % export GUI handles to handles
+
+guidata(hCOSMOSS, GUI_data);
+
+function varargout = COSMOSS_OutputFcn(hCOSMOSS, eventdata, GUI_data) 
 % varargout  cell array for returning output args (see VARARGOUT);
-% hObject    handle to figure
+% hCOSMOSS    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+% GUIdata    structure with handles and user data (see GUIDATA)
 
 % Get default command line output from handles structure
-varargout{1} = handles.output;
+varargout{1} = hCOSMOSS;
 
-function onListSelection(hObject, eventdata, handles)
+function Export_Handle_Callback(hObject, eventdata, GUI_data)
+% export handles back to work space
+assignin('base', 'Data_COSMOSS', GUI_data)
+disp('Updated GUI Data_COSMOSS exported!')
+% ^ GUI Skeleton ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-StructModel          = get(handles.GUI_Main.StructListBox,'Value');
+
+function onListSelection(hObject, eventdata, GUI_data)
+StructModel           = get(GUI_data.hGUIs.StructListBox,'Value');
 [fhModel,ModelList,~] = StructureModel(StructModel);
 
-guidata_Model = feval(fhModel,handles.hMain);
+hModel = feval(fhModel,'COSMOSS');
 disp(['COSMOSS using model ' ModelList{StructModel}])
 
-%- Data push to sub GUI test ----------------
-% guidata_Model.Test = 'Test';
-% guidata(guidata_Model.hModel,guidata_Model)
-%- Data push to sub GUI test ----------------
+%- push hCOSMOSS to sub GUI ----------------
+GUI_data_Model          = guidata(hModel);
+GUI_data_Model.hCOSMOSS = GUI_data.hCOSMOSS;
+guidata(hModel,GUI_data_Model)
+%-------------------------------------------
 
 % handles.Structure.hModel = hModel;
-guidata(hObject,handles)
+guidata(hObject,GUI_data)
 
-function FTIR_Callback(hObject, eventdata, handles)
-% hObject    handle to PlotFTIR (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-GUI_Inputs = ParseGUI_Main(handles);
-Structure = handles.Structure;
+function FTIR_Callback(hObject, eventdata, GUI_data)
+%% Main
+GUI_Inputs = ParseGUI_Main(GUI_data.hGUIs);
+Structure  = GUI_data.Structure;
 
-hF = figure;
-hAx = axes;
+hF  = figure;
+hAx = axes('Parent',hF);
 
 if eq(GUI_Inputs.Sampling,1)
     % Pre-allocate
@@ -137,7 +123,6 @@ if eq(GUI_Inputs.Sampling,1)
     Freq_Orig  = Structure.freq;
     Response1D = zeros(GridSize,1);
     
-    
     StandardDiv = GUI_Inputs.FWHM./(2*sqrt(2*log(2)));
     P_FlucCorr  = GUI_Inputs.P_FlucCorr/100; % turn percentage to number within 0~1
     
@@ -145,8 +130,8 @@ if eq(GUI_Inputs.Sampling,1)
     TIME   = zeros(GUI_Inputs.Sample_Num,1);
     
     for i = 1:GUI_Inputs.Sample_Num
-        DynamicUpdate = handles.GUI_Main.DynamicUpdate.Value;
-        UpdateStatus  = handles.GUI_Main.UpdateStatus.Value;
+        DynamicUpdate = GUI_data.GUI_Main.DynamicUpdate.Value;
+        UpdateStatus  = GUI_data.GUI_Main.UpdateStatus.Value;
         if and(~eq(i,1), and(eq(DynamicUpdate,1),~eq(UpdateStatus,1)))
             break
         end
@@ -187,18 +172,16 @@ else
 end
 
 %% Update FTIR data into guidata 
-handles.FTIR       = FTIR;
-guidata(hObject,handles)
+GUI_data.FTIR = FTIR;
+guidata(hObject,GUI_data)
 
-function SFG_Callback(hObject, eventdata, handles)
-% hObject    handle to PlotSFG (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-GUI_Inputs = ParseGUI_Main(handles);
-Structure = handles.Structure;
+function SFG_Callback(hObject, eventdata, GUI_data)
+%% Main
+GUI_Inputs = ParseGUI_Main(GUI_data.hGUIs);
+Structure  = GUI_data.Structure;
 
-hF = figure;
-hAx = axes;
+hF  = figure;
+hAx = axes('Parent',hF);
 
 if eq(GUI_Inputs.Sampling,1)
     % Pre-allocate
@@ -215,8 +198,8 @@ if eq(GUI_Inputs.Sampling,1)
     TIME   = zeros(GUI_Inputs.Sample_Num,1);
     
     for i = 1:GUI_Inputs.Sample_Num
-        DynamicUpdate = handles.GUI_Main.DynamicUpdate.Value;
-        UpdateStatus  = handles.GUI_Main.UpdateStatus.Value;
+        DynamicUpdate = GUI_data.GUI_Main.DynamicUpdate.Value;
+        UpdateStatus  = GUI_data.GUI_Main.UpdateStatus.Value;
         if and(~eq(i,1), and(eq(DynamicUpdate,1),~eq(UpdateStatus,1)))
             break
         end
@@ -257,24 +240,20 @@ else
 end
 
 %% Update share data
-handles.OneDSFG = OneDSFG;
-guidata(hObject,handles);
+GUI_data.OneDSFG = OneDSFG;
+guidata(hObject,GUI_data);
 
-function TwoDIR_Callback(hObject, eventdata, handles)
-% hObject    handle to Plot2DIR (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
+function TwoDIR_Callback(hObject, eventdata, GUI_data)
 %% Read GUI
-GUI_Inputs = ParseGUI_Main(handles);
+GUI_Inputs = ParseGUI_Main(GUI_data.hGUIs);
 
-DynamicUpdate = handles.GUI_Main.DynamicUpdate.Value;
+DynamicUpdate = GUI_Inputs.DynamicUpdate;
 if DynamicUpdate
     hF = figure;
 end
 
 %% Calculate TwoD response
-Structure = handles.Structure;
+Structure = GUI_data.Structure;
 
 if eq(GUI_Inputs.Sampling,1)
     % Pre-allocate
@@ -300,8 +279,8 @@ if eq(GUI_Inputs.Sampling,1)
     
     for i = 1:GUI_Inputs.Sample_Num
 
-        DynamicUpdate = handles.GUI_Main.DynamicUpdate.Value;
-        UpdateStatus  = handles.GUI_Main.UpdateStatus.Value;
+        DynamicUpdate = GUI_Inputs.DynamicUpdate;
+        UpdateStatus  = GUI_Inputs.UpdateStatus;
         if and(~eq(i,1), and(eq(DynamicUpdate,1),~eq(UpdateStatus,1)))
             break
         end
@@ -367,28 +346,24 @@ CVL.FilesName = Structure.FilesName; % pass filesname for figure title
 Plot2DIR(hF_final,CVL,GUI_Inputs);
 
 %% update TwoDIR_Response into guidata
-TwoDIR = Response;
+TwoDIR             = Response;
 TwoDIR.SpectraGrid = SpectraGrid;
 TwoDIR.CVL         = CVL;
 
 handles.TwoDIR = TwoDIR;
-guidata(hObject,handles);
+guidata(hObject,GUI_data);
 
-function TwoDSFG_Callback(hObject, eventdata, handles)
-% hObject    handle to Plot2DSFG (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
+function TwoDSFG_Callback(hObject, eventdata, GUI_data)
 %% Read GUI
-GUI_Inputs = ParseGUI_Main(handles);
+GUI_Inputs = ParseGUI_Main(GUI_data.hGUIs);
 
-DynamicUpdate = handles.GUI_Main.DynamicUpdate.Value;
+DynamicUpdate = GUI_Inputs.DynamicUpdate;
 if DynamicUpdate
     hF = figure;
 end
 
 %% Calculate TwoD response
-Structure = handles.Structure;
+Structure = GUI_data.Structure;
 
 if eq(GUI_Inputs.Sampling,1)
     % Pre-allocate
@@ -414,8 +389,8 @@ if eq(GUI_Inputs.Sampling,1)
     
     for i = 1:GUI_Inputs.Sample_Num
         
-        DynamicUpdate = handles.GUI_Main.DynamicUpdate.Value;
-        UpdateStatus  = handles.GUI_Main.UpdateStatus.Value;
+        DynamicUpdate = GUI_Inputs.DynamicUpdate;
+        UpdateStatus  = GUI_Inputs.UpdateStatus;
         if and(~eq(i,1), and(eq(DynamicUpdate,1),~eq(UpdateStatus,1)))
             break
         end
@@ -485,10 +460,6 @@ TwoDSFG             = Response;
 TwoDSFG.SpectraGrid = SpectraGrid;
 TwoDSFG.CVL         = CVL;
 
-handles.TwoDSFG = TwoDSFG;
-guidata(hObject,handles);
+GUI_data.TwoDSFG = TwoDSFG;
+guidata(hObject,GUI_data);
 
-function Export_Handle_Callback(hObject, eventdata, handles)
-% export handles back to work space
-assignin('base', 'hMain', handles)
-disp('Updated handles exported!')

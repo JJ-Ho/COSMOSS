@@ -1,9 +1,9 @@
-function hFcomb2 = PlotComb2(handles,GUI_Inputs)
+function hFcomb2 = PlotComb2(GUI_data,GUI_Inputs)
 %% retreive data from handles
-hStruc1        = handles.hStruc1;
-hStruc2        = handles.hStruc2;
-StrucData1     = handles.Structure.StrucData1;
-StrucData2     = handles.Structure.StrucData2;
+hStruc1        = GUI_data.hStruc1;
+hStruc2        = GUI_data.hStruc2;
+StrucData1     = GUI_data.Structure.StrucData1;
+StrucData2     = GUI_data.Structure.StrucData2;
 
 %% Retreive GUI inputs
 % GUI_Inputs = ParseGUI_Comb2(GUI_Struc);
@@ -24,8 +24,8 @@ Center2 = StrucData2.center;
 COM2 = sum(Center2,1)./size(Center2,1);
 
 %% make figure
-[hFunc_Model1,~,~] = StructureModel(StrucData1.StructModel);
-[hFunc_Model2,~,~] = StructureModel(StrucData2.StructModel);
+[fhFunc_Model1,~,~] = StructureModel(StrucData1.StructModel);
+[fhFunc_Model2,~,~] = StructureModel(StrucData2.StructModel);
 
 % retrieve GUI data of each selected model and update he corresponding
 % structure.
@@ -34,8 +34,8 @@ GUI_Data2 = guidata(hStruc2);
 GUI_Data1.Structure = StrucData1;
 GUI_Data2.Structure = StrucData2;
 
-hF1 = hFunc_Model1('PlotMolecule',hStruc1,'',GUI_Data1);
-hF2 = hFunc_Model2('PlotMolecule',hStruc2,'',GUI_Data2);
+hF1 = fhFunc_Model1('PlotMolecule',hStruc1,'',GUI_Data1);
+hF2 = fhFunc_Model2('PlotMolecule',hStruc2,'',GUI_Data2);
 
 hAx1 = findobj(hF1,'type','axes');
 hAx2 = findobj(hF2,'type','axes');
@@ -75,4 +75,4 @@ grid on
 
 xlabel('X')
 ylabel('Y')
-view([0,0])
+view([0,90])

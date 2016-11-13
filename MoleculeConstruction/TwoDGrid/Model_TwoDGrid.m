@@ -1,3 +1,4 @@
+% ^ GUI Skeleton ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function varargout = Model_TwoDGrid(varargin)
 % MODEL_TWODGRID MATLAB code for Model_TwoDGrid.fig
 %      MODEL_TWODGRID, by itself, creates a new MODEL_TWODGRID or raises the existing
@@ -43,48 +44,30 @@ else
 end
 % End initialization code - DO NOT EDIT
 
-
-% --- Executes just before Model_TwoDGrid is made visible.
-function Model_TwoDGrid_OpeningFcn(hObject, eventdata, handles, varargin)
+function Model_TwoDGrid_OpeningFcn(hModel_TwoDGrid, eventdata, GUI_data, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to Model_TwoDGrid (see VARARGIN)
 
-% Choose default command line output for Model_TwoDGrid
-handles.output = hObject;
-
-% Call createInterface to create GUI elements
-GUI_Struc = GUI_TwoDGrid(hObject);
-handles.GUI_Struc = GUI_Struc; % export GUI handles to handles
-
-% Get Main (upper level) function's handles
-if nargin > 3    
-    if ishandle(varargin{1}) 
-       hMain = varargin{1};
-       Data_Main = guidata(hMain);
-
-       handles.hMain = hMain;
-       handles.Data_Main = Data_Main;
-    else
-        if strcmp(varargin{1},'Comb2_Mode')
-            disp('Running Model_TwoDGrid as a sub GUI of Comb2')
-        end
-    end
-else
-    disp('Running Model_TwoDGrid in stand alone mode.')    
+switch varargin{1}
+    case 'COSMOSS'
+        disp('Running Model_TwoDGrid durectly from COSMOSS...')
+    case 'Comb2'
+        disp('Running Model_TwoDGrid as a sub GUI of Comb2...')
 end
 
-% Update handles structure
-guidata(hObject,handles);
+% Call createInterface to create GUI elements
+hGUIs = GUI_TwoDGrid(hModel_TwoDGrid);
 
-% UIWAIT makes Model_TwoDGrid wait for user response (see UIRESUME)
-% uiwait(handles.hModel);
+% Prep necessary data to be export
+GUI_data.hModel_TwoDGrid = hModel_TwoDGrid;
+GUI_data.hGUIs           = hGUIs; % export GUI handles to handles
 
+guidata(hModel_TwoDGrid,GUI_data);
 
-% --- Outputs from this function are returned to the command line.
-function varargout = Model_TwoDGrid_OutputFcn(hObject, eventdata, handles) 
+function varargout = Model_TwoDGrid_OutputFcn(hModel_TwoDGrid, eventdata, GUI_data) 
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -92,11 +75,19 @@ function varargout = Model_TwoDGrid_OutputFcn(hObject, eventdata, handles)
 
 % Get default command line output from handles structure
 % varargout{1} = handles.output;
-varargout{1} = handles; % export the whole guidata instead of GUI base figure handle.
+varargout{1} = hModel_TwoDGrid; % export the whole guidata instead of GUI base figure handle.
 
-function LoadG09(hObject, eventdata, handles)
+function Export_Handle_Callback(hObject, eventdata, handles)
+% export handles back to work space
+assignin('base', 'Data_TwoDGrid', handles)
+disp('Updated GUI Data_TwoDGrid exported!')
+% ^ GUI Skeleton ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+function LoadG09(hObject, eventdata, GUI_data)
 %% retreive GUI handles
-GUI_Struc  = handles.GUI_Struc;
+hGUIs  = GUI_data.hGUIs;
 
 %% Call uigetfile for G09 path
 PWD = pwd;
@@ -114,25 +105,26 @@ G09_Output = ReadG09Input(G09_Path);
 G09_Output.G09_Path = G09_Path;
 
 %% Export to Model handles
-handles.Structure.G09_Output = G09_Output;
-guidata(hObject,handles)
+GUI_data.Structure.G09_Output = G09_Output;
+guidata(hObject,GUI_data)
 
 %% update structure and the file name on GUI
-handles.hModel.Name = ['Model_2DGrid: ', FilesName];
+GUI_data.hModel_TwoDGrid.Name = ['Model_2DGrid: ', FilesName];
 % update mol frame Atom index
-GUI_Struc.MF_Center.String = num2str(G09_Output.Mol_Frame.Center_Ind);
-GUI_Struc.MF_Zi.String     = num2str(G09_Output.Mol_Frame.Z_i_Ind);
-GUI_Struc.MF_Zf.String     = num2str(G09_Output.Mol_Frame.Z_f_Ind);
-GUI_Struc.MF_XYi.String    = num2str(G09_Output.Mol_Frame.XY_i_Ind);
-GUI_Struc.MF_XYf.String    = num2str(G09_Output.Mol_Frame.XY_f_Ind);
+hGUIs.MF_Center.String = num2str(G09_Output.Mol_Frame.Center_Ind);
+hGUIs.MF_Zi.String     = num2str(G09_Output.Mol_Frame.Z_i_Ind);
+hGUIs.MF_Zf.String     = num2str(G09_Output.Mol_Frame.Z_f_Ind);
+hGUIs.MF_XYi.String    = num2str(G09_Output.Mol_Frame.XY_i_Ind);
+hGUIs.MF_XYf.String    = num2str(G09_Output.Mol_Frame.XY_f_Ind);
 
-UpdateStructure(hObject, eventdata, handles)
+UpdateStructure(hObject, eventdata, GUI_data)
 
-function UpdateStructure(hObject, eventdata, handles)
+function UpdateStructure(hObject, eventdata, GUI_data)
 %% retreive GUI inputs
-GUI_Struc  = handles.GUI_Struc;
-GUI_Inputs = ParseGUI_TwoDGrid(GUI_Struc);
-G09_Output = handles.Structure.G09_Output;
+hGUIs  = GUI_data.hGUIs;
+GUI_Inputs = ParseGUI_TwoDGrid(hGUIs);
+
+G09_Output = GUI_data.Structure.G09_Output;
 
 % update the mol frame info into G09_Output
 GUI_MF_Info.Center_Ind = GUI_Inputs.MF_Center;
@@ -168,28 +160,24 @@ Structure.StructModel = 3;
 Structure.G09_Output = G09_Output;
 
 % include FieldName of GUI Inputs
-[~,~,~,hGUIParser] = StructureModel(Structure.StructModel);
-[~,GUI_FieldName] = hGUIParser(GUI_Struc);
-handles.GUI_FieldName = GUI_FieldName;
+[~,~,~,fhGUIParser] = StructureModel(Structure.StructModel);
+[~,GUI_FieldName] = fhGUIParser(hGUIs);
+GUI_data.GUI_FieldName = GUI_FieldName;
 
 % update handles
-handles.Structure  = Structure;
-handles.GUI_Inputs = GUI_Inputs;
-guidata(hObject,handles)
+GUI_data.Structure  = Structure;
+GUI_data.GUI_Inputs = GUI_Inputs;
+guidata(hObject,GUI_data)
 
 % update to other GUIs
-Export2GUIs(handles)
+Export2GUIs(GUI_data)
 
 disp('Structure file generated!')
 
-
-function hF = PlotMolecule(hObject, eventdata, handles)
-%% Update structure
-UpdateStructure(hObject, eventdata, handles)
-
+function hF = PlotMolecule(hObject, eventdata, GUI_data)
 %% Read GUI
-GUI_Struc  = handles.GUI_Struc;
-GUI_Inputs = ParseGUI_TwoDGrid(GUI_Struc);
+hGUIs  = GUI_data.hGUIs;
+GUI_Inputs = ParseGUI_TwoDGrid(hGUIs);
 
 %- This part is obsolete, since the lab frame ensemble avg should not take
 %  orientation inputs, will be removed later
@@ -207,26 +195,21 @@ GUI_Inputs.Avg_Theta = 0;
 GUI_Inputs.Avg_Psi   = 0;
 %--------------------------------------------------------------------------
 
-hF = PlotXYZ_Grid(handles.Structure,GUI_Inputs);
+hF = PlotXYZ_Grid(GUI_data.Structure,GUI_Inputs);
 
-function PlotModes(hObject, eventdata, handles)
-Plot_Modes(handles.hModel);
+function PlotModes(hObject, eventdata, GUI_data)
+Plot_Modes(GUI_data.hModel_TwoDGrid);
 
-function Export_Handle_Callback(hObject, eventdata, handles)
-% export handles back to work space
-assignin('base', 'hModel_TwoDGrid', handles)
-disp('Updated handles exported!')
-
-function Replace_Convention_Label(hObject, eventdata, handles)
+function Replace_Convention_Label(hObject, eventdata, GUI_data)
 % retreive GUI inputs
-GUI_Struc  = handles.GUI_Struc;
-Frame_Type = GUI_Struc.Frame_Type.Value;
+hGUIs  = GUI_data.hGUIs;
+Frame_Type = hGUIs.Frame_Type.Value;
 
 switch Frame_Type
     case 1 %Frame_Type = 'XZ';
-        GUI_Struc.MF_XYi_text.String = 'XZ_i Ind.:';
-        GUI_Struc.MF_XYf_text.String = 'XZ_f Ind.:';
+        hGUIs.MF_XYi_text.String = 'XZ_i Ind.:';
+        hGUIs.MF_XYf_text.String = 'XZ_f Ind.:';
     case 2 %Frame_Type = 'YZ';
-        GUI_Struc.MF_XYi_text.String = 'YZ_i Ind.:';
-        GUI_Struc.MF_XYf_text.String = 'YZ_f Ind.:';
+        hGUIs.MF_XYi_text.String = 'YZ_i Ind.:';
+        hGUIs.MF_XYf_text.String = 'YZ_f Ind.:';
 end

@@ -99,13 +99,13 @@ function Update_Modes(hObject, eventdata, handles)
 % running Plot_Exciton stand alone for debug testing, give a field 'debug'
 % to use the default values in OneDSFG_Main.m
 GUI_Data_hModel = guidata(handles.hModel);
-if isfield(GUI_Data_hModel,'hMain')
-    GUI_Data_hMain = guidata(GUI_Data_hModel.hMain);
-    MainGUI_Inputs = ParseGUI_Main(GUI_Data_hMain);
+if isfield(GUI_Data_hModel,'hCOSMOSS')
+    GUI_Data_hMain = guidata(GUI_Data_hModel.hCOSMOSS);
+    MainGUI_Inputs = ParseGUI_Main(GUI_Data_hMain.hGUIs);
     %disp('Plot_Modes: Using coupling info from Main GUI')
 else
     MainGUI_Inputs.debug = 'debug';
-    GUI_Data_hModel.hMain = 'debug';
+    GUI_Data_hModel.hCOSMOSS = 'debug';
     %disp('Plot_Modes: Coupling info comes from defulat setting of OneDSFG_Main.m')
 end
 
@@ -116,7 +116,7 @@ Modes     = Update_Modes_Table(Structure, MainGUI_Inputs);
 handles.OneDSFG        = Modes.OneDSFG;
 handles.ModeList       = Modes.ModeList;
 handles.Structure      = Structure;
-handles.hMain          = GUI_Data_hModel.hMain;
+handles.hMain          = GUI_Data_hModel.hCOSMOSS;
 % handles.MianGUI_Inputs = MainGUI_Inputs;
 guidata(hObject, handles);
 
@@ -136,7 +136,7 @@ hModel     = handles.hModel;
 % Read the Molecule frame to Lab frame orientation from COSMOSS
 hMain = handles.hMain;
 GUI_Data_Main = guidata(hMain);
-GUI_Inputs_Main = ParseGUI_Main(GUI_Data_Main);
+GUI_Inputs_Main = ParseGUI_Main(GUI_Data_Main.hGUIs);
 % Pass the MF-LB Eular angles to Plotting function
 GUI_Inputs.Avg_Phi   = GUI_Inputs_Main.Avg_Phi;
 GUI_Inputs.Avg_Theta = GUI_Inputs_Main.Avg_Theta;

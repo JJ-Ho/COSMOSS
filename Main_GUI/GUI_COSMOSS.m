@@ -1,12 +1,12 @@
-function GUI = GUI_COSMOSS(hMainFig)
+function hGUIs = GUI_COSMOSS(hCOSMOSS)
 % This function will build all GUI elements on pre-build GUI base figure
 
 %% Pre-setting
-Version = '1.5.0';
+Version = '1.5.1';
 
 %% Add base layout
 MainLayout = uix.VBoxFlex(...
-    'Parent',hMainFig,...
+    'Parent',hCOSMOSS,...
     'Spacing',5,...
     'Padding',1);
 
@@ -879,6 +879,6 @@ FPanelLayout = uix.VBox('Parent',FigurePanel,...
 set(FPanelLayout,'Heights',[-1,150])
 
 %% output handles
-GUI = guihandles(hMainFig);
+hGUIs = guihandles(hCOSMOSS);
 
     

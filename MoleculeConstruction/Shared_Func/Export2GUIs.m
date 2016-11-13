@@ -1,41 +1,35 @@
-function Export2GUIs(handles)
+function Export2GUIs(GUI_data)
+% This function push Structure data to COSMOSS or Comb2 after the Model 
+% strueture data updated
 
-% check if this program run stand along, if not push Structure info to hMain
-if isfield(handles,'hMain')
-    Data_Main = guidata(handles.hMain);
-    Data_Main.Structure = handles.Structure;
-    guidata(handles.hMain,Data_Main)
+%% check if this program run stand along, if not push Structure info to hMain
+if isfield(GUI_data,'hCOSMOSS')
+    GUI_data_COSMOSS           = guidata(GUI_data.hCOSMOSS);
+    GUI_data_COSMOSS.Structure = GUI_data.Structure;
+    guidata(GUI_data.hCOSMOSS,GUI_data_COSMOSS)
     
     % change Name of Main GUI to help identifying which Structural Model is
     % using
-    Model_Name    = handles.hModel.Name;
-    handles.hMain.Name = ['COSMOSS: ' Model_Name];
+    Model_Name    = GUI_data.hModel.Name;
+    GUI_data.hCOSMOSS.Name = ['COSMOSS: ' Model_Name];
 end
 
-% if belong to comb2, push GUI handle to comb2
-if isfield(handles,'hComb2')
-    Data_Comb2 = guidata(handles.hComb2);
+%% if belong to comb2, push GUI handle to comb2
+if isfield(GUI_data,'Comb2_Order')
+    GUI_data_Comb2 = guidata(GUI_data.hModel_Comb2);
     
-    % update model specific plotting function
-    StructModel = handles.Structure.StructModel;
-    [~,~,hPlotFunc,~] = StructureModel(StructModel);
-        
-    switch handles.Comb2_Order
+    switch GUI_data.Comb2_Order
         case 1
-            Data_Comb2.hStruc1    = handles.hModel;
-            Data_Comb2.hPlotFunc1 = hPlotFunc;
-            Data_Comb2.GUI_FieldName1 = handles.GUI_FieldName;
+            GUI_data_Comb2.hStruc1        = GUI_data.hModel;
         case 2
-            Data_Comb2.hStruc2    = handles.hModel;
-            Data_Comb2.hPlotFunc2 = hPlotFunc;
-            Data_Comb2.GUI_FieldName2 = handles.GUI_FieldName;
+            GUI_data_Comb2.hStruc2        = GUI_data.hModel;
     end
     
-    guidata(handles.hComb2,Data_Comb2);
+    guidata(GUI_data.hModel_Comb2,GUI_data_Comb2);
     
     % push comb2 order # to GUI title, if necessary
-    TitleStr = handles.hModel.Name;
+    TitleStr = GUI_data.hModel.Name;
     if ~strcmp(TitleStr(1),'#')
-        handles.hModel.Name = ['#',int2str(handles.Comb2_Order),': ',TitleStr];
+        GUI_data.hModel.Name = ['#',int2str(GUI_data.Comb2_Order),': ',TitleStr];
     end
 end

@@ -1,13 +1,13 @@
-function [O,T] = ParseGUI_Comb2(hGUI)
+function [O,T] = ParseGUI_Comb2(hGUIs)
 
 % For relative orientation ------------------------------------------------
-O.Conc_Scaling =    str2double(get(hGUI.Conc_Scaling ,'String'));
-O.Trans_X      =    str2double(get(hGUI.Trans_X      ,'String'));
-O.Trans_Y      =    str2double(get(hGUI.Trans_Y      ,'String'));
-O.Trans_Z      =    str2double(get(hGUI.Trans_Z      ,'String'));
-O.Rot_Phi      =    str2double(get(hGUI.Rot_Phi      ,'String'));
-O.Rot_Psi      =    str2double(get(hGUI.Rot_Psi      ,'String'));
-O.Rot_Theta    =    str2double(get(hGUI.Rot_Theta    ,'String'));
+O.Conc_Scaling =    str2double(get(hGUIs.Conc_Scaling ,'String'));
+O.Trans_X      =    str2double(get(hGUIs.Trans_X      ,'String'));
+O.Trans_Y      =    str2double(get(hGUIs.Trans_Y      ,'String'));
+O.Trans_Z      =    str2double(get(hGUIs.Trans_Z      ,'String'));
+O.Rot_Phi      =    str2double(get(hGUIs.Rot_Phi      ,'String'));
+O.Rot_Psi      =    str2double(get(hGUIs.Rot_Psi      ,'String'));
+O.Rot_Theta    =    str2double(get(hGUIs.Rot_Theta    ,'String'));
 % -------------------------------------------------------------------------
 
 %% Export field name for each parameter

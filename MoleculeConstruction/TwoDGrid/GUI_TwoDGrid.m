@@ -1,10 +1,10 @@
-function GUI = GUI_TwoDGrid(fig)
+function hGUIs = GUI_TwoDGrid(hModel_TwoDGrid)
 %% Pre-setting
-Version = '1.2.1';
+Version = '1.3.0';
 
 %% Add base layout
 MainLayout = uix.VBoxFlex(...
-    'Parent',fig,...
+    'Parent',hModel_TwoDGrid,...
     'Spacing',1,...
     'Padding',5);
 
@@ -498,4 +498,4 @@ uicontrol('Parent',ButtonBox,...
 set(ButtonBox,'Height',[-1,-1,-1,-1,-1,20])
 
 %% output handles
-GUI = guihandles(fig);
+hGUIs = guihandles(hModel_TwoDGrid);

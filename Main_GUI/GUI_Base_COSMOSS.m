@@ -14,7 +14,7 @@ hCOSMOSS.ToolBar          = 'none';
 hCOSMOSS.MenuBar          = 'none';
 hCOSMOSS.NumberTitle      = 'off';
 hCOSMOSS.IntegerHandle    = 'off';
-hCOSMOSS.Tag              = 'Main'; % tag to distinguish type of GUI
+hCOSMOSS.Tag              = 'hMain'; % tag to distinguish type of GUI
 hCOSMOSS.HandleVisibility = 'Callback';
 
 gui_Options.syscolorfig = 1;

@@ -25,6 +25,11 @@ function varargout = COSMOSS(varargin)
 
 % Last Modified by GUIDE v2.5 01-Oct-2014 15:09:19
 
+% check if path is added otherwise, initailize the path
+if ~eq(exist('TwoDSFG_Main','file'),2)
+    Initialization
+end
+
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
@@ -53,10 +58,7 @@ function COSMOSS_OpeningFcn(hCOSMOSS, eventdata, GUI_data, varargin)
 % GUIdata    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to COSMOSS (see VARARGIN)
 
-% check if path is added otherwise, initailize the path
-if ~eq(exist('TwoDSFG_Main','file'),2)
-    Initialization
-end
+
 
 %- Check if GUI Layout Tool box exist ------------------------------------
 T = ver;
@@ -96,16 +98,16 @@ function onListSelection(hObject, eventdata, GUI_data)
 StructModel           = get(GUI_data.hGUIs.StructListBox,'Value');
 [fhModel,ModelList,~] = StructureModel(StructModel);
 
-hModel = feval(fhModel,'COSMOSS');
+hModel = feval(fhModel,'COSMOSS',GUI_data.hCOSMOSS);
 disp(['COSMOSS using model ' ModelList{StructModel}])
 
 %- push hCOSMOSS to sub GUI ----------------
-GUI_data_Model          = guidata(hModel);
-GUI_data_Model.hCOSMOSS = GUI_data.hCOSMOSS;
-guidata(hModel,GUI_data_Model)
+% GUI_data_Model          = guidata(hModel);
+% GUI_data_Model.hCOSMOSS = GUI_data.hCOSMOSS;
+% guidata(hModel,GUI_data_Model)
 %-------------------------------------------
 
-% handles.Structure.hModel = hModel;
+GUI_data.hModel = hModel;
 guidata(hObject,GUI_data)
 
 function FTIR_Callback(hObject, eventdata, GUI_data)

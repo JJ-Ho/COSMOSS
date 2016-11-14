@@ -50,12 +50,37 @@ function Model_Comb2_OpeningFcn(hModel_Comb2, eventdata, GUI_data, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to hModel (see VARARGIN)
-
-switch varargin{1}
-    case 'COSMOSS'
-        disp('Running Model_Comb2 durectly from COSMOSS...')
-    case 'Comb2'
-        disp('Running Model_Comb2 as a sub GUI of Comb2...')
+if nargin > 3
+    switch varargin{1}
+        case 'COSMOSS'
+            hCOSMOSS = varargin{2};
+            Data_COSMOSS = guidata(hCOSMOSS);
+            
+            %PRE ASSIGN VALUES TO SUBSTITUTE MAIN GUI VALUES
+            hGUIs_COSMOSS  = Data_COSMOSS.hGUIs;
+            set(hGUIs_COSMOSS.X_Min  ,'String','1500')
+            set(hGUIs_COSMOSS.X_Max  ,'String','1800')
+            
+            GUI_data.hCOSMOSS = hCOSMOSS;
+            
+            disp('Running Model_Comb2 durectly from COSMOSS...')
+        case 'Comb2'
+            hModel_Comb2 = varargin{2};
+            Comb2_Order  = varargin{3};
+            
+            GUI_data.hModel_Comb2 = hModel_Comb2;
+            GUI_data.Comb2_Order  = Comb2_Order;
+            
+            % Add comb2 order # to GUI title, if necessary
+            TitleStr = hModel_Comb2.Name;
+            if ~strcmp(TitleStr(1),'#')
+                hModel_Comb2.Name = ['#',int2str(Comb2_Order),', ',TitleStr];
+            end
+            
+            disp('Running Model_Comb2 as a sub GUI of Comb2...')
+    end
+else
+    disp('Running Model_Comb2 in stand alone mode...')
 end
 
 % Call createInterface to create GUI elements
@@ -85,25 +110,27 @@ disp('Updated GUI Data_Comb2 exported!')
 
 
 function BuildModel(GUI_data, Comb2_Order)
-
+%% Construct model GUI 
 if isfield(GUI_data,'Load')
     StructModel = GUI_data.Load.StructModel;
 else
     hGUIs       = GUI_data.hGUIs;
-    StructModel = get(hGUIs.StructBox1,'Value');
+    switch Comb2_Order
+        case 1
+            StructModel = get(hGUIs.StructBox1,'Value');
+        case 2
+            StructModel = get(hGUIs.StructBox2,'Value');
+    end
 end 
 
 [fhStructure,~,~] = StructureModel(StructModel);
 
-hModel = feval(fhStructure,'Comb2');
+hModel = feval(fhStructure,'Comb2',GUI_data.hModel_Comb2,Comb2_Order);
 
-% pass handles of comb2 to sub-GUI so when click update stracture in
-% sub-GUI, it knows where to push data to.
+%% Update GUI_data_Model
+% pass empty Structure for ???
 GUI_data_Model              = guidata(hModel);
-GUI_data_Model.hModel_Comb2 = GUI_data.hModel_Comb2;
-GUI_data_Model.Comb2_Order  = Comb2_Order;
 GUI_data_Model.Structure    = [];
-guidata(hModel,GUI_data_Model)
 
 % Update the GUI inputs if Load Structure 
 if isfield(GUI_data,'Load')
@@ -116,11 +143,21 @@ if isfield(GUI_data,'Load')
     % push the loaded structure data to sub-GUI
     GUI_data_Model.GUI_FieldName = FieldName;
     GUI_data_Model.Structure     = GUI_data.Load.Structure;
-    guidata(hModel,GUI_data_Model)
-    
 end
 
-%% update data to other GUIs
+guidata(hModel,GUI_data_Model)
+
+%% Update GUI_Data in Comb2 and propergate to COSMOSS
+% Save the modle handle to proper name
+switch Comb2_Order
+    case 1
+        GUI_data.hStruc1 = hModel;
+    case 2
+        GUI_data.hStruc2 = hModel;
+end
+
+guidata(GUI_data.hModel_Comb2,GUI_data)
+
 Export2GUIs(GUI_data_Model);
 
 function LoadStructure(hObject, eventdata, GUI_data)

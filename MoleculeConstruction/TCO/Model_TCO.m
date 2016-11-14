@@ -1,3 +1,4 @@
+% ^ GUI Skeleton ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function varargout = Model_TCO(varargin)
 % Model_TCO MATLAB code for Model_TCO.fig
 %      Model_TCO, by itself, creates a new Model_TCO or raises the existing
@@ -43,68 +44,80 @@ else
 end
 % End initialization code - DO NOT EDIT
 
-
-% --- Executes just before Model_TCO is made visible.
-function Model_TCO_OpeningFcn(hObject, eventdata, handles, varargin)
+function Model_TCO_OpeningFcn(hModel_TCO, eventdata, GUI_data, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to Model_TCO (see VARARGIN)
-
-% Choose default command line output for Model_TCO
-handles.output = hObject;
-
-% Call createInterface to create GUI elements
-GUI_Struc = GUI_TCO(hObject);
-handles.GUI_Struc = GUI_Struc; % export GUI handles to handles
-
-% Get Main function's handles
-if nargin > 3    
-    if ishandle(varargin{1})
-       hMain = varargin{1};
-       Data_Main = guidata(hMain);
-
-       handles.hMain = hMain;
-       handles.Data_Main = Data_Main;
-       
-       % Reset Non-Label Frequency, anharmonicity, and F_min/F_Max to fit amideI mode
-       GUI_Main  = Data_Main.GUI_Main;
-       set(GUI_Main.NLFreq ,'String','1700')
-       set(GUI_Main.LFreq  ,'String','1680')
-       set(GUI_Main.Anharm ,'String','20')
-       set(GUI_Main.Beta_NN,'String','5')
-       set(GUI_Main.X_Min  ,'String','1650')
-       set(GUI_Main.X_Max  ,'String','1750')
+if nargin > 3
+    switch varargin{1}
+        case 'COSMOSS'
+            hCOSMOSS = varargin{2};
+            Data_COSMOSS = guidata(hCOSMOSS);
+            
+            %PRE ASSIGN VALUES TO SUBSTITUTE MAIN GUI VALUES
+            hGUIs_COSMOSS  = Data_COSMOSS.hGUIs;
+            set(hGUIs_COSMOSS.X_Min  ,'String','1650')
+            set(hGUIs_COSMOSS.X_Max  ,'String','1750')
+            
+            GUI_data.hCOSMOSS = hCOSMOSS;
+            
+            disp('Running Model_TCO durectly from COSMOSS...')
+        case 'Comb2'
+            hModel_Comb2 = varargin{2};
+            Comb2_Order  = varargin{3};
+            
+            GUI_data.hModel_Comb2 = hModel_Comb2;
+            GUI_data.Comb2_Order  = Comb2_Order;
+            
+            % Add comb2 order # to GUI title, if necessary
+            TitleStr = hModel_TCO.Name;
+            if ~strcmp(TitleStr(1),'#')
+                hModel_TCO.Name = ['#',int2str(Comb2_Order),', ',TitleStr];
+            end
+            
+            disp('Running Model_TCO as a sub GUI of Comb2...')
     end
 else
-    disp('Running Model_TCO in stand alone mode.')
+    disp('Running Model_TCO in stand alone mode...')
 end
 
+% Call create Interface to create GUI elements
+hGUIs = GUI_TCO(hModel_TCO);
+
+% Prep necessary data to be export
+GUI_data.hModel_TCO = hModel_TCO;
+GUI_data.hGUIs      = hGUIs;
+
 % Update handles structure
-guidata(hObject, handles);
+guidata(hModel_TCO, GUI_data);
 
 % Generate the default structure
-UpdateStructure(hObject, eventdata, handles)
+UpdateStructure(hModel_TCO, eventdata, GUI_data)
 
-% UIWAIT makes Model_TCO wait for user response (see UIRESUME)
-% uiwait(handles.Model_TCO);
-
-
-% --- Outputs from this function are returned to the command line.
-function varargout = Model_TCO_OutputFcn(hObject, eventdata, handles) 
+function varargout = Model_TCO_OutputFcn(hModel_TCO, eventdata, GUI_data) 
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
 % Get default command line output from handles structure
-varargout{1} = handles;
+varargout{1} = hModel_TCO;
 
-function UpdateStructure(hObject, eventdata, handles)
+function Export_Handle_Callback(hModel_TCO, eventdata, GUI_data)
+% export handles back to work space
+assignin('base', 'Data_TCO', GUI_data)
+disp('Updated GUI Data_TCO exported!')
+% ^ GUI Skeleton ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+
+function UpdateStructure(hObject, eventdata, GUI_data)
 %% Read GUI variables
-GUI_Struc = handles.GUI_Struc;
-GUI_Inputs = ParseGUI_TCO(GUI_Struc);
+hGUIs = GUI_data.hGUIs;
+GUI_Inputs = ParseGUI_TCO(hGUIs);
 
 %% Construct molecule
 Structure = GetAcid(GUI_Inputs);
@@ -113,32 +126,27 @@ Structure = GetAcid(GUI_Inputs);
 Structure.StructModel = 1;                
 
 %% Export result to Main guidata
-handles.Structure = Structure;
+GUI_data.Structure = Structure;
 
 % include FieldName of GUI Inputs
 [~,~,~,hGUIParser] = StructureModel(Structure.StructModel);
-[~,GUI_FieldName] = hGUIParser(GUI_Struc);
-handles.GUI_FieldName = GUI_FieldName;
+[~,GUI_FieldName] = hGUIParser(hGUIs);
+GUI_data.GUI_FieldName = GUI_FieldName;
 
-guidata(hObject,handles)
+guidata(hObject,GUI_data)
 
 % update to other GUIs
-Export2GUIs(handles)
+Export2GUIs(GUI_data)
 
 disp('Structure file generated!')
 
-
-function hF = PlotMolecule(hObject, eventdata, handles)
+function hF = PlotMolecule(hObject, eventdata, GUI_data)
 %% Read GUI variables
-GUI_Struc = handles.GUI_Struc;
-GUI_Inputs = ParseGUI_TCO(GUI_Struc);
+hGUIs = GUI_data.hGUIs;
+GUI_Inputs = ParseGUI_TCO(hGUIs);
 
-hF = PlotXYZfiles_Acid(handles.Structure,GUI_Inputs);
+hF = PlotXYZfiles_Acid(GUI_data.Structure,GUI_Inputs);
 
-function PlotModes(hObject, eventdata, handles)
-Plot_Modes(handles.hModel);
+function PlotModes(hObject, eventdata, GUI_data)
+Plot_Modes(GUI_data.hModel);
 
-function Export_Handle_Callback(hObject, eventdata, handles)
-% export handles back to work space
-assignin('base', 'hModel_TCO', handles)
-disp('Updated handles exported!')

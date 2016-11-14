@@ -50,15 +50,40 @@ function Model_TwoDGrid_OpeningFcn(hModel_TwoDGrid, eventdata, GUI_data, varargi
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to Model_TwoDGrid (see VARARGIN)
-
-switch varargin{1}
-    case 'COSMOSS'
-        disp('Running Model_TwoDGrid durectly from COSMOSS...')
-    case 'Comb2'
-        disp('Running Model_TwoDGrid as a sub GUI of Comb2...')
+if nargin > 3
+    switch varargin{1}
+        case 'COSMOSS'
+            hCOSMOSS = varargin{2};
+            Data_COSMOSS = guidata(hCOSMOSS);
+            
+            %PRE ASSIGN VALUES TO SUBSTITUTE MAIN GUI VALUES
+            hGUIs_COSMOSS  = Data_COSMOSS.hGUIs;
+            set(hGUIs_COSMOSS.X_Min  ,'String','1650')
+            set(hGUIs_COSMOSS.X_Max  ,'String','1750')
+            
+            GUI_data.hCOSMOSS = hCOSMOSS;
+            
+            disp('Running Model_TwoDGrid durectly from COSMOSS...')
+        case 'Comb2'
+            hModel_Comb2 = varargin{2};
+            Comb2_Order  = varargin{3};
+            
+            GUI_data.hModel_Comb2 = hModel_Comb2;
+            GUI_data.Comb2_Order  = Comb2_Order;
+            
+            % Add comb2 order # to GUI title, if necessary
+            TitleStr = hModel_TwoDGrid.Name;
+            if ~strcmp(TitleStr(1),'#')
+                hModel_TwoDGrid.Name = ['#',int2str(Comb2_Order),', ',TitleStr];
+            end
+            
+            disp('Running Model_TwoDGrid as a sub GUI of Comb2...')
+    end
+else
+    disp('Running Model_TwoDGrid in stand alone mode...')
 end
 
-% Call createInterface to create GUI elements
+% Call create Interface to create GUI elements
 hGUIs = GUI_TwoDGrid(hModel_TwoDGrid);
 
 % Prep necessary data to be export
@@ -77,9 +102,9 @@ function varargout = Model_TwoDGrid_OutputFcn(hModel_TwoDGrid, eventdata, GUI_da
 % varargout{1} = handles.output;
 varargout{1} = hModel_TwoDGrid; % export the whole guidata instead of GUI base figure handle.
 
-function Export_Handle_Callback(hObject, eventdata, handles)
+function Export_Handle_Callback(hObject, eventdata, GUI_data)
 % export handles back to work space
-assignin('base', 'Data_TwoDGrid', handles)
+assignin('base', 'Data_TwoDGrid', GUI_data)
 disp('Updated GUI Data_TwoDGrid exported!')
 % ^ GUI Skeleton ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -109,7 +134,12 @@ GUI_data.Structure.G09_Output = G09_Output;
 guidata(hObject,GUI_data)
 
 %% update structure and the file name on GUI
-GUI_data.hModel_TwoDGrid.Name = ['Model_2DGrid: ', FilesName];
+TitleStr = '2DGrid: '; 
+if isfield(GUI_data,'Comb2_Order')
+    TitleStr = ['#',int2str(GUI_data.Comb2_Order),', ',TitleStr];
+end
+GUI_data.hModel_TwoDGrid.Name = [TitleStr, FilesName];
+
 % update mol frame Atom index
 hGUIs.MF_Center.String = num2str(G09_Output.Mol_Frame.Center_Ind);
 hGUIs.MF_Zi.String     = num2str(G09_Output.Mol_Frame.Z_i_Ind);

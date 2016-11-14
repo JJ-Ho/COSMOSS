@@ -1,6 +1,6 @@
 function GUI = GUI_TCO(fig) 
 %% Pre-setting
-Version = '1.1.1';
+Version = '1.2.0';
 
 %% Add base layout
 MainLayout = uix.VBoxFlex(...
@@ -253,7 +253,7 @@ FigurePanelLayout = uix.HBox('Parent',FigurePanel,...
                   'HorizontalAlignment','left',...
                   'units', 'normalized',...
                   'fontunits', 'point', 'fontsize', 14);
-        uix.Empty('Parent',FigurePanelLayout)
+        uix.Empty('Parent',FigurePanelLayout);
     set(FigurePanelLayout,'Widths',[80,80,80,-1])
 
 %% Button

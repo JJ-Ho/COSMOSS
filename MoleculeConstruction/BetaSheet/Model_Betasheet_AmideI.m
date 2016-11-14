@@ -1,4 +1,4 @@
-% ^ GUI Skeleton ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+%^ GUI Setup ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function varargout = Model_Betasheet_AmideI(varargin)
 % MODEL_BETASHEET_AMIDEI MATLAB code for Model_Betasheet_AmideI.fig
 %      MODEL_BETASHEET_AMIDEI, by itself, creates a new MODEL_BETASHEET_AMIDEI or raises the existing
@@ -64,7 +64,7 @@ if nargin > 3
             
             GUI_data.hCOSMOSS = hCOSMOSS;
             
-            disp('Running Model_Betasheet_AmideI durectly from COSMOSS...')
+            disp('Running Model_Betasheet_AmideI directly from COSMOSS...')
         case 'Comb2'
             hModel_Comb2 = varargin{2};
             Comb2_Order  = varargin{3};
@@ -87,12 +87,15 @@ end
 % Call createInterface to create GUI elements
 hGUIs = GUI_Betasheet_AmideI(hModel_Betasheet_AmideI);
 
-% Prep necessary data to be export
+% Prep necessary data to be saved in GUI_data
 GUI_data.hModel_Betasheet_AmideI = hModel_Betasheet_AmideI;
 GUI_data.hGUIs                   = hGUIs;
 
 % Update handles structure
 guidata(hModel_Betasheet_AmideI, GUI_data);
+
+% Generate default structure from GUI inputs
+UpdateStructure(hModel_Betasheet_AmideI, eventdata, GUI_data)
 
 function varargout = Model_Betasheet_AmideI_OutputFcn(hModel_Betasheet_AmideI, eventdata, GUI_data) 
 % varargout  cell array for returning output args (see VARARGOUT);
@@ -107,7 +110,7 @@ function Export_Handle_Callback(hObject, eventdata, GUI_data)
 % export handles back to work space
 assignin('base', 'Data_Betasheet_AmideI', GUI_data)
 disp('Updated GUI Data_Betasheet_AmideI exported!')
-% ^ GUI Skeleton ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+%^ GUI Setup ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 

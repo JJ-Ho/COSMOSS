@@ -10,7 +10,7 @@ Ex_Freq     = OneDSFG.H.Sort_Ex_Freq(2:end);
 Num_Ex_Mode = length(Ex_Freq);
 Ex_Ind      = (1:Num_Ex_Mode)';
 Ex_Mu       = squeeze(OneDSFG.Mu.Trans_Ex(1,2:end,:));
-% permute the matix dimension for spectial case
+% permute the matix dimension if only one mode
 if eq(Num_Ex_Mode,1)
     Ex_Mu     = Ex_Mu';
 end

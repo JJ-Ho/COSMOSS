@@ -1,4 +1,4 @@
-% ^ GUI Skeleton ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+%^ GUI Setup ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function varargout = Model_PDB_AmideI(varargin)
 % Model_PDB_AmideI MATLAB code for Model_PDB_AmideI.fig
 %      Model_PDB_AmideI, by itself, creates a new Model_PDB_AmideI or raises the existing
@@ -64,7 +64,7 @@ if nargin > 3
             
             GUI_data.hCOSMOSS = hCOSMOSS;
             
-            disp('Running Model_PDB_AmideI durectly from COSMOSS...')
+            disp('Running Model_PDB_AmideI directly from COSMOSS...')
         case 'Comb2'
             hModel_Comb2 = varargin{2};
             Comb2_Order  = varargin{3};
@@ -87,7 +87,7 @@ end
 % Call create Interface to create GUI elements
 hGUIs = GUI_PDB_AmideI(hModel_PDB_AmideI);
 
-% Prep necessary data to be export
+% Prep necessary data to be saved in GUI_data
 GUI_data.hModel_PDB_AmideI = hModel_PDB_AmideI;
 GUI_data.hGUIs             = hGUIs;
 
@@ -108,7 +108,7 @@ function Export_Handle_Callback(hObject, eventdata, GUI_data)
 % export handles back to work space
 assignin('base', 'Data_PDB_AmideI', GUI_data)
 disp('Updated GUI Data_PDB_AmideI exported!')
-% ^ GUI Skeleton ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^    
+%^ GUI Setup ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 

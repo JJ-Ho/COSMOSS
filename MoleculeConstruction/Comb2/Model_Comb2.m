@@ -1,4 +1,4 @@
-% ^ GUI Skeleton ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+%^ GUI Setup ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function varargout = Model_Comb2(varargin)
 % HMODEL MATLAB code for hModel.fig
 %      HMODEL, by itself, creates a new HMODEL or raises the existing
@@ -63,7 +63,7 @@ if nargin > 3
             
             GUI_data.hCOSMOSS = hCOSMOSS;
             
-            disp('Running Model_Comb2 durectly from COSMOSS...')
+            disp('Running Model_Comb2 directly from COSMOSS...')
         case 'Comb2'
             hModel_Comb2 = varargin{2};
             Comb2_Order  = varargin{3};
@@ -86,7 +86,7 @@ end
 % Call createInterface to create GUI elements
 hGUIs = GUI_Comb2(hModel_Comb2);
 
-% Prep necessary data to be export
+% Prep necessary data to be saved in GUI_data
 GUI_data.hModel_Comb2 = hModel_Comb2;
 GUI_data.hGUIs        = hGUIs; % export GUI handles
 
@@ -105,7 +105,7 @@ function Export_Handle_Callback(hObject, eventdata, GUI_data)
 % export handles back to work space
 assignin('base', 'Data_Comb2', GUI_data)
 disp('Updated GUI Data_Comb2 exported!')
-% ^ GUI Skeleton ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+%^ GUI Setup ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 
@@ -126,6 +126,10 @@ end
 [fhStructure,~,~] = StructureModel(StructModel);
 
 hModel = feval(fhStructure,'Comb2',GUI_data.hModel_Comb2,Comb2_Order);
+
+% Pass hCOSMOSS to the fig file of each sub-GUIs so they can always access
+% COSMOSS if needed
+hModel.UserData = GUI_data.hModel_Comb2.UserData;
 
 %% Update GUI_data_Model
 % pass empty Structure for ???

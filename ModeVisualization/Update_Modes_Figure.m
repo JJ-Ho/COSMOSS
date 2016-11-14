@@ -65,15 +65,19 @@ end
 
 N_Mode = length(Mu_Alpha_Ind);
 
-if exist('distinguishable_colors','file')
-    UnWanted = [0,0,0;1,1,1;1,0,0;0,1,0;0,0,1];
-    Mode_Colors = distinguishable_colors(N_Mode,UnWanted);
-else
-    Mode_Colors = bsxfun(@times,ones(N_Mode,3),[255,128,0]./256);
-end
+% if exist('distinguishable_colors','file')
+%     UnWanted = [0,0,0;1,1,1;1,0,0;0,1,0;0,0,1];
+%     Mode_Colors = distinguishable_colors(N_Mode,UnWanted);
+% else
+%     Mode_Colors = bsxfun(@times,ones(N_Mode,3),[255,128,0]./256);
+% end
+
+% use the same color for TDVs, found it hard to recognize if I use
+% different color
+Mode_Colors = bsxfun(@times,ones(N_Mode,3),[255,128,0]./256);
 
 %% Rotate from molecule frame to lab frame
-
+% Obsolete, need to delete in future
 % Orientation = Orientation/180*pi; % turn to radius unit
 Avg_Phi_R   =   Avg_Phi/180*pi;
 Avg_Psi_R   =   Avg_Psi/180*pi;

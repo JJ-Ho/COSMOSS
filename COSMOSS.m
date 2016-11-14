@@ -1,4 +1,4 @@
-% ^ GUI Skeleton ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+%^ GUI Setup ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function varargout = COSMOSS(varargin)
 % COSMOSS MATLAB code for COSMOSS.fig
 %      COSMOSS, by itself, creates a new COSMOSS or raises the existing
@@ -91,7 +91,7 @@ function Export_Handle_Callback(hObject, eventdata, GUI_data)
 % export handles back to work space
 assignin('base', 'Data_COSMOSS', GUI_data)
 disp('Updated GUI Data_COSMOSS exported!')
-% ^ GUI Skeleton ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+%^ GUI Setup ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 function onListSelection(hObject, eventdata, GUI_data)
@@ -101,11 +101,9 @@ StructModel           = get(GUI_data.hGUIs.StructListBox,'Value');
 hModel = feval(fhModel,'COSMOSS',GUI_data.hCOSMOSS);
 disp(['COSMOSS using model ' ModelList{StructModel}])
 
-%- push hCOSMOSS to sub GUI ----------------
-% GUI_data_Model          = guidata(hModel);
-% GUI_data_Model.hCOSMOSS = GUI_data.hCOSMOSS;
-% guidata(hModel,GUI_data_Model)
-%-------------------------------------------
+% Pass hCOSMOSS to the fig file of each sub-GUIs so they can always access
+% COSMOSS if needed
+hModel.UserData = GUI_data.hCOSMOSS;
 
 GUI_data.hModel = hModel;
 guidata(hObject,GUI_data)

@@ -1,4 +1,3 @@
-%^ GUI Setup ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function varargout = COSMOSS(varargin)
 % COSMOSS MATLAB code for COSMOSS.fig
 %      COSMOSS, by itself, creates a new COSMOSS or raises the existing

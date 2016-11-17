@@ -149,7 +149,18 @@ GUI_Inputs = ParseGUI_Modes(GUI_data.hGUIs);
 Structure  = GUI_data.Structure;
 OneDSFG    = GUI_data.OneDSFG;
 hModel     = GUI_data.hModel;
-% Not finished yet
+
+%% Draw molecule by calling the PlotMolecule function in each model
+[hFunc_Model,~,~] = StructureModel(Structure.StructModel);
+hF = hFunc_Model('PlotMolecule',hModel,eventdata,guidata(hModel));
+
+%% Call Update RespF function
+hAx = findobj(hF,'type','axes');
+Fig_Response(hAx, GUI_Inputs, Structure, OneDSFG);
+
+%% update handles
+GUI_data.hF = hF;
+guidata(hObject,GUI_data)
 
 function uitable_CellSelection(hObject, eventdata, GUI_data)
 hGUIs = GUI_data.hGUIs;

@@ -22,7 +22,8 @@ O.A_Sig1D      = str2double(get(hGUIs.A_Sig1D    ,'String'));
 % ------------------------------------------------------------------------
 
 % For 2D ------------------------------------------------------------------
-O.A_Pump       = str2double(get(hGUIs.A_Pump1    ,'String')); % fix it with update JonesTensor later
+O.A_Pump1      = str2double(get(hGUIs.A_Pump1    ,'String'));
+O.A_Pump2      = str2double(get(hGUIs.A_Pump2    ,'String'));
 O.A_Probe      = str2double(get(hGUIs.A_Probe    ,'String'));
 O.A_Vis2D      = str2double(get(hGUIs.A_Vis2D    ,'String'));
 O.A_Sig2D      = str2double(get(hGUIs.A_Sig2D    ,'String'));

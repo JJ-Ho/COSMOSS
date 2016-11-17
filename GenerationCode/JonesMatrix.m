@@ -16,16 +16,18 @@
 
 % define incident angle of Pump, Probe, Visible probe, and Signal
 % all angle is defined by angle between surface normal and the light beams.
-SaveAsFunc = 'y';
+SaveAsFunc = 'n';
 
 syms A_Pu1 A_Pu2 A_Pr A_Vi A_Si
 
-Pu1 = sym('Pu%d%d',[2,3]);
-Pu2 = sym('Pu%d%d',[2,3]);
-Pr =  sym('Pr%d%d',[2,3]);
-Vi =  sym('Vi%d%d',[2,3]);
-Si_T =  sym('Si%d%d',[2,3]);
+Pu1  = sym('Pu%d%d' ,[2,3]);
+Pu2  = sym('Pu%d%d' ,[2,3]);
+Pr   = sym('Pr%d%d' ,[2,3]);
+Vi   = sym('Vi%d%d' ,[2,3]);
+Si_R = sym('SiR%d%d',[2,3]);
+Si_T = sym('SiT%d%d',[2,3]);
 
+%% fill in numbers
 Pu1(1,1) = cos(A_Pu1);
 Pu1(1,2) = 0;
 Pu1(1,3) = sin(A_Pu1);

@@ -41,7 +41,8 @@ defaultAvg_Theta    = 0;
 defaultAvg_Psi      = 0;
 defaultAvg_Rot      = 1;
 defaultAvg_Mirror   = 1;
-defaultA_Pump       = 90;
+defaultA_Pump1      = 90;
+defaultA_Pump2      = 90;
 defaultA_Probe      = 90;
 defaultA_Vis2D      = 90;
 defaultA_Sig2D      = 90;
@@ -58,7 +59,8 @@ addOptional(INPUT,'Avg_Theta'   ,defaultAvg_Theta);
 addOptional(INPUT,'Avg_Psi'     ,defaultAvg_Psi);
 addOptional(INPUT,'Avg_Rot'     ,defaultAvg_Rot);
 addOptional(INPUT,'Avg_Mirror'  ,defaultAvg_Mirror);
-addOptional(INPUT,'A_Pump'      ,defaultA_Pump);
+addOptional(INPUT,'A_Pump1'     ,defaultA_Pump1);
+addOptional(INPUT,'A_Pump2'     ,defaultA_Pump2);
 addOptional(INPUT,'A_Probe'     ,defaultA_Probe);
 addOptional(INPUT,'A_Vis2D'     ,defaultA_Vis2D);
 addOptional(INPUT,'A_Sig2D'     ,defaultA_Sig2D);
@@ -79,7 +81,8 @@ Beta_NN      = INPUT.Results.Beta_NN;
 Avg_Phi      = INPUT.Results.Avg_Phi;
 Avg_Theta    = INPUT.Results.Avg_Theta;
 Avg_Psi      = INPUT.Results.Avg_Psi;
-A_Pump       = INPUT.Results.A_Pump;
+A_Pump1      = INPUT.Results.A_Pump1;
+A_Pump2      = INPUT.Results.A_Pump2;
 A_Probe      = INPUT.Results.A_Probe;
 A_Vis2D      = INPUT.Results.A_Vis2D;
 A_Sig2D      = INPUT.Results.A_Sig2D;
@@ -93,13 +96,14 @@ Avg_Mirror   = INPUT.Results.Avg_Mirror;
 
 %% Correct the units
 
-% Orientation = Orientation/180*pi; % turn to radius unit
-Avg_Phi_R   =   Avg_Phi/180*pi;
-Avg_Psi_R   =   Avg_Psi/180*pi;
-Avg_Theta_R = Avg_Theta/180*pi;
+% % Orientation = Orientation/180*pi; % turn to radius unit
+% Avg_Phi_R   =   Avg_Phi/180*pi;
+% Avg_Psi_R   =   Avg_Psi/180*pi;
+% Avg_Theta_R = Avg_Theta/180*pi;
 
 % Turn degrees into radius
-A_Pump  =  A_Pump /180*pi;
+A_Pump1 =  A_Pump1 /180*pi;
+A_Pump2 =  A_Pump2 /180*pi;
 A_Probe =  A_Probe/180*pi;
 A_Vis2D =  A_Vis2D/180*pi;
 A_Sig2D =  A_Sig2D/180*pi;
@@ -136,31 +140,21 @@ Response.Alpha = Alpha;
 
 %% Decide what kinds of rod rotation average is
 
+Dimension = 5; % for 2DSFG
+
 switch Avg_Rot
-    
+        
     case 1 %'Phi' C_Inf
-
-        R_Avg = R5_ZYZ_1(Avg_Psi_R,Avg_Theta_R);
+        R_Avg = LabFrameAvg('C4',Dimension);
         
-    case 2 %'Psi'
-
-        R_Avg = R5_ZYZ_2(Avg_Phi_R,Avg_Theta_R);
-        
-    case 3 %'{Phi,Psi}'
-
-        R_Avg = R5_ZYZ_12(Avg_Theta_R);
-        
-    case 4 %'Isotropic'
-        
-        R_Avg = R5_ZYZ_123;
-    
     case 5 %'No Average'
-       
-        R_Avg = R5_ZYZ_0(Avg_Phi_R,Avg_Psi_R,Avg_Theta_R);
+        R_Avg = LabFrameAvg('C1',Dimension);
         
     otherwise
-        disp('Avg_Option is not support, dont know how to apply Rotational average...')
+        disp('Avg_Angle is not support, dont know how to apply Rotational average...')
+        return
 end
+
 
 % Decide Mirror planes
 
@@ -185,26 +179,26 @@ end
 
 %% Applied rotational avergae on Response in molecular frame
 
-AR1  = zeros(size(Response.R1));
-AR2  = zeros(size(Response.R2));
-AR3  = zeros(size(Response.R3));
-NAR1 = zeros(size(Response.NR1));
-NAR2 = zeros(size(Response.NR2));
-NAR3 = zeros(size(Response.NR3));
+% AR1  = zeros(size(Response.R1));
+% AR2  = zeros(size(Response.R2));
+% AR3  = zeros(size(Response.R3));
+% NAR1 = zeros(size(Response.NR1));
+% NAR2 = zeros(size(Response.NR2));
+% NAR3 = zeros(size(Response.NR3));
 
-AR1(:,1:3)  = Response.R1(:,1:3);
-AR2(:,1:3)  = Response.R2(:,1:3);
-AR3(:,1:3)  = Response.R3(:,1:3);
-NAR1(:,1:3) = Response.NR1(:,1:3);
-NAR2(:,1:3) = Response.NR2(:,1:3);
-NAR3(:,1:3) = Response.NR3(:,1:3);
+% AR1(:,1:3)  = Response.R1(:,1:3);
+% AR2(:,1:3)  = Response.R2(:,1:3);
+% AR3(:,1:3)  = Response.R3(:,1:3);
+% NAR1(:,1:3) = Response.NR1(:,1:3);
+% NAR2(:,1:3) = Response.NR2(:,1:3);
+% NAR3(:,1:3) = Response.NR3(:,1:3);
 
-AR1(:,4:end)  = (bsxfun(@times,R_Avg*Response.R1(:,4:end)' ,Mirror_Mask))';
-AR2(:,4:end)  = (bsxfun(@times,R_Avg*Response.R2(:,4:end)' ,Mirror_Mask))';
-AR3(:,4:end)  = (bsxfun(@times,R_Avg*Response.R3(:,4:end)' ,Mirror_Mask))';
-NAR1(:,4:end) = (bsxfun(@times,R_Avg*Response.NR1(:,4:end)',Mirror_Mask))';
-NAR2(:,4:end) = (bsxfun(@times,R_Avg*Response.NR2(:,4:end)',Mirror_Mask))';
-NAR3(:,4:end) = (bsxfun(@times,R_Avg*Response.NR3(:,4:end)',Mirror_Mask))';
+AR1  = (bsxfun(@times,R_Avg*Response.R1 ,Mirror_Mask));
+AR2  = (bsxfun(@times,R_Avg*Response.R2 ,Mirror_Mask));
+AR3  = (bsxfun(@times,R_Avg*Response.R3 ,Mirror_Mask));
+NAR1 = (bsxfun(@times,R_Avg*Response.NR1,Mirror_Mask));
+NAR2 = (bsxfun(@times,R_Avg*Response.NR2,Mirror_Mask));
+NAR3 = (bsxfun(@times,R_Avg*Response.NR3,Mirror_Mask));
 
 Response.AR1 = AR1;
 Response.AR2 = AR2;
@@ -217,29 +211,29 @@ Response.NAR3 = NAR3;
 
 % Note: When I generate J, I aasume the two pump beam has the same input angle
 %       That's why here only has one pump input 
-J = JonesRef5(A_Sig2D,A_Vis2D,A_Probe,A_Pump);
+J = JonesRef5(A_Sig2D,A_Vis2D,A_Probe,A_Pump2,A_Pump1);
 
 % 35 =3 freq + 2^5 (ppppp - sssss) of signal
-JAR1  = zeros(size(Response.AR1,1),35);
-JAR2  = zeros(size(Response.AR2,1),35);
-JAR3  = zeros(size(Response.AR3,1),35);
-JNAR1 = zeros(size(Response.NAR1,1),35);
-JNAR2 = zeros(size(Response.NAR2,1),35);
-JNAR3 = zeros(size(Response.NAR3,1),35);
+% JAR1  = zeros(size(Response.AR1,1),35);
+% JAR2  = zeros(size(Response.AR2,1),35);
+% JAR3  = zeros(size(Response.AR3,1),35);
+% JNAR1 = zeros(size(Response.NAR1,1),35);
+% JNAR2 = zeros(size(Response.NAR2,1),35);
+% JNAR3 = zeros(size(Response.NAR3,1),35);
 
-JAR1(:,1:3)  = Response.AR1(:,1:3);
-JAR2(:,1:3)  = Response.AR2(:,1:3);
-JAR3(:,1:3)  = Response.AR3(:,1:3);
-JNAR1(:,1:3) = Response.NAR1(:,1:3);
-JNAR2(:,1:3) = Response.NAR2(:,1:3);
-JNAR3(:,1:3) = Response.NAR3(:,1:3);
+% JAR1(:,1:3)  = Response.AR1(:,1:3);
+% JAR2(:,1:3)  = Response.AR2(:,1:3);
+% JAR3(:,1:3)  = Response.AR3(:,1:3);
+% JNAR1(:,1:3) = Response.NAR1(:,1:3);
+% JNAR2(:,1:3) = Response.NAR2(:,1:3);
+% JNAR3(:,1:3) = Response.NAR3(:,1:3);
 
-JAR1(:,4:end)  = (J*Response.AR1(:,4:end)')';
-JAR2(:,4:end)  = (J*Response.AR2(:,4:end)')';
-JAR3(:,4:end)  = (J*Response.AR3(:,4:end)')';
-JNAR1(:,4:end) = (J*Response.NAR1(:,4:end)')';
-JNAR2(:,4:end) = (J*Response.NAR2(:,4:end)')';
-JNAR3(:,4:end) = (J*Response.NAR3(:,4:end)')';
+JAR1  = J*Response.AR1;
+JAR2  = J*Response.AR2;
+JAR3  = J*Response.AR3;
+JNAR1 = J*Response.NAR1;
+JNAR2 = J*Response.NAR2;
+JNAR3 = J*Response.NAR3;
 
 Response.JAR1 = JAR1;
 Response.JAR2 = JAR2;
@@ -252,27 +246,27 @@ Response.JNAR3 = JNAR3;
 
 E = EPolar5(P_Sig2D,P_Vis2D,P_Probe,P_Pump2,P_Pump1);
 
-% 4 = 3 freq + 1 signal
-EJAR1  = zeros(size(Response.JAR1,1),4);
-EJAR2  = zeros(size(Response.JAR2,1),4);
-EJAR3  = zeros(size(Response.JAR3,1),4);
-EJNAR1 = zeros(size(Response.JNAR1,1),4);
-EJNAR2 = zeros(size(Response.JNAR2,1),4);
-EJNAR3 = zeros(size(Response.JNAR3,1),4);
+% % 4 = 3 freq + 1 signal
+% EJAR1  = zeros(size(Response.JAR1,1),4);
+% EJAR2  = zeros(size(Response.JAR2,1),4);
+% EJAR3  = zeros(size(Response.JAR3,1),4);
+% EJNAR1 = zeros(size(Response.JNAR1,1),4);
+% EJNAR2 = zeros(size(Response.JNAR2,1),4);
+% EJNAR3 = zeros(size(Response.JNAR3,1),4);
+% 
+% EJAR1(:,1:3)  = Response.JAR1(:,1:3);
+% EJAR2(:,1:3)  = Response.JAR2(:,1:3);
+% EJAR3(:,1:3)  = Response.JAR3(:,1:3);
+% EJNAR1(:,1:3) = Response.JNAR1(:,1:3);
+% EJNAR2(:,1:3) = Response.JNAR2(:,1:3);
+% EJNAR3(:,1:3) = Response.JNAR3(:,1:3);
 
-EJAR1(:,1:3)  = Response.JAR1(:,1:3);
-EJAR2(:,1:3)  = Response.JAR2(:,1:3);
-EJAR3(:,1:3)  = Response.JAR3(:,1:3);
-EJNAR1(:,1:3) = Response.JNAR1(:,1:3);
-EJNAR2(:,1:3) = Response.JNAR2(:,1:3);
-EJNAR3(:,1:3) = Response.JNAR3(:,1:3);
-
-EJAR1(:,4:end)  = (E*Response.JAR1(:,4:end)')';
-EJAR2(:,4:end)  = (E*Response.JAR2(:,4:end)')';
-EJAR3(:,4:end)  = (E*Response.JAR3(:,4:end)')';
-EJNAR1(:,4:end) = (E*Response.JNAR1(:,4:end)')';
-EJNAR2(:,4:end) = (E*Response.JNAR2(:,4:end)')';
-EJNAR3(:,4:end) = (E*Response.JNAR3(:,4:end)')';
+EJAR1  = E*Response.JAR1;
+EJAR2  = E*Response.JAR2;
+EJAR3  = E*Response.JAR3;
+EJNAR1 = E*Response.JNAR1;
+EJNAR2 = E*Response.JNAR2;
+EJNAR3 = E*Response.JNAR3;
 
 Response.EJAR1 = EJAR1;
 Response.EJAR2 = EJAR2;

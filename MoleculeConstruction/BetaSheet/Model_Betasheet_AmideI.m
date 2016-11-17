@@ -128,7 +128,7 @@ Structure = GetAmideI(BB.Num_Atoms,...
                       BB.FilesName,...
                       GUI_Inputs);
 
-%% Export extra info into Structure                   
+%% Export extra info into Structure
 Structure.N_Residue         = BB.N_Residue;
 Structure.N_Strand          = BB.N_Strand;
 Structure.N_Mode_per_Starnd = BB.N_Residue-1;

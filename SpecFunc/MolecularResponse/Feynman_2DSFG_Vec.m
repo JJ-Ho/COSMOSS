@@ -5,6 +5,8 @@ function Response = Feynman_2DSFG_Vec(N,Sort_Ex_Freq,Alpha_Ex,Mu_Ex)
 % Since "kron" function use reshape alot, the overall speed of kron product
 % version is slower than for loop version
 % 
+% Note: Alpha_Ex = [size(H) x 9], index: [xx xy xz yx yy yz zx zy zz]
+% 
 % Todo: code acceleration, delete small signals.
 % 
 % ------- Version log -----------------------------------------------------
@@ -12,18 +14,23 @@ function Response = Feynman_2DSFG_Vec(N,Sort_Ex_Freq,Alpha_Ex,Mu_Ex)
 % Ver. 1.0  140126  modified from Feynman_2DIR_kron; vecterized version
 % 
 % ------------------------------------------------------------------------
-% Copyright Jia-Jung Ho, 2014
+% Copyright Jia-Jung Ho, 2014-2016
 
 %% debug
 % N = 3;
 % 
-% Mu_Ex = rand((N+1)*(N+2)/2);
-% Mu_Ex = Mu_Ex.* ~blkdiag(1,ones(N),ones(N*(N+1)/2));
-% Mu_Ex = repmat(Mu_Ex,[1,1,3]);
+% Sort_Ex_Freq = rand((N+1)*(N+2)/2,1)*1000;
 % 
-% Alpha_Ex = rand((N+1)*(N+2)/2);
-% Alpha_Ex = Alpha_Ex.* ~blkdiag(1,ones(N),ones(N*(N+1)/2));
-% Alpha_Ex = repmat(Alpha_Ex,[1,1,9]);
+% Mask = ones((N+1)*(N+2)/2);
+% Mask = Mask .* ~blkdiag(1,ones(N),ones(N*(N+1)/2));
+% Mask(1,N+2:(N+1)*(N+2)/2) = 0;
+% Mask(N+2:(N+1)*(N+2)/2,1) = 0;
+% 
+% Mu_Ex = rand((N+1)*(N+2)/2,(N+1)*(N+2)/2,3);
+% Mu_Ex = Mu_Ex.* repmat(Mask,[1,1,3]);
+% 
+% Alpha_Ex = rand((N+1)*(N+2)/2,(N+1)*(N+2)/2,9);
+% Alpha_Ex = Alpha_Ex.* repmat(Mask,[1,1,9]);
 
 %% Prepare index
 
@@ -97,24 +104,32 @@ Freq_R3  = [-Ea_3 ; Eb_3 - Ea_3 ; Ex_3 - Ea_3]';
 Freq_NR3 = [ Ea_3 ; Ea_3 - Eb_3 ; Ex_3 - Eb_3]';
 
 %% Output
-% Response.R1  = R1;
-% Response.R2  = R2;
-% Response.R3  = R3;
-% Response.NR1 = NR1;
-% Response.NR2 = NR2;
-% Response.NR3 = NR3;
+% Response.R1  = R1';  % [243 x N^2]
+% Response.R2  = R2';  % [243 x N^2]
+% Response.R3  = R3';  % [243 x N^3*(N+1)/2]
+% Response.NR1 = NR1'; % [243 x N^2]
+% Response.NR2 = NR2'; % [243 x N^2]
+% Response.NR3 = NR3'; % [243 x N^3*(N+1)/2]
 
-% Frequency.Freq_R1  = Freq_R1;
-% Frequency.Freq_R2  = Freq_R2;
-% Frequency.Freq_R3  = Freq_R3;
-% Frequency.Freq_NR1 = Freq_NR1;
-% Frequency.Freq_NR2 = Freq_NR2;
-% Frequency.Freq_NR3 = Freq_NR3;
+% Sparse matrix version
+Response.R1  = sparse(R1)';  % [243 x N^2]
+Response.R2  = sparse(R2)';  % [243 x N^2]
+Response.R3  = sparse(R3)';  % [243 x N^3*(N+1)/2]
+Response.NR1 = sparse(NR1)'; % [243 x N^2]
+Response.NR2 = sparse(NR2)'; % [243 x N^2]
+Response.NR3 = sparse(NR3)'; % [243 x N^3*(N+1)/2]
 
-Response.R1  = [Freq_R1,R1];
-Response.R2  = [Freq_R2,R2];
-Response.R3  = [Freq_R3,R3];
-Response.NR1 = [Freq_NR1,NR1];
-Response.NR2 = [Freq_NR2,NR2];
-Response.NR3 = [Freq_NR3,NR3];
+Response.Freq_R1  = Freq_R1;
+Response.Freq_R2  = Freq_R2;
+Response.Freq_R3  = Freq_R3;
+Response.Freq_NR1 = Freq_NR1;
+Response.Freq_NR2 = Freq_NR2;
+Response.Freq_NR3 = Freq_NR3;
+
+% Response.R1  = [Freq_R1,R1];
+% Response.R2  = [Freq_R2,R2];
+% Response.R3  = [Freq_R3,R3];
+% Response.NR1 = [Freq_NR1,NR1];
+% Response.NR2 = [Freq_NR2,NR2];
+% Response.NR3 = [Freq_NR3,NR3];
 

@@ -106,9 +106,9 @@ TDV = TDV{2};
 % [ Aiyx Aiyy Aiyz ]
 % [ Aizx Aizy Aizz ]
 % 
-Raman = textscan(fid,'[Raman] %s %f %f %f %f %f %f %f %f %f',Mode_Num,'CollectOutput',1,'commentStyle','%');
-Raman_Matrix = reshape((Raman{2})',[3,3,Mode_Num]);
-Raman_Matrix = permute(Raman_Matrix,[2,1,3]);
+Raman_Vector = textscan(fid,'[Raman] %s %f %f %f %f %f %f %f %f %f',Mode_Num,'CollectOutput',1,'commentStyle','%');
+Raman_Matrix = reshape((Raman_Vector{2})',[Mode_Num,3,3]);
+Raman_Matrix = permute(Raman_Matrix,[1,3,2]);
 
 %% Intensity scaling of IR and Raman
 Int_Harm.IR      = textscan(fid,'[Int_Harm]   IR    %s %f',Mode_Num,'commentStyle','%');
@@ -166,7 +166,8 @@ P.Atom_Name    = Atom_Name;
 P.Freq         = Freq;
 P.XYZ          = XYZ;
 P.TDV          = TDV;
-P.Raman        = Raman_Matrix;
+P.RamanV       = Raman_Vector;
+P.RamanM       = Raman_Matrix;
 P.Int_Harm     = Int_Harm;
 P.Int_AnHarm   = Int_AnHarm;
 P.Mol_Frame    = Mol_Frame;

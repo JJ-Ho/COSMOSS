@@ -22,14 +22,21 @@ NR1 = Response.BinNR1;
 NR2 = Response.BinNR2;
 NR3 = Response.BinNR3;
 
-%% Sort the responses to 2D frequency grid
-SpecAccuR1 = SortGrid(R1(:,1),R1(:,3),FreqRange,R1(:,4));
-SpecAccuR2 = SortGrid(R2(:,1),R2(:,3),FreqRange,R2(:,4));
-SpecAccuR3 = SortGrid(R3(:,1),R3(:,3),FreqRange,R3(:,4));
+Freq_R1  = Response.Freq_R1;
+Freq_R2  = Response.Freq_R2;
+Freq_R3  = Response.Freq_R3;
+Freq_NR1 = Response.Freq_NR1;
+Freq_NR2 = Response.Freq_NR2;
+Freq_NR3 = Response.Freq_NR3;
 
-SpecAccuNR1 = SortGrid(NR1(:,1),NR1(:,3),FreqRange,NR1(:,4));
-SpecAccuNR2 = SortGrid(NR2(:,1),NR2(:,3),FreqRange,NR2(:,4));
-SpecAccuNR3 = SortGrid(NR3(:,1),NR3(:,3),FreqRange,NR3(:,4));
+%% Sort the responses to 2D frequency grid
+SpecAccuR1 = SortGrid(Freq_R1(:,1),Freq_R1(:,3),FreqRange,R1);
+SpecAccuR2 = SortGrid(Freq_R2(:,1),Freq_R2(:,3),FreqRange,R2);
+SpecAccuR3 = SortGrid(Freq_R3(:,1),Freq_R3(:,3),FreqRange,R3);
+
+SpecAccuNR1 = SortGrid(Freq_NR1(:,1),Freq_NR1(:,3),FreqRange,NR1);
+SpecAccuNR2 = SortGrid(Freq_NR2(:,1),Freq_NR2(:,3),FreqRange,NR2);
+SpecAccuNR3 = SortGrid(Freq_NR3(:,1),Freq_NR3(:,3),FreqRange,NR3);
 
 %% Sum & output
 Rephasing = SpecAccuR1 + SpecAccuR2 - SpecAccuR3;

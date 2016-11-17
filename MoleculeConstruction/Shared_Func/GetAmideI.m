@@ -327,6 +327,19 @@ for ii=1:Num_Modes
     alpha_Sim(ii,:,:) = squeeze(XYZ_Sim(ii,:,:))*alpha_Mol'*squeeze(XYZ_Sim(ii,:,:))';
 end    
 
+% take vectorize Alpha
+% alpha_Sim = [N x 3 x3 ]
+% for a signle mode, the alpha_Sim: 
+% [ XX, XY, XZ ]
+% [ YX, YY, YZ ]
+% [ ZX, ZY, ZZ ]
+% Following the kron convention that the following E J L R beta used, the
+% alpha vector need to be in this index order
+% [XX,XY, XZ, YX, YY, YZ, ZX, ZY, ZZ]'
+% eventhough the Raman tensor we encounter in IR resonance SFG is always 
+% symmetric, I am being exta caucious here to make the indexing right.
+alpha = reshape(permute(alpha_Sim,[1,3,2]),[Num_Modes,9]);
+
 %% Define Mode frequency and anharmonicity
 
 AmideIFreq = ones(Num_Modes,1)* NLFreq;
@@ -343,7 +356,7 @@ Output.center         = AmideICenter;
 Output.freq           = AmideIFreq;
 Output.anharm         = AmideIAnharm;
 Output.mu             = mu_Sim;
-Output.alpha          = reshape(alpha_Sim,[Num_Modes,9]); % non-reduced alpha "vector"
+Output.alpha          = alpha; % raman tensor vector form [N x 9]
 Output.alpha_matrix   = alpha_Sim;
 Output.AtomSerNo      = AmideIAtomSerNo;
 Output.Num_Modes      = Num_Modes;

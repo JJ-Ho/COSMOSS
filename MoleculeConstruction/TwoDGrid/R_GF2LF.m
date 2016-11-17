@@ -10,7 +10,7 @@ function Output = R_GF2LF(S_Info)
 %% Process Inputs
 XYZ      = S_Info.XYZ;
 TDV      = S_Info.TDV;
-Raman    = S_Info.Raman;
+Raman    = S_Info.RamanV;
 %Mode_Num = S_Info.Mode_Num;
 
 
@@ -96,8 +96,7 @@ Rot2MF_2 = kron(Rot2MF,Rot2MF);
 Rot2LF_2 = kron(Rot2LF,Rot2LF);
 Rot_Total_mode_2 = Rot2LF_2*R_Bond_Avg_2*Rot2MF_2;
 
-Raman_V = reshape(Raman,9,[]);
-Raman_Rot_V = Rot_Total_mode_2*Raman_V;
+Raman_Rot_V = Rot_Total_mode_2*RamanV;  % note: RamanV = [N x 9], index: [xx xy xz yx yy yz zx zy zz]
 Raman_Rot_V(abs(Raman_Rot_V)<1E-10) = 0; % remove numerical error
 
 Raman_Rot_M = reshape(Raman_Rot_V,3,3,[]);

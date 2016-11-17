@@ -22,6 +22,7 @@ CouplingList = {'TDC',...
                 'Cho_PB',...
                 'Cho_APB',...
                 'TDC+Cho_APB',...
+                'Zero',...
                 };
 
 %% select models
@@ -78,6 +79,11 @@ if isstruct(StrucInfo)
             Beta_Mix(Beta_APB_Ind,Beta_APB_Ind) = Beta_APB;
 
             Beta = Beta_Mix;
+            
+        case 'Zero'
+            N_Modes = StrucInfo.Num_Modes;
+            Beta = zeros(N_Modes);
+            
         otherwise
             disp(['Unsupported coupling model:' CoupleType])  
     end

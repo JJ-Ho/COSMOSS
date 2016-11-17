@@ -113,14 +113,10 @@ Dimension = 3; % for SFG
 switch Avg_Rot
         
     case 1 %'Phi' C_Inf
-
         R_Avg = LabFrameAvg('C4',Dimension);
         
-    
     case 5 %'No Average'
-       
         R_Avg = LabFrameAvg('C1',Dimension);
-    
         
     otherwise
         disp('Avg_Angle is not support, dont know how to apply Rotational average...')

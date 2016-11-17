@@ -73,7 +73,7 @@ Mute_Ind    = INPUT.Results.Mute_Ind   ;
 XYZ_G09       = Monomer.XYZ;
 Atom_Num_G09  = Monomer.Atom_Num;
 mu_Mol_G09    = Monomer.TDV;
-alpha_Mol_G09 = Monomer.Raman_V;
+alpha_Mol_G09 = Monomer.Raman_V; % note: RamanV = [N x 9], index: [xx xy xz yx yy yz zx zy zz]
 Center_Ind    = Monomer.Center_Ind;
 %Freq_G09      = Gaussian_Input.Freq;
 
@@ -120,8 +120,8 @@ for j = 1:N_2
             XYZ_Grid_M(:,:,i,j) = bsxfun(@plus,XYZ_R,TransV);
 
             % Mu & Alpha
-               mu_Sim(i+(j-1)*N_1,:) = (R1_Fluc * mu_Mol_G09'   )'; % note    mu_Mol_G09 = [N_Mode*3]
-            alpha_Sim(i+(j-1)*N_1,:) = (R2_Fluc * alpha_Mol_G09 )'; % note alpha_Mol_G09 = [9*N_Mode]
+               mu_Sim(i+(j-1)*N_1,:) = (R1_Fluc * mu_Mol_G09'    )'; % note    mu_Mol_G09 = [N_Mode*3]
+            alpha_Sim(i+(j-1)*N_1,:) = (R2_Fluc * alpha_Mol_G09' )'; % note alpha_Mol_G09 = [N_Mode*9]
         end
     end
 end
@@ -184,7 +184,7 @@ Output.center       = Center;
 Output.freq         = Loc_Freq;
 Output.anharm       = Anharm;
 Output.mu           = mu_Sim;
-Output.alpha        = alpha_Sim; % non-reduced alpha "vector"
+Output.alpha        = alpha_Sim; % note: RamanV = [N x 9], index: [xx xy xz yx yy yz zx zy zz]
 Output.alpha_matrix = reshape(alpha_Sim,[Num_Modes,3,3]);
 Output.AtomSerNo    = AtomSerNo;
 Output.Num_Modes    = Num_Modes;

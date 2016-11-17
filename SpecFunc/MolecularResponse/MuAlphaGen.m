@@ -57,7 +57,7 @@ switch Mode
        
     case 'Alpha'
      
-       Trans_Moment = PDB_Data.alpha;
+       Trans_Moment = PDB_Data.alpha; % note: RamanV = [N x 9], index: [xx xy xz yx yy yz zx zy zz]
 end
 
 Size_Trans   = size(Trans_Moment,2);

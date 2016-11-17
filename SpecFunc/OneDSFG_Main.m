@@ -103,40 +103,28 @@ Alpha_Ex = squeeze(Alpha_Ex(2:Num_Modes+1,1,:))'; %=> [9*N]
 Mu_Ex    = squeeze(   Mu_Ex(1,2:Num_Modes+1,:))'; %=> [3*N]
 [Mu_Ind,Alpha_Ind] = ndgrid(1:3,1:9);
 
-ResLF = Alpha_Ex(Alpha_Ind,:).* Mu_Ex(Mu_Ind,:); %=> [27*N]
+ResLF = Alpha_Ex(Alpha_Ind(:),:).* Mu_Ex(Mu_Ind(:),:); %=> [27*N]
 Ex_Freq = Ex_Freq(2:Num_Modes+1); % => [N*1]
 
 %% Decide what kinds of ensemble average
-% need to eplain more this section
-Avg_Phi_R   = 0;
-Avg_Psi_R   = 0;
-Avg_Theta_R = 0;
+
+Dimension = 3; % for SFG
 
 switch Avg_Rot
         
     case 1 %'Phi' C_Inf
 
-        R_Avg = R3_ZYZ_1(Avg_Psi_R,Avg_Theta_R);
+        R_Avg = LabFrameAvg('C4',Dimension);
         
-    case 2 %'Psi'
-
-        R_Avg = R3_ZYZ_2(Avg_Phi_R,Avg_Theta_R);
-        
-    case 3 %'{Phi,Psi}'
-
-        R_Avg = R3_ZYZ_12(Avg_Theta_R);
-        
-    case 4 %'Isotropic'
-        
-        R_Avg = R3_ZYZ_123;
     
     case 5 %'No Average'
        
-        R_Avg = R3_ZYZ_0(Avg_Phi_R,Avg_Psi_R,Avg_Theta_R);
+        R_Avg = LabFrameAvg('C1',Dimension);
     
         
     otherwise
         disp('Avg_Angle is not support, dont know how to apply Rotational average...')
+        return
 end
 
 % Decide Mirror planes

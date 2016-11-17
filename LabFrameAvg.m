@@ -4,7 +4,7 @@ R_name = ['R',num2str(Dimension),'_ZYZ_0'];
 hf_R = str2func(R_name);
 
 switch Symmetry
-    case 'No'
+    case 'C1'
         R = hf_R(0,0,0);
     case 'C2'
         R = (hf_R(0 ,0,0)+...

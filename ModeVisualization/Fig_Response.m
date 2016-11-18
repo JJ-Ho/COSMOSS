@@ -1,7 +1,7 @@
 function Fig_Response(hAx, GUI_Inputs, Structure, OneDSFG)       
 hold on
 %% Plot hyper ellipsoid so that the radius = E'*Alpha*E
-        N_Grid = 100;
+        N_Grid = 30;
 
         phi   = linspace(0,2*pi,N_Grid);
         theta = linspace(-pi/2,pi/2,N_Grid);

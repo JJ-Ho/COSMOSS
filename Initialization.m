@@ -20,7 +20,3 @@ addpath(Main_GUIs);
 
 ServerVersion = genpath([Current_path '/ServerVersion']);
 addpath(ServerVersion);
-
-% Add path to SubFunctions
-SpectalFunctions = genpath([Current_path '/GenerationCode']);
-addpath(SpectalFunctions);

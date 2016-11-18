@@ -79,5 +79,5 @@ end
 
 %% Output
 Output.ModeList  = ModeList;
-Output.OneDSFG   = SpecData;
+Output.SpecData  = SpecData;
          

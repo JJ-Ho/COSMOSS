@@ -114,39 +114,35 @@ SpecType        = GUI_Inputs.SpecType;
 % update table contents
 switch SpecType
     case 1 %'FTIR'
-        CF      = TableFormat('FTIR');
-        FTIR    = FTIR_Main(Structure,COSMOSS_Inputs);
-        Modes   = Update_Modes_Table(FTIR);
+        CF       = TableFormat('FTIR');
+        SpecData = FTIR_Main(Structure,COSMOSS_Inputs);
+        Modes    = Update_Modes_Table(SpecData);
     case 2 %'SFG'
-        CF      = TableFormat('SFG');
-        OneDSFG = OneDSFG_Main(Structure,COSMOSS_Inputs);
-        Modes   = Update_Modes_Table(OneDSFG);
+        CF       = TableFormat('SFG');
+        SpecData = OneDSFG_Main(Structure,COSMOSS_Inputs);
+        Modes    = Update_Modes_Table(SpecData);
 end
 
-% setup uitable format
+%% Update GUI
 GUI_data.hGUIs.ModeList.ColumnName   = CF.Name;
 GUI_data.hGUIs.ModeList.ColumnFormat = CF.Format;
 GUI_data.hGUIs.ModeList.ColumnWidth  = CF.Width;
-
-%% Update handles structure
-GUI_data.OneDSFG   = Modes.OneDSFG;
-GUI_data.ModeList.Data  = Modes.ModeList;
-GUI_data.Structure = Structure;
-
-guidata(hObject, GUI_data);
-
-%% Update GUI
-% update the list on hPlot_Modes GUI
-set(GUI_data.hGUIs.ModeList,'Data',Modes.ModeList)
+GUI_data.hGUIs.ModeList.Data         = Modes.ModeList;
 
 % call sorting to sort table with the same GUI setting
 uitable_Sort(hObject, eventdata, GUI_data)
+
+%% Update handles structure
+GUI_data.SpecData  = SpecData;
+GUI_data.Structure = Structure;
+
+guidata(hObject, GUI_data);
 
 function Update_TDV_Raman(hObject, eventdata, GUI_data)
 %% Gather necessary inputs
 GUI_Inputs = ParseGUI_Modes(GUI_data.hGUIs);
 Structure  = GUI_data.Structure;
-OneDSFG    = GUI_data.OneDSFG;
+OneDSFG    = GUI_data.SpecData;
 hModel     = GUI_data.hModel;
 
 %% Draw molecule by calling the PlotMolecule function in each model
@@ -165,7 +161,7 @@ function Update_Response(hObject, eventdata, GUI_data)
 %% Gather necessary inputs
 GUI_Inputs = ParseGUI_Modes(GUI_data.hGUIs);
 Structure  = GUI_data.Structure;
-OneDSFG    = GUI_data.OneDSFG;
+OneDSFG    = GUI_data.SpecData;
 hModel     = GUI_data.hModel;
 
 %% Draw molecule by calling the PlotMolecule function in each model

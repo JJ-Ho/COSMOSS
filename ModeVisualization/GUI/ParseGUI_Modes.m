@@ -16,4 +16,4 @@ O.Normalize      =            get(hGUIs.Normalize     , 'Value' ) ;
 
 O.Plot_EigenVec  =            get(hGUIs.Plot_EigenVec , 'Value' ) ;
 O.EigneVec_Ind   = str2double(get(hGUIs.EigneVec_Ind  , 'String'));
-
+O.EigneVec_Conv  =            get(hGUIs.EigneVec_Conv , 'Value' ) ;

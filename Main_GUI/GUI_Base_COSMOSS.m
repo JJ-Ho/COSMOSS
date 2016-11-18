@@ -1,4 +1,4 @@
-function hCOSMOSS = GUI_COSMOSS_Base(Singleton)
+function hCOSMOSS = GUI_Base_COSMOSS(Singleton)
 % this function create base figure. To utilize the original GUI building
 % mechanism of Matlab and avoid Matlab default way to export GUI element 
 % handles, this function only create the base layer with no GUI elements.
@@ -8,7 +8,8 @@ function hCOSMOSS = GUI_COSMOSS_Base(Singleton)
 %% Create base figure
 hCOSMOSS = figure;
 
-hCOSMOSS.Position         = [103.8333 61.667 600.0000 600.0000];
+hCOSMOSS.Units            = 'Pixels';
+hCOSMOSS.Position         = [2 406 600 600];
 hCOSMOSS.Name             = 'COSMOSS';
 hCOSMOSS.ToolBar          = 'none';
 hCOSMOSS.MenuBar          = 'none';
@@ -21,3 +22,4 @@ gui_Options.syscolorfig = 1;
 setappdata(hCOSMOSS,'GUIDEOptions',gui_Options);
 
 disp('Creating COSMOSS GUI Using GUI Layout Toolbox!')
+disp('...')

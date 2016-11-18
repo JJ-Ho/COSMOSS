@@ -1,4 +1,3 @@
-%^ GUI Setup ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function varargout = Plot_Modes(varargin)
 % PLOT_MODES MATLAB code for Plot_Modes.fig
 %      PLOT_MODES, by itself, creates a new PLOT_MODES or raises the existing
@@ -31,7 +30,7 @@ gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
                    'gui_OpeningFcn', @Plot_Modes_OpeningFcn, ...
                    'gui_OutputFcn',  @Plot_Modes_OutputFcn, ...
-                   'gui_LayoutFcn',  [] , ...
+                   'gui_LayoutFcn',  @GUI_Base_Plot_Modes, ...
                    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
     gui_State.gui_Callback = str2func(varargin{1});
@@ -56,8 +55,8 @@ if nargin > 3
        hModel = varargin{1};
     end
 else
-    disp('Running in stand alone mode, using TCO modle for debug purpose')  
-    hModel = Model_TCO(GUI_data);
+    disp('Plot_Modes cannot run without COSMOSS... ')  
+    return
 end
 
 % Call createInterface to create GUI elements

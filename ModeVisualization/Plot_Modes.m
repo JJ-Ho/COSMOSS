@@ -107,11 +107,30 @@ COSMOSS_Inputs  = ParseGUI_Main(GUI_Data_hMain.hGUIs);
 GUI_Data_hModel = guidata(GUI_data.hModel);
 Structure       = GUI_Data_hModel.Structure;
 
-Modes = Update_Modes_Table(Structure, COSMOSS_Inputs);
+GUI_Inputs      = ParseGUI_Modes(GUI_data.hGUIs);
+SpecType        = GUI_Inputs.SpecType;
+
+
+% update table contents
+switch SpecType
+    case 1 %'FTIR'
+        CF      = TableFormat('FTIR');
+        FTIR    = FTIR_Main(Structure,COSMOSS_Inputs);
+        Modes   = Update_Modes_Table(FTIR);
+    case 2 %'SFG'
+        CF      = TableFormat('SFG');
+        OneDSFG = OneDSFG_Main(Structure,COSMOSS_Inputs);
+        Modes   = Update_Modes_Table(OneDSFG);
+end
+
+% setup uitable format
+GUI_data.hGUIs.ModeList.ColumnName   = CF.Name;
+GUI_data.hGUIs.ModeList.ColumnFormat = CF.Format;
+GUI_data.hGUIs.ModeList.ColumnWidth  = CF.Width;
 
 %% Update handles structure
 GUI_data.OneDSFG   = Modes.OneDSFG;
-GUI_data.ModeList  = Modes.ModeList;
+GUI_data.ModeList.Data  = Modes.ModeList;
 GUI_data.Structure = Structure;
 
 guidata(hObject, GUI_data);

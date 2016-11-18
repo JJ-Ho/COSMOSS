@@ -1,5 +1,6 @@
 function O = ParseGUI_Modes(hGUIs)
 %% Get GUI inputs
+O.SpecType       =            get(hGUIs.SpecType      , 'Value' ) ;
 
 O.Mu_Alpha_Plot  =            get(hGUIs.Mu_Alpha_Plot , 'Value' ) ; 
 O.Mu_Alpha_Type  =            get(hGUIs.Mu_Alpha_Type , 'Value' ) ; 

@@ -1,4 +1,4 @@
-function Output = PlotFTIR(PDB_Data,GUI_Inputs)
+function Output = FTIR_Main(PDB_Data,GUI_Inputs)
 %% PlotFTIR
 %  
 % Given one exciton alpha, mu matrix and respective one exciton state

@@ -129,21 +129,22 @@ PDB_Path = [PWD, '/StructureFiles/PDB/'];
 %% Parse molecule structure
 if Preprocessed
     % read the pre-processed MD sanpshots with the same molecule
+    TextPattern = 'ATOM %*f %s %*s %*s %*f %f %f %f %*f %*f %*s';
     if iscell(FilesName)
         N_File = size(FilesName,2);
         fid = fopen([PathName FilesName{1}]);
-        ATest = textscan(fid,'ATOM %*f %s %*s %*s %*f %f %f %f %*f %*f %*s','CollectOutput',1,'HeaderLines',1);
+        ATest = textscan(fid,TextPattern,'CollectOutput',1);
         fclose(fid);
-        XYZ = zeros([size(ATest{2}),N_File]);     % Creat all zeros RawData Matrix
+        XYZ = zeros([size(ATest{2}),N_File]); % Creat all zeros RawData Matrix
         
         progressbar;
         for i=1:N_File
             progressbar(i/N_File)
             % read preprocessed pdb file
             fid = fopen([PathName FilesName{i}]);
-            A = textscan(fid,'ATOM %*f %s %*s %*s %*f %f %f %f %*f %*f %*s','CollectOutput',1,'HeaderLines',1);
+            A = textscan(fid,TextPattern,'CollectOutput',1);
             fclose(fid);
-            
+
             XYZ(:,:,i) = A{2};
         end
         AtomName  = A{1};
@@ -163,7 +164,7 @@ if Preprocessed
     else
         N_File = 1;
         fid = fopen([PathName FilesName]);
-        A = textscan(fid,'ATOM %*f %s %*s %*s %*f %f %f %f %*f %*f %*s','CollectOutput',1,'HeaderLines',1);
+        A = textscan(fid,TextPattern,'CollectOutput',1);
         fclose(fid);
         
         AtomName   = A{1};

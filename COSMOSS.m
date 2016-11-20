@@ -139,8 +139,9 @@ Structure  = GUI_data.Structure;
 hF  = figure;
 hAx = axes('Parent',hF);
 
-if eq(GUI_Inputs.Sampling,1)
+if eq(GUI_Inputs.Sampling,1) % GUI: Diag. Disorder
     % Pre-allocate
+    
     GridSize   = length(GUI_Inputs.FreqRange);
     Num_Modes  = Structure.Num_Modes;
     Freq_Orig  = Structure.freq;
@@ -153,14 +154,21 @@ if eq(GUI_Inputs.Sampling,1)
     TIME   = zeros(GUI_Inputs.Sample_Num,1);
     
     for i = 1:GUI_Inputs.Sample_Num
-        DynamicUpdate = GUI_data.GUI_Main.DynamicUpdate.Value;
-        UpdateStatus  = GUI_data.GUI_Main.UpdateStatus.Value;
+        DynamicUpdate = GUI_data.hGUIs.DynamicUpdate.Value;
+        UpdateStatus  = GUI_data.hGUIs.UpdateStatus.Value;
         if and(~eq(i,1), and(eq(DynamicUpdate,1),~eq(UpdateStatus,1)))
             break
         end
         
         TSTART(i) = tic;
-        % Add diagonal disorder
+        
+        S = Structure;
+        % Replace mu and center if there are mutiple MD sanpshots
+        if isfield(S,'N_File') && gt(S.N_File,1)
+            S.mu = squeeze(S.mu(:,:,i));
+            S.center = S.center(:,:,i);
+        end
+        % Add diagonal disorder if any
         Correlation_Dice = rand;
 
         if Correlation_Dice < P_FlucCorr
@@ -168,8 +176,10 @@ if eq(GUI_Inputs.Sampling,1)
         else 
             Fluctuation = StandardDiv'.*randn(Num_Modes,1); 
         end
-        Structure.freq = Freq_Orig + Fluctuation;
-        FTIR = FTIR_Main(Structure,GUI_Inputs);
+        S.freq = Freq_Orig + Fluctuation;
+        
+        % Calculate FTIR
+        FTIR = FTIR_Main(S,GUI_Inputs);
         
         % recursive part
         Response1D = Response1D + FTIR.Response1D; % note freq is binned and sported, so direct addition work
@@ -186,8 +196,9 @@ if eq(GUI_Inputs.Sampling,1)
         end
     end
     
-        Total_TIME = sum(TIME);
-        disp(['Total time: ' num2str(Total_TIME)])
+    Plot1D(hAx,FTIR,GUI_Inputs);
+    Total_TIME = sum(TIME);
+    disp(['Total time: ' num2str(Total_TIME)])
         
 else
     FTIR = FTIR_Main(Structure,GUI_Inputs);
@@ -221,8 +232,8 @@ if eq(GUI_Inputs.Sampling,1)
     TIME   = zeros(GUI_Inputs.Sample_Num,1);
     
     for i = 1:GUI_Inputs.Sample_Num
-        DynamicUpdate = GUI_data.GUI_Main.DynamicUpdate.Value;
-        UpdateStatus  = GUI_data.GUI_Main.UpdateStatus.Value;
+        DynamicUpdate = GUI_data.hGUIs.DynamicUpdate.Value;
+        UpdateStatus  = GUI_data.hGUIs.UpdateStatus.Value;
         if and(~eq(i,1), and(eq(DynamicUpdate,1),~eq(UpdateStatus,1)))
             break
         end

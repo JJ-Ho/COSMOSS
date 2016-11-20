@@ -1,5 +1,7 @@
 function [O,T] = ParseGUI_AmideI(hGUI)
 
+O.Preprocessed = get(hGUI.Preprocessed ,'Value' );
+
 % Orientation -------------------------------------------------------------
 O.Phi_D   =  str2double(get(hGUI.Phi_D     ,'String'));
 O.Psi_D   =  str2double(get(hGUI.Psi_D     ,'String'));

@@ -94,7 +94,6 @@ GUI_data.hGUIs             = hGUIs;
 % Update handles structure
 guidata(hModel_PDB_AmideI, GUI_data);
 
-% --- Outputs from this function are returned to the command line.
 function varargout = Model_PDB_AmideI_OutputFcn(hModel_PDB_AmideI, GUI_data, handles) 
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
@@ -113,34 +112,86 @@ disp('Updated GUI Data_PDB_AmideI exported!')
 
 
 function LoadStructure(hObject, eventdata, GUI_data)
+%% Read GUI variables
+hGUIs  = GUI_data.hGUIs;
+COSMOSS_GUI_Inputs = ParseGUI_AmideI(hGUIs);
+Preprocessed = COSMOSS_GUI_Inputs.Preprocessed;
+
 %% Get pdb file location 
 PWD = pwd;
 PDB_Path = [PWD, '/StructureFiles/PDB/'];
 
 [FilesName,PathName,~] = uigetfile({'*.pdb','PDB file'; ...
                                     '*,*','All Files'},...
+                                    'MultiSelect','on',...
                                     'Select inputs',PDB_Path);
-
+                                
 %% Parse molecule structure
+if Preprocessed
+    % read the pre-processed MD sanpshots with the same molecule
+    if iscell(FilesName)
+        N_File = size(FilesName,2);
+        fid = fopen([PathName FilesName{1}]);
+        ATest = textscan(fid,'ATOM %*f %s %*s %*s %*f %f %f %f %*f %*f %*s','CollectOutput',1,'HeaderLines',1);
+        fclose(fid);
+        XYZ = zeros([size(ATest{2}),N_File]);     % Creat all zeros RawData Matrix
+        
+        progressbar;
+        for i=1:N_File
+            progressbar(i/N_File)
+            % read preprocessed pdb file
+            fid = fopen([PathName FilesName{i}]);
+            A = textscan(fid,'ATOM %*f %s %*s %*s %*f %f %f %f %*f %*f %*s','CollectOutput',1,'HeaderLines',1);
+            fclose(fid);
+            
+            XYZ(:,:,i) = A{2};
+        end
+        AtomName  = A{1};
+        Num_Atoms = size(XYZ,1);
+        
+        C = strsplit(PathName,'/');
+        FilesName  = C{end-1};
+        
+        % deal with the GUI inputs in COSMOSS
+        hCOSMOSS = GUI_data.hCOSMOSS;
+        Data_COSMOSS = guidata(hCOSMOSS);
+        COSMOSS_hGUIs = Data_COSMOSS.hGUIs;
+        COSMOSS_hGUIs.Sampling.Value = 1;
+        COSMOSS_hGUIs.Sample_Num.String = num2str(N_File);
+        COSMOSS_hGUIs.FWHM.String = num2str(0);
+        
+    else
+        N_File = 1;
+        fid = fopen([PathName FilesName]);
+        A = textscan(fid,'ATOM %*f %s %*s %*s %*f %f %f %f %*f %*f %*s','CollectOutput',1,'HeaderLines',1);
+        fclose(fid);
+        
+        AtomName   = A{1};
+        XYZ(:,:,1) = A{2};
+        Num_Atoms = size(XYZ,1);
+    end
+else 
+    N_File = 1;
+    PDB = pdbread([PathName FilesName]);
+    Atom_Data = PDB.Model.Atom;
+    Num_Atoms = size(Atom_Data,2);
 
-PDB = pdbread([PathName FilesName]);
-Atom_Data = PDB.Model.Atom;
-Num_Atoms = size(Atom_Data,2);
-
-% Get coordination data
-XYZ = zeros(Num_Atoms,3);
-AtomName = cell(Num_Atoms,1);
-for II = 1:Num_Atoms
-    A = Atom_Data(II);
-    XYZ(II,:) = [A.X, A.Y, A.Z];
-    AtomName{II} = Atom_Data(II).AtomName;
+    % Get coordination data
+    XYZ = zeros(Num_Atoms,3);
+    AtomName = cell(Num_Atoms,1);
+    for II = 1:Num_Atoms
+        A = Atom_Data(II);
+        XYZ(II,:) = [A.X, A.Y, A.Z];
+        AtomName{II} = Atom_Data(II).AtomName;
+    end
 end
 
 %% output to GUI
-GUI_data.Num_Atoms = Num_Atoms;
-GUI_data.XYZ       = XYZ;
-GUI_data.AtomName  = AtomName;
-GUI_data.FilesName = FilesName;
+GUI_data.PDB.Num_Atoms = Num_Atoms;
+GUI_data.PDB.XYZ       = XYZ;
+GUI_data.PDB.AtomName  = AtomName;
+GUI_data.PDB.FilesName = FilesName;
+GUI_data.PDB.N_File    = N_File;
 
 guidata(hObject,GUI_data)
 
@@ -154,13 +205,35 @@ hGUIs  = GUI_data.hGUIs;
 GUI_Inputs = ParseGUI_AmideI(hGUIs);
     
 %% Construct molecule
-Num_Atoms = GUI_data.Num_Atoms;
-XYZ       = GUI_data.XYZ;
-AtomName  = GUI_data.AtomName;
-FilesName = GUI_data.FilesName;
+Num_Atoms = GUI_data.PDB.Num_Atoms;
+XYZ       = GUI_data.PDB.XYZ;
+AtomName  = GUI_data.PDB.AtomName;
+FilesName = GUI_data.PDB.FilesName;
+N_File    = GUI_data.PDB.N_File;
 
-Structure = GetAmideI(Num_Atoms,XYZ,AtomName,FilesName,GUI_Inputs);
-                  
+% test # modes and pre-allocate matix
+Tmp1 = GetAmideI(Num_Atoms,XYZ(:,:,1),AtomName,FilesName,GUI_Inputs);
+Num_Modes = Tmp1.Num_Modes;
+mu      = zeros(Num_Modes,3,N_File);
+alpha   = zeros(Num_Modes,9,N_File);
+center  = zeros(Num_Modes,3,N_File);
+XYZ_Rot = zeros(Num_Atoms,3,N_File);
+
+for i = 1:N_File
+    Tmp = GetAmideI(Num_Atoms,XYZ(:,:,i),AtomName,FilesName,GUI_Inputs);
+    mu(:,:,i)      = Tmp.mu;
+    alpha(:,:,i)   = Tmp.alpha;
+    center(:,:,i)  = Tmp.center;
+    XYZ_Rot(:,:,i) = Tmp.XYZ;
+end
+
+Structure = Tmp1;
+Structure.center = center;
+Structure.mu     = mu;
+Structure.alpha  = alpha;
+Structure.XYZ    = XYZ_Rot;
+Structure.N_File = N_File;
+
 % Export into Structure so it can be passsed around different GUIs
 Structure.StructModel = 2;
 
@@ -183,23 +256,6 @@ function hF = PlotMolecule(hObject, eventdata, GUI_data)
 % Read GUI variables
 hGUIs  = GUI_data.hGUIs;
 GUI_Inputs = ParseGUI_AmideI(hGUIs);
-
-%- This part is obsolete, since the lab frame ensemble avg should not take
-%  orientation inputs, will be removed later
-% Read the Molecule frame to Lab frame orientation from COSMOSS
-% hMain = handles.hMain;
-% GUI_Data_Main = guidata(hMain);
-% GUI_Inputs_Main = ParseGUI_Main(GUI_Data_Main);
-% % Pass the MF-LB Eular angles to Plotting function
-% GUI_Inputs.Avg_Phi   = GUI_Inputs_Main.Avg_Phi;
-% GUI_Inputs.Avg_Theta = GUI_Inputs_Main.Avg_Theta;
-% GUI_Inputs.Avg_Psi   = GUI_Inputs_Main.Avg_Psi;
-
-GUI_Inputs.Avg_Phi   = 0;
-GUI_Inputs.Avg_Theta = 0;
-GUI_Inputs.Avg_Psi   = 0;
-%--------------------------------------------------------------------------
-
 
 hF = PlotXYZfiles_AmideI(GUI_data.Structure,GUI_Inputs);
 

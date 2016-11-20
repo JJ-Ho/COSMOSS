@@ -37,18 +37,12 @@ INPUT = inputParser;
 INPUT.KeepUnmatched = 1;
 
 % Default values
-defaultAvg_Phi        = 0;
-defaultAvg_Theta      = 0;
-defaultAvg_Psi        = 0;
 defaultPlot_Atoms     = 1;
 defaultPlot_Bonds     = 1;
 defaultPlot_Axis      = 1;
 defaultPlot_SideChain = 0;
 
 % Add optional inputs to inputparser object
-addOptional(INPUT,'Avg_Phi'        ,defaultAvg_Phi);
-addOptional(INPUT,'Avg_Theta'      ,defaultAvg_Theta);
-addOptional(INPUT,'Avg_Psi'        ,defaultAvg_Psi);
 addOptional(INPUT,'Plot_Atoms'     ,defaultPlot_Atoms);
 addOptional(INPUT,'Plot_Bonds'     ,defaultPlot_Bonds);
 addOptional(INPUT,'Plot_Axis'      ,defaultPlot_Axis);
@@ -56,27 +50,15 @@ addOptional(INPUT,'Plot_SideChain' ,defaultPlot_SideChain);
 
 parse(INPUT,GUI_Inputs_C{:});
 
-Avg_Phi        = INPUT.Results.Avg_Phi;
-Avg_Theta      = INPUT.Results.Avg_Theta;
-Avg_Psi        = INPUT.Results.Avg_Psi;
 Plot_Atoms     = INPUT.Results.Plot_Atoms;
 Plot_Bonds     = INPUT.Results.Plot_Bonds;
 Plot_Axis      = INPUT.Results.Plot_Axis;
 Plot_SideChain = INPUT.Results.Plot_SideChain;
 
 %% Main
-XYZ_MF    = Structure.XYZ;
-Center_MF = Structure.center;
-
-% Orientation = Orientation/180*pi; % turn to radius unit
-Avg_Phi_R   =   Avg_Phi/180*pi;
-Avg_Psi_R   =   Avg_Psi/180*pi;
-Avg_Theta_R = Avg_Theta/180*pi;
-
-R_MF_LF = R1_ZYZ_0(Avg_Phi_R,Avg_Psi_R,Avg_Theta_R);
-
-XYZ_LF    = (R_MF_LF*XYZ_MF')';
-Center_LF = (R_MF_LF*Center_MF')';
+XYZ_LF    = Structure.XYZ;
+Center_LF = Structure.center;
+R_MF_LF   = Structure.Mol_Frame_Rot;
 
 %% Position info
 Carbon_Pos   = XYZ_LF(Structure.AtomSerNo(:,1),:);

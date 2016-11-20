@@ -1,13 +1,24 @@
 function Output = GetAmideI(Num_Atoms,XYZ,AtomName,FilesName,GUI_Inputs)
 %% GetAmideI
-% Output = GetAmideI(Num_Atoms,XYZ,AtomName,FilesName,GUI_Inputs)
-% This function recongnize the amide I group by searching C-O-N-CA atom
-% name sequence. It also roatae the molecule by inputs.
+% Output = GetAmideI([Isotopes,LabelFreq])
+%  
+% This Script read pdb file and isolate the coordinates of (C,O,N) atoms of
+% the amide I mode then output the [center axes] of each local amide I
+% mode.
+% 
+% Isotopes: array of isotoped A.A. position
+% LabelFreq: Labeled frequencies, same length of Isotopes
+% 
+% If ther's no isotope labeling, just need single PDB_code input
+% 
+% Example:
+% 
+%   Output = GetAmideI(2RRI);
+% 
+%   Output = GetAmideI(2RRI,[10,13],[1650,1643]);
 % 
 
 % ------- Version log -----------------------------------------------------
-% 
-% Ver. 4.0  161119  Vectorize the C-O-N-NA seqrching process
 % 
 % Ver. 3.1  141021  Copy from SFG_AmideI_GUI
 %                   Add Input parser
@@ -56,10 +67,21 @@ function Output = GetAmideI(Num_Atoms,XYZ,AtomName,FilesName,GUI_Inputs)
 % ------------------------------------------------------------------------
 % Copyright Jia-Jung Ho, 2013
 
-%% Debug
-% Num_Atoms = Data_PDB_AmideI.Num_Atoms;
-% AtomName  = Data_PDB_AmideI.AtomName;
-% XYZ       = Data_PDB_AmideI.XYZ;
+%% Debug input part
+% clear all
+% varargin = {'Phi_D',0};
+% 
+% SheetType = 'Anti';
+% N_Residue= 7;
+% N_Strand = 5;
+% TransV = [0,0,4.75];
+% TwistV = [0,0,4];
+% BB = ConstuctBetaSheet(SheetType,N_Residue,N_Strand,TransV,TwistV);
+% 
+% Num_Atoms = BB.Num_Atoms;
+% XYZ       = BB.XYZ;
+% AtomName  = BB.AtomName;
+% FilesName = BB.FilesName;
 
 %% Inputs parser
 GUI_Inputs_C      = fieldnames(GUI_Inputs);
@@ -98,41 +120,137 @@ Anharm        = INPUT.Results.Anharm;
 LFreq         = INPUT.Results.LFreq;
 L_Index       = INPUT.Results.L_Index;
 
-%% Main
-Ind = (1:Num_Atoms)';
-Atom = [strcmp(AtomName,'C'),...
-        strcmp(AtomName,'O'),...
-        strcmp(AtomName,'N'),...
-        strcmp(AtomName,'CA'),...
-       ];
+%% find corresponding atoms for Amide I mode
+% The peptide atom patter in pdb file is -[N-CA-C-O-(side chain atoms)]-
+% This mode selection algorithm start by searching C atoms and fllowing
+% with the search of O,N,CA before hitting next C atom.
 
-% dlete irrelevent lines   
-Ind (~any(Atom,2))   = [];
-Atom(~any(Atom,2),:) = [];
-
-%% Remove first few rows not start with 'C'
-Head   = 'y';
-while strcmp(Head,'y')
-    if eq(Atom(1,:), [1,0,0,0])
-        Head = 'n';
-    else
-        Atom(1,:) = [];
-         Ind(1,:) = [];
+% find C atoms
+AmideI_C_AtomSerNo = [];
+for ii=1:Num_Atoms
+    if strcmp(AtomName{ii},'C')
+        AmideI_C_AtomSerNo = [AmideI_C_AtomSerNo;ii];
     end
 end
 
-% Remove first few rows not start with 'CA'
-Tail   = 'y';
-while strcmp(Tail,'y')
-    if eq(Atom(end,:), [0,0,0,1])
-        Tail = 'n';
-    else
-        Atom(end,:) = [];
-         Ind(end,:) = [];
+
+Num_AmideC = length(AmideI_C_AtomSerNo);
+AmideI_O_AtomSerNo  = nan(Num_AmideC,1);
+AmideI_N_AtomSerNo  = nan(Num_AmideC,1);
+AmideI_CA_AtomSerNo = nan(Num_AmideC,1);
+
+% find O atom within two the C atoms segment
+Count = 1;
+for jj=1:Num_AmideC
+    
+    FoundAmideO = 'n';
+    AtomIndex = AmideI_C_AtomSerNo(jj)+1;
+    
+    while strcmp(FoundAmideO,'n');
+        
+        % determine if the segament between C(jj) and C(jj+1) is finished   
+        switch jj
+            case Num_AmideC             
+                if AtomIndex > Num_Atoms
+                    Count = Count + 1;
+                    break
+                end
+            otherwise
+                if AtomIndex > AmideI_C_AtomSerNo(jj+1)
+                    Count = Count + 1;
+                    break
+                end
+        end    
+        % if the segment is not finished yet continue the search
+        if strcmp(AtomName{AtomIndex},'O')
+            AmideI_O_AtomSerNo(Count) = AtomIndex;
+            
+            FoundAmideO = 'y';
+            Count = Count + 1;
+        else
+            AtomIndex = AtomIndex + 1;
+        end
     end
 end
 
-AmideIAtomSerNo = reshape(Ind,4,[])';
+% find N atom within two the C atoms segment
+Count = 1;
+for kk=1:Num_AmideC
+    
+    FoundAmideN = 'n';
+    AtomIndex = AmideI_O_AtomSerNo(kk)+1;
+    
+    while strcmp(FoundAmideN,'n');
+        % determine if the segament between C(jj) and C(jj+1) is finished
+        switch kk
+            case Num_AmideC              
+                if AtomIndex > Num_Atoms
+                    Count = Count + 1;
+                    break
+                end
+            otherwise
+                if AtomIndex > AmideI_C_AtomSerNo(kk+1)
+                    Count = Count + 1;
+                    break
+                end
+        end
+        % if the segment is not finished yet continue the search
+        if strcmp(AtomName{AtomIndex},'N')
+            AmideI_N_AtomSerNo(Count) = AtomIndex;
+            
+            FoundAmideN = 'y';
+            Count = Count + 1;
+        else
+            AtomIndex = AtomIndex + 1;
+        end 
+    end
+end
+
+
+% find CA atom within two the C atoms segment
+Count = 1;
+for ll=1:Num_AmideC
+    
+    FoundAmideCA = 'n';
+    AtomIndex = AmideI_N_AtomSerNo(ll)+1;
+    
+    while strcmp(FoundAmideCA,'n');
+        % break while loop if the previous Atom is not exixt
+        if isnan(AtomIndex)
+            Count = Count + 1;
+            break
+        end
+        
+        % determine if the segament between C(jj) and C(jj+1) is finished
+        switch ll
+            case Num_AmideC              
+                if AtomIndex > Num_Atoms
+                    Count = Count + 1;
+                    break
+                end
+            otherwise
+                if AtomIndex > AmideI_C_AtomSerNo(ll+1)
+                    AmideI_CA_AtomSerNo(Count) = nan;
+                    Count = Count + 1;
+                    break
+                end
+        end
+        % if the segment is not finished yet continue the search
+        if strcmp(AtomName{AtomIndex},'CA')
+            AmideI_CA_AtomSerNo(Count) = AtomIndex;
+            
+            FoundAmideCA = 'y';
+            Count = Count + 1;
+        else
+            AtomIndex = AtomIndex + 1;
+        end 
+    end
+end
+       
+AmideIAtomSerNo = [AmideI_C_AtomSerNo';AmideI_O_AtomSerNo';AmideI_N_AtomSerNo';AmideI_CA_AtomSerNo']';
+
+% delete NaN rows to eliminate non-amide modes
+AmideIAtomSerNo(any(isnan(AmideIAtomSerNo),2),:) = [];
 
 %% Read molecule XYZ and rotate molecule in Molecule frame
 Num_Modes = size(AmideIAtomSerNo,1);
@@ -191,7 +309,7 @@ mu_angle = -27.5*pi/180; % cunter clockwise roation about x axis from Jenny's pa
 % mu_angle = -10*pi/180; % follow Skinner's 2014 paper, doi:10.1063/1.4882059
 
 mu_vec0 = 16.1016*[0,0,-1]';       % this scale factor was calculated from DFT simulation, check the 'NMA' note 
-mu_Mol  = (Rx(mu_angle)*mu_vec0)'; % 1 by 3
+mu_Mol  = (Rx(mu_angle)*mu_vec0)'; % 3 by 1
 
 % Raman tensor
 alpha_angle = -34*pi/180;    % counter clockwise roation about x axis from Jenny's paper (10.1021/jp408064b)
@@ -205,7 +323,7 @@ mu_Sim    = zeros(Num_Modes,3);
 alpha_Sim = zeros(Num_Modes,3,3);
 
 for ii=1:Num_Modes
-    mu_Sim(ii,:)      = (squeeze(XYZ_Sim(ii,:,:))*mu_Mol')';
+    mu_Sim(ii,:,:)    = squeeze(XYZ_Sim(ii,:,:))*mu_Mol';
     alpha_Sim(ii,:,:) = squeeze(XYZ_Sim(ii,:,:))*alpha_Mol'*squeeze(XYZ_Sim(ii,:,:))';
 end    
 
@@ -223,14 +341,14 @@ end
 alpha = reshape(permute(alpha_Sim,[1,3,2]),[Num_Modes,9]);
 
 %% Define Mode frequency and anharmonicity
-% replace labeled local mode frequency if any
+
 AmideIFreq = ones(Num_Modes,1)* NLFreq;
 
 if ~ischar(L_Index)
     AmideIFreq(L_Index) = LFreq.*ones(size(L_Index));
 end
 
-% anharmonicity
+% anharmonicity = 12
 AmideIAnharm = ones(Num_Modes,1).*Anharm;
 
 %% Output Structure
@@ -239,6 +357,7 @@ Output.freq           = AmideIFreq;
 Output.anharm         = AmideIAnharm;
 Output.mu             = mu_Sim;
 Output.alpha          = alpha; % raman tensor vector form [N x 9]
+Output.alpha_matrix   = alpha_Sim;
 Output.AtomSerNo      = AmideIAtomSerNo;
 Output.Num_Modes      = Num_Modes;
 Output.XYZ            = XYZ_Rot;
@@ -247,3 +366,5 @@ Output.mu_angle       = mu_angle;
 Output.alpha_angle    = alpha_angle;
 Output.Mol_Frame_Rot  = Mol_Frame_Rot;
 Output.Mol_Frame_Orig = Mol_Frame_Orig;
+
+

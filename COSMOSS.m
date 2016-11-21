@@ -279,7 +279,8 @@ guidata(hObject,GUI_data);
 
 function TwoDIR_Callback(hObject, eventdata, GUI_data)
 %% Read GUI
-GUI_Inputs = ParseGUI_Main(GUI_data.hGUIs);
+hGUIs = GUI_data.hGUIs;
+GUI_Inputs = ParseGUI_Main(hGUIs);
 
 DynamicUpdate = GUI_Inputs.DynamicUpdate;
 if DynamicUpdate
@@ -313,8 +314,8 @@ if eq(GUI_Inputs.Sampling,1)
     
     for i = 1:GUI_Inputs.Sample_Num
 
-        DynamicUpdate = GUI_Inputs.DynamicUpdate;
-        UpdateStatus  = GUI_Inputs.UpdateStatus;
+        DynamicUpdate = hGUIs.DynamicUpdate.Value; % directly access the GUI elment so can get the most recnt values
+        UpdateStatus  = hGUIs.UpdateStatus.Value;
         if and(~eq(i,1), and(eq(DynamicUpdate,1),~eq(UpdateStatus,1)))
             break
         end
@@ -389,7 +390,8 @@ guidata(hObject,GUI_data);
 
 function TwoDSFG_Callback(hObject, eventdata, GUI_data)
 %% Read GUI
-GUI_Inputs = ParseGUI_Main(GUI_data.hGUIs);
+hGUIs = GUI_data.hGUIs;
+GUI_Inputs = ParseGUI_Main(hGUIs);
 
 DynamicUpdate = GUI_Inputs.DynamicUpdate;
 if DynamicUpdate
@@ -423,8 +425,8 @@ if eq(GUI_Inputs.Sampling,1)
     
     for i = 1:GUI_Inputs.Sample_Num
         
-        DynamicUpdate = GUI_Inputs.DynamicUpdate;
-        UpdateStatus  = GUI_Inputs.UpdateStatus;
+        DynamicUpdate = hGUIs.DynamicUpdate.Value;
+        UpdateStatus  = hGUIs.UpdateStatus.Value;
         if and(~eq(i,1), and(eq(DynamicUpdate,1),~eq(UpdateStatus,1)))
             break
         end

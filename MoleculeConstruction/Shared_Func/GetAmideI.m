@@ -103,7 +103,6 @@ Ind = (1:Num_Atoms)';
 Atom = [strcmp(AtomName,'C'),...
         strcmp(AtomName,'O'),...
         strcmp(AtomName,'N'),...
-        strcmp(AtomName,'CA'),...
        ];
 
 % dlete irrelevent lines   
@@ -113,7 +112,7 @@ Atom(~any(Atom,2),:) = [];
 %% Remove first few rows not start with 'C'
 Head   = 'y';
 while strcmp(Head,'y')
-    if eq(Atom(1,:), [1,0,0,0])
+    if eq(Atom(1,:), [1,0,0])
         Head = 'n';
     else
         Atom(1,:) = [];
@@ -121,10 +120,10 @@ while strcmp(Head,'y')
     end
 end
 
-% Remove first few rows not start with 'CA'
+% Remove first few rows not start with 'N'
 Tail   = 'y';
 while strcmp(Tail,'y')
-    if eq(Atom(end,:), [0,0,0,1])
+    if eq(Atom(end,:), [0,0,1])
         Tail = 'n';
     else
         Atom(end,:) = [];
@@ -132,7 +131,7 @@ while strcmp(Tail,'y')
     end
 end
 
-AmideIAtomSerNo = reshape(Ind,4,[])';
+AmideIAtomSerNo = reshape(Ind,3,[])';
 
 %% Read molecule XYZ and rotate molecule in Molecule frame
 Num_Modes = size(AmideIAtomSerNo,1);

@@ -2,7 +2,8 @@ function Fig_Response(hAx, GUI_Inputs, Structure, OneDSFG)
 hold on
 %% Plot hyper ellipsoid so that the radius = E'*Alpha*E
         N_Grid = 30;
-
+        ScaleFactor = 10;
+        
         phi   = linspace(0,2*pi,N_Grid);
         theta = linspace(-pi/2,pi/2,N_Grid);
         [Phi,Theta] = meshgrid(phi,theta);
@@ -19,14 +20,20 @@ hold on
      
         % selecte mode
         EigneVec_Ind = GUI_Inputs.EigneVec_Ind;
-        Center       = Structure.center(EigneVec_Ind,:);
         
+        % Center of Exciton mode
+        EigVecM      = OneDSFG.H.Sort_Ex_V(2:end,2:end); % get ride of ground state
+        EigVecM2     = EigVecM.^2;
+        Center_Ex_MF = EigVecM2*(Structure.center);
+        Center       = Center_Ex_MF(EigneVec_Ind,:);
+        
+        % Response 
         Response = OneDSFG.MolFrame;
         Rho = V3*Response(:,EigneVec_Ind);
         Rho = reshape(Rho,size(Theta));
         
         % scale
-        Rho = Rho;
+        Rho = Rho./ScaleFactor;
         
         [X,Y,Z] = sph2cart(Phi,Theta,abs(Rho));
         X = X + Center(1);

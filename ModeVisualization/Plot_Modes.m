@@ -185,10 +185,12 @@ guidata(hObject,GUI_data)
 
 function Update_Response(hObject, eventdata, GUI_data)
 %% Gather necessary inputs
-GUI_Inputs = ParseGUI_Modes(GUI_data.hGUIs);
-Structure  = GUI_data.Structure;
-OneDSFG    = GUI_data.SpecData;
-hModel     = GUI_data.hModel;
+GUI_Inputs     = ParseGUI_Modes(GUI_data.hGUIs);
+Structure      = GUI_data.Structure;
+OneDSFG        = GUI_data.SpecData;
+hModel         = GUI_data.hModel;
+GUI_Data_Main = guidata(GUI_data.hCOSMOSS);
+GUI_Inputs_Main = ParseGUI_Main(GUI_Data_Main.hGUIs);
 
 %% Draw molecule by calling the PlotMolecule function in each model
 [hFunc_Model,~,~] = StructureModel(Structure.StructModel);
@@ -196,7 +198,7 @@ hF = hFunc_Model('PlotMolecule',hModel,eventdata,guidata(hModel));
 
 %% Call Update RespF function
 hAx = findobj(hF,'type','axes');
-Fig_Response(hAx, GUI_Inputs, Structure, OneDSFG);
+Fig_Response(hAx, GUI_Inputs, Structure, OneDSFG, GUI_Inputs_Main);
 
 %% update handles
 GUI_data.hF = hF;

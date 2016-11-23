@@ -67,7 +67,8 @@ Center_Ex_MF = EigVecM2*(Structure.center);
 Center       = Center_Ex_MF(EigneVec_Ind,:);
 
 % Response 
-Response = OneDSFG.MolFrame;
+% Response = OneDSFG.MolFrame;
+Response = OneDSFG.LabFrame;
 Rho = EJ_M*Response(:,EigneVec_Ind);
 Rho = reshape(Rho,N_Grid,N_Grid);
 
@@ -83,7 +84,7 @@ colormap('cool')
 caxis([-1,1])
 hSurf = surf(hAx,X,Y,Z,sign(Rho)); % colormapping sign only
 
-Transparency = 0.3;
+Transparency = 0.5;
 hSurf.EdgeColor = 'interp';
 hSurf.FaceAlpha = Transparency;
 hSurf.EdgeAlpha = Transparency;

@@ -18,7 +18,7 @@ function P = ReadG09Input(FName)
 %               Add Conn(3,13) = 1 for connection S-C bond
 % 
 % ------------------------------------------------------------------------ 
-% Copyright Jia-Jung Ho, 2013
+% Copyright Jia-Jung Ho, 2013-2016
 
 % ----[Debug] ------------------------------
 % clear all
@@ -27,22 +27,6 @@ function P = ReadG09Input(FName)
 % FName = '131029_MBA.txt';
 % ------------------------------------------
 
-%% Input part
-% 
-% Inputs = inputParser;
-% 
-% % Default values
-% defaultMolFrame   = 'XZ'; 
-% expectedMolFrame   = {'XZ','YZ'};
-% 
-% % Add optional inputs to inputparser object
-% addParamValue(Inputs,'MolFrame',defaultMolFrame,...
-%                  @(x) any(validatestring(x,expectedMolFrame)));
-% 
-% parse(Inputs,varargin{:});
-% 
-% % Reassign Variable names
-% MolFrame   = Inputs.Results.MolFrame;
 
 %% Start to read inputs
 fid = fopen(FName);
@@ -56,21 +40,6 @@ Atom = textscan(fid,'[Atom] %s %f %f %f',Atom_Num,'CollectOutput',1,'commentStyl
 
 Atom_Name = Atom{1}; % Atom symbel
 XYZ = Atom{2};  % Unrotated molecule xyz. Already a array since 'CollectOutput'
-
-% % Connectivity
-% [n,m] = ndgrid(1:Atom_Num);
-% T1=XYZ(m(:),:)-XYZ(n(:),:);
-% T2=sqrt(sum(T1.^2,2));
-% Distance_matrix=reshape(T2,Atom_Num,Atom_Num);
-% lower=tril(Distance_matrix,-1);
-% [a,b]=find(lower<1.6 & lower>0);
-% C_index=[a,b];
-% Conn=false(Atom_Num);
-% Conn(C_index(:,1)+(C_index(:,2)-1)*Atom_Num)=true;
-% 
-% Conn(13,3) = 1; % Add S-C connection for Ester
-% 
-% Conn=Conn|Conn';
 
 %% Read Definition of molecule frame axis
 % [Orientation]  Center Z_I Z_F XZ_I XZ_F
@@ -88,18 +57,19 @@ Mol_Frame.Z_i_Ind    = Z_i_Ind;
 Mol_Frame.Z_f_Ind    = Z_f_Ind;
 Mol_Frame.XY_i_Ind   = XY_i_Ind;
 Mol_Frame.XY_f_Ind   = XY_f_Ind;
-Mol_Frame.Frame_Type = 'XZ';
+Mol_Frame.Frame_Type = 'XZ'; % move the frame type switch to R_GF2LF
 
 %% Mu Vector Part
 % Unrotated Transition Dipole Vector (mu)
 TDV = textscan(fid,'[TDV] %s %f %f %f',Mode_Num,'CollectOutput',1,'commentStyle','%');
-TDV = TDV{2};
+TDV = (TDV{2})'; % [Vx, Vy, Vz]' size = [3xMode_Number]
 
 %% Alpha Vector Part
-% Unrotated Raman Tensor (alpha)
+% Unrotated Raman Tensor (alpha) in simulation frame
 % 
 % Vector version
-% [Aixx Aixy Aixz Aiyx Aiyy Aiyz Aizx Aizy Aizz]
+% [Aixx Aixy Aixz Aiyx Aiyy Aiyz Aizx Aizy Aizz]'
+% size =[9 x Mode_Num]
 % 
 % Matrix representation
 % [ Aixx Aixy Aixz ] 
@@ -107,8 +77,9 @@ TDV = TDV{2};
 % [ Aizx Aizy Aizz ]
 % 
 Raman_Vector = textscan(fid,'[Raman] %s %f %f %f %f %f %f %f %f %f',Mode_Num,'CollectOutput',1,'commentStyle','%');
-Raman_Matrix = reshape((Raman_Vector{2})',[Mode_Num,3,3]);
-Raman_Matrix = permute(Raman_Matrix,[1,3,2]);
+Raman_Vector = (Raman_Vector{2})'; 
+Raman_Matrix = reshape(Raman_Vector,[3,3,Mode_Num]);
+Raman_Matrix = permute(Raman_Matrix,[2,1,3]);
 
 %% Intensity scaling of IR and Raman
 Int_Harm.IR      = textscan(fid,'[Int_Harm]   IR    %s %f',Mode_Num,'commentStyle','%');

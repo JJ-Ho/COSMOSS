@@ -10,7 +10,7 @@ function Output = R_GF2LF(S_Info)
 %% Process Inputs
 XYZ      = S_Info.XYZ;
 TDV      = S_Info.TDV;
-Raman    = S_Info.RamanV;
+RamanV   = S_Info.RamanV;
 %Mode_Num = S_Info.Mode_Num;
 
 
@@ -83,7 +83,7 @@ end
 Rot_Total_mode = Rot2LF*R_Bond_Avg*Rot2MF;
 
 % Coordination tranfrom of TDV from mol. frame to lab frame
-TDV_Rot = (Rot_Total_mode*TDV')';
+TDV_Rot = Rot_Total_mode*TDV; % note: TDV = [3 x N]
 
 % Coordination tranfrom of Raman tensor from mol. frame to lab frame
 % Raman_Rot = zeros(size(Raman));
@@ -96,7 +96,7 @@ Rot2MF_2 = kron(Rot2MF,Rot2MF);
 Rot2LF_2 = kron(Rot2LF,Rot2LF);
 Rot_Total_mode_2 = Rot2LF_2*R_Bond_Avg_2*Rot2MF_2;
 
-Raman_Rot_V = Rot_Total_mode_2*RamanV;  % note: RamanV = [N x 9], index: [xx xy xz yx yy yz zx zy zz]
+Raman_Rot_V = Rot_Total_mode_2*RamanV;  % note: RamanV = [9 x N], index: [xx xy xz yx yy yz zx zy zz]
 Raman_Rot_V(abs(Raman_Rot_V)<1E-10) = 0; % remove numerical error
 
 Raman_Rot_M = reshape(Raman_Rot_V,3,3,[]);
@@ -105,9 +105,9 @@ Raman_Rot_M = reshape(Raman_Rot_V,3,3,[]);
 Output.LF            = S_Info;
 Output.LF.Center_Ind = Center_Ind;
 Output.LF.XYZ        = XYZ_T_R;
-Output.LF.TDV        = TDV_Rot;
+Output.LF.TDV        = TDV_Rot; % size [3 x N]
 Output.LF.Raman_M    = Raman_Rot_M;
-Output.LF.Raman_V    = Raman_Rot_V;
+Output.LF.Raman_V    = Raman_Rot_V; % size [9 x N]
 
 Output.Orig = S_Info;
 

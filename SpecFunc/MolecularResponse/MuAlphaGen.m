@@ -29,7 +29,7 @@ function Output = MuAlphaGen(PDB_Data,H,varargin)
 % Ver. 1.0  130705  Isolated from TwoExcitonH
 % 
 % ------------------------------------------------------------------------
-% Copyright Jia-Jung Ho, 2013-2014
+% Copyright Jia-Jung Ho, 2013-2016
 
 %% Inputs parser
 INPUT = inputParser;
@@ -53,7 +53,7 @@ switch Mode
     
     case 'Mu'
      
-       Trans_Moment = PDB_Data.mu;
+       Trans_Moment = PDB_Data.mu; % size [N x 3]
        
     case 'Alpha'
      

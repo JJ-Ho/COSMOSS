@@ -1,12 +1,21 @@
 function Output = Update_Modes_Table(SpecData)
 % This function update the table content of selected spectrum type
 
+%% Common part
+% Mode Frequency
+Ex_Freq     = SpecData.H.Sort_Ex_Freq(2:end);
+Num_Ex_Mode = length(Ex_Freq);
+Ex_Ind      = (1:Num_Ex_Mode)';
+
+% Participation number, percentage of local mode involve 
+EigV = SpecData.H.Sort_Ex_V(2:end,2:end);
+P_Num = 1./sum(EigV.^4,1)'./Num_Ex_Mode.*100;
+
+%% Spectrum specific part
 SpecType = SpecData.SpecType;
 switch SpecType
     case 'FTIR'
-        Ex_Freq     = SpecData.H.Sort_Ex_Freq(2:end);
-        Num_Ex_Mode = length(Ex_Freq);
-        Ex_Ind      = (1:Num_Ex_Mode)';
+
         Ex_Mu       = squeeze(SpecData.Mu.Trans_Ex(1,2:end,:));
         % permute the matix dimension if only one mode
         if eq(Num_Ex_Mode,1)
@@ -20,6 +29,7 @@ switch SpecType
 
         ModeList = [ Ex_Ind,...
                      Ex_Freq,...
+                     P_Num,...
                      Ex_Mu_Int,...
                      Ex_Mu_x,...
                      Ex_Mu_y,...
@@ -27,9 +37,7 @@ switch SpecType
                      ];
                  
     case 'SFG'
-        Ex_Freq     = SpecData.H.Sort_Ex_Freq(2:end);
-        Num_Ex_Mode = length(Ex_Freq);
-        Ex_Ind      = (1:length(Ex_Freq))';
+
         Ex_Mu       = squeeze(SpecData.Mu.Trans_Ex(1,2:end,:));
         % permute the matix dimension if only one mode
         if eq(Num_Ex_Mode,1)
@@ -63,6 +71,7 @@ switch SpecType
         % diaplay mode properties
         ModeList = [ Ex_Ind,...
                      Ex_Freq,...
+                     P_Num,...
                      Norm_1D,...
                      Norm_2D,...
                      Ex_Mu_Int,...

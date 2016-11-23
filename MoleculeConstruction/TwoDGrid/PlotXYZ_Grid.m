@@ -79,12 +79,20 @@ hold on
     %% Add atom indexes
     if Plot_Atom_Index
         if eq(N_Vec1*N_Vec2,1)
-            Index_Str = strsplit(num2str(1:Atom_Num));
-            XYZ_Text = XYZ_LF + 0.1;
-            text(XYZ_Text(:,1),XYZ_Text(:,2),XYZ_Text(:,3),Index_Str)
+            Atom_Ind_Str = strsplit(num2str(1:Atom_Num));
+            XYZ_Atom_Ind = XYZ_LF + 0.1;
+            text(XYZ_Atom_Ind(:,1),XYZ_Atom_Ind(:,2),XYZ_Atom_Ind(:,3),Atom_Ind_Str)
         else
             disp('Atom Index only work for single molecule now...')
         end
+    end
+    
+    %% Draw mode index
+    Plot_Mode_Index = 1;
+    if Plot_Mode_Index
+        Mode_Ind_Str = strsplit(num2str(1:Num_Modes));
+        XYZ_Mode_Ind = Center_LF + 0.1;
+        text(XYZ_Mode_Ind(:,1),XYZ_Mode_Ind(:,2),XYZ_Mode_Ind(:,3),Mode_Ind_Str)
     end
     
     %% Draw atoms

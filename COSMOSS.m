@@ -265,6 +265,7 @@ if eq(GUI_Inputs.Sampling,1)
         end
     end
     
+        Plot1D(hAx,OneDSFG,GUI_Inputs);
         Total_TIME = sum(TIME);
         disp(['Total time: ' num2str(Total_TIME)])
         

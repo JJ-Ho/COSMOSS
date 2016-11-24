@@ -104,20 +104,20 @@ Freq_R3  = [-Ea_3 ; Eb_3 - Ea_3 ; Ex_3 - Ea_3]';
 Freq_NR3 = [ Ea_3 ; Ea_3 - Eb_3 ; Ex_3 - Eb_3]';
 
 %% Output
-% Response.R1  = R1';  % [243 x N^2]
-% Response.R2  = R2';  % [243 x N^2]
-% Response.R3  = R3';  % [243 x N^3*(N+1)/2]
-% Response.NR1 = NR1'; % [243 x N^2]
-% Response.NR2 = NR2'; % [243 x N^2]
-% Response.NR3 = NR3'; % [243 x N^3*(N+1)/2]
+Response.R1  = R1';  % [243 x N^2]
+Response.R2  = R2';  % [243 x N^2]
+Response.R3  = R3';  % [243 x N^3*(N+1)/2]
+Response.NR1 = NR1'; % [243 x N^2]
+Response.NR2 = NR2'; % [243 x N^2]
+Response.NR3 = NR3'; % [243 x N^3*(N+1)/2]
 
 % Sparse matrix version
-Response.R1  = sparse(R1)';  % [243 x N^2]
-Response.R2  = sparse(R2)';  % [243 x N^2]
-Response.R3  = sparse(R3)';  % [243 x N^3*(N+1)/2]
-Response.NR1 = sparse(NR1)'; % [243 x N^2]
-Response.NR2 = sparse(NR2)'; % [243 x N^2]
-Response.NR3 = sparse(NR3)'; % [243 x N^3*(N+1)/2]
+% Response.R1  = sparse(R1)';  % [243 x N^2]
+% Response.R2  = sparse(R2)';  % [243 x N^2]
+% Response.R3  = sparse(R3)';  % [243 x N^3*(N+1)/2]
+% Response.NR1 = sparse(NR1)'; % [243 x N^2]
+% Response.NR2 = sparse(NR2)'; % [243 x N^2]
+% Response.NR3 = sparse(NR3)'; % [243 x N^3*(N+1)/2]
 
 Response.Freq_R1  = Freq_R1;
 Response.Freq_R2  = Freq_R2;

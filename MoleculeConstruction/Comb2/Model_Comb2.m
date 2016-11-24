@@ -366,10 +366,10 @@ Structure.FilesName    = 'Comb2';
 
 % This part is for applying Periodic Boundary Condition
 % Modify/comment if needed.
-% Structure.Vec_1 = [5.1,0,0];
-% Structure.Vec_2 = [-6.5,11.2583,0];
-% Structure.N_Vec1 = 4;
-% Structure.N_Vec2 = 4;
+Structure.Vec_1 = [5.1,0,0];
+Structure.Vec_2 = [-6.5,11.2583,0];
+Structure.N_Vec1 = 4;
+Structure.N_Vec2 = 4;
 
 % Export into Structure so it can be passsed around different GUIs
 Structure.StrucData1  = StrucData1;

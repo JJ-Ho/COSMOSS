@@ -1,6 +1,6 @@
 function GUI = GUI_Plot_Modes(fig)
 %% Pre-setting
-Version = '1.2.1';
+Version = '1.2.2';
 
 %% Add base layout
 MainLayout = uix.VBoxFlex(...

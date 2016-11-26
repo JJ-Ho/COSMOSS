@@ -140,26 +140,22 @@ SpecType        = GUI_Inputs.SpecType;
 % update table contents
 switch SpecType
     case 1 %'FTIR'
-        CF       = TableFormat('FTIR');
-        SpecData = FTIR_Main(Structure,COSMOSS_Inputs);
-        Modes    = Update_Modes_Table(SpecData);
+        T = Update_Modes_Table('FTIR',Structure,COSMOSS_Inputs);
     case 2 %'SFG'
-        CF       = TableFormat('SFG');
-        SpecData = OneDSFG_Main(Structure,COSMOSS_Inputs);
-        Modes    = Update_Modes_Table(SpecData);
+        T = Update_Modes_Table('SFG',Structure,COSMOSS_Inputs);
 end
 
 %% Update GUI
-GUI_data.hGUIs.ModeList.ColumnName   = CF.Name;
-GUI_data.hGUIs.ModeList.ColumnFormat = CF.Format;
-GUI_data.hGUIs.ModeList.ColumnWidth  = CF.Width;
-GUI_data.hGUIs.ModeList.Data         = Modes.ModeList;
+GUI_data.hGUIs.ModeList.ColumnName   = T.ModeList.Name;
+GUI_data.hGUIs.ModeList.ColumnFormat = T.ModeList.Format;
+GUI_data.hGUIs.ModeList.ColumnWidth  = T.ModeList.Width;
+GUI_data.hGUIs.ModeList.Data         = T.ModeList.Data;
 
 % call sorting to sort table with the same GUI setting
 uitable_Sort(hObject, eventdata, GUI_data)
 
 %% Update handles structure
-GUI_data.SpecData  = SpecData;
+GUI_data.SpecData  = T.SpecData;
 GUI_data.Structure = Structure;
 
 guidata(hObject, GUI_data);

@@ -54,7 +54,7 @@ function hPlot_Modes = GUI_Base_Plot_Modes(Singleton)
 hPlot_Modes = figure;
 
 hPlot_Modes.Units            = 'Pixels';
-hPlot_Modes.Position         = [2 53 752 537];
+hPlot_Modes.Position         = [2 53 680 540];
 hPlot_Modes.Name             = 'Plot_Modes';
 hPlot_Modes.ToolBar          = 'none';
 hPlot_Modes.MenuBar          = 'none';
@@ -137,19 +137,24 @@ GUI_Inputs      = ParseGUI_Modes(GUI_data.hGUIs);
 SpecType        = GUI_Inputs.SpecType;
 
 
+%% Update GUI
 % update table contents
 switch SpecType
     case 1 %'FTIR'
         T = Update_Modes_Table('FTIR',Structure,COSMOSS_Inputs);
+        GUI_data.hGUIs.Raman_Plot.Value = 0;
+        GUI_data.hGUIs.Raman_Plot.Enable = 'off';
     case 2 %'SFG'
         T = Update_Modes_Table('SFG',Structure,COSMOSS_Inputs);
+        GUI_data.hGUIs.Raman_Plot.Value = 1;
+        GUI_data.hGUIs.Raman_Plot.Enable = 'on';
 end
 
-%% Update GUI
 GUI_data.hGUIs.ModeList.ColumnName   = T.ModeList.Name;
 GUI_data.hGUIs.ModeList.ColumnFormat = T.ModeList.Format;
 GUI_data.hGUIs.ModeList.ColumnWidth  = T.ModeList.Width;
 GUI_data.hGUIs.ModeList.Data         = T.ModeList.Data;
+GUI_data.hGUIs.SortInd.String        = T.ModeList.Name;
 
 % call sorting to sort table with the same GUI setting
 uitable_Sort(hObject, eventdata, GUI_data)

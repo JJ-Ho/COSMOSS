@@ -4,11 +4,11 @@ function Output = Update_Modes_Table(SpecType,Structure,COSMOSS_Inputs)
 %% Defining column formats using ColumnFormat class
 C_Index  = ColumnFormat('Index'  ,'short',40);
 C_Freq   = ColumnFormat('Freq.'  ,'bank' ,50);
-C_P_Num  = ColumnFormat('P. %'   ,'bank' ,50);
-C_Mu_V   = ColumnFormat({'Mu x','Mu y','Mu z'},{'short','short','short'},{60,60,60});
+C_P_Num  = ColumnFormat('P. %'   ,'bank' ,40);
+C_Mu_V   = ColumnFormat({'Mu x','Mu y','Mu z'},{'bank','bank','bank'},{40,40,40});
 C_Mu_Int = ColumnFormat('Mu Int' ,'bank' ,50);
-C_A_V    = ColumnFormat({'A p1','A p2','A p3'},{'short','short','short'},{60,60,60});
-C_A_Int  = ColumnFormat('Norm[A]','bank' ,50);
+C_A_V    = ColumnFormat({'A p1','A p2','A p3'},{'bank','bank','bank'},{40,40,40});
+C_A_Int  = ColumnFormat('Norm[A]','bank' ,60);
 C_Norm1D = ColumnFormat('Norm 1D','bank' ,60);
 C_Norm2D = ColumnFormat('Norm 2D','bank' ,60);
 

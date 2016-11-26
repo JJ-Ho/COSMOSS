@@ -212,6 +212,7 @@ if strcmp(ExMode,'TwoEx')
 end
 
 %% Construct Full H
+
 if strcmp(ExMode,'TwoEx')
 
     H = blkdiag(ZeroExPart,OneExPart,TwoExPart);

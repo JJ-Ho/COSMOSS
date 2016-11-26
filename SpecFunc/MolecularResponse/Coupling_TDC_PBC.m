@@ -65,3 +65,4 @@ Beta = BetaPreFactor*(muIdotJ./(ModeDist.^3) - 3*RdotmuJ.*RdotmuI./(ModeDist).^5
 Beta = reshape(Beta,Num_Modes,Num_Modes);
 
 Beta(isnan(Beta)) = 0; % Get ride of diagnal
+Beta = (Beta+Beta')./2; % remove numerical error, make the matrix exactly symmetric

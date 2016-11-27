@@ -7,6 +7,10 @@ function  [SpectraGrid,Response] = TwoDSFG_Main(PDB_Data,GUI_Inputs)
 
 % ------- Version log -----------------------------------------------------
 % 
+% Ver. 2.0  161127  Reduce and break the ouput of H, Mu, Alpha into 0->1
+%                   and 1->2.. This simplify the indexing of matrix element
+%                   and helps in future cut-off speed-up upgrade. 
+% 
 % Ver. 1.3  141016  Add "PolarAng", "INCAng", "RotationalAvg", "Mirror_Plane"
 %                   into optional input. Take out unecessary input "handles"
 % 
@@ -36,9 +40,6 @@ INPUT.KeepUnmatched = true;
 defaultFreqRange    = 1650:1750;
 defaultCouplingType = 'TDC'; 
 defaultBeta_NN      = 0.8; % 0.8 cm-1 according to Lauren's PNAS paper (doi/10.1073/pnas.1117704109); that originate from Min Cho's paper (doi:10.1063/1.1997151)
-defaultAvg_Phi      = 0;
-defaultAvg_Theta    = 0;
-defaultAvg_Psi      = 0;
 defaultAvg_Rot      = 1;
 defaultAvg_Mirror   = 1;
 defaultA_Pump1      = 90;
@@ -53,10 +54,8 @@ defaultP_Vis2D      = 0;
 defaultP_Sig2D      = 0;
 
 addOptional(INPUT,'FreqRange'   ,defaultFreqRange);
+addOptional(INPUT,'CouplingType',defaultCouplingType);
 addOptional(INPUT,'Beta_NN'     ,defaultBeta_NN);
-addOptional(INPUT,'Avg_Phi'     ,defaultAvg_Phi);
-addOptional(INPUT,'Avg_Theta'   ,defaultAvg_Theta);
-addOptional(INPUT,'Avg_Psi'     ,defaultAvg_Psi);
 addOptional(INPUT,'Avg_Rot'     ,defaultAvg_Rot);
 addOptional(INPUT,'Avg_Mirror'  ,defaultAvg_Mirror);
 addOptional(INPUT,'A_Pump1'     ,defaultA_Pump1);
@@ -69,8 +68,6 @@ addOptional(INPUT,'P_Pump2'     ,defaultP_Pump2);
 addOptional(INPUT,'P_Probe'     ,defaultP_Probe);
 addOptional(INPUT,'P_Vis2D'     ,defaultP_Vis2D);
 addOptional(INPUT,'P_Sig2D'     ,defaultP_Sig2D);
-addOptional(INPUT,'CouplingType',defaultCouplingType);
-
 
 parse(INPUT,GUI_Inputs_C{:});
 
@@ -78,9 +75,8 @@ parse(INPUT,GUI_Inputs_C{:});
 FreqRange    = INPUT.Results.FreqRange;
 CouplingType = INPUT.Results.CouplingType;
 Beta_NN      = INPUT.Results.Beta_NN;
-Avg_Phi      = INPUT.Results.Avg_Phi;
-Avg_Theta    = INPUT.Results.Avg_Theta;
-Avg_Psi      = INPUT.Results.Avg_Psi;
+Avg_Rot      = INPUT.Results.Avg_Rot;
+Avg_Mirror   = INPUT.Results.Avg_Mirror; 
 A_Pump1      = INPUT.Results.A_Pump1;
 A_Pump2      = INPUT.Results.A_Pump2;
 A_Probe      = INPUT.Results.A_Probe;
@@ -91,48 +87,36 @@ P_Pump2      = INPUT.Results.P_Pump2;
 P_Probe      = INPUT.Results.P_Probe;
 P_Vis2D      = INPUT.Results.P_Vis2D;
 P_Sig2D      = INPUT.Results.P_Sig2D;
-Avg_Rot      = INPUT.Results.Avg_Rot;
-Avg_Mirror   = INPUT.Results.Avg_Mirror; 
 
-%% Correct the units
-
-% % Orientation = Orientation/180*pi; % turn to radius unit
-% Avg_Phi_R   =   Avg_Phi/180*pi;
-% Avg_Psi_R   =   Avg_Psi/180*pi;
-% Avg_Theta_R = Avg_Theta/180*pi;
-
-% Turn degrees into radius
-A_Pump1 =  A_Pump1 /180*pi;
-A_Pump2 =  A_Pump2 /180*pi;
-A_Probe =  A_Probe/180*pi;
-A_Vis2D =  A_Vis2D/180*pi;
-A_Sig2D =  A_Sig2D/180*pi;
-
-% Polarization Angles of incident beams
-P_Pump1 = P_Pump1/180*pi;   
-P_Pump2 = P_Pump2/180*pi;
-P_Probe = P_Probe/180*pi;
-P_Vis2D = P_Vis2D/180*pi;
-P_Sig2D = P_Sig2D/180*pi;
-    
 %% Call TwoExcitonH to calculate H,mu and alpha under exciton basis
 
 H = ExcitonH(PDB_Data,...
              'ExMode'  ,'TwoEx',...
              'CouplingType',CouplingType,...
              'Beta_NN' ,Beta_NN);
+         
+% Old version with full matrix export, use "Feynman_2DSFG_Vec_Full_M" function in next section   
+% Mu    = MuAlphaGen_full_M(PDB_Data,H,'Mode','Mu');
+% Alpha = MuAlphaGen_full_M(PDB_Data,H,'Mode','Alpha');
+% Sort_Ex_Freq = H.Sort_Ex_Freq;
+% Mu_Ex        = Mu.Trans_Ex;
+% Alpha_Ex     = Alpha.Trans_Ex;         
 
 Mu    = MuAlphaGen(PDB_Data,H,'Mode','Mu');
 Alpha = MuAlphaGen(PDB_Data,H,'Mode','Alpha');
 
-Sort_Ex_Freq = H.Sort_Ex_Freq;
-Mu_Ex        = Mu.Trans_Ex;
-Alpha_Ex     = Alpha.Trans_Ex;
+Ex_F1   = H.Sort_Ex_F1;
+Ex_F2   = H.Sort_Ex_F2;
+M_Ex_01 = Mu.M_Ex_01;
+M_Ex_12 = Mu.M_Ex_12;
+A_Ex_01 = Alpha.M_Ex_01;
+A_Ex_12 = Alpha.M_Ex_12;
 
 %% Generate Feynman pathway for 2DSFG
 Num_Modes = PDB_Data.Num_Modes;
 % Response  = Feynman_2DSFG_kron(Num_Modes,Sort_Ex_Freq,Alpha_Ex,Mu_Ex); % slower
-Response  = Feynman_2DSFG_Vec(Num_Modes,Sort_Ex_Freq,Alpha_Ex,Mu_Ex);
+% Response  = Feynman_2DSFG_Vec_Full_M(Num_Modes,Sort_Ex_Freq,Alpha_Ex,Mu_Ex);
+Response  = Feynman_2DSFG_Vec(Num_Modes,Ex_F1,Ex_F2,A_Ex_01,A_Ex_12,M_Ex_01,M_Ex_12);
 
 Response.H = H;
 Response.Mu = Mu;
@@ -178,21 +162,6 @@ switch Avg_Mirror
 end
 
 %% Applied rotational avergae on Response in molecular frame
-
-% AR1  = zeros(size(Response.R1));
-% AR2  = zeros(size(Response.R2));
-% AR3  = zeros(size(Response.R3));
-% NAR1 = zeros(size(Response.NR1));
-% NAR2 = zeros(size(Response.NR2));
-% NAR3 = zeros(size(Response.NR3));
-
-% AR1(:,1:3)  = Response.R1(:,1:3);
-% AR2(:,1:3)  = Response.R2(:,1:3);
-% AR3(:,1:3)  = Response.R3(:,1:3);
-% NAR1(:,1:3) = Response.NR1(:,1:3);
-% NAR2(:,1:3) = Response.NR2(:,1:3);
-% NAR3(:,1:3) = Response.NR3(:,1:3);
-
 AR1  = (bsxfun(@times,R_Avg*Response.R1 ,Mirror_Mask));
 AR2  = (bsxfun(@times,R_Avg*Response.R2 ,Mirror_Mask));
 AR3  = (bsxfun(@times,R_Avg*Response.R3 ,Mirror_Mask));
@@ -208,25 +177,14 @@ Response.NAR2 = NAR2;
 Response.NAR3 = NAR3;
 
 %% Jones Matrix convert XYZ to PS frame
+% Laser incident angles between laser beam and surface normal.
+A_Pump1 =  A_Pump1/180*pi;
+A_Pump2 =  A_Pump2/180*pi;
+A_Probe =  A_Probe/180*pi;
+A_Vis2D =  A_Vis2D/180*pi;
+A_Sig2D =  A_Sig2D/180*pi;
 
-% Note: When I generate J, I aasume the two pump beam has the same input angle
-%       That's why here only has one pump input 
-J = JonesRef5(A_Sig2D,A_Vis2D,A_Probe,A_Pump2,A_Pump1);
-
-% 35 =3 freq + 2^5 (ppppp - sssss) of signal
-% JAR1  = zeros(size(Response.AR1,1),35);
-% JAR2  = zeros(size(Response.AR2,1),35);
-% JAR3  = zeros(size(Response.AR3,1),35);
-% JNAR1 = zeros(size(Response.NAR1,1),35);
-% JNAR2 = zeros(size(Response.NAR2,1),35);
-% JNAR3 = zeros(size(Response.NAR3,1),35);
-
-% JAR1(:,1:3)  = Response.AR1(:,1:3);
-% JAR2(:,1:3)  = Response.AR2(:,1:3);
-% JAR3(:,1:3)  = Response.AR3(:,1:3);
-% JNAR1(:,1:3) = Response.NAR1(:,1:3);
-% JNAR2(:,1:3) = Response.NAR2(:,1:3);
-% JNAR3(:,1:3) = Response.NAR3(:,1:3);
+J = JonesRef5(A_Sig2D,A_Vis2D,A_Probe,A_Pump2,A_Pump1); % Take [radius]
 
 JAR1  = J*Response.AR1;
 JAR2  = J*Response.AR2;
@@ -243,23 +201,14 @@ Response.JNAR2 = JNAR2;
 Response.JNAR3 = JNAR3;
 
 %% E part, Plarization of each incident beams
+% Polarization Angles of incident beams, 0 = P, 90 = S
+P_Pump1 = P_Pump1/180*pi;   
+P_Pump2 = P_Pump2/180*pi;
+P_Probe = P_Probe/180*pi;
+P_Vis2D = P_Vis2D/180*pi;
+P_Sig2D = P_Sig2D/180*pi;
 
-E = EPolar5(P_Sig2D,P_Vis2D,P_Probe,P_Pump2,P_Pump1);
-
-% % 4 = 3 freq + 1 signal
-% EJAR1  = zeros(size(Response.JAR1,1),4);
-% EJAR2  = zeros(size(Response.JAR2,1),4);
-% EJAR3  = zeros(size(Response.JAR3,1),4);
-% EJNAR1 = zeros(size(Response.JNAR1,1),4);
-% EJNAR2 = zeros(size(Response.JNAR2,1),4);
-% EJNAR3 = zeros(size(Response.JNAR3,1),4);
-% 
-% EJAR1(:,1:3)  = Response.JAR1(:,1:3);
-% EJAR2(:,1:3)  = Response.JAR2(:,1:3);
-% EJAR3(:,1:3)  = Response.JAR3(:,1:3);
-% EJNAR1(:,1:3) = Response.JNAR1(:,1:3);
-% EJNAR2(:,1:3) = Response.JNAR2(:,1:3);
-% EJNAR3(:,1:3) = Response.JNAR3(:,1:3);
+E = EPolar5(P_Sig2D,P_Vis2D,P_Probe,P_Pump2,P_Pump1); % Take [radius]
 
 EJAR1  = E*Response.JAR1;
 EJAR2  = E*Response.JAR2;

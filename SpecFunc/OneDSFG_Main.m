@@ -89,8 +89,10 @@ H = ExcitonH(Structure_Data,'ExMode','OneEx','CouplingType',CouplingType,'Beta_N
 Ex_Freq = H.Sort_Ex_Freq;
 
 % construct mu,alpha
-Mu    = MuAlphaGen(Structure_Data,H,'Mode','Mu');
-Alpha = MuAlphaGen(Structure_Data,H,'Mode','Alpha');
+% Mu    = MuAlphaGen(Structure_Data,H,'Mode','Mu');
+% Alpha = MuAlphaGen(Structure_Data,H,'Mode','Alpha');
+Mu    = MuAlphaGen_full_M(Structure_Data,H,'Mode','Mu');
+Alpha = MuAlphaGen_full_M(Structure_Data,H,'Mode','Alpha');
 
 Mu_Ex    = Mu.Trans_Ex;
 Alpha_Ex = Alpha.Trans_Ex;

@@ -214,7 +214,6 @@ end
 %% Construct Full H
 
 if strcmp(ExMode,'TwoEx')
-
     H = blkdiag(ZeroExPart,OneExPart,TwoExPart);
 else 
     H = blkdiag(ZeroExPart,OneExPart);
@@ -228,7 +227,23 @@ Ex_Freq = diag(D_Full);
 % sort eiganvalue form small to big and reorder the eiganvectors
 [Sort_Ex_Freq,Indx] = sort(Ex_Freq);
  Sort_Ex_V          = V_Full(:,Indx);
- 
+
+% Extract block diagonals
+%Sort_Ex_V0 = Sort_Ex_V(1,1);
+%Output.Sort_Ex_V0 = Sort_Ex_V0;
+
+Sort_Ex_F1 = Sort_Ex_Freq(2:Num_Modes+1);
+Sort_Ex_V1 = Sort_Ex_V(2:Num_Modes+1,2:Num_Modes+1);
+Output.Sort_Ex_F1 = Sort_Ex_F1;
+Output.Sort_Ex_V1 = Sort_Ex_V1;
+
+if strcmp(ExMode,'TwoEx')
+    Sort_Ex_F2 = Sort_Ex_Freq(Num_Modes+2:end);
+    Sort_Ex_V2 = Sort_Ex_V(Num_Modes+2:end,Num_Modes+2:end);
+    Output.Sort_Ex_F2 = Sort_Ex_F2;
+    Output.Sort_Ex_V2 = Sort_Ex_V2;
+end 
+
 
 % Sparse_TwoExH = sparse(blkdiag(ZeroExPart,OneExPart,TwoExPart));
 % [V_S_Full,D_S_Full] = eigs(Sparse_TwoExH);
@@ -240,7 +255,6 @@ Ex_Freq = diag(D_Full);
 
 
 %% Output Variables
-
 Output.ExMode        = ExMode;
 Output.Num_Modes     = Num_Modes;
 Output.StatesNum     = StatesNum;
@@ -249,7 +263,6 @@ Output.Sort_Ex_V     = Sort_Ex_V;
 Output.Beta          = Beta;
 Output.H             = H;
 Output.OneExPart     = OneExPart;
-
 
 
 if strcmp(ExMode,'TwoEx')

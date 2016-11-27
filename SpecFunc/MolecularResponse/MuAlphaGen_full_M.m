@@ -1,4 +1,4 @@
-function Output = MuAlphaGen(PDB_Data,H,varargin)
+function Output = MuAlphaGen_full_M(PDB_Data,H,varargin)
 %% MuAlphaGen 
 % 
 % This Script generate mu and alpha matrix in local mode basis. According
@@ -13,9 +13,6 @@ function Output = MuAlphaGen(PDB_Data,H,varargin)
 % 
 % ------- Version log -----------------------------------------------------
 %
-% Ver. 3.0  141126  Instead of calculating the full matix of Transition
-%                   moments, I only export 0->1 and 1->2 part
-% 
 % Ver. 2.0  140608  Code clean up and fix sqrt(2) error
 % 
 % Ver. 1.1  130723  in order to reduce unique elements of Raman tensor from 
@@ -52,76 +49,92 @@ parse(INPUT,varargin{:});
 % Reassign Variable names
 Mode = INPUT.Results.Mode;
 
-switch Mode   
+switch Mode
+    
     case 'Mu'
+     
        Trans_Moment = PDB_Data.mu; % size [N x 3]
        
-    case 'Alpha'  
+    case 'Alpha'
+     
        Trans_Moment = PDB_Data.alpha; % note: RamanV = [N x 9], index: [xx xy xz yx yy yz zx zy zz]
 end
 
-M = size(Trans_Moment,2);
+Size_Trans   = size(Trans_Moment,2);
 
 %% reassign variable names
-N      = PDB_Data.Num_Modes;
-ExMode = H.ExMode;
+
+Num_Modes     = PDB_Data.Num_Modes;
+ExMode        = H.ExMode;
+StatesNum     = H.StatesNum;
+Sort_Ex_V     = H.Sort_Ex_V;
+
+if strcmp(ExMode,'TwoEx')
+    TEDIndexBegin = H.TEDIndexBegin;
+    TEDIndexEnd   = H.TEDIndexEnd;
+end
+
+
+Trans_Loc = zeros(StatesNum,StatesNum,Size_Trans);
 
 % Zero to One exciton transition
-M_Lo_01 = Trans_Moment; % size [N x 3 or 9]
+Trans_Loc(1,2:Num_Modes+1,:) = Trans_Moment(:,:);
+Trans_Loc(2:Num_Modes+1,1,:) = Trans_Moment(:,:);
 
 %% Two Exciton part
 if strcmp(ExMode,'TwoEx')
-
     % One exciton to Overtone transition 
-    Trans12_Onsite = zeros(N,N,M);
+    Temp_Trans12_Onsite = zeros(Num_Modes,Num_Modes,Size_Trans);
 
-    for ii=1:N
-        Trans12_Onsite(ii,ii,:) = Trans_Moment(ii,:)*sqrt(2);
+    for ii=1:Num_Modes
+        Temp_Trans12_Onsite(ii,ii,:) = Trans_Moment(ii,:)*sqrt(2);
     end
 
-    % Build up the block begin/end list from Two Exciton index
-    TEDIndexBegin = H.TEDIndexBegin-N;
-    TEDIndexEnd   = H.TEDIndexEnd-N;
+    Trans_Loc(2:Num_Modes+1,Num_Modes+2:2*Num_Modes+1,:) = Temp_Trans12_Onsite;
+    Trans_Loc(Num_Modes+2:2*Num_Modes+1,2:Num_Modes+1,:) = Temp_Trans12_Onsite;
 
-    % One exciton to Combination transition
-    Trans12_Combination = zeros(N,N*(N-1)/2,M);
-    for jj1=1:N-1
-        Temp_Trans12_Combination          = zeros(N,N-jj1,M);
+    % Build up the block begin/end list from Two Exciton index
+    TransBlockIndex1 = TEDIndexBegin + Num_Modes + 1;
+    TransBlockIndex2 = TEDIndexEnd   + Num_Modes + 1;
+
+    % One exciton to Combination transition 
+    for jj1=1:Num_Modes-1
+        Temp_Trans12_Combination          = zeros(Num_Modes,Num_Modes-jj1,Size_Trans);
         Temp_Trans12_Combination(jj1,:,:) = Trans_Moment(jj1+1:end,:);
 
         % [Improve] Can remove this for loop by work out the exact indexing of 
         % the diagnoal terms.
-        for kk=1:N-jj1
+        for kk=1:Num_Modes-jj1
             Temp_Trans12_Combination(kk+jj1,kk,:) = Trans_Moment(jj1,:);
         end
 
-        Trans12_Combination(:,TEDIndexBegin(jj1):TEDIndexEnd(jj1),:) = Temp_Trans12_Combination;
+        Trans_Loc(2:Num_Modes+1,TransBlockIndex1(jj1):TransBlockIndex2(jj1),:) = Temp_Trans12_Combination;
     end
 
-    M_Lo_12 = [Trans12_Onsite,Trans12_Combination];
-end
+    for jj2=1:Num_Modes-1
+        Temp_Trans12_Combination          = zeros(Num_Modes-jj2,Num_Modes,Size_Trans);
+        Temp_Trans12_Combination(:,jj2,:) = Trans_Moment(jj2+1:end,:);
 
-%% Change of basis and output
+        % [Improve] Can remove this for loop by work out the exact indexing of 
+        % the diagnoal terms.
+        for kk=1:Num_Modes-jj2
+            Temp_Trans12_Combination(kk,kk+jj2,:) = Trans_Moment(jj2,:);
+        end
 
-% 0->1, size = [N x 3 or 9] 
-Sort_Ex_V1 = H.Sort_Ex_V1;
-M_Ex_01    = Sort_Ex_V1' * M_Lo_01;
-% export
-Output.M_Lo_01 = M_Lo_01;
-Output.M_Ex_01 = M_Ex_01;
-
-% 1->2
-if strcmp(ExMode,'TwoEx')
-    Sort_Ex_V2 = H.Sort_Ex_V2;
-    M_Ex_12    = zeros(N,N*(N+1)/2,M);
-    
-    for II = 1:M
-        % size = [N x N*(N+1)/2 x 3 or 9] 
-        M_Ex_12(:,:,II) = Sort_Ex_V1' * squeeze(M_Lo_12(:,:,II)) * Sort_Ex_V2; 
+        Trans_Loc(TransBlockIndex1(jj2):TransBlockIndex2(jj2),2:Num_Modes+1,:) = Temp_Trans12_Combination;
     end
-    % export
-    Output.M_Lo_12 = M_Lo_12;
-    Output.M_Ex_12 = M_Ex_12;
 end
 
+%% Change of basis
+
+Trans_Ex = zeros(StatesNum,StatesNum,Size_Trans);
+% [Improve], maybe able to do more sophisticated
+for C_mu=1:Size_Trans
+    Trans_Ex(:,:,C_mu) = Sort_Ex_V'*Trans_Loc(:,:,C_mu)*Sort_Ex_V;
+end
+
+%% Output
+
+Output.Trans_Loc = Trans_Loc;
+Output.Trans_Ex  = Trans_Ex;
 

@@ -114,9 +114,9 @@ A_Ex_12 = Alpha.M_Ex_12;
 
 %% Generate Feynman pathway for 2DSFG
 Num_Modes = PDB_Data.Num_Modes;
-% Response  = Feynman_2DSFG_kron(Num_Modes,Sort_Ex_Freq,Alpha_Ex,Mu_Ex); % slower
-% Response  = Feynman_2DSFG_Vec_Full_M(Num_Modes,Sort_Ex_Freq,Alpha_Ex,Mu_Ex);
-Response  = Feynman_2DSFG_Vec(Num_Modes,Ex_F1,Ex_F2,A_Ex_01,A_Ex_12,M_Ex_01,M_Ex_12);
+% Response = Feynman_2DSFG_kron(Num_Modes,Sort_Ex_Freq,Alpha_Ex,Mu_Ex); % slower
+% Response = Feynman_2DSFG_Vec_Full_M(Num_Modes,Sort_Ex_Freq,Alpha_Ex,Mu_Ex);
+Response = Feynman_2DSFG_Vec(Num_Modes,Ex_F1,Ex_F2,A_Ex_01,A_Ex_12,M_Ex_01,M_Ex_12);
 
 Response.H = H;
 Response.Mu = Mu;
@@ -131,6 +131,9 @@ switch Avg_Rot
     case 1 %'Phi' C_Inf
         R_Avg = LabFrameAvg('C4',Dimension);
         
+    case 4 %'Isotropic'
+        R_Avg = LabFrameAvg('Isotropic',Dimension);
+                
     case 5 %'No Average'
         R_Avg = LabFrameAvg('C1',Dimension);
         

@@ -64,8 +64,10 @@ R_MF_LF   = Structure.Mol_Frame_Rot;
 Carbon_Pos   = XYZ_LF(Structure.AtomSerNo(:,1),:);
 Oxygen_Pos   = XYZ_LF(Structure.AtomSerNo(:,2),:);
 Nitrogen_Pos = XYZ_LF(Structure.AtomSerNo(:,3),:);
-CarbonA_Pos  = XYZ_LF(Structure.AtomSerNo(:,4),:);
-BB_Pos       = [Carbon_Pos;Oxygen_Pos;Nitrogen_Pos;CarbonA_Pos];
+BB_Pos       = [Carbon_Pos;Oxygen_Pos;Nitrogen_Pos];
+
+%CarbonA_Pos  = XYZ_LF(Structure.AtomSerNo(:,4),:);
+%BB_Pos       = [Carbon_Pos;Oxygen_Pos;Nitrogen_Pos;CarbonA_Pos];
 
 hF = figure; 
 hold on

@@ -79,58 +79,35 @@ P_Pump2      = INPUT.Results.P_Pump2;
 P_Probe      = INPUT.Results.P_Probe;
 P_Sig2D      = INPUT.Results.P_Sig2D;
 
-%% Correct the units
-
-% Turn degrees into radius (not work for BoxCard geometry yet)
-A_Pump1  =  A_Pump1 /180*pi;
-A_Pump2  =  A_Pump2 /180*pi;
-A_Probe  =  A_Probe/180*pi;
-A_Sig2D  =  A_Sig2D/180*pi;
-
-% Polarization Angles of incident beams
-P_Pump1  = P_Pump1/180*pi;
-P_Pump2  = P_Pump2/180*pi;
-P_Probe  = P_Probe/180*pi;
-P_Sig2D  = P_Sig2D/180*pi;
-    
 %% Call TwoExcitonH to calculate H,mu and alpha under exciton basis
 H = ExcitonH(PDB_Data,...
              'ExMode'  ,'TwoEx',...
              'CouplingType',CouplingType,...
              'Beta_NN' ,Beta_NN);
 
-Mu = MuAlphaGen(PDB_Data,H,'Mode','Mu');
+% Mu = MuAlphaGen_full_M(PDB_Data,H,'Mode','Mu');
+% Sort_Ex_Freq = H.Sort_Ex_Freq;
+% Mu_Ex        = Mu.Trans_Ex;
 
-Sort_Ex_Freq = H.Sort_Ex_Freq;
-Mu_Ex        = Mu.Trans_Ex;
+Mu = MuAlphaGen(PDB_Data,H,'Mode','Mu');
+Ex_F1   = H.Sort_Ex_F1;
+Ex_F2   = H.Sort_Ex_F2;
+M_Ex_01 = Mu.M_Ex_01;
+M_Ex_12 = Mu.M_Ex_12;
 
 %% Generate Feynman pathway for 2DSFG
 Num_Modes = PDB_Data.Num_Modes;
-% Response  = Feynman_2DIR_kron(Num_Modes,Sort_Ex_Freq,Mu_Ex);
-Response  = Feynman_2DIR_Vec(Num_Modes,Sort_Ex_Freq,Mu_Ex);
+% Response = Feynman_2DIR_kron(Num_Modes,Sort_Ex_Freq,Mu_Ex);
+% Response = Feynman_2DIR_Vec_Full_M(Num_Modes,Sort_Ex_Freq,Mu_Ex);
+Response = Feynman_2DIR_Vec(Num_Modes,Ex_F1,Ex_F2,M_Ex_01,M_Ex_12);
+
 Response.H  = H;
 Response.Mu = Mu;
 
 %% Decide what kinds of rod rotation average is
-
-R_Avg = LabFrameAvg('Isotropic',4);
+R_Avg = LabFrameAvg('Isotropic',4); 
 
 %% Applied rotational average on Response in molecular frame
-
-% AR1  = zeros(size(Response.R1));
-% AR2  = zeros(size(Response.R2));
-% AR3  = zeros(size(Response.R3));
-% NAR1 = zeros(size(Response.NR1));
-% NAR2 = zeros(size(Response.NR2));
-% NAR3 = zeros(size(Response.NR3));
-% 
-% AR1(:,1:3)  = Response.R1(:,1:3);
-% AR2(:,1:3)  = Response.R2(:,1:3);
-% AR3(:,1:3)  = Response.R3(:,1:3);
-% NAR1(:,1:3) = Response.NR1(:,1:3);
-% NAR2(:,1:3) = Response.NR2(:,1:3);
-% NAR3(:,1:3) = Response.NR3(:,1:3);
-
 AR1  = R_Avg*Response.R1 ;
 AR2  = R_Avg*Response.R2 ;
 AR3  = R_Avg*Response.R3 ;
@@ -146,25 +123,13 @@ Response.NAR2 = NAR2;
 Response.NAR3 = NAR3;
 
 %% Jones Matrix convert XYZ to PS frame
+% Turn degrees into radius (not work for BoxCard geometry yet)
+A_Pump1 = A_Pump1/180*pi;
+A_Pump2 = A_Pump2/180*pi;
+A_Probe = A_Probe/180*pi;
+A_Sig2D = A_Sig2D/180*pi;
 
-% Note: When I generate J, I aasume the two pump beam has the same input angle
-%       That's why here only has one pump input 
 J = JonesTrans4(A_Sig2D,A_Probe,A_Pump2,A_Pump1);
-
-% % 19 =3 freq + 2^4 (pppp - ssss) of signal
-% JAR1  = zeros(size(Response.AR1,1),19);
-% JAR2  = zeros(size(Response.AR2,1),19);
-% JAR3  = zeros(size(Response.AR3,1),19);
-% JNAR1 = zeros(size(Response.NAR1,1),19);
-% JNAR2 = zeros(size(Response.NAR2,1),19);
-% JNAR3 = zeros(size(Response.NAR3,1),19);
-% 
-% JAR1(:,1:3)  = Response.AR1(:,1:3);
-% JAR2(:,1:3)  = Response.AR2(:,1:3);
-% JAR3(:,1:3)  = Response.AR3(:,1:3);
-% JNAR1(:,1:3) = Response.NAR1(:,1:3);
-% JNAR2(:,1:3) = Response.NAR2(:,1:3);
-% JNAR3(:,1:3) = Response.NAR3(:,1:3);
 
 JAR1  = J*Response.AR1;
 JAR2  = J*Response.AR2;
@@ -181,23 +146,13 @@ Response.JNAR2 = JNAR2;
 Response.JNAR3 = JNAR3;
 
 %% E part, Plarization of each incident beams
+% Polarization Angles of incident beams
+P_Pump1  = P_Pump1/180*pi;
+P_Pump2  = P_Pump2/180*pi;
+P_Probe  = P_Probe/180*pi;
+P_Sig2D  = P_Sig2D/180*pi;
 
 E = EPolar4(P_Sig2D,P_Probe,P_Pump2,P_Pump1);
-
-% % 4 = 3 freq + 1 signal
-% EJAR1  = zeros(size(Response.JAR1,1),4);
-% EJAR2  = zeros(size(Response.JAR2,1),4);
-% EJAR3  = zeros(size(Response.JAR3,1),4);
-% EJNAR1 = zeros(size(Response.JNAR1,1),4);
-% EJNAR2 = zeros(size(Response.JNAR2,1),4);
-% EJNAR3 = zeros(size(Response.JNAR3,1),4);
-% 
-% EJAR1(:,1:3)  = Response.JAR1(:,1:3);
-% EJAR2(:,1:3)  = Response.JAR2(:,1:3);
-% EJAR3(:,1:3)  = Response.JAR3(:,1:3);
-% EJNAR1(:,1:3) = Response.JNAR1(:,1:3);
-% EJNAR2(:,1:3) = Response.JNAR2(:,1:3);
-% EJNAR3(:,1:3) = Response.JNAR3(:,1:3);
 
 EJAR1  = E*Response.JAR1;
 EJAR2  = E*Response.JAR2;

@@ -68,7 +68,7 @@ TD_M_Ex = reshape(M_Ex_12,[],3);
 TD_A_Ex = reshape(A_Ex_12,[],9);
 
 % Indice of 2D version Mu_Ex, 
-% Note [(N+1)*(N+2)/2,(N+1)*(N+2)/2] is the first two Dimension of Mu_Ex
+% Note [N,N*(N+1)/2] is the first two Dimension of Mu_Ex
 ind_ax = sub2ind([N,N*(N+1)/2],Ka(:),Kx(:));
 ind_bx = sub2ind([N,N*(N+1)/2],Kb(:),Kx(:));
 ind_xa = ind_ax;
@@ -123,11 +123,4 @@ Response.Freq_R3  = Freq_R3;
 Response.Freq_NR1 = Freq_NR1;
 Response.Freq_NR2 = Freq_NR2;
 Response.Freq_NR3 = Freq_NR3;
-
-% Response.R1  = [Freq_R1,R1];
-% Response.R2  = [Freq_R2,R2];
-% Response.R3  = [Freq_R3,R3];
-% Response.NR1 = [Freq_NR1,NR1];
-% Response.NR2 = [Freq_NR2,NR2];
-% Response.NR3 = [Freq_NR3,NR3];
 

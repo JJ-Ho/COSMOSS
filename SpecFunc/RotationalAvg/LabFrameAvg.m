@@ -35,9 +35,18 @@ switch Symmetry
         % 
         % R = sparse(C4_x) * sparse(C4_z);
         % To save time, I load the pre calculated matrix instead
-        SaveName = ['R',num2str(Dimension),'_Iso'];
-        load(SaveName);
-        R = Iso;
+        
+        % this one has bug, since the 2DIR signal still have orrientation 
+        % dependence, need to check how did I generate it later.
+        % SaveName = ['R',num2str(Dimension),'_Iso'];
+        % load(SaveName);
+        % R = Iso;
+        
+        % temporary solution: calling the working isotropic averaged
+        % function from old calculation.
+        R_name = ['R',num2str(Dimension),'_ZYZ_123'];
+        hf_R = str2func(R_name);
+        R = feval(hf_R);
         
     otherwise
         disp(['Does not support ',Symmetry,'Symmetry...'])

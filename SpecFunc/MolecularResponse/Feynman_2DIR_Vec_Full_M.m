@@ -1,4 +1,4 @@
-function Response = Feynman_2DIR_Vec(N,Sort_Ex_Freq,Mu_Ex)
+function Response = Feynman_2DIR_Vec_Full_M(N,Sort_Ex_Freq,Mu_Ex)
 % 
 % This function generate Feynman pathway of 2DSFG with given polarization.
 % 

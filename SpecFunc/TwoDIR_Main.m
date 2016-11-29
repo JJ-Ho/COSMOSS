@@ -99,28 +99,18 @@ M_Ex_12 = Mu.M_Ex_12;
 Num_Modes = PDB_Data.Num_Modes;
 % Response = Feynman_2DIR_kron(Num_Modes,Sort_Ex_Freq,Mu_Ex);
 % Response = Feynman_2DIR_Vec_Full_M(Num_Modes,Sort_Ex_Freq,Mu_Ex);
-Response = Feynman_2DIR_Vec(Num_Modes,Ex_F1,Ex_F2,M_Ex_01,M_Ex_12);
+[Freq,Beta] = Feynman_2DIR_Vec(Num_Modes,Ex_F1,Ex_F2,M_Ex_01,M_Ex_12);
 
-Response.H  = H;
-Response.Mu = Mu;
-
-%% Decide what kinds of rod rotation average is
+%% Decide what kinds of rod rotation average is and applied rotational 
+% average on Response in molecular frame
 R_Avg = LabFrameAvg('Isotropic',4); 
 
-%% Applied rotational average on Response in molecular frame
-AR1  = R_Avg*Response.R1 ;
-AR2  = R_Avg*Response.R2 ;
-AR3  = R_Avg*Response.R3 ;
-NAR1 = R_Avg*Response.NR1;
-NAR2 = R_Avg*Response.NR2;
-NAR3 = R_Avg*Response.NR3;
-
-Response.AR1 = AR1;
-Response.AR2 = AR2;
-Response.AR3 = AR3;
-Response.NAR1 = NAR1;
-Response.NAR2 = NAR2;
-Response.NAR3 = NAR3;
+AR1  = R_Avg*Beta.R1 ;
+AR2  = R_Avg*Beta.R2 ;
+AR3  = R_Avg*Beta.R3 ;
+NAR1 = R_Avg*Beta.NR1;
+NAR2 = R_Avg*Beta.NR2;
+NAR3 = R_Avg*Beta.NR3;
 
 %% Jones Matrix convert XYZ to PS frame
 % Turn degrees into radius (not work for BoxCard geometry yet)
@@ -131,19 +121,12 @@ A_Sig2D = A_Sig2D/180*pi;
 
 J = JonesTrans4(A_Sig2D,A_Probe,A_Pump2,A_Pump1);
 
-JAR1  = J*Response.AR1;
-JAR2  = J*Response.AR2;
-JAR3  = J*Response.AR3;
-JNAR1 = J*Response.NAR1;
-JNAR2 = J*Response.NAR2;
-JNAR3 = J*Response.NAR3;
-
-Response.JAR1 = JAR1;
-Response.JAR2 = JAR2;
-Response.JAR3 = JAR3;
-Response.JNAR1 = JNAR1;
-Response.JNAR2 = JNAR2;
-Response.JNAR3 = JNAR3;
+JAR1  = J*AR1;
+JAR2  = J*AR2;
+JAR3  = J*AR3;
+JNAR1 = J*NAR1;
+JNAR2 = J*NAR2;
+JNAR3 = J*NAR3;
 
 %% E part, Plarization of each incident beams
 % Polarization Angles of incident beams
@@ -154,27 +137,44 @@ P_Sig2D  = P_Sig2D/180*pi;
 
 E = EPolar4(P_Sig2D,P_Probe,P_Pump2,P_Pump1);
 
-EJAR1  = E*Response.JAR1;
-EJAR2  = E*Response.JAR2;
-EJAR3  = E*Response.JAR3;
-EJNAR1 = E*Response.JNAR1;
-EJNAR2 = E*Response.JNAR2;
-EJNAR3 = E*Response.JNAR3;
+EJAR1  = E*JAR1;
+EJAR2  = E*JAR2;
+EJAR3  = E*JAR3;
+EJNAR1 = E*JNAR1;
+EJNAR2 = E*JNAR2;
+EJNAR3 = E*JNAR3;
 
-Response.EJAR1 = EJAR1;
-Response.EJAR2 = EJAR2;
-Response.EJAR3 = EJAR3;
-Response.EJNAR1 = EJNAR1;
-Response.EJNAR2 = EJNAR2;
-Response.EJNAR3 = EJNAR3;
+%% Output
+Response.H  = H;
+Response.Mu = Mu;
+
+Response.Freq = Freq;
+Response.Beta = Beta;
+
+Response.RBeta.R_Avg = R_Avg;
+Response.RBeta.R1    = AR1;
+Response.RBeta.R2    = AR2;
+Response.RBeta.R3    = AR3;
+Response.RBeta.NR1   = NAR1;
+Response.RBeta.NR2   = NAR2;
+Response.RBeta.NR3   = NAR3;
+
+Response.JRBeta.J    = J;
+Response.JRBeta.R1   = JAR1;
+Response.JRBeta.R2   = JAR2;
+Response.JRBeta.R3   = JAR3;
+Response.JRBeta.NR1  = JNAR1;
+Response.JRBeta.NR2  = JNAR2;
+Response.JRBeta.NR3  = JNAR3;
+
+Response.EJRBeta.E   = E;
+Response.EJRBeta.R1  = EJAR1;
+Response.EJRBeta.R2  = EJAR2;
+Response.EJRBeta.R3  = EJAR3;
+Response.EJRBeta.NR1 = EJNAR1;
+Response.EJRBeta.NR2 = EJNAR2;
+Response.EJRBeta.NR3 = EJNAR3;
 
 %% Binning of spectra
-Response.BinR1  = EJAR1;
-Response.BinR2  = EJAR2;
-Response.BinR3  = EJAR3;
-Response.BinNR1 = EJNAR1;
-Response.BinNR2 = EJNAR2;
-Response.BinNR3 = EJNAR3;
-
-SpectraGrid = Bin2D(Response,FreqRange);
-
+S = Response.EJRBeta;
+SpectraGrid  = Bin2D(S,Freq,FreqRange);

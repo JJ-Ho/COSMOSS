@@ -1,4 +1,4 @@
-function Output = Bin2D(Response,FreqRange)
+function Output = Bin2D(S,F,FreqRange)
 %% Bin2D
 % 
 % Given the response in the form [ Pump, Pump-Probe, Probe, Signal ], this 
@@ -15,19 +15,19 @@ function Output = Bin2D(Response,FreqRange)
 
 
 %% Rename signal
-R1 = Response.BinR1;
-R2 = Response.BinR2;
-R3 = Response.BinR3;
-NR1 = Response.BinNR1;
-NR2 = Response.BinNR2;
-NR3 = Response.BinNR3;
+R1  = S.R1;
+R2  = S.R2;
+R3  = S.R3;
+NR1 = S.NR1;
+NR2 = S.NR2;
+NR3 = S.NR3;
 
-Freq_R1  = Response.Freq_R1;
-Freq_R2  = Response.Freq_R2;
-Freq_R3  = Response.Freq_R3;
-Freq_NR1 = Response.Freq_NR1;
-Freq_NR2 = Response.Freq_NR2;
-Freq_NR3 = Response.Freq_NR3;
+Freq_R1  = F.R1;
+Freq_R2  = F.R2;
+Freq_R3  = F.R3;
+Freq_NR1 = F.NR1;
+Freq_NR2 = F.NR2;
+Freq_NR3 = F.NR3;
 
 %% Sort the responses to 2D frequency grid
 SpecAccuR1 = SortGrid(Freq_R1(:,1),Freq_R1(:,3),FreqRange,R1);

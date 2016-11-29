@@ -7,6 +7,8 @@ function Output = GetAmideI(Num_Atoms,XYZ,AtomName,FilesName,GUI_Inputs)
 
 % ------- Version log -----------------------------------------------------
 % 
+% Ver. 4.1  161129  Fix the bug that C-O-O is recognized as C-O-N
+% 
 % Ver. 4.0  161119  Vectorize the C-O-N-NA seqrching process
 % 
 % Ver. 3.1  141021  Copy from SFG_AmideI_GUI
@@ -57,9 +59,11 @@ function Output = GetAmideI(Num_Atoms,XYZ,AtomName,FilesName,GUI_Inputs)
 % Copyright Jia-Jung Ho, 2013
 
 %% Debug
-% Num_Atoms = Data_PDB_AmideI.Num_Atoms;
-% AtomName  = Data_PDB_AmideI.AtomName;
-% XYZ       = Data_PDB_AmideI.XYZ;
+% Num_Atoms = Test.Num_Atoms;
+% AtomName  = Test.AtomName;
+% XYZ       = Test.XYZ;
+% FilesName = Test.FilesName;
+% GUI_Inputs.Debug = 'Debug';
 
 %% Inputs parser
 GUI_Inputs_C      = fieldnames(GUI_Inputs);
@@ -105,7 +109,7 @@ Atom = [strcmp(AtomName,'C'),...
         strcmp(AtomName,'N'),...
        ];
 
-% dlete irrelevent lines   
+% delete irrelevent lines with no above atoms 
 Ind (~any(Atom,2))   = [];
 Atom(~any(Atom,2),:) = [];
 
@@ -131,7 +135,23 @@ while strcmp(Tail,'y')
     end
 end
 
-AmideIAtomSerNo = reshape(Ind,3,[])';
+% Remove any lines that does not have all three atoms
+% ex:
+%   i [1,0,0]     [1,0,0]
+%   j [0,1,0]  vs [0,1,0]  by clapse the ijk dimemsion
+%   k [0,0,1]     [0,1,0]
+%        ||          ||
+%        \/          \/
+%     [1,1,1]     [1,2,0]  
+AtomX = sum(permute(reshape(Atom,3,[],3),[3,2,1]),3);
+Mask = ones(size(AtomX));
+Array_Mask = logical(bsxfun(@times,all(~(AtomX - Mask)),[1,1,1]'));
+IndX = Ind(Array_Mask(:));
+
+% IndX = bsxfun(@times,IndX,Array_Mask);
+% IndX(~any(IndX,1))   = [];
+
+AmideIAtomSerNo = reshape(IndX,3,[])';
 
 %% Read molecule XYZ and rotate molecule in Molecule frame
 Num_Modes = size(AmideIAtomSerNo,1);

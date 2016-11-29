@@ -145,6 +145,9 @@ Structure.RotV   = [GUI_Inputs.Phi_D,GUI_Inputs.Psi_D,GUI_Inputs.Theta_D];
 % Export into Structure so it can be passsed around different GUIs
 Structure.StructModel = 4;
 
+% Include the whole BB info for debug
+Structure.BB = BB;
+
 %% Export result to Main guidata
 GUI_data.Structure = Structure;
 

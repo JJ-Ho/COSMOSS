@@ -1,4 +1,4 @@
-function Response = Feynman_2DSFG_Vec(N,F1,F2,A_Ex_01,A_Ex_12,M_Ex_01,M_Ex_12)
+function [Freq,Beta] = Feynman_2DSFG_Vec(N,F1,F2,A_Ex_01,A_Ex_12,M_Ex_01,M_Ex_12)
 % 
 % This function generate Feynman pathway of 2DSFG with given polarization.
 % 
@@ -102,25 +102,25 @@ Freq_R3  = [-Ea_3 ; Eb_3 - Ea_3 ; Ex_3 - Ea_3]';
 Freq_NR3 = [ Ea_3 ; Ea_3 - Eb_3 ; Ex_3 - Eb_3]';
 
 %% Output
-Response.R1  = R1';  % [243 x N^2]
-Response.R2  = R2';  % [243 x N^2]
-Response.R3  = R3';  % [243 x N^3*(N+1)/2]
-Response.NR1 = NR1'; % [243 x N^2]
-Response.NR2 = NR2'; % [243 x N^2]
-Response.NR3 = NR3'; % [243 x N^3*(N+1)/2]
+Beta.R1  = R1';  % [243 x N^2]
+Beta.R2  = R2';  % [243 x N^2]
+Beta.R3  = R3';  % [243 x N^3*(N+1)/2]
+Beta.NR1 = NR1'; % [243 x N^2]
+Beta.NR2 = NR2'; % [243 x N^2]
+Beta.NR3 = NR3'; % [243 x N^3*(N+1)/2]
 
 % Sparse matrix version
-% Response.R1  = sparse(R1)';  % [243 x N^2]
-% Response.R2  = sparse(R2)';  % [243 x N^2]
-% Response.R3  = sparse(R3)';  % [243 x N^3*(N+1)/2]
-% Response.NR1 = sparse(NR1)'; % [243 x N^2]
-% Response.NR2 = sparse(NR2)'; % [243 x N^2]
-% Response.NR3 = sparse(NR3)'; % [243 x N^3*(N+1)/2]
+% Beta.R1  = sparse(R1)';  % [243 x N^2]
+% Beta.R2  = sparse(R2)';  % [243 x N^2]
+% Beta.R3  = sparse(R3)';  % [243 x N^3*(N+1)/2]
+% Beta.NR1 = sparse(NR1)'; % [243 x N^2]
+% Beta.NR2 = sparse(NR2)'; % [243 x N^2]
+% Beta.NR3 = sparse(NR3)'; % [243 x N^3*(N+1)/2]
 
-Response.Freq_R1  = Freq_R1;
-Response.Freq_R2  = Freq_R2;
-Response.Freq_R3  = Freq_R3;
-Response.Freq_NR1 = Freq_NR1;
-Response.Freq_NR2 = Freq_NR2;
-Response.Freq_NR3 = Freq_NR3;
+Freq.R1  = Freq_R1;
+Freq.R2  = Freq_R2;
+Freq.R3  = Freq_R3;
+Freq.NR1 = Freq_NR1;
+Freq.NR2 = Freq_NR2;
+Freq.NR3 = Freq_NR3;
 

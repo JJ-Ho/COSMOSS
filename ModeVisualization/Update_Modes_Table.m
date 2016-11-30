@@ -12,9 +12,11 @@ C_A_Int  = ColumnFormat('Norm[A]','bank' ,60);
 C_Norm1D = ColumnFormat('Norm 1D','bank' ,60);
 C_Norm2D = ColumnFormat('Norm 2D','bank' ,60);
 
-C_PumpF  = ColumnFormat('Pump F.' ,'bank' ,55);
-C_ProbF  = ColumnFormat('Probe F.','bank' ,55);
-C_2D_Int = ColumnFormat('2D Int.' ,'bank' ,70);
+C_PumpF  = ColumnFormat('Pump' ,'bank' ,55);
+C_ProbF  = ColumnFormat('Probe','bank' ,55);
+C_Int    = ColumnFormat('Intensity' ,'bank' ,70);
+
+C_Path_Label = ColumnFormat('Path' ,'short' ,30);
 
 %% Calculate Spectral data
 switch SpecType
@@ -56,25 +58,54 @@ end
 
 %% 2D spectrum Common part
 if or(strcmp(SpecType,'TwoDIR'),strcmp(SpecType,'TwoDSFG'))
-    % Pump Frequency
-    Pump_F = abs(SD.Freq.R1(:,1));
-    N_Path = length(Pump_F);
-    C_PumpF.Data = Pump_F;
+    PathName = {'R1','R2','R3','NR1','NR2','NR3'};
+    Pump_F = [];
+    Prob_F = [];
+    Ex_Ind = [];
+    Int    = [];
+    PathName_Str = [];
     
-    % Probe Frequency
-    Prob_F = abs(SD.Freq.R1(:,3));
-    C_ProbF.Data = Prob_F;
+    for L = 1:length(PathName)
+        % Pump Frequency
+        New_Pump_F = abs(SD.Freq.(PathName{L})(:,1));
+        Pump_F = [Pump_F ; New_Pump_F ];
+        N_Path = length(New_Pump_F);
 
-    % mode index
-    Ex_Ind       = (1:N_Path)';
-    C_Index.Data = Ex_Ind;
+        % Probe Frequency
+        New_Prob_F = abs(SD.Freq.(PathName{L})(:,3));
+        Prob_F = [Prob_F ; New_Prob_F ];    
+
+        % mode index
+        New_Ind = (1:N_Path)';
+        Ex_Ind = [Ex_Ind ; New_Ind ];    
+
+        % signal intensity
+        New_Int = SD.EJRBeta.(PathName{L})';
+        Int = [Int ; New_Int ];
+        
+        % Pathway label (Number version)
+        Tmp = ones(N_Path,1).*L;
+        PathName_Str = [PathName_Str ; Tmp];
+    end
     
-    % signal intensity
-    Int = SD.EJRBeta.R1';
-    C_2D_Int.Data = Int;
+    % Apply intensity cutoff
+    CutOff_R = 0.01;
+    CutOff_I = Int < max(abs(Int)*CutOff_R);
+    
+    Int(CutOff_I) = [];
+    Pump_F(CutOff_I) = [];
+    Prob_F(CutOff_I) = [];
+    Ex_Ind(CutOff_I) = [];
+    PathName_Str(CutOff_I) = [];
+    
+    C_PumpF.Data = Pump_F;
+    C_ProbF.Data = Prob_F;
+    C_Index.Data = Ex_Ind;
+    C_Int.Data = Int;
+    C_Path_Label.Data = PathName_Str;
 end
 
-%% 1D Spectrum specific part and create corresponding TableColumn Class
+%% Spectrum specific part and create corresponding TableColumn Class
 switch SpecType
     case 'FTIR'
         ModeList = merge2cell(C_Index,...
@@ -123,7 +154,9 @@ switch SpecType
         ModeList = merge2cell(C_Index,...
                               C_PumpF,...
                               C_ProbF,...
-                              C_2D_Int);
+                              C_Int,...
+                              C_Path_Label);
+                              
 end
 
 

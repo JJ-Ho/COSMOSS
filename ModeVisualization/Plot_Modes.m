@@ -216,7 +216,7 @@ TableData = hGUIs.ModeList.Data;
 
 CurrentCell   = eventdata.Indices;
 CurrentRowInd = CurrentCell(:,1)';
-Mode_Ind_Str  = num2str(TableData(CurrentRowInd,1)');
+Mode_Ind_Str  = num2str(cell2mat(TableData(CurrentRowInd,1)'));
 
 % Update the Mode index on GUI
 hGUIs.Mu_Alpha_Ind.String = Mode_Ind_Str;
@@ -230,11 +230,13 @@ function uitable_Sort(hObject, eventdata, GUI_data)
 TableData  = GUI_data.hGUIs.ModeList.Data;
 SortColumn = GUI_data.hGUIs.SortInd.Value;
 
+SC = abs(cell2mat(TableData(:,SortColumn))); % only sort the absolute value
+
 if eq(SortColumn,1) 
     % for sorting index
-    [~,SortInd] = sort(abs(TableData(:,SortColumn)),'ascend');
+    [~,SortInd] = sort(SC,'ascend');
 else
-    [~,SortInd] = sort(abs(TableData(:,SortColumn)),'descend');
+    [~,SortInd] = sort(SC,'descend');
 end
 
 SortedData = TableData(SortInd,:);

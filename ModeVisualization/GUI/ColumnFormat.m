@@ -16,12 +16,19 @@ classdef ColumnFormat
            O.Name   = {};
            O.Format = {};
            O.Width  = {};
-           O.Data   = [];
+           O.Data   = {};
            for i = 1:nargin
                O.Name   = [O.Name  ,varargin{i}.Name];
                O.Format = [O.Format,varargin{i}.Format];
                O.Width  = [O.Width ,varargin{i}.Width];
-               O.Data   = [O.Data  ,varargin{i}.Data];
+               
+               if isnumeric(varargin{i}.Data)
+                   Next_Data = num2cell(varargin{i}.Data);
+               else
+                   Next_Data = varargin{i}.Data;
+               end
+               
+               O.Data   = [O.Data  ,Next_Data];
            end
        end
    end

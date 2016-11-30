@@ -17,6 +17,7 @@ C_ProbF  = ColumnFormat('Probe','bank' ,55);
 C_Int    = ColumnFormat('Intensity' ,'bank' ,70);
 
 C_Path_Label = ColumnFormat('Path' ,'short' ,30);
+C_Pathways   = ColumnFormat({'4th','3rd','2nd','1st'},{'short','short','short'},{30,30,30,30});
 
 %% Calculate Spectral data
 switch SpecType
@@ -58,12 +59,14 @@ end
 
 %% 2D spectrum Common part
 if or(strcmp(SpecType,'TwoDIR'),strcmp(SpecType,'TwoDSFG'))
-    PathName = {'R1','R2','R3','NR1','NR2','NR3'};
-    Pump_F = [];
-    Prob_F = [];
-    Ex_Ind = [];
-    Int    = [];
+    PathName = {'R1','R2','R3','NR1','NR2','NR3'}; % [Improve] add GUI input for this 
+    %PathName = {'R1'};
+    Pump_F       = [];
+    Prob_F       = [];
+    Ex_Ind       = [];
+    Int          = [];
     PathName_Str = [];
+    Pathways     = [];
     
     for L = 1:length(PathName)
         % Pump Frequency
@@ -86,23 +89,30 @@ if or(strcmp(SpecType,'TwoDIR'),strcmp(SpecType,'TwoDSFG'))
         % Pathway label (Number version)
         Tmp = ones(N_Path,1).*L;
         PathName_Str = [PathName_Str ; Tmp];
+        
+        % Pathways index
+        New_Pathways = SD.Index.(PathName{L});
+        Pathways = [Pathways ; New_Pathways];
     end
     
     % Apply intensity cutoff
-    CutOff_R = 0.01;
+    CutOff_R = 0.01; % [Improve] add GUI input for this 
     CutOff_I = Int < max(abs(Int)*CutOff_R);
     
-    Int(CutOff_I) = [];
-    Pump_F(CutOff_I) = [];
-    Prob_F(CutOff_I) = [];
-    Ex_Ind(CutOff_I) = [];
+    Int(CutOff_I)          = [];
+    Pump_F(CutOff_I)       = [];
+    Prob_F(CutOff_I)       = [];
+    Ex_Ind(CutOff_I)       = [];
     PathName_Str(CutOff_I) = [];
+    Pathways(CutOff_I,:)   = [];
     
-    C_PumpF.Data = Pump_F;
-    C_ProbF.Data = Prob_F;
-    C_Index.Data = Ex_Ind;
-    C_Int.Data = Int;
+    % save dtata to columns
+    C_PumpF.Data      = Pump_F;
+    C_ProbF.Data      = Prob_F;
+    C_Index.Data      = Ex_Ind;
+    C_Int.Data        = Int;
     C_Path_Label.Data = PathName_Str;
+    C_Pathways.Data   = Pathways;
 end
 
 %% Spectrum specific part and create corresponding TableColumn Class
@@ -155,7 +165,8 @@ switch SpecType
                               C_PumpF,...
                               C_ProbF,...
                               C_Int,...
-                              C_Path_Label);
+                              C_Path_Label,...
+                              C_Pathways);
                               
 end
 

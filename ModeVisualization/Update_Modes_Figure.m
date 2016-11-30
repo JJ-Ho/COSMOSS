@@ -20,6 +20,7 @@ defaultNormalize      = 1;
 defaultPlot_EigenVec  = 0;
 defaultEigneVec_Ind   = [];
 defaultEigneVec_Conv  = 1;
+defaultSpecType       = 1; % FTIR
 
 % add options
 addOptional(INPUT,'Mu_Alpha_Plot' , defaultMu_Alpha_Plot );
@@ -34,6 +35,7 @@ addOptional(INPUT,'Normalize'     , defaultNormalize     );
 addOptional(INPUT,'Plot_EigenVec' , defaultPlot_EigenVec );
 addOptional(INPUT,'EigneVec_Ind'  , defaultEigneVec_Ind  );
 addOptional(INPUT,'EigneVec_Conv' , defaultEigneVec_Conv );
+addOptional(INPUT,'SpecType'      , defaultSpecType      );
 
 parse(INPUT,GUI_Inputs_C{:});
 
@@ -50,6 +52,7 @@ Normalize      = INPUT.Results.Normalize     ;
 Plot_EigenVec  = INPUT.Results.Plot_EigenVec ;
 EigneVec_Ind   = INPUT.Results.EigneVec_Ind  ;
 EigneVec_Conv  = INPUT.Results.EigneVec_Conv ;
+SpecType       = INPUT.Results.SpecType      ;
 
 %% Define useful parameters
 N_Mode_Total  = Structure.Num_Modes;
@@ -65,8 +68,14 @@ Mu_Loc_MF = SpecData.Mu.M_Lo_01;
 Mu_Ex_MF  = SpecData.Mu.M_Ex_01;
 
 % Raman Tensor
-Alpha_Loc_MF = SpecData.Alpha.M_Lo_01;
-Alpha_Ex_MF  = SpecData.Alpha.M_Lo_01;
+if or(eq(SpecType,1),eq(SpecType,3)) % check if FTIR or 2DIR
+    Alpha_Loc_MF = zeros(size(Mu_Loc_MF,1),9); % size [N x 9]
+    Alpha_Ex_MF  = zeros(size(Mu_Ex_MF,1),9);  % size [N x 9]
+else
+    Alpha_Loc_MF = SpecData.Alpha.M_Lo_01;
+    Alpha_Ex_MF  = SpecData.Alpha.M_Ex_01;
+end
+
 
 % Eigen vectors
 EigVecM      = SpecData.H.Sort_Ex_V1;
@@ -177,8 +186,8 @@ Output.Mu_Alpha_Ind = Mu_Alpha_Ind;
 function Plot_Mu(hAx,N_Plot_Mode,Center,Mu,Mode_colors,TDV_Scale,Normalize)
 if Normalize
     % normalize to unit vector for direction comparison
-    Mu_Loc_Int = sqrt(sum(Mu.^2,2));
-    Mu = bsxfun(@rdivide,Mu,Mu_Loc_Int);
+    Mu_Int = sqrt(sum(Mu.^2,2));
+    Mu = bsxfun(@rdivide,Mu,Mu_Int);
 end
 Mu_Loc_S = TDV_Scale .* Mu; % Scale TDV vector in plot 
 

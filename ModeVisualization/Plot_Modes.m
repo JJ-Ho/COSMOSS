@@ -148,6 +148,10 @@ switch SpecType
         T = Update_Modes_Table('SFG',Structure,COSMOSS_Inputs);
         GUI_data.hGUIs.Raman_Plot.Value = 1;
         GUI_data.hGUIs.Raman_Plot.Enable = 'on';
+    case 3 %'2DIR'
+        T = Update_Modes_Table('TwoDIR',Structure,COSMOSS_Inputs);
+        GUI_data.hGUIs.Raman_Plot.Value = 0;
+        GUI_data.hGUIs.Raman_Plot.Enable = 'off';
 end
 
 GUI_data.hGUIs.ModeList.ColumnName   = T.ModeList.Name;
@@ -169,7 +173,7 @@ function Update_TDV_Raman(hObject, eventdata, GUI_data)
 %% Gather necessary inputs
 GUI_Inputs = ParseGUI_Modes(GUI_data.hGUIs);
 Structure  = GUI_data.Structure;
-OneDSFG    = GUI_data.SpecData;
+SpecData   = GUI_data.SpecData;
 hModel     = GUI_data.hModel;
 
 %% Draw molecule by calling the PlotMolecule function in each model
@@ -177,7 +181,7 @@ hModel     = GUI_data.hModel;
 hF = hFunc_Model('PlotMolecule',hModel,eventdata,guidata(hModel));
 
 %% Call Update Figure function
-Fig_Output = Update_Modes_Figure(hF, GUI_Inputs, Structure, OneDSFG);
+Fig_Output = Update_Modes_Figure(hF, GUI_Inputs, Structure, SpecData);
 
 %% update handles
 GUI_data.hF           = hF;

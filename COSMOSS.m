@@ -386,7 +386,7 @@ TwoDIR             = Response;
 TwoDIR.SpectraGrid = SpectraGrid;
 TwoDIR.CVL         = CVL;
 
-handles.TwoDIR = TwoDIR;
+GUI_data.TwoDIR = TwoDIR;
 guidata(hObject,GUI_data);
 
 function TwoDSFG_Callback(hObject, eventdata, GUI_data)

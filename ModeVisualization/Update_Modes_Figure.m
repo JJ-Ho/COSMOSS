@@ -1,4 +1,4 @@
-function Output = Update_Modes_Figure(hF,GUI_Inputs, Structure, OneDSFG)
+function Output = Update_Modes_Figure(hF,GUI_Inputs, Structure, SpecData)
 %% Inputs parser
 GUI_Inputs_C      = fieldnames(GUI_Inputs);
 GUI_Inputs_C(:,2) = struct2cell(GUI_Inputs);
@@ -61,15 +61,15 @@ N_Mode_Select = length(Mu_Alpha_Ind);
 Center_Loc_MF = Structure.center;
 
 % Transition dipole
-Mu_Loc_MF = squeeze(OneDSFG.Mu.Trans_Loc(1,Mode_Index,:));
-Mu_Ex_MF  = squeeze(OneDSFG.Mu. Trans_Ex(1,Mode_Index,:));
+Mu_Loc_MF = SpecData.Mu.M_Lo_01;
+Mu_Ex_MF  = SpecData.Mu.M_Ex_01;
 
 % Raman Tensor
-Alpha_Loc_MF = squeeze(OneDSFG.Alpha.Trans_Loc(1,Mode_Index,:));
-Alpha_Ex_MF  = squeeze(OneDSFG.Alpha. Trans_Ex(1,Mode_Index,:));
+Alpha_Loc_MF = SpecData.Alpha.M_Lo_01;
+Alpha_Ex_MF  = SpecData.Alpha.M_Lo_01;
 
 % Eigen vectors
-EigVecM      = OneDSFG.H.Sort_Ex_V(2:end,2:end); % get ride of ground state
+EigVecM      = SpecData.H.Sort_Ex_V1;
 EigVecM2     = EigVecM.^2;
 Center_Ex_MF = EigVecM2*(Structure.center);
 
@@ -152,7 +152,7 @@ hold off
 Fig_Title = hAx.Title.String;
 
 Mode_Ind_Str  = sprintf('#%d',Mu_Alpha_Ind);
-Mode_Freq_Str = sprintf(', @%6.2f cm^{-1}' ,OneDSFG.H.Sort_Ex_Freq(Mu_Alpha_Ind +1));
+Mode_Freq_Str = sprintf(', @%6.2f cm^{-1}' ,SpecData.H.Sort_Ex_Freq(Mu_Alpha_Ind +1));
 Scaling_Str   = sprintf(', S\\mu= %2.1f, S\\alpha= %2.1f',TDV_Scale,Raman_Scale);
 
 Fig_Title{length(Fig_Title)+1} = [Mode_Ind_Str, Mode_Freq_Str, Scaling_Str];

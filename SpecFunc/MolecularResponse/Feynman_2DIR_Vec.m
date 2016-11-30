@@ -83,7 +83,6 @@ I_NR1 = [Ib(:),Ib(:),Ia(:),Ia(:)]; % GB
 I_NR2 = [Ia(:),Ib(:),Ib(:),Ia(:)]; % SE
 I_NR3 = [Kb(:),Kx(:),Kb(:),Ka(:)]; % EA
 
-
 %% Generate List of interaction Frequencies
 Ea_12 = F1(Ia(:))';
 Eb_12 = F1(Ib(:))';

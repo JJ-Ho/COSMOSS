@@ -26,7 +26,6 @@ function  [SpectraGrid,Response] = TwoDIR_Main(PDB_Data,GUI_Inputs)
 % GUI_Inputs.debug = 1;
 % %-Degub------------------------------------------
 
-
 %% Inputs parser
 GUI_Inputs_C      = fieldnames(GUI_Inputs);
 GUI_Inputs_C(:,2) = struct2cell(GUI_Inputs);

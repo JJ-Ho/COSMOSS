@@ -1,4 +1,4 @@
-function [Freq,Beta] = Feynman_2DSFG_Vec(N,F1,F2,A_Ex_01,A_Ex_12,M_Ex_01,M_Ex_12)
+function [Freq,Beta,Index] = Feynman_2DSFG_Vec(N,F1,F2,A_Ex_01,A_Ex_12,M_Ex_01,M_Ex_12)
 % 
 % This function generate Feynman pathway of 2DSFG with given polarization.
 % 
@@ -58,7 +58,6 @@ R2  = A_b0(:,Ja(:)).*M_a0(:,Jb(:)).*M_0b(:,Jc(:)).*M_0a(:,Jd(:));
 NR1 = A_b0(:,Ja(:)).*M_0b(:,Jb(:)).*M_a0(:,Jc(:)).*M_0a(:,Jd(:));
 NR2 = A_a0(:,Ja(:)).*M_b0(:,Jb(:)).*M_0b(:,Jc(:)).*M_0a(:,Jd(:));
 
-
 % R3 NR3
 N_0a = M_Ex_01(Ka(:),:);
 N_0b = M_Ex_01(Kb(:),:);
@@ -84,6 +83,15 @@ N_xb = TD_A_Ex(ind_xb,:);
 % Response (EA)
 R3  = N_xa(:,Ja(:)).*N_bx(:,Jb(:)).*N_0b(:,Jc(:)).*N_0a(:,Jd(:));
 NR3 = N_xb(:,Ja(:)).*N_ax(:,Jb(:)).*N_0b(:,Jc(:)).*N_0a(:,Jd(:));
+
+%% Prep for export mode index
+I_R1  = [Ib(:),Ib(:),Ia(:),Ia(:)]; % GB
+I_R2  = [Ib(:),Ia(:),Ib(:),Ia(:)]; % SE
+I_R3  = [Ka(:),Kx(:),Kb(:),Ka(:)]; % EA
+
+I_NR1 = [Ib(:),Ib(:),Ia(:),Ia(:)]; % GB
+I_NR2 = [Ia(:),Ib(:),Ib(:),Ia(:)]; % SE
+I_NR3 = [Kb(:),Kx(:),Kb(:),Ka(:)]; % EA
 
 %% Generate List of interaction Frequencies
 Ea_12 = F1(Ia(:))';
@@ -124,3 +132,9 @@ Freq.NR1 = Freq_NR1;
 Freq.NR2 = Freq_NR2;
 Freq.NR3 = Freq_NR3;
 
+Index.R1  = I_R1;
+Index.R2  = I_R2;
+Index.R3  = I_R3;
+Index.NR1 = I_NR1;
+Index.NR2 = I_NR2;
+Index.NR3 = I_NR3;

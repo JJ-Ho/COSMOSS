@@ -136,7 +136,6 @@ Structure       = GUI_Data_hModel.Structure;
 GUI_Inputs      = ParseGUI_Modes(GUI_data.hGUIs);
 SpecType        = GUI_Inputs.SpecType;
 
-
 %% Update GUI
 % update table contents
 switch SpecType
@@ -152,6 +151,10 @@ switch SpecType
         T = Update_Modes_Table('TwoDIR',Structure,COSMOSS_Inputs);
         GUI_data.hGUIs.Raman_Plot.Value = 0;
         GUI_data.hGUIs.Raman_Plot.Enable = 'off';
+    case 4 %'2DSFG'
+        T = Update_Modes_Table('TwoDSFG',Structure,COSMOSS_Inputs);
+        GUI_data.hGUIs.Raman_Plot.Value = 1;
+        GUI_data.hGUIs.Raman_Plot.Enable = 'on';
 end
 
 GUI_data.hGUIs.ModeList.ColumnName   = T.ModeList.Name;
@@ -190,11 +193,11 @@ guidata(hObject,GUI_data)
 
 function Update_Response(hObject, eventdata, GUI_data)
 %% Gather necessary inputs
-GUI_Inputs     = ParseGUI_Modes(GUI_data.hGUIs);
-Structure      = GUI_data.Structure;
-OneDSFG        = GUI_data.SpecData;
-hModel         = GUI_data.hModel;
-GUI_Data_Main = guidata(GUI_data.hCOSMOSS);
+GUI_Inputs      = ParseGUI_Modes(GUI_data.hGUIs);
+Structure       = GUI_data.Structure;
+OneDSFG         = GUI_data.SpecData;
+hModel          = GUI_data.hModel;
+GUI_Data_Main   = guidata(GUI_data.hCOSMOSS);
 GUI_Inputs_Main = ParseGUI_Main(GUI_Data_Main.hGUIs);
 
 %% Draw molecule by calling the PlotMolecule function in each model

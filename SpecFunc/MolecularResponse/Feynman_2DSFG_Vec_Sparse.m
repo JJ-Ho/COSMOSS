@@ -1,4 +1,4 @@
-function [Freq,Beta,Index] = Feynman_2DSFG_Vec(F1,F2,A_Ex_01,A_Ex_12,M_Ex_01,M_Ex_12)
+function [Grid,Freq,Int,Index] = Feynman_2DSFG_Vec_Sparse(FreqRange,EJR,F1,F2,A_Ex_01,A_Ex_12,M_Ex_01,M_Ex_12)
 % 
 % This function generate Feynman pathway of 2DSFG with given polarization.
 % 
@@ -25,6 +25,10 @@ function [Freq,Beta,Index] = Feynman_2DSFG_Vec(F1,F2,A_Ex_01,A_Ex_12,M_Ex_01,M_E
 % M_Ex_12 = rand(length(F1),length(F2),3);
 % A_Ex_01 = rand(length(F1),9);
 % A_Ex_12 = rand(length(F1),length(F2),9);
+
+%% Rund up frequency
+F1 = round(F1);
+F2 = round(F2);
 
 %% Prepare index
 % Find number of modes in 1ex and 2ex
@@ -111,10 +115,10 @@ A_a0 = A_Ex_01(Ia(:),:);
 A_b0 = A_Ex_01(Ib(:),:);
 
 % Response (GB SE)
-R1  = A_b0(:,Ja(:)).*M_0b(:,Jb(:)).*M_a0(:,Jc(:)).*M_0a(:,Jd(:));
-R2  = A_b0(:,Ja(:)).*M_a0(:,Jb(:)).*M_0b(:,Jc(:)).*M_0a(:,Jd(:));
-NR1 = A_b0(:,Ja(:)).*M_0b(:,Jb(:)).*M_a0(:,Jc(:)).*M_0a(:,Jd(:));
-NR2 = A_a0(:,Ja(:)).*M_b0(:,Jb(:)).*M_0b(:,Jc(:)).*M_0a(:,Jd(:));
+S_R1  = (A_b0(:,Ja(:)).*M_0b(:,Jb(:)).*M_a0(:,Jc(:)).*M_0a(:,Jd(:)))*EJR';
+S_R2  = (A_b0(:,Ja(:)).*M_a0(:,Jb(:)).*M_0b(:,Jc(:)).*M_0a(:,Jd(:)))*EJR';
+S_NR1 = (A_b0(:,Ja(:)).*M_0b(:,Jb(:)).*M_a0(:,Jc(:)).*M_0a(:,Jd(:)))*EJR';
+S_NR2 = (A_a0(:,Ja(:)).*M_b0(:,Jb(:)).*M_0b(:,Jc(:)).*M_0a(:,Jd(:)))*EJR';
 
 % R3 NR3
 N_0a = M_Ex_01(Ka(:),:);
@@ -132,8 +136,8 @@ N_xa = TD_A_Ex(ind_xa,:);
 N_xb = TD_A_Ex(ind_xb,:);
 
 % Response (EA)
-R3  = N_xa(:,Ja(:)).*N_bx(:,Jb(:)).*N_0b(:,Jc(:)).*N_0a(:,Jd(:));
-NR3 = N_xb(:,Ja(:)).*N_ax(:,Jb(:)).*N_0b(:,Jc(:)).*N_0a(:,Jd(:));
+S_R3  = (N_xa(:,Ja(:)).*N_bx(:,Jb(:)).*N_0b(:,Jc(:)).*N_0a(:,Jd(:)))*EJR';
+S_NR3 = (N_xb(:,Ja(:)).*N_ax(:,Jb(:)).*N_0b(:,Jc(:)).*N_0a(:,Jd(:)))*EJR';
 
 %% Prep for export mode index
 I_R1  = [Ib(:),Ib(:),Ia(:),Ia(:)]; % GB
@@ -160,15 +164,35 @@ Ex_3 = F2(Kx(:));
 Freq_R3  = [-Ea_3, Eb_3 - Ea_3, Ex_3 - Ea_3];
 Freq_NR3 = [ Ea_3, Ea_3 - Eb_3, Ex_3 - Eb_3];
 
+%% Construct sparse matrix version of Responses
+SparseMax = max([max(Ea_12), max(Ex_3 - Ea_3), max(FreqRange)]); 
+
+R1  = sparse(Ea_12,       Eb_12,S_R1 ,SparseMax,SparseMax);
+R2  = sparse(Ea_12,       Eb_12,S_R2 ,SparseMax,SparseMax);
+R3  = sparse(Ea_3 ,Ex_3 - Ea_3 ,S_R3 ,SparseMax,SparseMax);
+NR1 = sparse(Ea_12,       Eb_12,S_NR1,SparseMax,SparseMax);
+NR2 = sparse(Ea_12,       Ea_12,S_NR2,SparseMax,SparseMax);
+NR3 = sparse(Ea_3 ,Ex_3 - Eb_3 ,S_NR3,SparseMax,SparseMax);
+
 %whos %% debug
 
 %% Output
-Beta.R1  = R1';  % [243 x N^2]
-Beta.R2  = R2';  % [243 x N^2]
-Beta.R3  = R3';  % [243 x N^3*(N+1)/2]
-Beta.NR1 = NR1'; % [243 x N^2]
-Beta.NR2 = NR2'; % [243 x N^2]
-Beta.NR3 = NR3'; % [243 x N^3*(N+1)/2]
+MinF = min(FreqRange);
+MaxF = max(FreqRange);
+
+Grid.R1  = full( R1(MinF:MaxF,MinF:MaxF)); % [Pumpx Probe]
+Grid.R2  = full( R2(MinF:MaxF,MinF:MaxF)); % [Pumpx Probe]
+Grid.R3  = full( R3(MinF:MaxF,MinF:MaxF)); % [Pumpx Probe]
+Grid.NR1 = full(NR1(MinF:MaxF,MinF:MaxF)); % [Pumpx Probe]
+Grid.NR2 = full(NR2(MinF:MaxF,MinF:MaxF)); % [Pumpx Probe]
+Grid.NR3 = full(NR3(MinF:MaxF,MinF:MaxF)); % [Pumpx Probe]
+
+Int.R1  = S_R1;
+Int.R2  = S_R2;
+Int.R3  = S_R3;
+Int.NR1 = S_NR1;
+Int.NR2 = S_NR2;
+Int.NR3 = S_NR3;
 
 Freq.R1  = Freq_R1;
 Freq.R2  = Freq_R2;

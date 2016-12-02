@@ -27,7 +27,8 @@ switch SpecType
     case 'TwoDIR'
         [~,SD] = TwoDIR_Main(Structure,COSMOSS_Inputs);
     case 'TwoDSFG'
-        [~,SD] = TwoDSFG_Main(Structure,COSMOSS_Inputs);
+        %[~,SD] = TwoDSFG_Main(Structure,COSMOSS_Inputs);
+        [~,SD] = TwoDSFG_Main_Sparse(Structure,COSMOSS_Inputs);
 end
 
 %% 1D spectra Common part 
@@ -84,8 +85,8 @@ if or(strcmp(SpecType,'TwoDIR'),strcmp(SpecType,'TwoDSFG'))
         Ex_Ind = [Ex_Ind ; New_Ind ];    
 
         % signal intensity
-        New_Int = SD.EJRBeta.(PathName{L})';
-        Int = [Int ; New_Int ];
+        New_Int = SD.Int.(PathName{L});
+        Int = [Int ; New_Int(:) ];
         
         % Pathway label (Number version)
         Tmp = ones(N_Path,1).*L;

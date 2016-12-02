@@ -176,6 +176,8 @@ Response.EJRBeta.NR1 = EJNAR1;
 Response.EJRBeta.NR2 = EJNAR2;
 Response.EJRBeta.NR3 = EJNAR3;
 
+Response.Int = Response.EJRBeta;
+
 %% Binning of spectra
 S = Response.EJRBeta;
 SpectraGrid  = Bin2D(S,Freq,FreqRange);

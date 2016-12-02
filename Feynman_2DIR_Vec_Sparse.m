@@ -1,11 +1,9 @@
-function [Grid,Freq,Int,Index] = Feynman_2DSFG_Vec_Sparse(FreqRange,EJR,F1,F2,A_Ex_01,A_Ex_12,M_Ex_01,M_Ex_12)
+function [Grid,Freq,Int,Index] = Feynman_2DIR_Vec_Sparse(FreqRange,EJR,F1,F2,M_Ex_01,M_Ex_12)
 % 
 % This function generate Feynman pathway of 2DSFG with given polarization.
 % 
 % Since "kron" function use reshape alot, the overall speed of kron product
 % version is slower than for loop version
-% 
-% Note: Alpha_Ex = [size(H) x 9], index: [xx xy xz yx yy yz zx zy zz]
 % 
 % Todo: code acceleration, delete small signals.
 % 
@@ -23,8 +21,6 @@ function [Grid,Freq,Int,Index] = Feynman_2DSFG_Vec_Sparse(FreqRange,EJR,F1,F2,A_
 % 
 % M_Ex_01 = rand(length(F1),3);
 % M_Ex_12 = rand(length(F1),length(F2),3);
-% A_Ex_01 = rand(length(F1),9);
-% A_Ex_12 = rand(length(F1),length(F2),9);
 
 %% Rund up frequency for sparse accumulation
 F1 = round(F1);
@@ -35,11 +31,11 @@ F2 = round(F2);
 N1 = length(F1);
 N2 = length(F2);
 
-% R1 R2 NR1 NR2 index expansion,size N1^2 
+% R1 R2 NR1 NR2 index expansion,size N^2 
 [Ib,Ia] = ndgrid(1:N1,1:N1);
 % XYZ index expansion, size 3^4
-[Jd,Jc,Jb,Ja] = ndgrid(1:3,1:3,1:3,1:9);
-% R3 NR3 index expansion, size: N2*N1^2
+[Jd,Jc,Jb,Ja] = ndgrid(1:3,1:3,1:3,1:3);
+% R3 NR3 index expansion, size: N^3*(N+1)/2
 [Kx,Kb,Ka] = ndgrid(1:N2,1:N1,1:N1);
 
 %[length(Ib(:)),length(Kx(:))] %% Debug
@@ -47,6 +43,8 @@ N2 = length(F2);
 %% Reduce mode number base on the transition intensity
 Cut_Off_01 = 0;
 Cut_Off_12 = 2E-2;
+% Cut_Off_01 = 0;
+% Cut_Off_12 = 0;
 
 % 01
 Norm_M_01  = sqrt(sum(M_Ex_01.^2,2));
@@ -65,16 +63,11 @@ Ia = Ia(Ia>0);
 Ind_Norm_M_01 = Norm_M_01 > Cut_Off_12 * Max_Norm_M_01;
 
 Norm_M_12  = sqrt(sum(M_Ex_12.^2,3));
-Norm_A_12  = sqrt(sum(A_Ex_12.^2,3));
-
 Max_Norm_M_12 = max(Norm_M_12(:));
-Max_Norm_A_12 = max(Norm_A_12(:));
-
 Ind_Norm_M_12 = Norm_M_12 > Cut_Off_12 * Max_Norm_M_12;
-Ind_Norm_A_12 = Norm_A_12 > Cut_Off_12 * Max_Norm_A_12;
-Ind_Norm_AM_12 = and(Ind_Norm_M_12,Ind_Norm_A_12);
 
-Mask_Kx = repmat(Ind_Norm_AM_12', 1,1,N1);
+
+Mask_Kx = repmat(Ind_Norm_M_12', 1,1,N1);
 Mask_Kb = repmat(Ind_Norm_M_01',N2,1,N1);
 Mask_Ka = permute(Mask_Kb,[1,3,2]);
 
@@ -103,30 +96,26 @@ Ka(isnan(Ka)) = [];
 
 %[length(Ib(:)),length(Kx(:))] %% Debug
 
-%% Get 2DSFG response from index version kron product
+%% Get 2DIR response from index version kronec product
 % R1 R2 NR1 NR2
 M_0a = M_Ex_01(Ia(:),:);
 M_0b = M_Ex_01(Ib(:),:);
 M_a0 = M_0a;
 M_b0 = M_0b;
 
-A_a0 = A_Ex_01(Ia(:),:);
-A_b0 = A_Ex_01(Ib(:),:);
-
 % Response (GB SE)
-S_R1  = (A_b0(:,Ja(:)).*M_0b(:,Jb(:)).*M_a0(:,Jc(:)).*M_0a(:,Jd(:)))*EJR';
-S_R2  = (A_b0(:,Ja(:)).*M_a0(:,Jb(:)).*M_0b(:,Jc(:)).*M_0a(:,Jd(:)))*EJR';
-S_NR1 = (A_b0(:,Ja(:)).*M_0b(:,Jb(:)).*M_a0(:,Jc(:)).*M_0a(:,Jd(:)))*EJR';
-S_NR2 = (A_a0(:,Ja(:)).*M_b0(:,Jb(:)).*M_0b(:,Jc(:)).*M_0a(:,Jd(:)))*EJR';
+S_R1  = (M_b0(:,Ja(:)).*M_0b(:,Jb(:)).*M_a0(:,Jc(:)).*M_0a(:,Jd(:)))*EJR';
+S_R2  = (M_b0(:,Ja(:)).*M_a0(:,Jb(:)).*M_0b(:,Jc(:)).*M_0a(:,Jd(:)))*EJR';
+S_NR1 = (M_b0(:,Ja(:)).*M_0b(:,Jb(:)).*M_a0(:,Jc(:)).*M_0a(:,Jd(:)))*EJR';
+S_NR2 = (M_a0(:,Ja(:)).*M_b0(:,Jb(:)).*M_0b(:,Jc(:)).*M_0a(:,Jd(:)))*EJR';
 
 %% R3 NR3
 % Merge the first two index of Mu_Ex into one => 2D verion Mu_Ex
 TD_M_Ex = reshape(M_Ex_12,[],3);
-TD_A_Ex = reshape(A_Ex_12,[],9);
 
 % estimate of largest array size and break it down to several for loop
-MEM_CutOff = 1; %[GB]
-Ele_Max = round(MEM_CutOff/(243 * 8 / 1e9)) + 1; % number of elements to reach MEM_CufOff
+MEM_CutOff = 0.1; %[GB]
+Ele_Max = round(MEM_CutOff/(81 * 8 / 1e9)) + 1; % number of elements to reach MEM_CufOff
 N3 = numel(Ka);
 
 if N3 > Ele_Max
@@ -142,7 +131,7 @@ if N3 > Ele_Max
     Loop_N = size(Ka_L,2);
 
     % display how many loop is going to be done
-    MEM = numel(Ka_L) * 243 * 8 / 1e9; % roughly unit in GB
+    MEM = numel(Ka_L) * 81 * 8 / 1e9; % roughly unit in GB
     disp('--------------------------------------')
     disp(['Memory cut-off set at ', num2str(MEM_CutOff), 'GB...'])
     disp(['Memory size of R3/NR3 is about ', num2str(round(MEM)), 'GB...'])
@@ -159,8 +148,8 @@ if N3 > Ele_Max
 
         N_ax = TD_M_Ex(ind_ax(:,LN),:);
         N_bx = TD_M_Ex(ind_bx(:,LN),:);
-        N_xa = TD_A_Ex(ind_ax(:,LN),:); % ind_xa = ind_ax
-        N_xb = TD_A_Ex(ind_bx(:,LN),:); % ind_xb = ind_bx
+        N_xa = TD_M_Ex(ind_ax(:,LN),:); % ind_xa = ind_ax
+        N_xb = TD_M_Ex(ind_bx(:,LN),:); % ind_xb = ind_bx
 
         % Response (EA)
         S_R3(:,LN)  = (N_xa(:,Ja(:)).*N_bx(:,Jb(:)).*N_0b(:,Jc(:)).*N_0a(:,Jd(:)))*EJR';
@@ -184,27 +173,27 @@ if N3 > Ele_Max
 
         N_ax = TD_M_Ex(ind_ax_End,:);
         N_bx = TD_M_Ex(ind_bx_End,:);
-        N_xa = TD_A_Ex(ind_ax_End,:); % ind_xa = ind_ax
-        N_xb = TD_A_Ex(ind_bx_End,:); % ind_xb = ind_bx
+        N_xa = N_ax; % ind_xa = ind_ax
+        N_xb = N_bx; % ind_xb = ind_bx
 
         % Response (EA)
         S_R3_End  = (N_xa(:,Ja(:)).*N_bx(:,Jb(:)).*N_0b(:,Jc(:)).*N_0a(:,Jd(:)))*EJR';
         S_NR3_End = (N_xb(:,Ja(:)).*N_ax(:,Jb(:)).*N_0b(:,Jc(:)).*N_0a(:,Jd(:)))*EJR';
     
     S_R3  = [ S_R3; S_R3_End];
-    S_NR3 = [S_NR3;S_NR3_End];
+    S_NR3 = [S_NR3;S_NR3_End];    
 else
     N_0a = M_Ex_01(Ka(:),:);
     N_0b = M_Ex_01(Kb(:),:);
 
     N_ax = TD_M_Ex(ind_ax,:);
     N_bx = TD_M_Ex(ind_bx,:);
-    N_xa = TD_A_Ex(ind_ax,:); % ind_xa = ind_ax
-    N_xb = TD_A_Ex(ind_bx,:); % ind_xb = ind_bx
+    N_xa = N_ax; % ind_xa = ind_ax
+    N_xb = N_bx; % ind_xb = ind_bx
 
     % Response (EA)
-    S_R3  = (N_xa(:,Ja(:)).*N_bx(:,Jb(:)).*N_0b(:,Jc(:)).*N_0a(:,Jd(:)))*EJR';
-    S_NR3 = (N_xb(:,Ja(:)).*N_ax(:,Jb(:)).*N_0b(:,Jc(:)).*N_0a(:,Jd(:)))*EJR';
+    S_R3  = N_xa(:,Ja(:)).*N_bx(:,Jb(:)).*N_0b(:,Jc(:)).*N_0a(:,Jd(:));
+    S_NR3 = N_xb(:,Ja(:)).*N_ax(:,Jb(:)).*N_0b(:,Jc(:)).*N_0a(:,Jd(:));
 end
 
 %% Prep for export mode index

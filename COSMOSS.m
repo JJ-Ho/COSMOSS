@@ -333,8 +333,9 @@ if eq(GUI_Inputs.Sampling,1)
         end
         Structure.freq = Freq_Orig + Fluctuation;
        
-        [Tmp_SG,Tmp_Res] = TwoDIR_Main(Structure,GUI_Inputs);
-
+        %[Tmp_SG,Tmp_Res] = TwoDIR_Main(Structure,GUI_Inputs);
+        [Tmp_SG,Tmp_Res] = TwoDIR_Main_Sparse(Structure,GUI_Inputs);
+        
         Rephasing    = Rephasing    + Tmp_SG.Rephasing   ;
         NonRephasing = NonRephasing + Tmp_SG.NonRephasing;
         SpecAccuR1   = SpecAccuR1   + Tmp_SG.SpecAccuR1  ;
@@ -370,7 +371,8 @@ if eq(GUI_Inputs.Sampling,1)
     disp(['Total time: ' num2str(Total_TIME)])
     
 else
-    [SpectraGrid,Response] = TwoDIR_Main(Structure,GUI_Inputs);
+    %[SpectraGrid,Response] = TwoDIR_Main(Structure,GUI_Inputs);
+    [SpectraGrid,Response] = TwoDIR_Main_Sparse(Structure,GUI_Inputs);
 end
 
 %% Conv2D linshape and make figure
@@ -483,7 +485,7 @@ if eq(GUI_Inputs.Sampling,1)
     disp(['Total time: ' num2str(Total_TIME)])
     
 else
-%     [SpectraGrid,Response] = TwoDSFG_Main(Structure,GUI_Inputs);
+    %[SpectraGrid,Response] = TwoDSFG_Main(Structure,GUI_Inputs);
     [SpectraGrid,Response] = TwoDSFG_Main_Sparse(Structure,GUI_Inputs);
 end
 

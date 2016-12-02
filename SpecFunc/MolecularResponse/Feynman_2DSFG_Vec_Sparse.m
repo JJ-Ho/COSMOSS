@@ -125,7 +125,7 @@ TD_M_Ex = reshape(M_Ex_12,[],3);
 TD_A_Ex = reshape(A_Ex_12,[],9);
 
 % estimate of largest array size and break it down to several for loop
-MEM_CutOff = 1; %[GB]
+MEM_CutOff = 0.1; %[GB]
 Ele_Max = round(MEM_CutOff/(243 * 8 / 1e9)) + 1; % number of elements to reach MEM_CufOff
 N3 = numel(Ka);
 

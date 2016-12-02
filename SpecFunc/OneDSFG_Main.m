@@ -95,6 +95,22 @@ Ex_F1   = H.Sort_Ex_F1;
 M_Ex_01 = Mu.M_Ex_01';    %=> [3*N]
 A_Ex_01 = Alpha.M_Ex_01'; %=> [9*N]
 
+%% Reduce mode number base on the transition intensity
+Cut_Off = 0;
+
+Norm_M_01  = sum(M_Ex_01.^2,1);
+Norm_A_01  = sum(A_Ex_01.^2,1);
+Norm_AM_01 = Norm_A_01.* Norm_M_01;
+
+Max_Norm_AM_01 = max(Norm_AM_01);
+Ind_Norm_AM_01 = Norm_AM_01 > Cut_Off * Max_Norm_AM_01;
+
+Ex_F1   = Ex_F1(Ind_Norm_AM_01);
+M_Ex_01 = M_Ex_01(:,Ind_Norm_AM_01);
+A_Ex_01 = A_Ex_01(:,Ind_Norm_AM_01);
+
+Removed_Ind = (1:Num_Modes).* ~Ind_Norm_AM_01; % export removed mode list
+
 %% Generate Molecular frame SFG Responses
 % vectorized version
 [M_Ind,A_Ind] = ndgrid(1:3,1:9);
@@ -185,3 +201,4 @@ OneDSFG.CouplingType = CouplingType;
 OneDSFG.SpecType     = 'SFG';
 OneDSFG.Response1D   = AccuGrid;
 OneDSFG.freq_OneD    = FreqRange;
+OneDSFG.Removed_Ind  = Removed_Ind;

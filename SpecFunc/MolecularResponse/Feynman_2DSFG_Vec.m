@@ -1,4 +1,4 @@
-function [Freq,Beta,Index] = Feynman_2DSFG_Vec(N,F1,F2,A_Ex_01,A_Ex_12,M_Ex_01,M_Ex_12)
+function [Freq,Beta,Index] = Feynman_2DSFG_Vec(F1,F2,A_Ex_01,A_Ex_12,M_Ex_01,M_Ex_12)
 % 
 % This function generate Feynman pathway of 2DSFG with given polarization.
 % 
@@ -17,31 +17,89 @@ function [Freq,Beta,Index] = Feynman_2DSFG_Vec(N,F1,F2,A_Ex_01,A_Ex_12,M_Ex_01,M
 % Copyright Jia-Jung Ho, 2014-2016
 
 %% debug
-% N = 3;
+% clear all
+% F1 = (1:3);
+% F2 = (4:7);
 % 
-% Sort_Ex_Freq = rand((N+1)*(N+2)/2,1)*1000;
-% 
-% Mask = ones((N+1)*(N+2)/2);
-% Mask = Mask .* ~blkdiag(1,ones(N),ones(N*(N+1)/2));
-% Mask(1,N+2:(N+1)*(N+2)/2) = 0;
-% Mask(N+2:(N+1)*(N+2)/2,1) = 0;
-% 
-% Mu_Ex = rand((N+1)*(N+2)/2,(N+1)*(N+2)/2,3);
-% Mu_Ex = Mu_Ex.* repmat(Mask,[1,1,3]);
-% 
-% Alpha_Ex = rand((N+1)*(N+2)/2,(N+1)*(N+2)/2,9);
-% Alpha_Ex = Alpha_Ex.* repmat(Mask,[1,1,9]);
+% M_Ex_01 = rand(length(F1),3);
+% M_Ex_12 = rand(length(F1),length(F2),3);
+% A_Ex_01 = rand(length(F1),9);
+% A_Ex_12 = rand(length(F1),length(F2),9);
 
 %% Prepare index
+% Find number of modes in 1ex and 2ex
+N1 = length(F1);
+N2 = length(F2);
 
-% R1 R2 NR1 NR2 index expansion,size N^2 
-[Ib,Ia] = ndgrid(1:N,1:N);
+% R1 R2 NR1 NR2 index expansion,size N1^2 
+[Ib,Ia] = ndgrid(1:N1,1:N1);
 % XYZ index expansion, size 3^4
 [Jd,Jc,Jb,Ja] = ndgrid(1:3,1:3,1:3,1:9);
-% R3 NR3 index expansion, size: N^3*(N+1)/2
-[Kx,Kb,Ka] = ndgrid(1:N*(N+1)/2,1:N,1:N);
+% R3 NR3 index expansion, size: N2*N1^2
+[Kx,Kb,Ka] = ndgrid(1:N2,1:N1,1:N1);
 
-%% Get 2DIR response from index version kronec product
+%[length(Ib(:)),length(Kx(:))] %% Debug
+
+%% Reduce mode number base on the transition intensity
+Cut_Off_01 = 0;
+Cut_Off_12 = 2E-2;
+
+% 01
+Norm_M_01  = sqrt(sum(M_Ex_01.^2,2));
+
+Max_Norm_M_01 = max(Norm_M_01);
+Ind_Norm_M_01 = Norm_M_01 > Cut_Off_01 * Max_Norm_M_01;
+
+[Mask_Ib,Mask_Ia] = ndgrid(Ind_Norm_M_01,Ind_Norm_M_01);
+Ib = Mask_Ib.*Ib;
+Ia = Mask_Ia.*Ia;
+
+Ib = Ib(Ib>0);
+Ia = Ia(Ia>0);
+
+% 12
+Ind_Norm_M_01 = Norm_M_01 > Cut_Off_12 * Max_Norm_M_01;
+
+Norm_M_12  = sqrt(sum(M_Ex_12.^2,3));
+Norm_A_12  = sqrt(sum(A_Ex_12.^2,3));
+
+Max_Norm_M_12 = max(Norm_M_12(:));
+Max_Norm_A_12 = max(Norm_A_12(:));
+
+Ind_Norm_M_12 = Norm_M_12 > Cut_Off_12 * Max_Norm_M_12;
+Ind_Norm_A_12 = Norm_A_12 > Cut_Off_12 * Max_Norm_A_12;
+Ind_Norm_AM_12 = and(Ind_Norm_M_12,Ind_Norm_A_12);
+
+Mask_Kx = repmat(Ind_Norm_AM_12', 1,1,N1);
+Mask_Kb = repmat(Ind_Norm_M_01',N2,1,N1);
+Mask_Ka = permute(Mask_Kb,[1,3,2]);
+
+Kx = Mask_Kx.*Mask_Kb.*Mask_Ka.*Kx;
+Kb = Mask_Kx.*Mask_Kb.*Mask_Ka.*Kb;
+Ka = Mask_Kx.*Mask_Kb.*Mask_Ka.*Ka;
+
+Kx(Kx==0) = NaN;
+Kb(Kb==0) = NaN;
+Ka(Ka==0) = NaN;
+
+% Indice of 2D version Mu_Ex, 
+% Note [N,N*(N+1)/2] is the first two Dimension of Mu_Ex
+ind_ax = sub2ind([N1,N2],Ka(:),Kx(:));
+ind_bx = sub2ind([N1,N2],Kb(:),Kx(:));
+
+ind_ax(isnan(ind_ax)) = [];
+ind_bx(isnan(ind_bx)) = [];
+
+ind_xa = ind_ax;
+ind_xb = ind_bx;
+
+Kx(isnan(Kx)) = [];
+Kb(isnan(Kb)) = [];
+Ka(isnan(Ka)) = [];
+
+%[length(Ib(:)),length(Kx(:))] %% Debug
+
+%% Get 2DSFG response from index version kronec product
 
 % R1 R2 NR1 NR2
 M_0a = M_Ex_01(Ia(:),:);
@@ -66,13 +124,6 @@ N_0b = M_Ex_01(Kb(:),:);
 TD_M_Ex = reshape(M_Ex_12,[],3);
 TD_A_Ex = reshape(A_Ex_12,[],9);
 
-% Indice of 2D version Mu_Ex, 
-% Note [N,N*(N+1)/2] is the first two Dimension of Mu_Ex
-ind_ax = sub2ind([N,N*(N+1)/2],Ka(:),Kx(:));
-ind_bx = sub2ind([N,N*(N+1)/2],Kb(:),Kx(:));
-ind_xa = ind_ax;
-ind_xb = ind_bx;
-
 % get TDV using linear index of the first two indice of Mu_Ex 
 % and ":" to extract the whole vector components 
 N_ax = TD_M_Ex(ind_ax,:);
@@ -94,20 +145,20 @@ I_NR2 = [Ia(:),Ib(:),Ib(:),Ia(:)]; % SE
 I_NR3 = [Kb(:),Kx(:),Kb(:),Ka(:)]; % EA
 
 %% Generate List of interaction Frequencies
-Ea_12 = F1(Ia(:))';
-Eb_12 = F1(Ib(:))';
+Ea_12 = F1(Ia(:));
+Eb_12 = F1(Ib(:));
 
-Freq_R1  = [-Ea_12 ; zeros(1,N^2)  ; Eb_12]';
-Freq_R2  = [-Ea_12 ; Eb_12 - Ea_12 ; Eb_12]';
-Freq_NR1 = [ Ea_12 ; zeros(1,N^2)  ; Eb_12]';
-Freq_NR2 = [ Ea_12 ; Ea_12 - Eb_12 ; Ea_12]'; % This is a interesting term! only contribute to diagonal!
+Freq_R1  = [-Ea_12, zeros(size(Ea_12)), Eb_12];
+Freq_R2  = [-Ea_12, Eb_12 - Ea_12     , Eb_12];
+Freq_NR1 = [ Ea_12, zeros(size(Ea_12)), Eb_12];
+Freq_NR2 = [ Ea_12, Ea_12 - Eb_12     , Ea_12]; % This is a interesting term! only contribute to diagonal!
 
-Ea_3 = F1(Ka(:))';
-Eb_3 = F1(Kb(:))';
-Ex_3 = F2(Kx(:))';
+Ea_3 = F1(Ka(:));
+Eb_3 = F1(Kb(:));
+Ex_3 = F2(Kx(:));
 
-Freq_R3  = [-Ea_3 ; Eb_3 - Ea_3 ; Ex_3 - Ea_3]';
-Freq_NR3 = [ Ea_3 ; Ea_3 - Eb_3 ; Ex_3 - Eb_3]';
+Freq_R3  = [-Ea_3, Eb_3 - Ea_3, Ex_3 - Ea_3];
+Freq_NR3 = [ Ea_3, Ea_3 - Eb_3, Ex_3 - Eb_3];
 
 %% Output
 Beta.R1  = R1';  % [243 x N^2]

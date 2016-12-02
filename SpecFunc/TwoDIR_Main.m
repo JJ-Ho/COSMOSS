@@ -96,10 +96,10 @@ M_Ex_01 = Mu.M_Ex_01;
 M_Ex_12 = Mu.M_Ex_12;
 
 %% Generate Feynman pathway for 2DSFG
-Num_Modes = PDB_Data.Num_Modes;
+% Num_Modes = PDB_Data.Num_Modes;
 % Response = Feynman_2DIR_kron(Num_Modes,Sort_Ex_Freq,Mu_Ex);
 % Response = Feynman_2DIR_Vec_Full_M(Num_Modes,Sort_Ex_Freq,Mu_Ex);
-[Freq,Beta,Index] = Feynman_2DIR_Vec(Num_Modes,Ex_F1,Ex_F2,M_Ex_01,M_Ex_12);
+[Freq,Beta,Index] = Feynman_2DIR_Vec(Ex_F1,Ex_F2,M_Ex_01,M_Ex_12);
 
 %% Decide what kinds of rod rotation average is and applied rotational 
 % average on Response in molecular frame

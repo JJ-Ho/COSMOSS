@@ -103,7 +103,7 @@ Ka(isnan(Ka)) = [];
 
 %[length(Ib(:)),length(Kx(:))] %% Debug
 
-%% Get 2DSFG response from index version kronec product
+%% Get 2DSFG response from index version kron product
 
 % R1 R2 NR1 NR2
 M_0a = M_Ex_01(Ia(:),:);
@@ -120,24 +120,94 @@ S_R2  = (A_b0(:,Ja(:)).*M_a0(:,Jb(:)).*M_0b(:,Jc(:)).*M_0a(:,Jd(:)))*EJR';
 S_NR1 = (A_b0(:,Ja(:)).*M_0b(:,Jb(:)).*M_a0(:,Jc(:)).*M_0a(:,Jd(:)))*EJR';
 S_NR2 = (A_a0(:,Ja(:)).*M_b0(:,Jb(:)).*M_0b(:,Jc(:)).*M_0a(:,Jd(:)))*EJR';
 
-% R3 NR3
-N_0a = M_Ex_01(Ka(:),:);
-N_0b = M_Ex_01(Kb(:),:);
-
+%% R3 NR3
 % Merge the first two index of Mu_Ex into one => 2D verion Mu_Ex
 TD_M_Ex = reshape(M_Ex_12,[],3);
 TD_A_Ex = reshape(A_Ex_12,[],9);
 
-% get TDV using linear index of the first two indice of Mu_Ex 
-% and ":" to extract the whole vector components 
-N_ax = TD_M_Ex(ind_ax,:);
-N_bx = TD_M_Ex(ind_bx,:);
-N_xa = TD_A_Ex(ind_xa,:);
-N_xb = TD_A_Ex(ind_xb,:);
+% estimate of largest array size and break it down to several for loop
+MEM_CutOff = 1; %[GB]
+Ele_Max = round(MEM_CutOff/(243 * 8 / 1e9)) + 1; % number of elements to reach MEM_CufOff
+N3 = numel(Ka);
 
-% Response (EA)
-S_R3  = (N_xa(:,Ja(:)).*N_bx(:,Jb(:)).*N_0b(:,Jc(:)).*N_0a(:,Jd(:)))*EJR';
-S_NR3 = (N_xb(:,Ja(:)).*N_ax(:,Jb(:)).*N_0b(:,Jc(:)).*N_0a(:,Jd(:)))*EJR';
+if N3 > Ele_Max
+    % Add NaNs so I can reshape indexes
+    Padding_L = Ele_Max - mod(N3,Ele_Max);
+    Padding_NaN = nan(Padding_L,1);
+    
+    Ka_L     = reshape( [Ka(:); Padding_NaN],Ele_Max,[]);
+    Kb_L     = reshape( [Kb(:); Padding_NaN],Ele_Max,[]);
+    ind_ax = reshape([ind_ax; Padding_NaN],Ele_Max,[]);
+    ind_bx = reshape([ind_bx; Padding_NaN],Ele_Max,[]);
+
+    Loop_N = size(Ka_L,2);
+
+    % display how many loop is going to be done
+    MEM = numel(Ka_L) * 243 * 8 / 1e9; % roughly unit in GB
+    disp('--------------------------------------')
+    disp(['Memory cut-off set at ', num2str(MEM_CutOff), 'GB...'])
+    disp(['Memory size of R3/NR3 is about ', num2str(round(MEM)), 'GB...'])
+    disp(['Will run R3/NR3 calculation into ', num2str(Loop_N), ' Loops to reduce memory load...'])
+    disp('--------------------------------------')
+    
+    % pre-allocate matrix
+    S_R3  = zeros(Ele_Max,Loop_N-1);
+    S_NR3 = zeros(Ele_Max,Loop_N-1);
+
+    for LN = 1:Loop_N -1 
+        N_0a = M_Ex_01(Ka_L(:,LN),:);
+        N_0b = M_Ex_01(Kb_L(:,LN),:);
+
+        N_ax = TD_M_Ex(ind_ax(:,LN),:);
+        N_bx = TD_M_Ex(ind_bx(:,LN),:);
+        N_xa = TD_A_Ex(ind_ax(:,LN),:); % ind_xa = ind_ax
+        N_xb = TD_A_Ex(ind_bx(:,LN),:); % ind_xb = ind_bx
+
+        % Response (EA)
+        S_R3(:,LN)  = (N_xa(:,Ja(:)).*N_bx(:,Jb(:)).*N_0b(:,Jc(:)).*N_0a(:,Jd(:)))*EJR';
+        S_NR3(:,LN) = (N_xb(:,Ja(:)).*N_ax(:,Jb(:)).*N_0b(:,Jc(:)).*N_0a(:,Jd(:)))*EJR';
+
+    end
+    
+    S_R3  =  S_R3(:);
+    S_NR3 = S_NR3(:);
+    
+    % deall with the last loop
+        Last_Ind = (1:mod(N3,Ele_Max))';
+        
+        Ka_End     =   Ka_L(Last_Ind,Loop_N);
+        Kb_End     =   Kb_L(Last_Ind,Loop_N);
+        ind_ax_End = ind_ax(Last_Ind,Loop_N);
+        ind_bx_End = ind_bx(Last_Ind,Loop_N);
+
+        N_0a = M_Ex_01(Ka_End,:);
+        N_0b = M_Ex_01(Kb_End,:);
+
+        N_ax = TD_M_Ex(ind_ax_End,:);
+        N_bx = TD_M_Ex(ind_bx_End,:);
+        N_xa = TD_A_Ex(ind_ax_End,:); % ind_xa = ind_ax
+        N_xb = TD_A_Ex(ind_bx_End,:); % ind_xb = ind_bx
+
+        % Response (EA)
+        S_R3_End  = (N_xa(:,Ja(:)).*N_bx(:,Jb(:)).*N_0b(:,Jc(:)).*N_0a(:,Jd(:)))*EJR';
+        S_NR3_End = (N_xb(:,Ja(:)).*N_ax(:,Jb(:)).*N_0b(:,Jc(:)).*N_0a(:,Jd(:)))*EJR';
+    
+    S_R3  = [ S_R3; S_R3_End];
+    S_NR3 = [S_NR3;S_NR3_End];
+else
+
+    N_0a = M_Ex_01(Ka(:),:);
+    N_0b = M_Ex_01(Kb(:),:);
+
+    N_ax = TD_M_Ex(ind_ax,:);
+    N_bx = TD_M_Ex(ind_bx,:);
+    N_xa = TD_A_Ex(ind_ax,:); % ind_xa = ind_ax
+    N_xb = TD_A_Ex(ind_bx,:); % ind_xb = ind_bx
+
+    % Response (EA)
+    S_R3  = (N_xa(:,Ja(:)).*N_bx(:,Jb(:)).*N_0b(:,Jc(:)).*N_0a(:,Jd(:)))*EJR';
+    S_NR3 = (N_xb(:,Ja(:)).*N_ax(:,Jb(:)).*N_0b(:,Jc(:)).*N_0a(:,Jd(:)))*EJR';
+end
 
 %% Prep for export mode index
 I_R1  = [Ib(:),Ib(:),Ia(:),Ia(:)]; % GB

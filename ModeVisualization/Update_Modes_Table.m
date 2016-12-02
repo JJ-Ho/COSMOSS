@@ -62,7 +62,7 @@ end
 %% 2D spectrum Common part
 if or(strcmp(SpecType,'TwoDIR'),strcmp(SpecType,'TwoDSFG'))
     PathName = {'R1','R2','R3','NR1','NR2','NR3'}; % [Improve] add GUI input for this 
-    %PathName = {'R1'};
+    %PathName = {'NR2'};
     Pump_F       = [];
     Prob_F       = [];
     Ex_Ind       = [];
@@ -100,6 +100,7 @@ if or(strcmp(SpecType,'TwoDIR'),strcmp(SpecType,'TwoDSFG'))
     % Apply intensity cutoff
     CutOff_R = 1E-2; % [Improve] add GUI input for this 
     CutOff_I = Int < max(abs(Int)*CutOff_R);
+    
     
     Int(CutOff_I)          = [];
     Pump_F(CutOff_I)       = [];

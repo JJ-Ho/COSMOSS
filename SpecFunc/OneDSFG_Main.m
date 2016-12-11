@@ -173,7 +173,7 @@ J_ResLF_Avg = J * ResLF_Avg; % => [8,N]
 
 %% E part, Plarization of each incident beams
 % Polarization Angles of incident beams, 0 = P, 90 = S
-P_IR    =    P_IR/180*pi;   
+P_IR    =    P_IR/180*pi;
 P_Vis1D = P_Vis1D/180*pi;
 P_Sig1D = P_Sig1D/180*pi;
 

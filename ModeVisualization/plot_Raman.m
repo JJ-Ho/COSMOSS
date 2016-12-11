@@ -160,7 +160,8 @@ switch Raman_Type
         V1 = [cos(T).*cos(P),cos(T).*sin(P),sin(T)];
         V2 = V1;
         %V2 = [-sin(T).*cos(P),-sin(T).*sin(P),cos(T)]; % for cross polarization
-
+        
+        Raman = RT_scale .* Raman;
         Rho = sum((V1*Raman).*V2,2);
         Rho = reshape(Rho,size(Theta));
 

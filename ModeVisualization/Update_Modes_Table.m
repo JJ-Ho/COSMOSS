@@ -48,11 +48,7 @@ if or(strcmp(SpecType,'FTIR'),strcmp(SpecType,'SFG'))
     C_P_Num.Data = P_Num;
 
     % Transition dipole
-    Ex_Mu = SD.Mu.M_Ex_01;
-        % permute the matix dimension if only one mode
-        if eq(Num_Ex_Mode,1)
-            Ex_Mu = Ex_Mu';
-        end
+    Ex_Mu = SD.Mu.M_Ex_01; % [Nx3]
     C_Mu_V.Data = Ex_Mu;
 
     Ex_Mu_Int = sqrt(sum(Ex_Mu.^2,2));
@@ -128,11 +124,7 @@ switch SpecType
                               C_Mu_V);
                  
     case 'SFG'
-        Ex_Alpha = SD.Alpha.M_Ex_01;
-            % permute the matix dimension for spectial case
-            if eq(Num_Ex_Mode,1)
-                Ex_Alpha = Ex_Alpha';
-            end
+        Ex_Alpha = SD.Alpha.M_Ex_01; % [Nx9]
 
         Ex_Alpha_Norm = sqrt(sum(Ex_Alpha(:,:).^2,2)); % Norm defined in Silby's paper: JCP 1992, 97, 5607?5615.
         C_A_Int.Data = Ex_Alpha_Norm;
@@ -145,7 +137,7 @@ switch SpecType
             EigenV_Alpha(i,:) = diag(D)';
         end
         C_A_V.Data = EigenV_Alpha;
-        
+
         Norm1D =  Ex_Mu_Int.*Ex_Alpha_Norm;
         C_Norm1D.Data = Norm1D;
 

@@ -174,28 +174,21 @@ XYZ_Rot = (Rot_Mat*XYZ')';
 Mol_Frame_Rot = (Rot_Mat\Mol_Frame_Orig')'; % axis rotation is inv(Rot_M)*Axis_M = Rot_M\Axis_M
 
 %% Define Aminde I modes coordinate system
-switch Num_Modes
-    case 1
-        Dimenesion = 1;
-    otherwise
-        Dimenesion = 2;
-end
-
 Vec_CO = XYZ_Atom_Rot(:,2,:)-XYZ_Atom_Rot(:,1,:);
-Vec_CO = squeeze(Vec_CO);
+Vec_CO = reshape(Vec_CO,Num_Modes,3);
 Vec_CO = bsxfun(@rdivide,Vec_CO,sqrt(sum(abs(Vec_CO).^2,2))); % normaliz CO vectors
 
 Vec_CN = XYZ_Atom_Rot(:,3,:)-XYZ_Atom_Rot(:,1,:);
-Vec_CN= squeeze(Vec_CN);
+Vec_CN=  reshape(Vec_CN,Num_Modes,3); 
 Vec_CN = bsxfun(@rdivide,Vec_CN,sqrt(sum(abs(Vec_CN).^2,2))); % normaliz CN vectors
 
-AmideICenter = squeeze(XYZ_Atom_Rot(:,1,:)) + Vec_CO.*0.665 + Vec_CN.*0.256; % center of amide I mode, ref from Jenny's mathematica code
+AmideICenter = reshape(XYZ_Atom_Rot(:,1,:),Num_Modes,3) + Vec_CO.*0.665 + Vec_CN.*0.256; % center of amide I mode, ref from Jenny's mathematica code
 
 % Define Lab frame coordinate of each mode
 Z_Sim = Vec_CO;
-X_Sim = cross(Vec_CN,Z_Sim,Dimenesion);
-X_Sim = bsxfun(@rdivide,X_Sim,sqrt(sum(abs(X_Sim).^2,Dimenesion))); % normalize
-Y_Sim = cross(Z_Sim,X_Sim,Dimenesion);
+X_Sim = cross(Vec_CN,Z_Sim,2);
+X_Sim = bsxfun(@rdivide,X_Sim,sqrt(sum(abs(X_Sim).^2,2))); % normalize
+Y_Sim = cross(Z_Sim,X_Sim,2);
 Y_Sim = bsxfun(@rdivide,Y_Sim,sqrt(sum(abs(Y_Sim).^2,2))); % normalize
 
 XYZ_Sim = [X_Sim(:); Y_Sim(:); Z_Sim(:)]';

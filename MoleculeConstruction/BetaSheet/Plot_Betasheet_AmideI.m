@@ -127,8 +127,12 @@ hold on
     %% draws bonds
     if Plot_Bonds
         % Chain
-            Conn0 = Connectivity(Carbon_Pos,'BondLength',3.5);
-            gplot3(Conn0, Carbon_Pos);
+            if eq(size(Carbon_Pos,1),1)
+                % only one carbon, don't draw peptide chain
+            else
+                Conn0 = Connectivity(Carbon_Pos,'BondLength',3.5);
+                gplot3(Conn0, Carbon_Pos);
+            end
         % C=O bond
             C_O_XYZ = [Carbon_Pos;Oxygen_Pos];
             Conn1 = Connectivity(C_O_XYZ,'BondLength',1.6);

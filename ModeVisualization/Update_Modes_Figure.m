@@ -17,9 +17,10 @@ defaultRaman_Plot     = 1;
 defaultRaman_Scale    = 1;
 defaultRaman_Type     = 1;
 defaultNormalize      = 1;
-defaultPlot_EigenVec  = 0;
-defaultEigneVec_Ind   = [];
-defaultEigneVec_Conv  = 1;
+defaultPlot_EigVec    = 0;
+defaultEigVec_Ind     = [];
+defaultEigVec_Conv    = 1;
+defaultEigVec_Scale   = 1;
 defaultSpecType       = 1; % FTIR
 
 % add options
@@ -32,9 +33,10 @@ addOptional(INPUT,'Raman_Plot'    , defaultRaman_Plot    );
 addOptional(INPUT,'Raman_Scale'   , defaultRaman_Scale   );
 addOptional(INPUT,'Raman_Type'    , defaultRaman_Type    );
 addOptional(INPUT,'Normalize'     , defaultNormalize     );
-addOptional(INPUT,'Plot_EigenVec' , defaultPlot_EigenVec );
-addOptional(INPUT,'EigneVec_Ind'  , defaultEigneVec_Ind  );
-addOptional(INPUT,'EigneVec_Conv' , defaultEigneVec_Conv );
+addOptional(INPUT,'Plot_EigVec'   , defaultPlot_EigVec   );
+addOptional(INPUT,'EigVec_Ind'    , defaultEigVec_Ind    );
+addOptional(INPUT,'EigVec_Conv'   , defaultEigVec_Conv   );
+addOptional(INPUT,'EigVec_Scale'  , defaultEigVec_Scale  );
 addOptional(INPUT,'SpecType'      , defaultSpecType      );
 
 parse(INPUT,GUI_Inputs_C{:});
@@ -49,14 +51,15 @@ Raman_Plot     = INPUT.Results.Raman_Plot    ;
 Raman_Scale    = INPUT.Results.Raman_Scale   ;
 Raman_Type     = INPUT.Results.Raman_Type    ;
 Normalize      = INPUT.Results.Normalize     ;
-Plot_EigenVec  = INPUT.Results.Plot_EigenVec ;
-EigneVec_Ind   = INPUT.Results.EigneVec_Ind  ;
-EigneVec_Conv  = INPUT.Results.EigneVec_Conv ;
+Plot_EigVec    = INPUT.Results.Plot_EigVec   ;
+EigVec_Ind     = INPUT.Results.EigVec_Ind    ;
+EigVec_Conv    = INPUT.Results.EigVec_Conv   ;
+EigVec_Scale   = INPUT.Results.EigVec_Scale  ;
 SpecType       = INPUT.Results.SpecType      ;
 
 %% Define useful parameters
 N_Mode_Total  = Structure.Num_Modes;
-Mode_Index    = (1:N_Mode_Total)+1;
+%Mode_Index    = (1:N_Mode_Total)+1;
 N_Mode_Select = length(Mu_Alpha_Ind);
 
 %% molecular frame (need to rename to ab frame)
@@ -110,17 +113,15 @@ if Mu_Alpha_Plot
 end
 
 % Plot Mixing coefficients
-if Plot_EigenVec
+if Plot_EigVec
     Mode_Colors = bsxfun(@times,ones(N_Mode_Total,3),[255,128,0]./256);
-    switch EigneVec_Conv
+    Mix_Coeft   = EigVecM(:,EigVec_Ind).* EigVec_Scale;
+    switch EigVec_Conv
         case 1 % just the coefficient
-
-           Mix_Coeft  = EigVecM(:,EigneVec_Ind);
            [X0,Y0,Z0] = sphere(50);
            for k = 1:Structure.Num_Modes
-
-               R_Scaling = 3;
-               RR   = abs(Mix_Coeft(k)) .* R_Scaling;
+               
+               RR   = abs(Mix_Coeft(k));
                Sign = sign(Mix_Coeft(k));
                switch Sign
                    case 1
@@ -139,14 +140,14 @@ if Plot_EigenVec
            end
            
         case 2 % with TDV
-            Mu_Loc_MF  = bsxfun(@times,Mu_Loc_MF,EigVecM(:,EigneVec_Ind));
+            Mu_Loc_MF  = bsxfun(@times,Mu_Loc_MF,Mix_Coeft);
             Center     = Center_Loc_MF;
             Mu         = Mu_Loc_MF;
             
             Plot_Mu(hAx,N_Mode_Total,Center,Mu,Mode_Colors,TDV_Scale,Normalize)
 
         case 3 % with Raman tensor
-            Alpha_Loc_MF = bsxfun(@times,Alpha_Loc_MF,EigVecM(:,EigneVec_Ind));
+            Alpha_Loc_MF = bsxfun(@times,Alpha_Loc_MF,Mix_Coeft);
             Center       = Center_Loc_MF;
             Alpha        = Alpha_Loc_MF;
             

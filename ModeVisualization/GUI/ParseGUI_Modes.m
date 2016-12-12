@@ -14,6 +14,7 @@ O.Raman_Type     =            get(hGUIs.Raman_Type    , 'Value' ) ;
 
 O.Normalize      =            get(hGUIs.Normalize     , 'Value' ) ;
 
-O.Plot_EigenVec  =            get(hGUIs.Plot_EigenVec , 'Value' ) ;
-O.EigneVec_Ind   = str2double(get(hGUIs.EigneVec_Ind  , 'String'));
-O.EigneVec_Conv  =            get(hGUIs.EigneVec_Conv , 'Value' ) ;
+O.Plot_EigVec    =            get(hGUIs.Plot_EigVec   , 'Value' ) ;
+O.EigVec_Ind     = str2double(get(hGUIs.EigVec_Ind    , 'String'));
+O.EigVec_Conv    =            get(hGUIs.EigVec_Conv   , 'Value' ) ;
+O.EigVec_Scale   = str2double(get(hGUIs.EigVec_Scale  , 'String'));

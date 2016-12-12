@@ -223,7 +223,7 @@ Mode_Ind_Str  = num2str(cell2mat(TableData(CurrentRowInd,1)'));
 
 % Update the Mode index on GUI
 hGUIs.Mu_Alpha_Ind.String = Mode_Ind_Str;
-hGUIs.EigneVec_Ind.String = Mode_Ind_Str;
+hGUIs.EigVec_Ind.String   = Mode_Ind_Str;
 
 %% update handles
 GUI_data.Mode_Ind_Str = Mode_Ind_Str;

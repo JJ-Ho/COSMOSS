@@ -58,18 +58,18 @@ hold on
 
 %% Deal with response L x <R> x beta
 % selecte mode
-EigneVec_Ind = GUI_Inputs.EigneVec_Ind;
+EigVec_Ind = GUI_Inputs.EigVec_Ind;
 
 % Center of Exciton mode
 EigVecM      = OneDSFG.H.Sort_Ex_V(2:end,2:end); % get ride of ground state
 EigVecM2     = EigVecM.^2;
 Center_Ex_MF = EigVecM2*(Structure.center);
-Center       = Center_Ex_MF(EigneVec_Ind,:);
+Center       = Center_Ex_MF(EigVec_Ind,:);
 
 % Response 
 % Response = OneDSFG.MolFrame;
 Response = OneDSFG.LabFrame;
-Rho = EJ_M*Response(:,EigneVec_Ind);
+Rho = EJ_M*Response(:,EigVec_Ind);
 Rho = reshape(Rho,N_Grid,N_Grid);
 
 % scale

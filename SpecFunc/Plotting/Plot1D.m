@@ -150,6 +150,10 @@ hF.Units = 'normalized'; % use normalized scale
 hAx.FontSize = 14;
 hAx.XLim = [FreqRange(1),FreqRange(end)];
 hAx.XLabel.String = 'cm^{-1}';
+hAx.XGrid = 'on';
+hAx.YGrid = 'on';
+hAx.XMinorGrid = 'on';
+
 
 if PlotCursor
     % Call pointer

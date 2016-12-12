@@ -3,7 +3,7 @@ function Fig_Response(hAx, GUI_Inputs, Structure, OneDSFG, GUI_Data_hMain)
 
 %% define constants
 N_Grid = 30;
-ScaleFactor = 10;
+ScaleFactor = 0.1;
 
 A1 = GUI_Data_hMain.A_IR;
 A2 = GUI_Data_hMain.A_Vis1D;
@@ -15,8 +15,6 @@ P2 = GUI_Data_hMain.P_Vis1D;
 P3 = GUI_Data_hMain.P_Sig1D;
 Polar = [P1,P2,P3];
 
-
-hold on
 %% Generate ExJ(psi,theta,Ai...,Pi...)
 % The relative orientation of laser beams are determined by the incidnet 
 % angles(Ai) and the polarization angle (Pi) defined on the incident beam 
@@ -73,19 +71,49 @@ Rho = EJ_M*Response(:,EigVec_Ind);
 Rho = reshape(Rho,N_Grid,N_Grid);
 
 % scale
-Rho = Rho./ScaleFactor;
+Rho = Rho.*ScaleFactor;
 
 [X,Y,Z] = sph2cart(Phi,Theta,abs(Rho));
 X = X + Center(1);
 Y = Y + Center(2);
 Z = Z + Center(3);
 colormap('cool')
-
 caxis([-1,1])
-hSurf = surf(hAx,X,Y,Z,sign(Rho)); % colormapping sign only
 
+%% Deal with orientation vector 
+PlotRotV = 1;
+
+Max_Rho = max(abs(Rho(:)));
+RotV = [0;0;1];
+RotV = RotV.*Max_Rho*1.1;
+
+%% Make figure
+hold on
+if PlotRotV
+    quiver3(hAx,...
+            Center(1),Center(2),Center(3),...
+            RotV(1),RotV(2),RotV(3),0,...
+            'LineWidth',2,...
+            'MaxHeadSize',0.6,...
+            'Color',[255,128,0]./256);
+end
+
+hSurf = surf(hAx,X,Y,Z,sign(Rho)); % colormapping sign only
+hold off
+
+%% Adjust the surface
 Transparency = 0.5;
 hSurf.EdgeColor = 'interp';
 hSurf.FaceAlpha = Transparency;
 hSurf.EdgeAlpha = Transparency;
-hold off
+
+%% Figure setting
+% Inherent the molecular plot title
+Fig_Title = hAx.Title.String;
+Mode_Ind_Str  = sprintf('#%d',EigVec_Ind);
+Mode_Freq_Str = sprintf(', @%6.2f cm^{-1}' ,OneDSFG.H.Sort_Ex_Freq(EigVec_Ind+1));
+Scaling_Str   = sprintf(', Scale= %2.1f',ScaleFactor);
+
+
+Fig_Title{length(Fig_Title)+1} = [Mode_Ind_Str, Mode_Freq_Str, Scaling_Str];
+hAx.Title.String = Fig_Title;

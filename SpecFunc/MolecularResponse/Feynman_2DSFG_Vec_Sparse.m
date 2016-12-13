@@ -145,7 +145,7 @@ if N3 > Ele_Max
     MEM = numel(Ka_L) * 243 * 8 / 1e9; % roughly unit in GB
     disp('--------------------------------------')
     disp(['Memory cut-off set at ', num2str(MEM_CutOff), 'GB...'])
-    disp(['Memory size of R3/NR3 is about ', num2str(round(MEM)), 'GB...'])
+    disp(['Memory size of R3/NR3 is about ', sprintf('%4.1f',MEM), 'GB...'])
     disp(['Will run R3/NR3 calculation into ', num2str(Loop_N), ' Loops to reduce memory load...'])
     disp('--------------------------------------')
     

@@ -1,5 +1,11 @@
-function [EJ_T,Phi,Theta] = EJ(P,A,N_Grid)
+% function [EJ_T,Phi,Theta] = EJ(P,A,N_Grid)
+%% Debug
+A = [90,90,90];
+P = [0,0,0];
 
+N_Grid = 10;
+
+%% prep for inputs
 P1 = P(1);
 P2 = P(2);
 P3 = P(3);
@@ -7,7 +13,7 @@ A1 = A(1);
 A2 = A(2);
 A3 = A(3);
 
-% generate R(Phi,Theta)
+%% generate R(Phi,Theta)
 phi   = linspace(0,2*pi,N_Grid);
 theta = linspace(-pi/2,pi/2,N_Grid);
 [Phi,Theta] = meshgrid(phi,theta);

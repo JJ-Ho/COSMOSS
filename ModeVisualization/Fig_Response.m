@@ -52,7 +52,8 @@ Polar = [P1,P2,P3];
 % [Jc,Jb,Ja] = ndgrid(1:3,1:3,1:3);
 % V3 = V3(:,Ja(:)).*V2(:,Jb(:)).*V1(:,Jc(:));
 
-[EJ_M,Phi,Theta] = EJ(Polar,Ang,N_Grid);
+% [M,Phi,Theta] = EJ(Polar,Ang,N_Grid);
+[M,Phi,Theta] = EJRR(GUI_Data_hMain,N_Grid);
 
 %% Deal with response L x <R> x beta
 % selecte mode
@@ -67,7 +68,8 @@ Center       = Center_Ex_MF(EigVec_Ind,:);
 % Response 
 % Response = OneDSFG.MolFrame;
 Response = OneDSFG.LabFrame;
-Rho = EJ_M*Response(:,EigVec_Ind);
+Rho = M*Response(:,EigVec_Ind);
+% Rho = EJR*reshape(RT*Response(:,EigVec_Ind),27,[]);
 Rho = reshape(Rho,N_Grid,N_Grid);
 
 % scale

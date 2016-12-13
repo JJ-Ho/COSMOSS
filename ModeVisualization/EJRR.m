@@ -1,27 +1,31 @@
-% function [M,Phi,Theta]=EJRR(GUI_Data_hMain,N_Grid)
+function [M,Phi,Theta]=EJRR(GUI_Data_hMain,N_Grid)
+% This function calculate the E*J*R(phi,theta) matrix for Chi(2)
+% visulization in tensor form. It is easy to apply ensemble average in
+% tensor form so compare to function EJ, I include ensemble average here. 
+
 %% Debug
-A_IR    = 90./180*pi;
-A_Vis1D = 90./180*pi;
-A_Sig1D = 90./180*pi;
-
-P_IR    = 0;
-P_Vis1D = 0;
-P_Sig1D = 0;
-
-Avg_Rot = 5;
-
-N_Grid = 10;
+% A_IR    = 90./180*pi;
+% A_Vis1D = 90./180*pi;
+% A_Sig1D = 90./180*pi;
+% 
+% P_IR    = 0;
+% P_Vis1D = 0;
+% P_Sig1D = 0;
+% 
+% Avg_Rot = 5;
+% 
+% N_Grid = 10;
 
 %% Read parameters from COSMOSS GUI
-% A_IR    = GUI_Data_hMain.A_IR/180*pi;
-% A_Vis1D = GUI_Data_hMain.A_Vis1D/180*pi;
-% A_Sig1D = GUI_Data_hMain.A_Sig1D/180*pi;
-% 
-% P_IR    = GUI_Data_hMain.P_IR/180*pi;
-% P_Vis1D = GUI_Data_hMain.P_Vis1D/180*pi;
-% P_Sig1D = GUI_Data_hMain.P_Sig1D/180*pi;
-% 
-% Avg_Rot = GUI_Data_hMain.Avg_Rot;
+A_IR    = GUI_Data_hMain.A_IR/180*pi;
+A_Vis1D = GUI_Data_hMain.A_Vis1D/180*pi;
+A_Sig1D = GUI_Data_hMain.A_Sig1D/180*pi;
+
+P_IR    = GUI_Data_hMain.P_IR/180*pi;
+P_Vis1D = GUI_Data_hMain.P_Vis1D/180*pi;
+P_Sig1D = GUI_Data_hMain.P_Sig1D/180*pi;
+
+Avg_Rot = GUI_Data_hMain.Avg_Rot;
 
 %% E
 E3 = EPolar3(P_Sig1D,P_Vis1D,P_IR);
@@ -73,13 +77,13 @@ end
 phi   = linspace(0,2*pi,N_Grid);
 theta = linspace(-pi/2,pi/2,N_Grid);
 [Phi,Theta] = meshgrid(phi,theta);
-% T = pi/2-Theta(:); % make the vector perpendicular to incident beam direction
-T = Theta(:);
+T = pi/2-Theta(:); % make the vector perpendicular to incident beam direction
+% T = Theta(:);
 P = Phi(:);
 
 R3 = R3_ZYZ_0_ND(P,0,T); % [G^2,27,27]
-RT = reshape(permute(R3,[2,3,1]),27,[]);
-% RT = reshape(permute(R3,[2,1,3]),[],27);
+% RT = reshape(permute(R3,[2,3,1]),27,[]);
+RT = reshape(permute(R3,[3,2,1]),27,[]);
 
 %% EJ<R>R
 EJR_R = E3*J3*R_Avg*RT;

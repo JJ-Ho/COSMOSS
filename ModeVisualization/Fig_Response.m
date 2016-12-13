@@ -5,15 +5,15 @@ function Fig_Response(hAx, GUI_Inputs, Structure, OneDSFG, GUI_Data_hMain)
 N_Grid = 30;
 ScaleFactor = 0.1;
 
-A1 = GUI_Data_hMain.A_IR;
-A2 = GUI_Data_hMain.A_Vis1D;
-A3 = GUI_Data_hMain.A_Sig1D;
-Ang = [A1,A2,A3];
-
-P1 = GUI_Data_hMain.P_IR;
-P2 = GUI_Data_hMain.P_Vis1D;
-P3 = GUI_Data_hMain.P_Sig1D;
-Polar = [P1,P2,P3];
+% A1 = GUI_Data_hMain.A_IR;
+% A2 = GUI_Data_hMain.A_Vis1D;
+% A3 = GUI_Data_hMain.A_Sig1D;
+% % Ang = [A1,A2,A3];
+% 
+% P1 = GUI_Data_hMain.P_IR;
+% P2 = GUI_Data_hMain.P_Vis1D;
+% P3 = GUI_Data_hMain.P_Sig1D;
+% Polar = [P1,P2,P3];
 
 %% Generate ExJ(psi,theta,Ai...,Pi...)
 % The relative orientation of laser beams are determined by the incidnet 
@@ -66,10 +66,9 @@ Center_Ex_MF = EigVecM2*(Structure.center);
 Center       = Center_Ex_MF(EigVec_Ind,:);
 
 % Response 
-% Response = OneDSFG.MolFrame;
-Response = OneDSFG.LabFrame;
+Response = OneDSFG.MolFrame;
+% Response = OneDSFG.LabFrame;
 Rho = M*Response(:,EigVec_Ind);
-% Rho = EJR*reshape(RT*Response(:,EigVec_Ind),27,[]);
 Rho = reshape(Rho,N_Grid,N_Grid);
 
 % scale

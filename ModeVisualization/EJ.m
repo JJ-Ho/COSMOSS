@@ -1,9 +1,14 @@
-% function [EJ_T,Phi,Theta] = EJ(P,A,N_Grid)
-%% Debug
-A = [90,90,90];
-P = [0,0,0];
+function [EJ_T,Phi,Theta] = EJ(P,A,N_Grid)
+% This function calculate the E*J*R(phi,theta) matrix for Chi(2)
+% visulization in hybride scalar tensor form. Since I am not sure about how
+% to deal with ensemble average in this form, I did not inclde the ensemble
+% average part in here. 
 
-N_Grid = 10;
+%% Debug
+% A = [90,90,90];
+% P = [0,0,0];
+% 
+% N_Grid = 10;
 
 %% prep for inputs
 P1 = P(1);
@@ -28,19 +33,22 @@ t6 = sin(0);
 t7 = sin(T);
 R = reshape([-t3.*t6+t2.*t4.*t5,t4.*t6+t2.*t3.*t5,-t2.*t7,-t2.*t3-t4.*t5.*t6,t2.*t4-t3.*t5.*t6,t6.*t7,t4.*t7,t3.*t7,t5],[],3,3);
 RT = reshape(permute(R,[3,1,2]),3,[]);
+% RT = reshape(permute(R,[2,1,3]),3,[]);
 
 %%
 % Signal(3)
 E3 = [cosd(P3), sind(P3)];
 J3 = [-cosd(A3), 0, sind(A3); % negative sign is for reflective geometry
               0, 1,       0];
-EJ3 = reshape(E3*J3*RT,[],3);          
+% EJ3 = reshape(E3*J3,[],3); 
+EJ3 = reshape(E3*J3*RT,[],3);
 % EJ3 = reshape((R*(E3*J3)')',3,[]);          
 
 % Visible(2)
 E2 = [cosd(P2), sind(P2)];
 J2 = [cosd(A2), 0, sind(A2);
              0, 1,       0];
+% EJ2 = reshape(E2*J2,[],3);
 EJ2 = reshape(E2*J2*RT,[],3);
 % EJ2 = reshape((R*(E2*J2)')',3,[]);
 
@@ -48,7 +56,8 @@ EJ2 = reshape(E2*J2*RT,[],3);
 E1 = [cosd(P1), sind(P1)];
 J1 = [cosd(A1), 0, sind(A1);
              0, 1,       0];
-EJ1 = reshape(E1*J1*RT,[],3);  
+% EJ1 = reshape(E1*J1,[],3);
+EJ1 = reshape(E1*J1*RT,[],3);
 % EJ1 = reshape((R*(E1*J1)')',3,[]); 
 
 

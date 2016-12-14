@@ -54,7 +54,7 @@ function hPlot_Modes = GUI_Base_Plot_Modes(Singleton)
 hPlot_Modes = figure;
 
 hPlot_Modes.Units            = 'Pixels';
-hPlot_Modes.Position         = [2 53 680 540];
+hPlot_Modes.Position         = [2 53 605 600];
 hPlot_Modes.Name             = 'Plot_Modes';
 hPlot_Modes.ToolBar          = 'none';
 hPlot_Modes.MenuBar          = 'none';
@@ -200,13 +200,9 @@ hModel          = GUI_data.hModel;
 GUI_Data_Main   = guidata(GUI_data.hCOSMOSS);
 GUI_Inputs_Main = ParseGUI_Main(GUI_Data_Main.hGUIs);
 
-%% Draw molecule by calling the PlotMolecule function in each model
-[hFunc_Model,~,~] = StructureModel(Structure.StructModel);
-hF = hFunc_Model('PlotMolecule',hModel,eventdata,guidata(hModel));
 
 %% Call Update RespF function
-hAx = findobj(hF,'type','axes');
-Fig_Response(hAx, GUI_Inputs, Structure, OneDSFG, GUI_Inputs_Main);
+hF = Fig_Response(hModel, GUI_Inputs, Structure, OneDSFG, GUI_Inputs_Main);
 
 %% update handles
 GUI_data.hF = hF;

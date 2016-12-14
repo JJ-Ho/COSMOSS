@@ -1,19 +1,11 @@
-function Fig_Response(hAx, GUI_Inputs, Structure, OneDSFG, GUI_Data_hMain) 
+function hF = Fig_Response(hModel, GUI_Inputs, Structure, OneDSFG, GUI_Data_hMain) 
 % Plot hyper ellipsoid so that the radius = (ExJ)x(LxRxbeta)
 
 %% define constants
-N_Grid = 30;
-ScaleFactor = 0.1;
-
-% A1 = GUI_Data_hMain.A_IR;
-% A2 = GUI_Data_hMain.A_Vis1D;
-% A3 = GUI_Data_hMain.A_Sig1D;
-% % Ang = [A1,A2,A3];
-% 
-% P1 = GUI_Data_hMain.P_IR;
-% P2 = GUI_Data_hMain.P_Vis1D;
-% P3 = GUI_Data_hMain.P_Sig1D;
-% Polar = [P1,P2,P3];
+N_Grid      = GUI_Inputs.Sig_NGrid;
+ScaleFactor = GUI_Inputs.Sig_Scale;
+Plot3D      = GUI_Inputs.Sig_Plot3D;
+PlotCT      = GUI_Inputs.Sig_PlotCT;
 
 %% Generate ExJ(psi,theta,Ai...,Pi...)
 % The relative orientation of laser beams are determined by the incidnet 
@@ -32,25 +24,6 @@ ScaleFactor = 0.1;
 % we can eliminate the phi angle out of three Euler angle and thus we can
 % map the response (R) as function of two Euler angle so we can visulize it
 % in (R,psi,theta) 3D coordinate. 
-
-% % generate R(Psi,Theta)
-% phi   = linspace(0,2*pi,N_Grid);
-% theta = linspace(-pi/2,pi/2,N_Grid);
-% [Phi,Theta] = meshgrid(phi,theta);
-% 
-% T = Theta(:);
-% P = Phi(:);
-% 
-% 
-% 
-% V1 = [cos(T).*cos(P),cos(T).*sin(P),sin(T)];
-% % V1 = [sin(T).*cos(P),sin(T).*sin(P),cos(T)];
-% V2 = V1;
-% V3 = V1;
-% %V2 = [-sin(T).*cos(P),-sin(T).*sin(P),cos(T)]; % for cross polarization
-% 
-% [Jc,Jb,Ja] = ndgrid(1:3,1:3,1:3);
-% V3 = V3(:,Ja(:)).*V2(:,Jb(:)).*V1(:,Jc(:));
 
 % [M,Phi,Theta] = EJ(Polar,Ang,N_Grid);
 [M,Phi,Theta] = EJRR(GUI_Data_hMain,N_Grid);
@@ -78,43 +51,90 @@ Rho = Rho.*ScaleFactor;
 X = X + Center(1);
 Y = Y + Center(2);
 Z = Z + Center(3);
-colormap('cool')
-caxis([-1,1])
-
-%% Deal with orientation vector 
-PlotRotV = 1;
 
 Max_Rho = max(abs(Rho(:)));
-RotV = [0;0;1];
-RotV = RotV.*Max_Rho*1.1;
 
-%% Make figure
-hold on
-if PlotRotV
-    quiver3(hAx,...
-            Center(1),Center(2),Center(3),...
-            RotV(1),RotV(2),RotV(3),0,...
-            'LineWidth',2,...
-            'MaxHeadSize',0.6,...
-            'Color',[255,128,0]./256);
+%% Make 3D figure
+if Plot3D
+    
+    % Plot molecule
+    [hFunc_Model,~,~] = StructureModel(Structure.StructModel);
+    hF_3D = hFunc_Model('PlotMolecule',hModel,'',guidata(hModel));
+    hAx_3D = findobj(hF_3D,'type','axes');
+    
+    % Deal with orientation vector 
+    PlotRotV = 1;
+
+    hold on
+    if PlotRotV
+
+        RotV = [0;0;1];
+        RotV = RotV.*Max_Rho*1.1;
+
+        quiver3(hAx_3D,...
+                Center(1),Center(2),Center(3),...
+                RotV(1),RotV(2),RotV(3),0,...
+                'LineWidth',2,...
+                'MaxHeadSize',0.6,...
+                'Color',[255,128,0]./256);
+    end
+
+    hSurf = surf(hAx_3D,X,Y,Z,sign(Rho)); % colormapping sign only
+    hold off
+
+    % colorbar
+    colormap('cool')
+    caxis([-1,1])
+    
+    % Adjust the surface
+    Transparency = 0.5;
+    hSurf.EdgeColor = 'interp';
+    hSurf.FaceAlpha = Transparency;
+    hSurf.EdgeAlpha = Transparency;
+
+    % Figure setting
+    % Inherent the molecular plot title
+    Fig_Title = hAx_3D.Title.String;
+    Mode_Ind_Str  = sprintf('#%d',EigVec_Ind);
+    Mode_Freq_Str = sprintf(', @%6.2f cm^{-1}' ,OneDSFG.H.Sort_Ex_Freq(EigVec_Ind+1));
+    Scaling_Str   = sprintf(', Scale= %2.1f',ScaleFactor);
+
+    Fig_Title{length(Fig_Title)+1} = [Mode_Ind_Str, Mode_Freq_Str, Scaling_Str];
+    hAx_3D.Title.String = Fig_Title;
+    
+    hF.hF_3D = hF_3D;
 end
 
-hSurf = surf(hAx,X,Y,Z,sign(Rho)); % colormapping sign only
-hold off
+%% Contour plot
+if PlotCT
+    hF_C = figure; 
+    contour(Phi./pi.*180,Theta./pi.*180,Rho,20)
+    hAx_C = findobj(hF_C,'type','axes');
+    hAx_C.FontSize = 16;
+    hAx_C.XGrid = 'on';
+    hAx_C.YGrid = 'on';
+    hAx_C.XMinorGrid = 'on';
+    hAx_C.YMinorGrid = 'on';
+    hAx_C.XTick = (0:60:360)';
+    hAx_C.YTick = (-90:30:90)';
+    xlabel(hAx_C, '\phi (Degree)');
+    ylabel(hAx_C, '\theta (Degree)');
+    colorbar
+    colormap('jet')
+    caxis([-Max_Rho,Max_Rho])
+    
+    % Figure setting
+    % Inherent the molecular plot title
+    Mode_Ind_Str  = sprintf('#%d',EigVec_Ind);
+    Mode_Freq_Str = sprintf(', @%6.2f cm^{-1}' ,OneDSFG.H.Sort_Ex_Freq(EigVec_Ind+1));
 
-%% Adjust the surface
-Transparency = 0.5;
-hSurf.EdgeColor = 'interp';
-hSurf.FaceAlpha = Transparency;
-hSurf.EdgeAlpha = Transparency;
+    Fig_Title = ['Contour map of mode ', Mode_Ind_Str, Mode_Freq_Str];
+    hAx_C.Title.String = Fig_Title;
 
-%% Figure setting
-% Inherent the molecular plot title
-Fig_Title = hAx.Title.String;
-Mode_Ind_Str  = sprintf('#%d',EigVec_Ind);
-Mode_Freq_Str = sprintf(', @%6.2f cm^{-1}' ,OneDSFG.H.Sort_Ex_Freq(EigVec_Ind+1));
-Scaling_Str   = sprintf(', Scale= %2.1f',ScaleFactor);
+    hF.hF_C = hF_C;
+end
 
-
-Fig_Title{length(Fig_Title)+1} = [Mode_Ind_Str, Mode_Freq_Str, Scaling_Str];
-hAx.Title.String = Fig_Title;
+%% Output
+if ~or(Plot3D,PlotCT)
+    hF = 'no figure made';
+end

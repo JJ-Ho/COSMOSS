@@ -1,4 +1,3 @@
-%^ GUI Setup ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function varargout = Model_Betasheet_AmideI(varargin)
 % MODEL_BETASHEET_AMIDEI MATLAB code for Model_Betasheet_AmideI.fig
 %      MODEL_BETASHEET_AMIDEI, by itself, creates a new MODEL_BETASHEET_AMIDEI or raises the existing
@@ -31,7 +30,7 @@ gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
                    'gui_OpeningFcn', @Model_Betasheet_AmideI_OpeningFcn, ...
                    'gui_OutputFcn',  @Model_Betasheet_AmideI_OutputFcn, ...
-                   'gui_LayoutFcn',  [] , ...
+                   'gui_LayoutFcn',  @GUI_Base_Betasheet_AmideI, ...
                    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
     gui_State.gui_Callback = str2func(varargin{1});
@@ -43,6 +42,30 @@ else
     gui_mainfcn(gui_State, varargin{:});
 end
 % End initialization code - DO NOT EDIT
+
+function hModel = GUI_Base_Betasheet_AmideI(Singleton)
+% this function create base figure. To utilize the original GUI building
+% mechanism of Matlab and avoid Matlab default way to export GUI element 
+% handles, this function only create the base layer with no GUI elements.
+% Aftter calling "gui_mainfcn" we will call "GUI_COSMOSS" to build GUI
+% elements.
+
+% Create base figure
+hModel = figure;
+
+hModel.Units            = 'Pixels';
+hModel.Position         = [2 406 250 600];
+hModel.Name             = 'Model_Betasheet_AmideI';
+hModel.ToolBar          = 'none';
+hModel.MenuBar          = 'none';
+hModel.NumberTitle      = 'off';
+hModel.IntegerHandle    = 'off';
+hModel.Tag              = 'hModel'; % tag to distinguish type of GUI
+hModel.HandleVisibility = 'Callback';
+
+gui_Options.syscolorfig = 1;
+setappdata(hModel,'GUIDEOptions',gui_Options);
+
 
 function Model_Betasheet_AmideI_OpeningFcn(hModel_Betasheet_AmideI, eventdata, GUI_data, varargin)
 % This function has no output args, see OutputFcn.

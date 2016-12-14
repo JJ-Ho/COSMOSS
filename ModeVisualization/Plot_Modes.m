@@ -54,7 +54,7 @@ function hPlot_Modes = GUI_Base_Plot_Modes(Singleton)
 hPlot_Modes = figure;
 
 hPlot_Modes.Units            = 'Pixels';
-hPlot_Modes.Position         = [2 53 605 600];
+hPlot_Modes.Position         = [2 53 610 600];
 hPlot_Modes.Name             = 'Plot_Modes';
 hPlot_Modes.ToolBar          = 'none';
 hPlot_Modes.MenuBar          = 'none';

@@ -61,7 +61,7 @@ function hCOSMOSS = GUI_Base_COSMOSS(Singleton)
 hCOSMOSS = figure;
 
 hCOSMOSS.Units            = 'Pixels';
-hCOSMOSS.Position         = [2 406 600 600];
+hCOSMOSS.Position         = [2 406 560 600];
 hCOSMOSS.Name             = 'COSMOSS';
 hCOSMOSS.ToolBar          = 'none';
 hCOSMOSS.MenuBar          = 'none';

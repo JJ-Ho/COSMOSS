@@ -74,7 +74,7 @@ SortIndBox = uix.HBox('Parent',ModeListLayout,...
               'fontunits', 'point', 'fontsize', 14,...
               'Callback',@(hObject,eventdata)Plot_Modes('Update_Modes',hObject,eventdata,guidata(hObject)));
  
-    set(SortIndBox,'Widths',[120,-1,120,-1,80,80])        
+    set(SortIndBox,'Widths',[110,-1,110,-1,80,80])        
     
 set(ModeListLayout,'Heights',[-1,25])
          

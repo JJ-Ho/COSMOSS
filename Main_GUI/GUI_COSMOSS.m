@@ -2,7 +2,7 @@ function hGUIs = GUI_COSMOSS(hCOSMOSS)
 % This function will build all GUI elements on pre-build GUI base figure
 
 %% Pre-setting
-Version = '1.6.0';
+Version = '1.6.1';
 
 %% Add base layout
 MainLayout = uix.VBoxFlex(...
@@ -228,9 +228,9 @@ SamplePanelLayout = uix.HBox('Parent',SamplePanel,...
 set(SamplePanelLayout,'Widths',[130,-1])
 
 %% Laser Setting Panel
-LaserTabGP = uitabgroup('Parent',LaserPanel);
+LaserTabGP = uitabgroup('Parent',LaserPanel,'Tag','LaserSetting');
 
-OneDTab = uitab(LaserTabGP,'Title','1D');
+OneDTab = uitab(LaserTabGP,'Title','1D','Tag','Tab_1D');
 
 OneDTabLayout = uix.HBox('Parent',OneDTab,...
     'Padding', 1, 'Spacing', 1);
@@ -327,7 +327,7 @@ OneDTabLayout = uix.HBox('Parent',OneDTab,...
     
 set(OneDTabLayout,'Widths',[-2,-1,-1,-1])
     
-TwoDTab = uitab(LaserTabGP,'Title','2D');
+TwoDTab = uitab(LaserTabGP,'Title','2D','Tag','Tab_2D');
 TwoDTabFontSize = 12;
 TwoDTabLayout = uix.HBox('Parent',TwoDTab,...
     'Padding', 1, 'Spacing', 1);

@@ -154,20 +154,20 @@ hAx.XGrid = 'on';
 hAx.YGrid = 'on';
 hAx.XMinorGrid = 'on';
 
+FilesName       = OneD_Data.FilesName;
+FilesName_Reg   = regexprep(FilesName,'\_','\\_');
+Coupling        = OneD_Data.CouplingType;
+Coupling_Reg    = regexprep(Coupling,'\_','\\_');
+Title_String{1} = [Signal_Type_Title,'-',OneD_Data.SpecType,' ',FilesName_Reg,', Coupling:',Coupling_Reg]; 
 
 if PlotCursor
+    Title_String{2} = '';
     % Call pointer
     S.fh = hF;
     S.ax = hAx;
     Pointer_N(S) % use normalized scale
-else
-    FilesName     = OneD_Data.FilesName;
-    FilesName_Reg = regexprep(FilesName,'\_','\\_');
-    Coupling      = OneD_Data.CouplingType;
-    Coupling_Reg  = regexprep(Coupling,'\_','\\_');
-    Title_String  = [Signal_Type_Title,'-',OneD_Data.SpecType,' ',FilesName_Reg,', Coupling:',Coupling_Reg];
-    title(Title_String,'FontSize',16);    
 end
+title(Title_String,'FontSize',16);
 
 if IntegralArea
     % integrate the curve area

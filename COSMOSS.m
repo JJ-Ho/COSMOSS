@@ -132,6 +132,10 @@ GUI_data.hModel = hModel;
 guidata(hObject,GUI_data)
 
 function FTIR_Callback(hObject, eventdata, GUI_data)
+% update the laser seeting tab
+hGUIs = GUI_data.hGUIs;
+hGUIs.LaserSetting.SelectedTab = hGUIs.Tab_1D;
+
 %% Main
 GUI_Inputs = ParseGUI_Main(GUI_data.hGUIs);
 Structure  = GUI_data.Structure;
@@ -210,6 +214,10 @@ GUI_data.FTIR = FTIR;
 guidata(hObject,GUI_data)
 
 function SFG_Callback(hObject, eventdata, GUI_data)
+% update the laser seeting tab
+hGUIs = GUI_data.hGUIs;
+hGUIs.LaserSetting.SelectedTab = hGUIs.Tab_1D;
+
 %% Main
 GUI_Inputs = ParseGUI_Main(GUI_data.hGUIs);
 Structure  = GUI_data.Structure;
@@ -282,6 +290,9 @@ function TwoDIR_Callback(hObject, eventdata, GUI_data)
 %% Read GUI
 hGUIs = GUI_data.hGUIs;
 GUI_Inputs = ParseGUI_Main(hGUIs);
+
+% update the laser seeting tab
+hGUIs.LaserSetting.SelectedTab = hGUIs.Tab_2D;
 
 DynamicUpdate = GUI_Inputs.DynamicUpdate;
 if DynamicUpdate
@@ -395,6 +406,9 @@ function TwoDSFG_Callback(hObject, eventdata, GUI_data)
 %% Read GUI
 hGUIs = GUI_data.hGUIs;
 GUI_Inputs = ParseGUI_Main(hGUIs);
+
+% update the laser seeting tab
+hGUIs.LaserSetting.SelectedTab = hGUIs.Tab_2D;
 
 DynamicUpdate = GUI_Inputs.DynamicUpdate;
 if DynamicUpdate

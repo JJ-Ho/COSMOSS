@@ -85,16 +85,18 @@ hAx.YLabel.String = 'Pump (cm^{-1})';
 
 shading flat
 
+FilesName       = CVL.FilesName;
+FilesName_Reg   = regexprep(FilesName,'\_','\\_');
+Coupling        = GUI_Inputs.CouplingType;
+Coupling_Reg    = regexprep(Coupling,'\_','\\_');
+Title_String{1} = ['2DIR ',FilesName_Reg,', Coupling:',Coupling_Reg];
+ 
 if PlotCursor
+    Title_String{2} = '';
     % Call pointer
     S.fh = hF;
     S.ax = hAx;
     Pointer_N(S) % use normalized scale
-else
-    FilesName     = CVL.FilesName;
-    FilesName_Reg = regexprep(FilesName,'\_','\\_');
-    Coupling      = GUI_Inputs.CouplingType;
-    Coupling_Reg  = regexprep(Coupling,'\_','\\_');
-    Title_String  = ['2DIR ',FilesName_Reg,', Coupling:',Coupling_Reg];
-    title(Title_String,'FontSize',16); 
 end
+
+title(Title_String,'FontSize',16);

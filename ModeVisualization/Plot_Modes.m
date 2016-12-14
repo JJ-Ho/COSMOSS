@@ -200,12 +200,11 @@ hModel          = GUI_data.hModel;
 GUI_Data_Main   = guidata(GUI_data.hCOSMOSS);
 GUI_Inputs_Main = ParseGUI_Main(GUI_Data_Main.hGUIs);
 
-
 %% Call Update RespF function
-hF = Fig_Response(hModel, GUI_Inputs, Structure, OneDSFG, GUI_Inputs_Main);
+Response = Fig_Response(hModel, GUI_Inputs, Structure, OneDSFG, GUI_Inputs_Main);
 
 %% update handles
-GUI_data.hF = hF;
+GUI_data.Response = Response;
 guidata(hObject,GUI_data)
 
 function uitable_CellSelection(hObject, eventdata, GUI_data)

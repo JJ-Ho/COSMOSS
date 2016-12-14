@@ -1,4 +1,4 @@
-function hF = Fig_Response(hModel, GUI_Inputs, Structure, OneDSFG, GUI_Data_hMain) 
+function Output = Fig_Response(hModel, GUI_Inputs, Structure, OneDSFG, GUI_Data_hMain) 
 % Plot hyper ellipsoid so that the radius = (ExJ)x(LxRxbeta)
 
 %% define constants
@@ -6,6 +6,7 @@ N_Grid      = GUI_Inputs.Sig_NGrid;
 ScaleFactor = GUI_Inputs.Sig_Scale;
 Plot3D      = GUI_Inputs.Sig_Plot3D;
 PlotCT      = GUI_Inputs.Sig_PlotCT;
+PlotCT_R    = GUI_Inputs.Sig_PlotCT_R;
 
 %% Generate ExJ(psi,theta,Ai...,Pi...)
 % The relative orientation of laser beams are determined by the incidnet 
@@ -30,29 +31,36 @@ PlotCT      = GUI_Inputs.Sig_PlotCT;
 
 %% Deal with response L x <R> x beta
 % selecte mode
-EigVec_Ind = GUI_Inputs.EigVec_Ind;
-
-% Center of Exciton mode
-EigVecM      = OneDSFG.H.Sort_Ex_V(2:end,2:end); % get ride of ground state
-EigVecM2     = EigVecM.^2;
-Center_Ex_MF = EigVecM2*(Structure.center);
-Center       = Center_Ex_MF(EigVec_Ind,:);
+% EigVec_Ind = GUI_Inputs.EigVec_Ind;
+EigVec_Ind = GUI_Inputs.Mu_Alpha_Ind;
 
 % Response 
 Response = OneDSFG.MolFrame;
-% Response = OneDSFG.LabFrame;
 Rho = M*Response(:,EigVec_Ind);
-Rho = reshape(Rho,N_Grid,N_Grid);
+Rho = reshape(Rho,N_Grid,N_Grid,[]);
 
 % scale
+N_Modes = length(EigVec_Ind);
 Rho = Rho.*ScaleFactor;
+Max_Rho = max(abs(reshape(Rho,[],N_Modes)));
 
-[X,Y,Z] = sph2cart(Phi,Theta,abs(Rho));
-X = X + Center(1);
-Y = Y + Center(2);
-Z = Z + Center(3);
+% deal with multi modes
+if gt(N_Modes,1)
+    disp('Multiple mode comparison, ')
+    disp('Contour plot shows the ratio of all the modes raletive to the first mode')
+    Plot3D = 0;
+    
+    Rho_R = zeros(size(Rho) - [0,0,1]);
 
-Max_Rho = max(abs(Rho(:)));
+    for i = 2:N_Modes
+        %Rho_R(:,:,i) = Rho(:,:,i)./Rho(:,:,1);
+        %Rho_R(:,:,i) = (Rho(:,:,i)./Max_Rho(i)) ./ (Rho(:,:,1)./Max_Rho(1));
+        %Rho_R(:,:,i) = (Rho(:,:,i)./Max_Rho(i)) - (Rho(:,:,1)./Max_Rho(1));
+        %Rho_R(:,:,i) = (Rho(:,:,i)+Max_Rho(i)) ./ (Rho(:,:,1)+Max_Rho(1));
+        %Rho_R(:,:,i) = (Rho(:,:,i)+1) ./ (Rho(:,:,1)+1);
+        Rho_R(:,:,i) = (Rho(:,:,i)+Max_Rho(i)) ./ (Rho(:,:,1)+Max_Rho(1));
+    end
+end
 
 %% Make 3D figure
 if Plot3D
@@ -65,21 +73,33 @@ if Plot3D
     % Deal with orientation vector 
     PlotRotV = 1;
 
+    % Center of Exciton mode
+    EigVecM      = OneDSFG.H.Sort_Ex_V(2:end,2:end); % get ride of ground state
+    EigVecM2     = EigVecM.^2;
+    Center_Ex_MF = EigVecM2*(Structure.center);
+    Center       = Center_Ex_MF(EigVec_Ind,:);
+
+    % shift hyperellipsoid to mode center
+    [X,Y,Z] = sph2cart(Phi,Theta,abs(Rho));
+    X = X + Center(1);
+    Y = Y + Center(2);
+    Z = Z + Center(3);
+
     hold on
-    if PlotRotV
+        if PlotRotV
 
-        RotV = [0;0;1];
-        RotV = RotV.*Max_Rho*1.1;
+            RotV = [0;0;1];
+            RotV = RotV.*Max_Rho*1.1;
 
-        quiver3(hAx_3D,...
-                Center(1),Center(2),Center(3),...
-                RotV(1),RotV(2),RotV(3),0,...
-                'LineWidth',2,...
-                'MaxHeadSize',0.6,...
-                'Color',[255,128,0]./256);
-    end
+            quiver3(hAx_3D,...
+                    Center(1),Center(2),Center(3),...
+                    RotV(1),RotV(2),RotV(3),0,...
+                    'LineWidth',2,...
+                    'MaxHeadSize',0.6,...
+                    'Color',[255,128,0]./256);
+        end
 
-    hSurf = surf(hAx_3D,X,Y,Z,sign(Rho)); % colormapping sign only
+        hSurf = surf(hAx_3D,X,Y,Z,sign(Rho)); % colormapping sign only
     hold off
 
     % colorbar
@@ -92,8 +112,7 @@ if Plot3D
     hSurf.FaceAlpha = Transparency;
     hSurf.EdgeAlpha = Transparency;
 
-    % Figure setting
-    % Inherent the molecular plot title
+    % Figure title inherent the molecular plot
     Fig_Title = hAx_3D.Title.String;
     Mode_Ind_Str  = sprintf('#%d',EigVec_Ind);
     Mode_Freq_Str = sprintf(', @%6.2f cm^{-1}' ,OneDSFG.H.Sort_Ex_Freq(EigVec_Ind+1));
@@ -107,34 +126,77 @@ end
 
 %% Contour plot
 if PlotCT
-    hF_C = figure; 
-    contour(Phi./pi.*180,Theta./pi.*180,Rho,20)
-    hAx_C = findobj(hF_C,'type','axes');
-    hAx_C.FontSize = 16;
-    hAx_C.XGrid = 'on';
-    hAx_C.YGrid = 'on';
-    hAx_C.XMinorGrid = 'on';
-    hAx_C.YMinorGrid = 'on';
-    hAx_C.XTick = (0:60:360)';
-    hAx_C.YTick = (-90:30:90)';
-    xlabel(hAx_C, '\phi (Degree)');
-    ylabel(hAx_C, '\theta (Degree)');
-    colorbar
-    colormap('jet')
-    caxis([-Max_Rho,Max_Rho])
-    
-    % Figure setting
-    % Inherent the molecular plot title
-    Mode_Ind_Str  = sprintf('#%d',EigVec_Ind);
-    Mode_Freq_Str = sprintf(', @%6.2f cm^{-1}' ,OneDSFG.H.Sort_Ex_Freq(EigVec_Ind+1));
+    for j = 1:N_Modes
+        hF_C = figure; 
+        contour(Phi./pi.*180,Theta./pi.*180,Rho(:,:,j),20)
 
-    Fig_Title = ['Contour map of mode ', Mode_Ind_Str, Mode_Freq_Str];
-    hAx_C.Title.String = Fig_Title;
+        % figure adjustment
+        hAx_C = findobj(hF_C,'type','axes');
+        hAx_C.FontSize = 16;
+        hAx_C.XGrid = 'on';
+        hAx_C.YGrid = 'on';
+        hAx_C.XMinorGrid = 'on';
+        hAx_C.YMinorGrid = 'on';
+        hAx_C.XTick = (0:60:360)';
+        hAx_C.YTick = (-90:30:90)';
+        xlabel(hAx_C, '\phi (Degree)');
+        ylabel(hAx_C, '\theta (Degree)');
+        colorbar
+        colormap('jet')
+        caxis([-Max_Rho(j),Max_Rho(j)])
 
-    hF.hF_C = hF_C;
+        % Figure title inherent the molecular plot
+        Mode_Ind_Str  = sprintf('#%d',EigVec_Ind(j));
+        Mode_Freq_Str = sprintf(', @%6.2f cm^{-1}' ,OneDSFG.H.Sort_Ex_Freq(EigVec_Ind(j)+1));
+
+        Fig_Title = ['Contour map of mode ', Mode_Ind_Str, Mode_Freq_Str];
+        hAx_C.Title.String = Fig_Title;
+
+        hF.hF_C = hF_C;
+    end
+end
+
+%% Make contour ratio plot
+if PlotCT_R
+    for k = 2:N_Modes
+        hF_CR = figure; 
+        contour(Phi./pi.*180,Theta./pi.*180,Rho_R(:,:,k),100)
+
+        % figure adjustment
+        hAx_CR = findobj(hF_CR,'type','axes');
+        hAx_CR.FontSize = 16;
+        hAx_CR.XGrid = 'on';
+        hAx_CR.YGrid = 'on';
+        hAx_CR.XMinorGrid = 'on';
+        hAx_CR.YMinorGrid = 'on';
+        hAx_CR.XTick = (0:60:360)';
+        hAx_CR.YTick = (-90:30:90)';
+        xlabel(hAx_CR, '\phi (Degree)');
+        ylabel(hAx_CR, '\theta (Degree)');
+        colorbar
+        colormap('jet')
+        
+        Max_Rho_R = max(abs(reshape(Rho_R(:,:,k),[],1)));
+        Max_Rho_R = 1;
+        caxis([-Max_Rho_R,Max_Rho_R])
+
+        % Figure title inherent the molecular plot
+        Mode_Ind_Str  = sprintf('#%d to %d',EigVec_Ind(k),EigVec_Ind(1));
+        Mode_Freq_Str = sprintf(', @%6.2f cm^{-1}' ,OneDSFG.H.Sort_Ex_Freq(EigVec_Ind(k)+1));
+
+        Fig_Title = ['Ratio map of mode ', Mode_Ind_Str, Mode_Freq_Str];
+        hAx_CR.Title.String = Fig_Title;
+
+        hF.hF_CR = hF_CR;
+    end
 end
 
 %% Output
 if ~or(Plot3D,PlotCT)
     hF = 'no figure made';
 end
+
+Output.hF    = hF;
+Output.Phi   = Phi;
+Output.Theta = Theta;
+Output.Rho   = Rho;

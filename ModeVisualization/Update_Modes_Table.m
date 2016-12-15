@@ -6,10 +6,11 @@ C_Index  = ColumnFormat('Index'  ,'short',40);
 C_Freq   = ColumnFormat('Freq.'  ,'bank' ,50);
 C_P_Num  = ColumnFormat('P. %'   ,'bank' ,40);
 C_Mu_V   = ColumnFormat({'Mu x','Mu y','Mu z'},{'bank','bank','bank'},{40,40,40});
-C_Mu_Int = ColumnFormat('Mu Int' ,'bank' ,50);
 C_A_V    = ColumnFormat({'A p1','A p2','A p3'},{'bank','bank','bank'},{40,40,40});
-C_A_Int  = ColumnFormat('Norm[A]','bank' ,60);
-C_Norm1D = ColumnFormat('Norm 1D','bank' ,60);
+C_Mu_Int = ColumnFormat('N[Mu]' ,'bank' ,40);
+C_A_Int  = ColumnFormat('N[A]'  ,'bank' ,40);
+C_Norm1D = ColumnFormat('N[1D]' ,'bank' ,40);
+C_Sig    = ColumnFormat('Signal','bank' ,40);
 
 C_PumpF  = ColumnFormat('Pump' ,'bank' ,55);
 C_ProbF  = ColumnFormat('Probe','bank' ,55);
@@ -34,7 +35,7 @@ end
 %% 1D spectra Common part 
 if or(strcmp(SpecType,'FTIR'),strcmp(SpecType,'SFG'))
     % Mode Frequency
-    Pump_F     = SD.H.Sort_Ex_F1;
+    Pump_F      = SD.H.Sort_Ex_F1;
     Num_Ex_Mode = SD.H.Num_Modes;
     C_Freq.Data = Pump_F;
 
@@ -141,11 +142,15 @@ switch SpecType
         Norm1D =  Ex_Mu_Int.*Ex_Alpha_Norm;
         C_Norm1D.Data = Norm1D;
 
+        % signal size
+        Signal = SD.EJLabFrame';
+        C_Sig.Data = Signal;
         
         % diaplay mode properties
         ModeList = merge2cell(C_Index,...
                               C_Freq,...
                               C_P_Num,...
+                              C_Sig,...
                               C_Norm1D,...
                               C_Mu_Int,...
                               C_Mu_V,...

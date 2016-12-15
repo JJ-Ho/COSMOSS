@@ -74,14 +74,11 @@ end
 
 %% R in 3D space
 % generate R(Phi,Theta)
-phi   = linspace(0,2*pi,N_Grid);
-theta = linspace(-pi/2,pi/2,N_Grid);
+phi     = linspace(0,2*pi,N_Grid);
+theta   = linspace(0,  pi,N_Grid);
 [Phi,Theta] = meshgrid(phi,theta);
-T = pi/2-Theta(:); % make the vector perpendicular to incident beam direction
-% T = Theta(:);
-P = Phi(:);
 
-R3 = R3_ZYZ_0_ND(P,0,T); % [G^2,27,27]
+R3 = R3_ZYZ_0_ND(Phi(:),0,Theta(:)); % [G^2,27,27]
 % RT = reshape(permute(R3,[2,3,1]),27,[]);
 RT = reshape(permute(R3,[3,2,1]),27,[]);
 

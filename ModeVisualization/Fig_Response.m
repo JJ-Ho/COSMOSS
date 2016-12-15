@@ -29,6 +29,9 @@ PlotCT_R    = GUI_Inputs.Sig_PlotCT_R;
 % [M,Phi,Theta] = EJ(Polar,Ang,N_Grid);
 [M,Phi,Theta] = EJRR(GUI_Data_hMain,N_Grid);
 
+Theta_D = Theta./pi.*180;
+Phi_D   =   Phi./pi.*180;
+
 %% Deal with response L x <R> x beta
 % selecte mode
 % EigVec_Ind = GUI_Inputs.EigVec_Ind;
@@ -56,9 +59,13 @@ if gt(N_Modes,1)
         %Rho_R(:,:,i) = Rho(:,:,i)./Rho(:,:,1);
         %Rho_R(:,:,i) = (Rho(:,:,i)./Max_Rho(i)) ./ (Rho(:,:,1)./Max_Rho(1));
         %Rho_R(:,:,i) = (Rho(:,:,i)./Max_Rho(i)) - (Rho(:,:,1)./Max_Rho(1));
+        %Rho_R(:,:,i) = 1./(Rho(:,:,i)./Max_Rho(i)) - (Rho(:,:,1)./Max_Rho(1));
+        Rho_R(:,:,i) = (Rho(:,:,i)./Max_Rho(i)) - (Rho(:,:,1)./Max_Rho(1));
         %Rho_R(:,:,i) = (Rho(:,:,i)+Max_Rho(i)) ./ (Rho(:,:,1)+Max_Rho(1));
         %Rho_R(:,:,i) = (Rho(:,:,i)+1) ./ (Rho(:,:,1)+1);
-        Rho_R(:,:,i) = (Rho(:,:,i)+Max_Rho(i)) ./ (Rho(:,:,1)+Max_Rho(1));
+        %Rho_R(:,:,i) = (Rho(:,:,i)+Max_Rho(i)) ./ (Rho(:,:,1)+Max_Rho(1));
+        %Rho_R(:,:,i) = (abs(Rho(:,:,i))+1) ./ (abs(Rho(:,:,1))+1);
+        %Rho_R(:,:,i) = (abs(Rho(:,:,1))+1) ./ (abs(Rho(:,:,i))+1);
     end
 end
 
@@ -80,7 +87,9 @@ if Plot3D
     Center       = Center_Ex_MF(EigVec_Ind,:);
 
     % shift hyperellipsoid to mode center
-    [X,Y,Z] = sph2cart(Phi,Theta,abs(Rho));
+    Az = Phi;
+    Elv = pi/2-Theta;
+    [X,Y,Z] = sph2cart(Az,Elv,abs(Rho));
     X = X + Center(1);
     Y = Y + Center(2);
     Z = Z + Center(3);
@@ -128,7 +137,7 @@ end
 if PlotCT
     for j = 1:N_Modes
         hF_C = figure; 
-        contour(Phi./pi.*180,Theta./pi.*180,Rho(:,:,j),20)
+        contourf(Phi_D,Theta_D,Rho(:,:,j),20)
 
         % figure adjustment
         hAx_C = findobj(hF_C,'type','axes');
@@ -138,13 +147,14 @@ if PlotCT
         hAx_C.XMinorGrid = 'on';
         hAx_C.YMinorGrid = 'on';
         hAx_C.XTick = (0:60:360)';
-        hAx_C.YTick = (-90:30:90)';
+        hAx_C.YTick = (0:30:180)';
         xlabel(hAx_C, '\phi (Degree)');
         ylabel(hAx_C, '\theta (Degree)');
         colorbar
         colormap('jet')
         caxis([-Max_Rho(j),Max_Rho(j)])
-
+        
+        
         % Figure title inherent the molecular plot
         Mode_Ind_Str  = sprintf('#%d',EigVec_Ind(j));
         Mode_Freq_Str = sprintf(', @%6.2f cm^{-1}' ,OneDSFG.H.Sort_Ex_Freq(EigVec_Ind(j)+1));
@@ -158,9 +168,11 @@ end
 
 %% Make contour ratio plot
 if PlotCT_R
+%     reverse = 1./(1:0.1:5);
+%     v = [5:-0.1:2,reverse];
     for k = 2:N_Modes
         hF_CR = figure; 
-        contour(Phi./pi.*180,Theta./pi.*180,Rho_R(:,:,k),100)
+        contourf(Phi_D,Theta_D,Rho_R(:,:,k),100)
 
         % figure adjustment
         hAx_CR = findobj(hF_CR,'type','axes');
@@ -173,13 +185,17 @@ if PlotCT_R
         hAx_CR.YTick = (-90:30:90)';
         xlabel(hAx_CR, '\phi (Degree)');
         ylabel(hAx_CR, '\theta (Degree)');
+        
+        % Set colorbar
         colorbar
-        colormap('jet')
+        CMAP = SelectColormap(7);
+        colormap(CMAP)   
         
         Max_Rho_R = max(abs(reshape(Rho_R(:,:,k),[],1)));
-        Max_Rho_R = 1;
         caxis([-Max_Rho_R,Max_Rho_R])
+        %caxis([0.2,5])
 
+        
         % Figure title inherent the molecular plot
         Mode_Ind_Str  = sprintf('#%d to %d',EigVec_Ind(k),EigVec_Ind(1));
         Mode_Freq_Str = sprintf(', @%6.2f cm^{-1}' ,OneDSFG.H.Sort_Ex_Freq(EigVec_Ind(k)+1));

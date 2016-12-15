@@ -96,7 +96,7 @@ M_Ex_01 = Mu.M_Ex_01';    %=> [3*N]
 A_Ex_01 = Alpha.M_Ex_01'; %=> [9*N]
 
 %% Reduce mode number base on the transition intensity
-Cut_Off = 0;
+Cut_Off = -1; % this will cause problem in table generation of Plot_Mode, need to remove later
 
 Norm_M_01  = sum(M_Ex_01.^2,1);
 Norm_A_01  = sum(A_Ex_01.^2,1);

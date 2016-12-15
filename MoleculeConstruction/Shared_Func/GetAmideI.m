@@ -1,5 +1,6 @@
 function Output = GetAmideI(Num_Atoms,XYZ,AtomName,FilesName,GUI_Inputs)
 %% GetAmideI
+
 % Output = GetAmideI(Num_Atoms,XYZ,AtomName,FilesName,GUI_Inputs)
 % This function recongnize the amide I group by searching C-O-N-CA atom
 % name sequence. It also roatae the molecule by inputs.
@@ -255,7 +256,7 @@ Output.AtomSerNo      = AmideIAtomSerNo;
 Output.Num_Modes      = Num_Modes;
 Output.XYZ            = XYZ_Rot;
 Output.FilesName      = FilesName;
-Output.mu_angle       = mu_angle;
-Output.alpha_angle    = alpha_angle;
+Output.mu_angle       = mu_angle/pi*180;    % unit degrees
+Output.alpha_angle    = alpha_angle/pi*180; % unit degrees
 Output.Mol_Frame_Rot  = Mol_Frame_Rot;
 Output.Mol_Frame_Orig = Mol_Frame_Orig;

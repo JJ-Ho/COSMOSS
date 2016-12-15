@@ -130,7 +130,9 @@ if PlotNorm
     PlotY = PlotY./max(abs(PlotY(:)));
     Stick = Stick./max(abs(Stick(:)));
 else
-    Stick = Stick.*(max(abs(PlotY(:)))/max(abs(Stick(:))));
+    %Stick = Stick.*(max(abs(PlotY(:)))/max(abs(Stick(:))));
+    % scale convoluted curve instaed of stick height 
+    PlotY = PlotY.*(max(abs(Stick(:)))/max(abs(PlotY(:))));
 end
 
 

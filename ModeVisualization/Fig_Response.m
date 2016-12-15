@@ -40,7 +40,7 @@ EigVec_Ind = GUI_Inputs.Mu_Alpha_Ind;
 % Response 
 Response = OneDSFG.MolFrame;
 Rho = M*Response(:,EigVec_Ind);
-Rho = reshape(Rho,N_Grid,N_Grid,[]);
+Rho = reshape(Rho,N_Grid,2*N_Grid,[]);
 
 % scale
 N_Modes = length(EigVec_Ind);

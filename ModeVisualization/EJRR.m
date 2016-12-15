@@ -74,9 +74,9 @@ end
 
 %% R in 3D space
 % generate R(Phi,Theta)
-phi     = linspace(0,2*pi,N_Grid);
-theta   = linspace(0,  pi,N_Grid);
-[Phi,Theta] = meshgrid(phi,theta);
+phi     = linspace(0,2*pi,N_Grid*2);
+theta   = linspace(0,  pi,N_Grid  );
+[Phi,Theta] = meshgrid(phi,theta  );
 
 R3 = R3_ZYZ_0_ND(Phi(:),0,Theta(:)); % [G^2,27,27]
 % RT = reshape(permute(R3,[2,3,1]),27,[]);

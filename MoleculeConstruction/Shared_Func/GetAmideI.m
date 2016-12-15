@@ -165,7 +165,7 @@ Phi_R   = Phi_D/180*pi;
 Psi_R   = Psi_D/180*pi;
 Theta_R = Theta_D/180*pi;
 
-Rot_Mat = R1_ZYZ_0(Phi_R,Psi_R,Theta_R);
+Rot_Mat = R1_ZYZ_0(Phi_R,Psi_R,Theta_R)';
 XYZ_Atom_Rot = (Rot_Mat*XYZ_Orig')';
 
 XYZ_Atom_Rot = reshape(XYZ_Atom_Rot,Num_Modes,[],3); % [C_xyz O_xyz N_xyz CA_xyz; C_xyz, O_xyz, N_xyz, CA_xyz ; ...]

@@ -214,14 +214,15 @@ TableData = hGUIs.ModeList.Data;
 
 CurrentCell   = eventdata.Indices;
 CurrentRowInd = CurrentCell(:,1)';
-Mode_Ind_Str  = num2str(cell2mat(TableData(CurrentRowInd,1)'));
+Mode_Ind_Str_Full  = num2str(cell2mat(TableData(   CurrentRowInd,1)'));
+Mode_Ind_Str_1st   = num2str(cell2mat(TableData(CurrentRowInd(1),1)'));
 
 % Update the Mode index on GUI
-hGUIs.Mu_Alpha_Ind.String = Mode_Ind_Str;
-hGUIs.EigVec_Ind.String   = Mode_Ind_Str;
+hGUIs.Mu_Alpha_Ind.String = Mode_Ind_Str_Full;
+hGUIs.EigVec_Ind.String   = Mode_Ind_Str_1st; % only take the first index of slection, since mixxing coefficient only take one mode
 
 %% update handles
-GUI_data.Mode_Ind_Str = Mode_Ind_Str;
+GUI_data.Mode_Ind_Str = Mode_Ind_Str_Full;
 guidata(hObject,GUI_data)
 
 function uitable_Sort(hObject, eventdata, GUI_data)

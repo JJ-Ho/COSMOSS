@@ -6,7 +6,7 @@ N_Grid      = GUI_Inputs.Sig_NGrid;
 ScaleFactor = GUI_Inputs.Sig_Scale;
 Plot3D      = GUI_Inputs.Sig_Plot3D;
 PlotCT      = GUI_Inputs.Sig_PlotCT;
-PlotCT_R    = GUI_Inputs.Sig_PlotCT_R;
+PlotSum     = GUI_Inputs.Sig_PlotSum;
 
 %% Generate ExJ(psi,theta,Ai...,Pi...)
 % The relative orientation of laser beams are determined by the incidnet 
@@ -34,8 +34,7 @@ Phi_D   =   Phi./pi.*180;
 
 %% Deal with response L x <R> x beta
 % selecte mode
-% EigVec_Ind = GUI_Inputs.EigVec_Ind;
-EigVec_Ind = GUI_Inputs.Mu_Alpha_Ind;
+EigVec_Ind = GUI_Inputs.Mu_Alpha_Ind; % get a full mode list from Mu_Alpha_Ind
 
 % Response 
 Response = OneDSFG.MolFrame;
@@ -47,26 +46,33 @@ N_Modes = length(EigVec_Ind);
 Rho = Rho.*ScaleFactor;
 Max_Rho = max(abs(reshape(Rho,[],N_Modes)));
 
-% deal with multi modes
-if gt(N_Modes,1)
-    disp('Multiple mode comparison, ')
-    disp('Contour plot shows the ratio of all the modes raletive to the first mode')
-    Plot3D = 0;
-    
-    Rho_R = zeros(size(Rho) - [0,0,1]);
+% % deal with multi modes
+% if gt(N_Modes,1)
+%     disp('Multiple mode comparison, ')
+%     disp('Contour plot shows the ratio of all the modes raletive to the first mode')
+%     Plot3D = 0;
+%     
+%     Rho_R = zeros(size(Rho) - [0,0,1]);
+% 
+%     for i = 2:N_Modes
+%         %Rho_R(:,:,i) = Rho(:,:,i)./Rho(:,:,1);
+%         %Rho_R(:,:,i) = (Rho(:,:,i)./Max_Rho(i)) ./ (Rho(:,:,1)./Max_Rho(1));
+%         %Rho_R(:,:,i) = (Rho(:,:,i)./Max_Rho(i)) - (Rho(:,:,1)./Max_Rho(1));
+%         %Rho_R(:,:,i) = 1./(Rho(:,:,i)./Max_Rho(i)) - (Rho(:,:,1)./Max_Rho(1));
+%         Rho_R(:,:,i) = (Rho(:,:,i)./Max_Rho(i)) - (Rho(:,:,1)./Max_Rho(1));
+%         %Rho_R(:,:,i) = (Rho(:,:,i)+Max_Rho(i)) ./ (Rho(:,:,1)+Max_Rho(1));
+%         %Rho_R(:,:,i) = (Rho(:,:,i)+1) ./ (Rho(:,:,1)+1);
+%         %Rho_R(:,:,i) = (Rho(:,:,i)+Max_Rho(i)) ./ (Rho(:,:,1)+Max_Rho(1));
+%         %Rho_R(:,:,i) = (abs(Rho(:,:,i))+1) ./ (abs(Rho(:,:,1))+1);
+%         %Rho_R(:,:,i) = (abs(Rho(:,:,1))+1) ./ (abs(Rho(:,:,i))+1);
+%     end
+% end
 
-    for i = 2:N_Modes
-        %Rho_R(:,:,i) = Rho(:,:,i)./Rho(:,:,1);
-        %Rho_R(:,:,i) = (Rho(:,:,i)./Max_Rho(i)) ./ (Rho(:,:,1)./Max_Rho(1));
-        %Rho_R(:,:,i) = (Rho(:,:,i)./Max_Rho(i)) - (Rho(:,:,1)./Max_Rho(1));
-        %Rho_R(:,:,i) = 1./(Rho(:,:,i)./Max_Rho(i)) - (Rho(:,:,1)./Max_Rho(1));
-        Rho_R(:,:,i) = (Rho(:,:,i)./Max_Rho(i)) - (Rho(:,:,1)./Max_Rho(1));
-        %Rho_R(:,:,i) = (Rho(:,:,i)+Max_Rho(i)) ./ (Rho(:,:,1)+Max_Rho(1));
-        %Rho_R(:,:,i) = (Rho(:,:,i)+1) ./ (Rho(:,:,1)+1);
-        %Rho_R(:,:,i) = (Rho(:,:,i)+Max_Rho(i)) ./ (Rho(:,:,1)+Max_Rho(1));
-        %Rho_R(:,:,i) = (abs(Rho(:,:,i))+1) ./ (abs(Rho(:,:,1))+1);
-        %Rho_R(:,:,i) = (abs(Rho(:,:,1))+1) ./ (abs(Rho(:,:,i))+1);
-    end
+%% Sum up multimodes response
+if PlotSum
+    Rho = sum(Rho,3);
+    Max_Rho = sum(Max_Rho);
+    N_Modes = 1;
 end
 
 %% Make 3D figure
@@ -167,45 +173,45 @@ if PlotCT
 end
 
 %% Make contour ratio plot
-if PlotCT_R
-%     reverse = 1./(1:0.1:5);
-%     v = [5:-0.1:2,reverse];
-    for k = 2:N_Modes
-        hF_CR = figure; 
-        contourf(Phi_D,Theta_D,Rho_R(:,:,k),100)
-
-        % figure adjustment
-        hAx_CR = findobj(hF_CR,'type','axes');
-        hAx_CR.FontSize = 16;
-        hAx_CR.XGrid = 'on';
-        hAx_CR.YGrid = 'on';
-        hAx_CR.XMinorGrid = 'on';
-        hAx_CR.YMinorGrid = 'on';
-        hAx_CR.XTick = (0:60:360)';
-        hAx_CR.YTick = (-90:30:90)';
-        xlabel(hAx_CR, '\phi (Degree)');
-        ylabel(hAx_CR, '\theta (Degree)');
-        
-        % Set colorbar
-        colorbar
-        CMAP = SelectColormap(7);
-        colormap(CMAP)   
-        
-        Max_Rho_R = max(abs(reshape(Rho_R(:,:,k),[],1)));
-        caxis([-Max_Rho_R,Max_Rho_R])
-        %caxis([0.2,5])
-
-        
-        % Figure title inherent the molecular plot
-        Mode_Ind_Str  = sprintf('#%d to %d',EigVec_Ind(k),EigVec_Ind(1));
-        Mode_Freq_Str = sprintf(', @%6.2f cm^{-1}' ,OneDSFG.H.Sort_Ex_Freq(EigVec_Ind(k)+1));
-
-        Fig_Title = ['Ratio map of mode ', Mode_Ind_Str, Mode_Freq_Str];
-        hAx_CR.Title.String = Fig_Title;
-
-        hF.hF_CR = hF_CR;
-    end
-end
+% if PlotCT_R
+% %     reverse = 1./(1:0.1:5);
+% %     v = [5:-0.1:2,reverse];
+%     for k = 2:N_Modes
+%         hF_CR = figure; 
+%         contourf(Phi_D,Theta_D,Rho_R(:,:,k),100)
+% 
+%         % figure adjustment
+%         hAx_CR = findobj(hF_CR,'type','axes');
+%         hAx_CR.FontSize = 16;
+%         hAx_CR.XGrid = 'on';
+%         hAx_CR.YGrid = 'on';
+%         hAx_CR.XMinorGrid = 'on';
+%         hAx_CR.YMinorGrid = 'on';
+%         hAx_CR.XTick = (0:60:360)';
+%         hAx_CR.YTick = (-90:30:90)';
+%         xlabel(hAx_CR, '\phi (Degree)');
+%         ylabel(hAx_CR, '\theta (Degree)');
+%         
+%         % Set colorbar
+%         colorbar
+%         CMAP = SelectColormap(7);
+%         colormap(CMAP)   
+%         
+%         Max_Rho_R = max(abs(reshape(Rho_R(:,:,k),[],1)));
+%         caxis([-Max_Rho_R,Max_Rho_R])
+%         %caxis([0.2,5])
+% 
+%         
+%         % Figure title inherent the molecular plot
+%         Mode_Ind_Str  = sprintf('#%d to %d',EigVec_Ind(k),EigVec_Ind(1));
+%         Mode_Freq_Str = sprintf(', @%6.2f cm^{-1}' ,OneDSFG.H.Sort_Ex_Freq(EigVec_Ind(k)+1));
+% 
+%         Fig_Title = ['Ratio map of mode ', Mode_Ind_Str, Mode_Freq_Str];
+%         hAx_CR.Title.String = Fig_Title;
+% 
+%         hF.hF_CR = hF_CR;
+%     end
+% end
 
 %% Output
 if ~or(Plot3D,PlotCT)

@@ -1,6 +1,6 @@
 function GUI = GUI_Plot_Modes(fig)
 %% Pre-setting
-Version = '1.3.6';
+Version = '1.3.7';
 
 %% Add base layout
 MainLayout = uix.VBoxFlex(...
@@ -302,7 +302,7 @@ ResponseLayout = uix.VBox('Parent',Response_Panel,...
                   'units', 'normalized',...
                   'fontunits', 'point', 'fontsize', 14); 
         uix.Empty('Parent',ContourBox);
-    set(ContourBox,'Widths',[150,150,-1])
+    set(ContourBox,'Widths',[150,180,-1])
     
     uix.Empty('Parent',ResponseLayout);
     

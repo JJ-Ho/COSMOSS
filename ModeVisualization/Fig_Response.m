@@ -90,7 +90,11 @@ if Plot3D
     EigVecM      = OneDSFG.H.Sort_Ex_V(2:end,2:end); % get ride of ground state
     EigVecM2     = EigVecM.^2;
     Center_Ex_MF = EigVecM2*(Structure.center);
-    Center       = Center_Ex_MF(EigVec_Ind,:);
+    if PlotSum
+        Center = sum(Center_Ex_MF(EigVec_Ind,:),1)./length(EigVec_Ind);
+    else
+        Center = Center_Ex_MF(EigVec_Ind,:);
+    end
 
     % shift hyperellipsoid to mode center
     Az = Phi;
@@ -162,10 +166,18 @@ if PlotCT
         
         
         % Figure title inherent the molecular plot
-        Mode_Ind_Str  = sprintf('#%d',EigVec_Ind(j));
-        Mode_Freq_Str = sprintf(', @%6.2f cm^{-1}' ,OneDSFG.H.Sort_Ex_Freq(EigVec_Ind(j)+1));
+        if PlotSum
+            M_Ind = EigVec_Ind;
+            Mode_Ind_Str  = sprintf('#%d ',M_Ind);
+            Fig_Title = ['Contour map of mode ', Mode_Ind_Str];
 
-        Fig_Title = ['Contour map of mode ', Mode_Ind_Str, Mode_Freq_Str];
+        else
+            M_Ind = EigVec_Ind(j);
+            Mode_Ind_Str  = sprintf('#%d',M_Ind);
+            Mode_Freq_Str = sprintf(', @%6.2f cm^{-1}' ,OneDSFG.H.Sort_Ex_Freq(M_Ind+1));
+            Fig_Title = ['Contour map of mode ', Mode_Ind_Str, Mode_Freq_Str];
+        end
+        
         hAx_C.Title.String = Fig_Title;
 
         hF.hF_C = hF_C;

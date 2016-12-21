@@ -50,7 +50,8 @@ if or(strcmp(SpecType,'FTIR'),strcmp(SpecType,'SFG'))
 
     % Transition dipole
     Ex_Mu = SD.Mu.M_Ex_01; % [Nx3]
-    C_Mu_V.Data = Ex_Mu;
+    Ex_Mu_N = bsxfun(@rdivide,Ex_Mu,sqrt(sum(Ex_Mu.^2,2))); % normalized vector components
+    C_Mu_V.Data = Ex_Mu_N.^2; % (x^2,y^2,z^2)./(x^2+y^2+z^2) so when the sum of the three components = 1
 
     Ex_Mu_Int = sqrt(sum(Ex_Mu.^2,2));
     C_Mu_Int.Data = Ex_Mu_Int;
@@ -126,22 +127,33 @@ switch SpecType
                  
     case 'SFG'
         Ex_Alpha = SD.Alpha.M_Ex_01; % [Nx9]
-
+        
+        % deal with norm(alpha)
         Ex_Alpha_Norm = sqrt(sum(Ex_Alpha(:,:).^2,2)); % Norm defined in Silby's paper: JCP 1992, 97, 5607?5615.
         C_A_Int.Data = Ex_Alpha_Norm;
         
-        % Diagonalze Raman Tensor so I can look at their priciple values
-        Ex_AlphaM = reshape(Ex_Alpha,Num_Ex_Mode,3,3);
-        EigenV_Alpha = zeros(Num_Ex_Mode,3);
-        for i = 1: Num_Ex_Mode
-            [~,D] = eig(squeeze(Ex_AlphaM(i,:,:)));
-            EigenV_Alpha(i,:) = diag(D)';
-        end
-        C_A_V.Data = EigenV_Alpha;
-
+        % deal with norm(1DSFG)
         Norm1D =  Ex_Mu_Int.*Ex_Alpha_Norm;
         C_Norm1D.Data = Norm1D;
-
+        
+        % Diagonalze Raman Tensor so I can look at their principle values
+        % Also project transition dipoles onto the principle axis of Raman tensors 
+        Ex_AlphaM = reshape(Ex_Alpha,Num_Ex_Mode,3,3);
+        EigenV_Alpha = zeros(Num_Ex_Mode,3);
+        Ex_Mu_N_P_Raman = zeros(Num_Ex_Mode,3);
+        for i = 1: Num_Ex_Mode
+            [V,D] = eig(squeeze(Ex_AlphaM(i,:,:)));
+            EigenV_Alpha(i,:) = diag(D)';
+            EigenV_Alpha(i,:) = EigenV_Alpha(i,:)./norm(EigenV_Alpha(i,:)); % normalize
+            
+            Ex_Mu_N_P_Raman(i,:) = Ex_Mu_N(i,:) * V;
+        end
+        C_A_V.Data  = EigenV_Alpha.^2; % (x^2,y^2,z^2)./(x^2+y^2+z^2) so when the sum of the three components = 1
+        
+        % update the Principle axis projected transtion dipole components
+        C_Mu_V.Name = {'Mu p1','Mu p2','Mu p3'};
+        C_Mu_V.Data = Ex_Mu_N_P_Raman.^2; % (x^2,y^2,z^2)./(x^2+y^2+z^2) so when the sum of the three components = 1
+        
         % signal size
         Signal = SD.EJLabFrame';
         C_Sig.Data = Signal;
@@ -174,7 +186,6 @@ switch SpecType
                               C_Pathways);
                               
 end
-
 
 %% Output
 Output.ModeList  = ModeList;

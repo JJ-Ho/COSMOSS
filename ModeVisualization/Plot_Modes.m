@@ -123,10 +123,7 @@ disp('Updated GUI Data_Plot_Modes exported!')
 
 
 function Update_Modes(hObject, eventdata, GUI_data)
-%% Run OneDSFG to get the corresponding mu and alpha of exciton modes
-% Retrieve Label index and Coupling model from COSMOSS GUI if any, if
-% running Plot_Exciton stand alone for debug testing, give a field 'debug'
-% to use the default values in OneDSFG_Main.m
+%% Gather GUI inputs
 GUI_Data_hMain  = guidata(GUI_data.hCOSMOSS);
 COSMOSS_Inputs  = ParseGUI_Main(GUI_Data_hMain.hGUIs);
 
@@ -210,17 +207,21 @@ guidata(hObject,GUI_data)
 function uitable_CellSelection(hObject, eventdata, GUI_data)
 hGUIs = GUI_data.hGUIs;
 
-TableData = hGUIs.ModeList.Data;
+TableData   = hGUIs.ModeList.Data;
+CurrentCell = eventdata.Indices;
 
-CurrentCell   = eventdata.Indices;
-CurrentRowInd = CurrentCell(:,1)';
-Mode_Ind_Str_Full  = num2str(cell2mat(TableData(   CurrentRowInd,1)'));
-Mode_Ind_Str_1st   = num2str(cell2mat(TableData(CurrentRowInd(1),1)'));
+if isempty(CurrentCell)
+    disp('No mode selected, please select at least one mode...')
+    return
+else
+    CurrentRowInd = CurrentCell(:,1)';
+    Mode_Ind_Str_Full  = num2str(cell2mat(TableData(CurrentRowInd   ,1)'));
+    Mode_Ind_Str_1st   = num2str(cell2mat(TableData(CurrentRowInd(1),1)'));
 
-% Update the Mode index on GUI
-hGUIs.Mu_Alpha_Ind.String = Mode_Ind_Str_Full;
-hGUIs.EigVec_Ind.String   = Mode_Ind_Str_1st; % only take the first index of slection, since mixxing coefficient only take one mode
-
+    % Update the Mode index on GUI
+    hGUIs.Mu_Alpha_Ind.String = Mode_Ind_Str_Full;
+    hGUIs.EigVec_Ind.String   = Mode_Ind_Str_1st; % only take the first index of slection, since mixxing coefficient only take one mode
+end
 %% update handles
 GUI_data.Mode_Ind_Str = Mode_Ind_Str_Full;
 guidata(hObject,GUI_data)

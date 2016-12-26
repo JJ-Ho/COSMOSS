@@ -28,7 +28,10 @@ switch SpecType
     case 'TwoDIR'
         [~,SD] = TwoDIR_Main(Structure,COSMOSS_Inputs);
     case 'TwoDSFG'
-        %[~,SD] = TwoDSFG_Main(Structure,COSMOSS_Inputs);
+        % In order to save time, the non-table generation mode does not 
+        % export Beta But when generating table, I also need molFrame 
+        % response to visulizae it, so here I toggle switch GenTable on.
+        COSMOSS_Inputs.GenTable = 1;
         [~,SD] = TwoDSFG_Main_Sparse(Structure,COSMOSS_Inputs);
 end
 

@@ -1,4 +1,4 @@
-function [Grid,Freq,Int,Index] = Feynman_2DSFG_Vec_Sparse(FreqRange,EJR,F1,F2,A_Ex_01,A_Ex_12,M_Ex_01,M_Ex_12)
+function [Grid,Freq,Int,Index,Beta] = Feynman_2DSFG_Vec_Sparse_Beta_Only(FreqRange,EJR,F1,F2,A_Ex_01,A_Ex_12,M_Ex_01,M_Ex_12)
 % 
 % This function generate Feynman pathway of 2DSFG with given polarization.
 % 
@@ -114,10 +114,20 @@ A_a0 = A_Ex_01(Ia(:),:);
 A_b0 = A_Ex_01(Ib(:),:);
 
 % Response (GB SE)
-S_R1  = (A_b0(:,Ja(:)).*M_0b(:,Jb(:)).*M_a0(:,Jc(:)).*M_0a(:,Jd(:)))*EJR';
-S_R2  = (A_b0(:,Ja(:)).*M_a0(:,Jb(:)).*M_0b(:,Jc(:)).*M_0a(:,Jd(:)))*EJR';
-S_NR1 = (A_b0(:,Ja(:)).*M_0b(:,Jb(:)).*M_a0(:,Jc(:)).*M_0a(:,Jd(:)))*EJR';
-S_NR2 = (A_a0(:,Ja(:)).*M_b0(:,Jb(:)).*M_0b(:,Jc(:)).*M_0a(:,Jd(:)))*EJR';
+% S_R1  = (A_b0(:,Ja(:)).*M_0b(:,Jb(:)).*M_a0(:,Jc(:)).*M_0a(:,Jd(:)))*EJR';
+% S_R2  = (A_b0(:,Ja(:)).*M_a0(:,Jb(:)).*M_0b(:,Jc(:)).*M_0a(:,Jd(:)))*EJR';
+% S_NR1 = (A_b0(:,Ja(:)).*M_0b(:,Jb(:)).*M_a0(:,Jc(:)).*M_0a(:,Jd(:)))*EJR';
+% S_NR2 = (A_a0(:,Ja(:)).*M_b0(:,Jb(:)).*M_0b(:,Jc(:)).*M_0a(:,Jd(:)))*EJR';
+Beta_R1  = (A_b0(:,Ja(:)).*M_0b(:,Jb(:)).*M_a0(:,Jc(:)).*M_0a(:,Jd(:)));
+Beta_R2  = (A_b0(:,Ja(:)).*M_a0(:,Jb(:)).*M_0b(:,Jc(:)).*M_0a(:,Jd(:)));
+Beta_NR1 = (A_b0(:,Ja(:)).*M_0b(:,Jb(:)).*M_a0(:,Jc(:)).*M_0a(:,Jd(:)));
+Beta_NR2 = (A_a0(:,Ja(:)).*M_b0(:,Jb(:)).*M_0b(:,Jc(:)).*M_0a(:,Jd(:)));
+
+S_R1  = Beta_R1 *EJR';
+S_R2  = Beta_R2 *EJR';
+S_NR1 = Beta_NR1*EJR';
+S_NR2 = Beta_NR2*EJR';
+
 
 %% R3 NR3
 % Merge the first two index of Mu_Ex into one => 2D verion Mu_Ex
@@ -150,6 +160,8 @@ if N3 > Ele_Max
     disp('--------------------------------------')
     
     % pre-allocate matrix
+    Beta_R3  = zeros(Ele_Max,243,Loop_N-1);
+    Beta_NR3 = zeros(Ele_Max,243,Loop_N-1);
     S_R3  = zeros(Ele_Max,Loop_N-1);
     S_NR3 = zeros(Ele_Max,Loop_N-1);
 
@@ -163,8 +175,11 @@ if N3 > Ele_Max
         N_xb = TD_A_Ex(ind_bx(:,LN),:); % ind_xb = ind_bx
 
         % Response (EA)
-        S_R3(:,LN)  = (N_xa(:,Ja(:)).*N_bx(:,Jb(:)).*N_0b(:,Jc(:)).*N_0a(:,Jd(:)))*EJR';
-        S_NR3(:,LN) = (N_xb(:,Ja(:)).*N_ax(:,Jb(:)).*N_0b(:,Jc(:)).*N_0a(:,Jd(:)))*EJR';
+        Beta_R3(:,:,LN)  = (N_xa(:,Ja(:)).*N_bx(:,Jb(:)).*N_0b(:,Jc(:)).*N_0a(:,Jd(:)));
+        Beta_NR3(:,:,LN) = (N_xb(:,Ja(:)).*N_ax(:,Jb(:)).*N_0b(:,Jc(:)).*N_0a(:,Jd(:)));
+        
+        S_R3(:,LN)  = Beta_R3(:,:,LN)*EJR';
+        S_NR3(:,LN) = Beta_NR3(:,:,LN)*EJR';
 
     end
     
@@ -188,8 +203,11 @@ if N3 > Ele_Max
         N_xb = TD_A_Ex(ind_bx_End,:); % ind_xb = ind_bx
 
         % Response (EA)
-        S_R3_End  = (N_xa(:,Ja(:)).*N_bx(:,Jb(:)).*N_0b(:,Jc(:)).*N_0a(:,Jd(:)))*EJR';
-        S_NR3_End = (N_xb(:,Ja(:)).*N_ax(:,Jb(:)).*N_0b(:,Jc(:)).*N_0a(:,Jd(:)))*EJR';
+        Beta_R3_End  = (N_xa(:,Ja(:)).*N_bx(:,Jb(:)).*N_0b(:,Jc(:)).*N_0a(:,Jd(:)));
+        Beta_NR3_End = (N_xb(:,Ja(:)).*N_ax(:,Jb(:)).*N_0b(:,Jc(:)).*N_0a(:,Jd(:)));
+        
+        S_R3_End  = Beta_R3_End*EJR';
+        S_NR3_End = Beta_NR3_End*EJR';
         
     S_R3  = [ S_R3; S_R3_End];
     S_NR3 = [S_NR3;S_NR3_End];
@@ -275,3 +293,10 @@ Index.R3  = I_R3;
 Index.NR1 = I_NR1;
 Index.NR2 = I_NR2;
 Index.NR3 = I_NR3;
+
+Beta.R1  = Beta_R1';
+Beta.R2  = Beta_R2';
+Beta.R3  = Beta_R3';
+Beta.NR1 = Beta_NR1';
+Beta.NR2 = Beta_NR2';
+Beta.NR3 = Beta_NR3';

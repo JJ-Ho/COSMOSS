@@ -52,6 +52,7 @@ defaultP_Pump2      = 0;
 defaultP_Probe      = 0;
 defaultP_Vis2D      = 0;
 defaultP_Sig2D      = 0;
+defaultGenTable     = 0; % toggle to switch between Table generation mode
 
 addOptional(INPUT,'FreqRange'   ,defaultFreqRange);
 addOptional(INPUT,'CouplingType',defaultCouplingType);
@@ -68,6 +69,7 @@ addOptional(INPUT,'P_Pump2'     ,defaultP_Pump2);
 addOptional(INPUT,'P_Probe'     ,defaultP_Probe);
 addOptional(INPUT,'P_Vis2D'     ,defaultP_Vis2D);
 addOptional(INPUT,'P_Sig2D'     ,defaultP_Sig2D);
+addOptional(INPUT,'GenTable'    ,defaultGenTable);
 
 parse(INPUT,GUI_Inputs_C{:});
 
@@ -87,6 +89,7 @@ P_Pump2      = INPUT.Results.P_Pump2;
 P_Probe      = INPUT.Results.P_Probe;
 P_Vis2D      = INPUT.Results.P_Vis2D;
 P_Sig2D      = INPUT.Results.P_Sig2D;
+GenTable     = INPUT.Results.GenTable;
 
 %% Call TwoExcitonH to calculate H,mu and alpha under exciton basis
 
@@ -179,7 +182,12 @@ E = EPolar5(P_Sig2D,P_Vis2D,P_Probe,P_Pump2,P_Pump1); % Take [radius]
 %% Generate Feynman pathway for 2DSFG
 EJR = E*J*R_Avg;
 
-[Grid,Freq,Int,Index] = Feynman_2DSFG_Vec_Sparse(FreqRange,EJR,Ex_F1,Ex_F2,A_Ex_01,A_Ex_12,M_Ex_01,M_Ex_12);
+if GenTable
+    [Grid,Freq,Int,Index,Beta] = Feynman_2DSFG_Vec_Sparse_Beta_Only(FreqRange,EJR,Ex_F1,Ex_F2,A_Ex_01,A_Ex_12,M_Ex_01,M_Ex_12);
+    Response.MolFrame = Beta;
+else
+    [Grid,Freq,Int,Index] = Feynman_2DSFG_Vec_Sparse(FreqRange,EJR,Ex_F1,Ex_F2,A_Ex_01,A_Ex_12,M_Ex_01,M_Ex_12);
+end
 
 %% Group up outputs
 Response.H = H;
@@ -190,7 +198,7 @@ Response.Freq  = Freq;
 Response.Int   = Int;
 Response.Index = Index;
 
-%% Binning of spectra
+%% Rename binned signal
 SpectraGrid.SpecAccuR1  = Grid.R1;
 SpectraGrid.SpecAccuR2  = Grid.R2;
 SpectraGrid.SpecAccuR3  = Grid.R3;

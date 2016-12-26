@@ -517,4 +517,3 @@ TwoDSFG.CVL         = CVL;
 
 GUI_data.TwoDSFG = TwoDSFG;
 guidata(hObject,GUI_data);
-

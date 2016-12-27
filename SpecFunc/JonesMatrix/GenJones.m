@@ -16,7 +16,7 @@
 
 % define incident angle of Pump, Probe, Visible probe, and Signal
 % all angle is defined by angle between surface normal and the light beams.
-SaveAsFunc = 'n';
+SaveAsFunc = 'y';
 
 syms A_Pu1 A_Pu2 A_Pr A_Vi A_Si
 
@@ -72,12 +72,16 @@ Si_T(2,3) = 0;
 
 
 %% Direct product and permutation of index
+Rps1 =                     Si_R;
+Rps2 =                kron(Si_R,Vi);
 Rps3 =           kron(kron(Si_R,Vi),Pu1);% SFG
 Rps4 =      kron(kron(kron(Si_T,Pr),Pu2),Pu1);% 2DIR
 Rps5 = kron(kron(kron(kron(Si_R,Vi),Pr ),Pu2),Pu1);% 2DSFG
 
 %% 
 if strcmp(SaveAsFunc,'y')   
+    matlabFunction(Rps1,'file','JonesRef1');
+    matlabFunction(Rps2,'file','JonesRef2');
     matlabFunction(Rps3,'file','JonesRef3');
     matlabFunction(Rps4,'file','JonesTrans4');
     matlabFunction(Rps5,'file','JonesRef5');

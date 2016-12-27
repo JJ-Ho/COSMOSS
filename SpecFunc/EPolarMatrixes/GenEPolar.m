@@ -19,12 +19,16 @@ E_Pr  = [cos(O_Pr) , sin(O_Pr) ];
 E_Pu2 = [cos(O_Pu2), sin(O_Pu2)];
 E_Pu1 = [cos(O_Pu1), sin(O_Pu1)];
 
+E1 =                     E_Sig;
+E2 =                kron(E_Sig,E_Vis);
 E3 =           kron(kron(E_Sig,E_Vis),E_Pu1);
 E4 =      kron(kron(kron(E_Sig,E_Pr ),E_Pu2),E_Pu1);
 E5 = kron(kron(kron(kron(E_Sig,E_Vis),E_Pr),E_Pu2),E_Pu1);
 
 %% 
 if strcmp(SaveAsFunc,'y')   
+    matlabFunction(E1,'file','EPolar1');
+    matlabFunction(E2,'file','EPolar2');
     matlabFunction(E3,'file','EPolar3');
     matlabFunction(E4,'file','EPolar4');
     matlabFunction(E5,'file','EPolar5');

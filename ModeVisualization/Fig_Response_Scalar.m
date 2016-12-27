@@ -1,12 +1,36 @@
-function Output = Fig_Response(hModel, GUI_Inputs, Structure, SpecData, GUI_Data_hMain) 
+% function Output = Fig_Response_Scalar(hModel, GUI_Inputs, Structure, SpecData, GUI_Data_hMain) 
 % Plot hyper ellipsoid so that the radius = (ExJ)x(LxRxbeta)
+%% Debug
+N_Grid      = 30;
+ScaleFactor = 1;
+Plot3D      = 0;
+PlotCT      = 1;
+PlotSum     = 0;
+SpecType    = 2;
+
+GUI_Data_hMain.A_IR    = 90;
+GUI_Data_hMain.A_Vis1D = 90;
+GUI_Data_hMain.A_Sig1D = 90;
+
+GUI_Data_hMain.P_IR    = 0;
+GUI_Data_hMain.P_Vis1D = 0;
+GUI_Data_hMain.P_Sig1D = 0;
+
+SpecData = OneDSFG_Main(Structure,GUI_Data_hMain);
+% SpecData = TwoDSFG_Main(Structure,GUI_Data_hMain);
+
+% EigVec_Ind = [2,3,7,8];
+EigVec_Ind = 3;
 
 %% define constants
-N_Grid      = GUI_Inputs.Sig_NGrid;
-ScaleFactor = GUI_Inputs.Sig_Scale;
-Plot3D      = GUI_Inputs.Sig_Plot3D;
-PlotCT      = GUI_Inputs.Sig_PlotCT;
-PlotSum     = GUI_Inputs.Sig_PlotSum;
+% N_Grid      = GUI_Inputs.Sig_NGrid;
+% ScaleFactor = GUI_Inputs.Sig_Scale;
+% Plot3D      = GUI_Inputs.Sig_Plot3D;
+% PlotCT      = GUI_Inputs.Sig_PlotCT;
+% PlotSum     = GUI_Inputs.Sig_PlotSum;
+
+% SpecType    = GUI_Inputs.SpecType;
+% EigVec_Ind  = GUI_Inputs.Mu_Alpha_Ind; % get a full mode list from Mu_Alpha_Ind
 
 %% Generate ExJ(psi,theta,Ai...,Pi...)
 % The relative orientation of laser beams are determined by the incidnet 
@@ -26,59 +50,37 @@ PlotSum     = GUI_Inputs.Sig_PlotSum;
 % map the response (R) as function of two Euler angle so we can visulize it
 % in (R,psi,theta) 3D coordinate. 
 
-SpecType = GUI_Inputs.SpecType;
 
 switch SpecType
     case 2 % 1DSFG
-        % [M,Phi,Theta] = EJ(Polar,Ang,N_Grid);
-        [M,Phi,Theta] = EJRR(GUI_Data_hMain,N_Grid);
-        Response = SpecData.MolFrame;
+        [M2,M1,Phi,Theta] = EJR_Scalar(GUI_Data_hMain,N_Grid);
+        
+        Alpha_All = SpecData.Alpha.M_Ex_01;
+        Mu_All    = SpecData.Mu.M_Ex_01;
+        
+        Alpha = Alpha_All(EigVec_Ind,:)';
+        Mu    =    Mu_All(EigVec_Ind,:)';
+        Rho   = (M2*Alpha).*(M1*Mu);
     case 4 % 2DSFG
-        [M,Phi,Theta] = EJRR_2DSFG(GUI_Data_hMain,N_Grid);
-        Response = SpecData.MolFrame.R1; %% Need to implement which pathway to use
+        disp('Spectral Type no supported yet...')
+        %[M,Phi,Theta] = EJRR_2DSFG(GUI_Data_hMain,N_Grid);
+        %Response = SpecData.MolFrame.R1; %% Need to implement which pathway to use
     otherwise
         disp('Spectral Type no supported yet...')
         return
 end
 
-
 Theta_D = Theta./pi.*180;
 Phi_D   =   Phi./pi.*180;
 
 %% Deal with response L x <R> x beta
-% selecte mode
-EigVec_Ind = GUI_Inputs.Mu_Alpha_Ind; % get a full mode list from Mu_Alpha_Ind
-
 % Response 
-Rho = M*Response(:,EigVec_Ind);
 Rho = reshape(Rho,N_Grid,2*N_Grid,[]);
 
 % scale
 N_Modes = length(EigVec_Ind);
 Rho = Rho.*ScaleFactor;
 Max_Rho = max(abs(reshape(Rho,[],N_Modes)));
-
-% % deal with multi modes
-% if gt(N_Modes,1)
-%     disp('Multiple mode comparison, ')
-%     disp('Contour plot shows the ratio of all the modes raletive to the first mode')
-%     Plot3D = 0;
-%     
-%     Rho_R = zeros(size(Rho) - [0,0,1]);
-% 
-%     for i = 2:N_Modes
-%         %Rho_R(:,:,i) = Rho(:,:,i)./Rho(:,:,1);
-%         %Rho_R(:,:,i) = (Rho(:,:,i)./Max_Rho(i)) ./ (Rho(:,:,1)./Max_Rho(1));
-%         %Rho_R(:,:,i) = (Rho(:,:,i)./Max_Rho(i)) - (Rho(:,:,1)./Max_Rho(1));
-%         %Rho_R(:,:,i) = 1./(Rho(:,:,i)./Max_Rho(i)) - (Rho(:,:,1)./Max_Rho(1));
-%         Rho_R(:,:,i) = (Rho(:,:,i)./Max_Rho(i)) - (Rho(:,:,1)./Max_Rho(1));
-%         %Rho_R(:,:,i) = (Rho(:,:,i)+Max_Rho(i)) ./ (Rho(:,:,1)+Max_Rho(1));
-%         %Rho_R(:,:,i) = (Rho(:,:,i)+1) ./ (Rho(:,:,1)+1);
-%         %Rho_R(:,:,i) = (Rho(:,:,i)+Max_Rho(i)) ./ (Rho(:,:,1)+Max_Rho(1));
-%         %Rho_R(:,:,i) = (abs(Rho(:,:,i))+1) ./ (abs(Rho(:,:,1))+1);
-%         %Rho_R(:,:,i) = (abs(Rho(:,:,1))+1) ./ (abs(Rho(:,:,i))+1);
-%     end
-% end
 
 %% Sum up multimodes response
 if PlotSum
@@ -88,6 +90,7 @@ if PlotSum
 end
 
 %% Make 3D figure
+hF = struct;
 if Plot3D
     
     % Plot molecule

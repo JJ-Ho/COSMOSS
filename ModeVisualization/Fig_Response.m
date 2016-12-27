@@ -1,4 +1,4 @@
-function Output = Fig_Response(hModel, GUI_Inputs, Structure, OneDSFG, GUI_Data_hMain) 
+function Output = Fig_Response(hModel, GUI_Inputs, Structure, SpecData, GUI_Data_hMain) 
 % Plot hyper ellipsoid so that the radius = (ExJ)x(LxRxbeta)
 
 %% define constants
@@ -26,8 +26,21 @@ PlotSum     = GUI_Inputs.Sig_PlotSum;
 % map the response (R) as function of two Euler angle so we can visulize it
 % in (R,psi,theta) 3D coordinate. 
 
-% [M,Phi,Theta] = EJ(Polar,Ang,N_Grid);
-[M,Phi,Theta] = EJRR(GUI_Data_hMain,N_Grid);
+SpecType = GUI_Inputs.SpecType;
+
+switch SpecType
+    case 2 % 1DSFG
+        % [M,Phi,Theta] = EJ(Polar,Ang,N_Grid);
+        [M,Phi,Theta] = EJRR(GUI_Data_hMain,N_Grid);
+        Response = SpecData.MolFrame;
+    case 4 % 2DSFG
+        [M,Phi,Theta] = EJRR_2DSFG(GUI_Data_hMain,N_Grid);
+        Response = SpecData.MolFrame.R1; %% Need to implement which pathway to use
+    otherwise
+        diap('Spectral Type no supported yet...')
+        return
+end
+
 
 Theta_D = Theta./pi.*180;
 Phi_D   =   Phi./pi.*180;
@@ -37,7 +50,6 @@ Phi_D   =   Phi./pi.*180;
 EigVec_Ind = GUI_Inputs.Mu_Alpha_Ind; % get a full mode list from Mu_Alpha_Ind
 
 % Response 
-Response = OneDSFG.MolFrame;
 Rho = M*Response(:,EigVec_Ind);
 Rho = reshape(Rho,N_Grid,2*N_Grid,[]);
 
@@ -87,13 +99,15 @@ if Plot3D
     PlotRotV = 1;
 
     % Center of Exciton mode
-    EigVecM      = OneDSFG.H.Sort_Ex_V(2:end,2:end); % get ride of ground state
+    EigVecM      = SpecData.H.Sort_Ex_V(2:end,2:end); % get ride of ground state
     EigVecM2     = EigVecM.^2;
     Center_Ex_MF = EigVecM2*(Structure.center);
+    
     if PlotSum
         Center = sum(Center_Ex_MF(EigVec_Ind,:),1)./length(EigVec_Ind);
     else
         Center = Center_Ex_MF(EigVec_Ind,:);
+        %Center = [0,0,0]; % tmp work-around for tensor form 2DSFG 
     end
 
     % shift hyperellipsoid to mode center
@@ -134,7 +148,7 @@ if Plot3D
     % Figure title inherent the molecular plot
     Fig_Title = hAx_3D.Title.String;
     Mode_Ind_Str  = sprintf('#%d',EigVec_Ind);
-    Mode_Freq_Str = sprintf(', @%6.2f cm^{-1}' ,OneDSFG.H.Sort_Ex_Freq(EigVec_Ind+1));
+    Mode_Freq_Str = sprintf(', @%6.2f cm^{-1}' ,SpecData.H.Sort_Ex_Freq(EigVec_Ind+1));
     Scaling_Str   = sprintf(', Scale= %2.1f',ScaleFactor);
 
     Fig_Title{length(Fig_Title)+1} = [Mode_Ind_Str, Mode_Freq_Str, Scaling_Str];
@@ -174,7 +188,7 @@ if PlotCT
         else
             M_Ind = EigVec_Ind(j);
             Mode_Ind_Str  = sprintf('#%d',M_Ind);
-            Mode_Freq_Str = sprintf(', @%6.2f cm^{-1}' ,OneDSFG.H.Sort_Ex_Freq(M_Ind+1));
+            Mode_Freq_Str = sprintf(', @%6.2f cm^{-1}' ,SpecData.H.Sort_Ex_Freq(M_Ind+1));
             Fig_Title = ['Contour map of mode ', Mode_Ind_Str, Mode_Freq_Str];
         end
         

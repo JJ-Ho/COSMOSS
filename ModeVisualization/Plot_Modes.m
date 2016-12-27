@@ -192,13 +192,13 @@ function Update_Response(hObject, eventdata, GUI_data)
 %% Gather necessary inputs
 GUI_Inputs      = ParseGUI_Modes(GUI_data.hGUIs);
 Structure       = GUI_data.Structure;
-OneDSFG         = GUI_data.SpecData;
+SpecData        = GUI_data.SpecData;
 hModel          = GUI_data.hModel;
 GUI_Data_Main   = guidata(GUI_data.hCOSMOSS);
 GUI_Inputs_Main = ParseGUI_Main(GUI_Data_Main.hGUIs);
 
 %% Call Update RespF function
-Response = Fig_Response(hModel, GUI_Inputs, Structure, OneDSFG, GUI_Inputs_Main);
+Response = Fig_Response(hModel, GUI_Inputs, Structure, SpecData, GUI_Inputs_Main);
 
 %% update handles
 GUI_data.Response = Response;

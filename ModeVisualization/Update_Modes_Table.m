@@ -93,6 +93,11 @@ if or(strcmp(SpecType,'TwoDIR'),strcmp(SpecType,'TwoDSFG'))
         Tmp = ones(N_Path,1).*L;
         PathName_Str = [PathName_Str ; Tmp];
         
+        % Pathway label (String version)
+        %clear Tmp
+        %[Tmp{1:N_Path}] = deal(PathName{L});
+        %PathName_Str = [PathName_Str ; Tmp'];
+        
         % Pathways index
         New_Pathways = SD.Index.(PathName{L});
         Pathways = [Pathways ; New_Pathways];

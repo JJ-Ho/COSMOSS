@@ -160,10 +160,8 @@ GUI_data.hGUIs.ModeList.ColumnWidth  = T.ModeList.Width;
 GUI_data.hGUIs.ModeList.Data         = T.ModeList.Data;
 GUI_data.hGUIs.SortInd.String        = T.ModeList.Name;
 
-% call sorting to sort table with the same GUI setting
-uitable_Sort(hObject, eventdata, GUI_data)
-
 %% Update handles structure
+GUI_data.Table     = T.ModeList;
 GUI_data.SpecData  = T.SpecData;
 GUI_data.Structure = Structure;
 
@@ -228,10 +226,11 @@ GUI_data.Mode_Ind_Str = Mode_Ind_Str_Full;
 guidata(hObject,GUI_data)
 
 function uitable_Sort(hObject, eventdata, GUI_data)
-TableData  = GUI_data.hGUIs.ModeList.Data;
+Data       = GUI_data.Table.Data;
+SortInd    = GUI_data.Table.SortInd;
 SortColumn = GUI_data.hGUIs.SortInd.Value;
 
-SC = abs(cell2mat(TableData(:,SortColumn))); % only sort the absolute value
+SC = SortInd(:,SortColumn); 
 
 if eq(SortColumn,1) 
     % for sorting index
@@ -240,7 +239,7 @@ else
     [~,SortInd] = sort(SC,'descend');
 end
 
-SortedData = TableData(SortInd,:);
+SortedData = Data(SortInd,:);
 
 % Update Table on GUI
 set(GUI_data.hGUIs.ModeList,'Data', SortedData);

@@ -5,7 +5,7 @@ function Output = Update_Modes_Table(SpecType,Structure,COSMOSS_Inputs)
 C_Index  = ColumnFormat('Index'  ,'short',40);
 C_Freq   = ColumnFormat('Freq.'  ,'bank' ,50);
 C_P_Num  = ColumnFormat('P. %'   ,'bank' ,40);
-C_Mu_V   = ColumnFormat({'Mu x','Mu y','Mu z'},{'bank','bank','bank'},{40,40,40});
+C_Mu_V   = ColumnFormat({'Mu x%','Mu y%','Mu z%'},{'bank','bank','bank'},{40,40,40});
 C_A_V    = ColumnFormat({'A p1','A p2','A p3'},{'bank','bank','bank'},{40,40,40});
 C_Mu_Int = ColumnFormat('N[Mu]' ,'bank' ,40);
 C_A_Int  = ColumnFormat('N[A]'  ,'bank' ,40);
@@ -38,26 +38,27 @@ end
 %% 1D spectra Common part 
 if or(strcmp(SpecType,'FTIR'),strcmp(SpecType,'SFG'))
     % Mode Frequency
-    Pump_F      = SD.H.Sort_Ex_F1;
-    Num_Ex_Mode = SD.H.Num_Modes;
-    C_Freq.Data = Pump_F;
+    Pump_F = SD.H.Sort_Ex_F1;
+    C_Freq = ImportSortInd(C_Freq,Pump_F);
 
     % mode index
-    Ex_Ind       = (1:Num_Ex_Mode)';
-    C_Index.Data = Ex_Ind;
-
+    Num_Ex_Mode = SD.H.Num_Modes;
+    Ex_Ind      = (1:Num_Ex_Mode)';
+    C_Index = ImportSortInd(C_Index,Ex_Ind);
+    
     % Participation number, percentage of local mode involve 
     EigV         = SD.H.Sort_Ex_V1;
     P_Num        = 1./sum(EigV.^4,1)'./Num_Ex_Mode.*100;
-    C_P_Num.Data = P_Num;
+    C_P_Num = ImportSortInd(C_P_Num,P_Num);
 
-    % Transition dipole
+    % Transition dipole vector direction
     Ex_Mu = SD.Mu.M_Ex_01; % [Nx3]
     Ex_Mu_N = bsxfun(@rdivide,Ex_Mu,sqrt(sum(Ex_Mu.^2,2))); % normalized vector components
-    C_Mu_V.Data = Ex_Mu_N.^2; % (x^2,y^2,z^2)./(x^2+y^2+z^2) so when the sum of the three components = 1
+    C_Mu_V = ImportSortInd(C_Mu_V,Ex_Mu_N.^2); % (x^2,y^2,z^2)./(x^2+y^2+z^2) so when the sum of the three components = 1
 
+    % Transition dipole Intensity
     Ex_Mu_Int = sqrt(sum(Ex_Mu.^2,2));
-    C_Mu_Int.Data = Ex_Mu_Int;
+    C_Mu_Int = ImportSortInd(C_Mu_Int,Ex_Mu_Int);
 end
 
 %% 2D spectrum Common part
@@ -68,6 +69,7 @@ if or(strcmp(SpecType,'TwoDIR'),strcmp(SpecType,'TwoDSFG'))
     Prob_F       = [];
     Ex_Ind       = [];
     Int          = [];
+    PathType     = [];
     PathName_Str = [];
     Pathways     = [];
     
@@ -91,12 +93,15 @@ if or(strcmp(SpecType,'TwoDIR'),strcmp(SpecType,'TwoDSFG'))
         
         % Pathway label (Number version)
         Tmp = ones(N_Path,1).*L;
-        PathName_Str = [PathName_Str ; Tmp];
+        PathType = [PathType ; Tmp];
         
-        % Pathway label (String version)
-        %clear Tmp
-        %[Tmp{1:N_Path}] = deal(PathName{L});
-        %PathName_Str = [PathName_Str ; Tmp'];
+        %Pathway label (String version)
+        clear Tmp
+        FormattedPathNameStr = strcat('<html><pre style="font-weight: bold;">', ...
+                                       [' ',PathName{L}], ...
+                                       '</pre></html>');
+        [Tmp{1:N_Path}] = deal(FormattedPathNameStr);
+        PathName_Str = [PathName_Str ; Tmp']; 
         
         % Pathways index
         New_Pathways = SD.Index.(PathName{L});
@@ -113,15 +118,20 @@ if or(strcmp(SpecType,'TwoDIR'),strcmp(SpecType,'TwoDSFG'))
     Prob_F(CutOff_I)       = [];
     Ex_Ind(CutOff_I)       = [];
     PathName_Str(CutOff_I) = [];
+    PathType(CutOff_I)     = [];
     Pathways(CutOff_I,:)   = [];
     
-    % save dtata to columns
-    C_PumpF.Data      = Pump_F;
-    C_ProbF.Data      = Prob_F;
-    C_Index.Data      = Ex_Ind;
-    C_Int.Data        = Int;
+    % save data to formated column
+    C_PumpF      = ImportSortInd(C_PumpF      ,Pump_F);
+    C_ProbF      = ImportSortInd(C_ProbF      ,Prob_F);
+    C_Index      = ImportSortInd(C_Index      ,Ex_Ind);
+    C_Int        = ImportSortInd(C_Int        ,Int);
+    C_Path_Label = ImportSortInd(C_Path_Label ,PathType);
+    C_Pathways   = ImportSortInd(C_Pathways   ,Pathways);
+    
+    % Replace face value of Data to proper stings
     C_Path_Label.Data = PathName_Str;
-    C_Pathways.Data   = Pathways;
+    
 end
 
 %% Spectrum specific part and create corresponding TableColumn Class
@@ -138,11 +148,11 @@ switch SpecType
         
         % deal with norm(alpha)
         Ex_Alpha_Norm = sqrt(sum(Ex_Alpha(:,:).^2,2)); % Norm defined in Silby's paper: JCP 1992, 97, 5607?5615.
-        C_A_Int.Data = Ex_Alpha_Norm;
+        C_A_Int = ImportSortInd(C_A_Int,Ex_Alpha_Norm);
         
         % deal with norm(1DSFG)
         Norm1D =  Ex_Mu_Int.*Ex_Alpha_Norm;
-        C_Norm1D.Data = Norm1D;
+        C_Norm1D = ImportSortInd(C_Norm1D,Norm1D);
         
         % Diagonalze Raman Tensor so I can look at their principle values
         % Also project transition dipoles onto the principle axis of Raman tensors 
@@ -156,15 +166,15 @@ switch SpecType
             
             Ex_Mu_N_P_Raman(i,:) = Ex_Mu_N(i,:) * V;
         end
-        C_A_V.Data  = EigenV_Alpha.^2; % (x^2,y^2,z^2)./(x^2+y^2+z^2) so when the sum of the three components = 1
+        C_A_V = ImportSortInd(C_A_V,EigenV_Alpha.^2); % (x^2,y^2,z^2)./(x^2+y^2+z^2) so when the sum of the three components = 1
         
         % update the Principle axis projected transtion dipole components
         C_Mu_V.Name = {'Mu p1','Mu p2','Mu p3'};
-        C_Mu_V.Data = Ex_Mu_N_P_Raman.^2; % (x^2,y^2,z^2)./(x^2+y^2+z^2) so when the sum of the three components = 1
+        C_Mu_V = ImportSortInd(C_Mu_V,Ex_Mu_N_P_Raman.^2); % (x^2,y^2,z^2)./(x^2+y^2+z^2) so when the sum of the three components = 1
         
         % signal size
         Signal = SD.EJLabFrame';
-        C_Sig.Data = Signal;
+        C_Sig = ImportSortInd(C_Sig,Signal);
         
         % diaplay mode properties
         ModeList = merge2cell(C_Index,...

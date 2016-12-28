@@ -198,7 +198,8 @@ GUI_Data_Main   = guidata(GUI_data.hCOSMOSS);
 GUI_Inputs_Main = ParseGUI_Main(GUI_Data_Main.hGUIs);
 
 %% Call Update RespF function
-Response = Fig_Response(hModel, GUI_Inputs, Structure, SpecData, GUI_Inputs_Main);
+% Response = Fig_Response(hModel, GUI_Inputs, Structure, SpecData, GUI_Inputs_Main);
+Response = Fig_Response_Scalar(hModel, GUI_Inputs, Structure, SpecData, GUI_Inputs_Main);
 
 %% update handles
 GUI_data.Response = Response;

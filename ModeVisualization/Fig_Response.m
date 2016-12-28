@@ -1,5 +1,5 @@
 function Output = Fig_Response(hModel, GUI_Inputs, Structure, SpecData, GUI_Data_hMain) 
-% Plot hyper ellipsoid so that the radius = (ExJ)x(LxRxbeta)
+% Orientation dependence of SFG/2DSFG signal in tensor form 
 
 %% define constants
 N_Grid      = GUI_Inputs.Sig_NGrid;

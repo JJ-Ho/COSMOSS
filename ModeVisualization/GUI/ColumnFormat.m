@@ -36,13 +36,7 @@ classdef ColumnFormat
                MC.Format  = [MC.Format  ,varargin{i}.Format ];
                MC.Width   = [MC.Width   ,varargin{i}.Width  ];
                MC.Data    = [MC.Data    ,varargin{i}.Data   ];
-               MC.SortInd = [MC.SortInd ,varargin{i}.SortInd];
-               
-               %if isnumeric(varargin{i}.Data)
-               %    Next_Data = num2cell(varargin{i}.Data);
-               %else
-               %    Next_Data = varargin{i}.Data;
-               %end     
+               MC.SortInd = [MC.SortInd ,varargin{i}.SortInd];               
            end
        end
        

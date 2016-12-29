@@ -16,8 +16,8 @@ C_PumpF  = ColumnFormat('Pump' ,'bank' ,55);
 C_ProbF  = ColumnFormat('Probe','bank' ,55);
 C_Int    = ColumnFormat('Intensity' ,'bank' ,70);
 
-C_Path_Label = ColumnFormat('Path' ,'short' ,30);
-C_Pathways   = ColumnFormat({'4th','3rd','2nd','1st'},{'short','short','short'},{30,30,30,30});
+C_PathName = ColumnFormat('Path' ,'short' ,30);
+C_PathInd  = ColumnFormat({'4th','3rd','2nd','1st'},{'short','short','short'},{40,40,40,40});
 
 %% Calculate Spectral data
 switch SpecType
@@ -63,24 +63,23 @@ end
 
 %% 2D spectrum Common part
 if or(strcmp(SpecType,'TwoDIR'),strcmp(SpecType,'TwoDSFG'))
-    PathName = {'R1','R2','R3','NR1','NR2','NR3'}; % [Improve] add GUI input for this 
-    %PathName = {'NR2'};
+    Path = {'R1','R2','R3','NR1','NR2','NR3'}; % [Improve] add GUI input for this 
+    %Path = {'R1','R2','R3'};
     Pump_F       = [];
     Prob_F       = [];
     Ex_Ind       = [];
     Int          = [];
-    PathType     = [];
-    PathName_Str = [];
-    Pathways     = [];
+    PathName_N   = [];
+    PathInd_N    = [];
     
-    for L = 1:length(PathName)
+    for L = 1:length(Path)
         % Pump Frequency
-        New_Pump_F = abs(SD.Freq.(PathName{L})(:,1));
+        New_Pump_F = abs(SD.Freq.(Path{L})(:,1));
         Pump_F = [Pump_F ; New_Pump_F ];
         N_Path = length(New_Pump_F);
 
         % Probe Frequency
-        New_Prob_F = abs(SD.Freq.(PathName{L})(:,3));
+        New_Prob_F = abs(SD.Freq.(Path{L})(:,3));
         Prob_F = [Prob_F ; New_Prob_F ];    
 
         % mode index
@@ -88,50 +87,47 @@ if or(strcmp(SpecType,'TwoDIR'),strcmp(SpecType,'TwoDSFG'))
         Ex_Ind = [Ex_Ind ; New_Ind ];    
 
         % signal intensity
-        New_Int = SD.Int.(PathName{L});
+        New_Int = SD.Int.(Path{L});
         Int = [Int ; New_Int(:) ];
         
-        % Pathway label (Number version)
+        % Pathway Name (Number version)
         Tmp = ones(N_Path,1).*L;
-        PathType = [PathType ; Tmp];
+        PathName_N = [PathName_N ; Tmp];
         
-        %Pathway label (String version)
-        clear Tmp
-        FormattedPathNameStr = strcat('<html><pre style="font-weight: bold;">', ...
-                                       [' ',PathName{L}], ...
-                                       '</pre></html>');
-        [Tmp{1:N_Path}] = deal(FormattedPathNameStr);
-        PathName_Str = [PathName_Str ; Tmp']; 
-        
-        % Pathways index
-        New_Pathways = SD.Index.(PathName{L});
-        Pathways = [Pathways ; New_Pathways];
+        % Pathways index (Number version)
+        New_PathInd_N = SD.Index.(Path{L});
+        PathInd_N = [PathInd_N ; New_PathInd_N];     
     end
     
     % Apply intensity cutoff
     CutOff_R = 1E-2; % [Improve] add GUI input for this 
     CutOff_I = Int < max(abs(Int)*CutOff_R);
     
-    
-    Int(CutOff_I)          = [];
-    Pump_F(CutOff_I)       = [];
-    Prob_F(CutOff_I)       = [];
-    Ex_Ind(CutOff_I)       = [];
-    PathName_Str(CutOff_I) = [];
-    PathType(CutOff_I)     = [];
-    Pathways(CutOff_I,:)   = [];
+    Int(CutOff_I)           = [];
+    Pump_F(CutOff_I)        = [];
+    Prob_F(CutOff_I)        = [];
+    Ex_Ind(CutOff_I)        = [];
+    PathName_N(CutOff_I)    = [];
+    PathInd_N(CutOff_I,:)   = [];
     
     % save data to formated column
-    C_PumpF      = ImportSortInd(C_PumpF      ,Pump_F);
-    C_ProbF      = ImportSortInd(C_ProbF      ,Prob_F);
-    C_Index      = ImportSortInd(C_Index      ,Ex_Ind);
-    C_Int        = ImportSortInd(C_Int        ,Int);
-    C_Path_Label = ImportSortInd(C_Path_Label ,PathType);
-    C_Pathways   = ImportSortInd(C_Pathways   ,Pathways);
+    C_PumpF     = ImportSortInd(C_PumpF    ,Pump_F);
+    C_ProbF     = ImportSortInd(C_ProbF    ,Prob_F);
+    C_Index     = ImportSortInd(C_Index    ,Ex_Ind);
+    C_Int       = ImportSortInd(C_Int      ,Int);
+    C_PathName  = ImportSortInd(C_PathName ,PathName_N);
+    C_PathInd   = ImportSortInd(C_PathInd  ,PathInd_N);
     
     % Replace face value of Data to proper stings
-    C_Path_Label.Data = PathName_Str;
-    
+    % Pathway Name (String version)
+    FormattedPathNameStr = strcat('<html><pre style="color:black ; font-weight: bold;">', ...
+                                   strcat({' '},Path(PathName_N)'), ...
+                                   '</pre></html>');   
+    C_PathName.Data = FormattedPathNameStr;
+
+    % Pathways index (String version)
+    FormattedPathInd = TableFromatPathways(PathName_N,PathInd_N);        
+    C_PathInd.Data   = FormattedPathInd;
 end
 
 %% Spectrum specific part and create corresponding TableColumn Class
@@ -192,16 +188,16 @@ switch SpecType
                               C_PumpF,...
                               C_ProbF,...
                               C_Int,...
-                              C_Path_Label,...
-                              C_Pathways);
+                              C_PathName,...
+                              C_PathInd);
                           
     case 'TwoDSFG'
         ModeList = merge2cell(C_Index,...
                               C_PumpF,...
                               C_ProbF,...
                               C_Int,...
-                              C_Path_Label,...
-                              C_Pathways);
+                              C_PathName,...
+                              C_PathInd);
                               
 end
 

@@ -158,7 +158,9 @@ GUI_data.hGUIs.ModeList.ColumnName   = T.ModeList.Name;
 GUI_data.hGUIs.ModeList.ColumnFormat = T.ModeList.Format;
 GUI_data.hGUIs.ModeList.ColumnWidth  = T.ModeList.Width;
 GUI_data.hGUIs.ModeList.Data         = T.ModeList.Data;
+
 GUI_data.hGUIs.SortInd.String        = T.ModeList.Name;
+GUI_data.hGUIs.PathType.String       = T.PathType;
 
 %% Update handles structure
 GUI_data.Table     = T.ModeList;
@@ -204,9 +206,11 @@ GUI_data.Response = Response;
 guidata(hObject,GUI_data)
 
 function uitable_CellSelection(hObject, eventdata, GUI_data)
-hGUIs = GUI_data.hGUIs;
-
-TableData   = hGUIs.ModeList.Data;
+%% Gather GUI inputs
+hGUIs       = GUI_data.hGUIs;
+GUI_Inputs  = ParseGUI_Modes(hGUIs);
+SpecType    = GUI_Inputs.SpecType;
+TableNData  = GUI_data.Table.SortInd;
 CurrentCell = eventdata.Indices;
 
 if isempty(CurrentCell)
@@ -214,34 +218,46 @@ if isempty(CurrentCell)
     return
 else
     CurrentRowInd = CurrentCell(:,1)';
-    Mode_Ind_Str_Full  = num2str(cell2mat(TableData(CurrentRowInd   ,1)'));
-    Mode_Ind_Str_1st   = num2str(cell2mat(TableData(CurrentRowInd(1),1)'));
-
+    Mode_Ind_Str_Full = TableNData(CurrentRowInd,1)';
+    Mode_Ind_Str_1st  = Mode_Ind_Str_Full(1);
+    
+    if gt(SpecType,2)
+        PathType = TableNData(CurrentRowInd,5)';
+        hGUIs.PathType.Value = PathType;
+    end
+    
     % Update the Mode index on GUI
-    hGUIs.Mu_Alpha_Ind.String = Mode_Ind_Str_Full;
-    hGUIs.EigVec_Ind.String   = Mode_Ind_Str_1st; % only take the first index of slection, since mixxing coefficient only take one mode
+    hGUIs.Mu_Alpha_Ind.String = num2str(Mode_Ind_Str_Full);
+    hGUIs.EigVec_Ind.String   = num2str(Mode_Ind_Str_1st); % only take the first index of slection, since mixxing coefficient only take one mode
 end
 %% update handles
 GUI_data.Mode_Ind_Str = Mode_Ind_Str_Full;
 guidata(hObject,GUI_data)
 
 function uitable_Sort(hObject, eventdata, GUI_data)
-Data       = GUI_data.Table.Data;
-SortInd    = GUI_data.Table.SortInd;
+Table      = GUI_data.Table;
+Data       = Table.Data;
+SortInd    = Table.SortInd;
 SortColumn = GUI_data.hGUIs.SortInd.Value;
 
 SC = SortInd(:,SortColumn); 
 
 if eq(SortColumn,1) 
     % for sorting index
-    [~,SortInd] = sort(SC,'ascend');
+    [~,Ind] = sort(SC,'ascend');
 else
-    [~,SortInd] = sort(SC,'descend');
+    [~,Ind] = sort(SC,'descend');
 end
 
-SortedData = Data(SortInd,:);
+SortedData    = Data(Ind,:);
+SortedSortInd = SortInd(Ind,:);
 
 % Update Table on GUI
 set(GUI_data.hGUIs.ModeList,'Data', SortedData);
 
+% Update Table in GUID_data
+Table.Data     = SortedData;
+Table.SortInd  = SortedSortInd;
+GUI_data.Table = Table;
+guidata(hObject,GUI_data)
 

@@ -28,14 +28,11 @@ switch SpecType
     case 'TwoDIR'
         [~,SD] = TwoDIR_Main(Structure,COSMOSS_Inputs);
     case 'TwoDSFG'
-        % In order to save time, the non-table generation mode does not 
-        % export Beta But when generating table, I also need molFrame 
-        % response to visulizae it, so here I toggle switch GenTable on.
-        COSMOSS_Inputs.GenTable = 1;
         [~,SD] = TwoDSFG_Main_Sparse(Structure,COSMOSS_Inputs);
 end
 
 %% 1D spectra Common part 
+PathType = 'None';
 if or(strcmp(SpecType,'FTIR'),strcmp(SpecType,'SFG'))
     % Mode Frequency
     Pump_F = SD.H.Sort_Ex_F1;
@@ -63,31 +60,35 @@ end
 
 %% 2D spectrum Common part
 if or(strcmp(SpecType,'TwoDIR'),strcmp(SpecType,'TwoDSFG'))
-    Path = {'R1','R2','R3','NR1','NR2','NR3'}; % [Improve] add GUI input for this 
-    %Path = {'R1','R2','R3'};
+    PathType = {'R1','R2','R3','NR1','NR2','NR3'}; % [Improve] add GUI input for this 
     Pump_F       = [];
     Prob_F       = [];
-    Ex_Ind       = [];
     Int          = [];
     PathName_N   = [];
     PathInd_N    = [];
     
-    for L = 1:length(Path)
+    % unify path index from type+index to accumulated index
+    % this will have size difference problem when PathType no longer
+    % including all. Need to fix the cutOff Index size issue later
+    PathType_Total = fieldnames(SD.Index);
+    N_Path_Total = 0;
+    for P = 1:length(PathType_Total)
+        N_Path_Total = N_Path_Total + size(SD.Index.(PathType_Total{P}),1);
+    end
+    Index = (1:N_Path_Total)';
+    
+    for L = 1:length(PathType)
         % Pump Frequency
-        New_Pump_F = abs(SD.Freq.(Path{L})(:,1));
+        New_Pump_F = abs(SD.Freq.(PathType{L})(:,1));
         Pump_F = [Pump_F ; New_Pump_F ];
         N_Path = length(New_Pump_F);
 
         % Probe Frequency
-        New_Prob_F = abs(SD.Freq.(Path{L})(:,3));
+        New_Prob_F = abs(SD.Freq.(PathType{L})(:,3));
         Prob_F = [Prob_F ; New_Prob_F ];    
 
-        % mode index
-        New_Ind = (1:N_Path)';
-        Ex_Ind = [Ex_Ind ; New_Ind ];    
-
         % signal intensity
-        New_Int = SD.Int.(Path{L});
+        New_Int = SD.Int.(PathType{L});
         Int = [Int ; New_Int(:) ];
         
         % Pathway Name (Number version)
@@ -95,7 +96,7 @@ if or(strcmp(SpecType,'TwoDIR'),strcmp(SpecType,'TwoDSFG'))
         PathName_N = [PathName_N ; Tmp];
         
         % Pathways index (Number version)
-        New_PathInd_N = SD.Index.(Path{L});
+        New_PathInd_N = SD.Index.(PathType{L});
         PathInd_N = [PathInd_N ; New_PathInd_N];     
     end
     
@@ -106,14 +107,14 @@ if or(strcmp(SpecType,'TwoDIR'),strcmp(SpecType,'TwoDSFG'))
     Int(CutOff_I)           = [];
     Pump_F(CutOff_I)        = [];
     Prob_F(CutOff_I)        = [];
-    Ex_Ind(CutOff_I)        = [];
+    Index(CutOff_I)         = [];
     PathName_N(CutOff_I)    = [];
     PathInd_N(CutOff_I,:)   = [];
     
     % save data to formated column
     C_PumpF     = ImportSortInd(C_PumpF    ,Pump_F);
     C_ProbF     = ImportSortInd(C_ProbF    ,Prob_F);
-    C_Index     = ImportSortInd(C_Index    ,Ex_Ind);
+    C_Index     = ImportSortInd(C_Index    ,Index);
     C_Int       = ImportSortInd(C_Int      ,Int);
     C_PathName  = ImportSortInd(C_PathName ,PathName_N);
     C_PathInd   = ImportSortInd(C_PathInd  ,PathInd_N);
@@ -121,7 +122,7 @@ if or(strcmp(SpecType,'TwoDIR'),strcmp(SpecType,'TwoDSFG'))
     % Replace face value of Data to proper stings
     % Pathway Name (String version)
     FormattedPathNameStr = strcat('<html><pre style="color:black ; font-weight: bold;">', ...
-                                   strcat({' '},Path(PathName_N)'), ...
+                                   strcat({' '},PathType(PathName_N)'), ...
                                    '</pre></html>');   
     C_PathName.Data = FormattedPathNameStr;
 
@@ -204,4 +205,4 @@ end
 %% Output
 Output.ModeList  = ModeList;
 Output.SpecData  = SD;
-         
+Output.PathType  = PathType;

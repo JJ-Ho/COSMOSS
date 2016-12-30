@@ -51,19 +51,93 @@ EigVec_Ind  = GUI_Inputs.Mu_Alpha_Ind; % get a full mode list from Mu_Alpha_Ind
 % map the response (R) as function of two Euler angle so we can visulize it
 % in (R,psi,theta) 3D coordinate. 
 
-[M2,M1,Phi,Theta] = EJR_Scalar(GUI_Data_hMain,N_Grid);
+[EJR2,EJR1,Phi,Theta] = EJR_Scalar(GUI_Data_hMain,N_Grid);
 
 switch SpecType
     case 2 % 1DSFG
-        Alpha_All = SpecData.Alpha.M_Ex_01;
-        Mu_All    = SpecData.Mu.M_Ex_01;
+        A_All = SpecData.Alpha.M_Ex_01;
+        M_All    = SpecData.Mu.M_Ex_01;
         
-        Alpha = Alpha_All(EigVec_Ind,:)';
-        Mu    =    Mu_All(EigVec_Ind,:)';
-        Sig   = (M2*Alpha).*(M1*Mu);
+        Alpha = A_All(EigVec_Ind,:)';
+        Mu    =    M_All(EigVec_Ind,:)';
+        Sig   = (EJR2*Alpha).*(EJR1*Mu);
+        
     case 4 % 2DSFG
+        % decode the unified index to type + index
+        PathType_Total = fieldnames(SpecData.Index);
+        TypeVec  = [];
+        IndexVec = [];
+        for P = 1:length(PathType_Total)
+            N_Path   = size(SpecData.Index.(PathType_Total{P}),1);
+            TypeVec  = [TypeVec;ones(N_Path,1).*P];
+            IndexVec = [IndexVec;(1:N_Path)'];
+        end
+        PathType = TypeVec(EigVec_Ind);
+        TypeInd = IndexVec(EigVec_Ind);
+        
+        F = SpecData.Index.(PathType_Total{PathType})(TypeInd,:);
         
         
+        A1_All = SpecData.Alpha.M_Ex_01;
+        A2_All = SpecData.Alpha.M_Ex_12;
+        M1_All = SpecData.Mu.M_Ex_01;
+        M2_All = SpecData.Mu.M_Ex_12;
+        
+        switch PathType
+            case 1
+                a = F(4);
+                b = F(2);
+
+                A4 = A1_All(b,:)';
+                M3 = M1_All(b,:)';
+                M2 = M1_All(a,:)';
+                M1 = M1_All(a,:)';
+            case 2
+                a = F(4);
+                b = F(3);
+
+                A4 = A1_All(b,:)';
+                M3 = M1_All(a,:)';
+                M2 = M1_All(b,:)';
+                M1 = M1_All(a,:)';
+            case 3
+                a = F(4);
+                b = F(3);
+                x = F(2);
+                
+                A4 = -squeeze(A2_All(a,x,:));
+                M3 =  squeeze(M2_All(b,x,:));
+                M2 = M1_All(b,:)';
+                M1 = M1_All(a,:)';
+            case 4
+                a = F(4);
+                b = F(2);
+
+                A4 = A1_All(b,:)';
+                M3 = M1_All(b,:)';
+                M2 = M1_All(a,:)';
+                M1 = M1_All(a,:)';
+            case 5
+                a = F(4);
+                b = F(3);
+
+                A4 = A1_All(a,:)';
+                M3 = M1_All(b,:)';
+                M2 = M1_All(b,:)';
+                M1 = M1_All(a,:)';
+            case 6
+                a = F(4);
+                b = F(3);
+                x = F(2);
+                
+                A4 = -squeeze(A2_All(b,x,:));
+                M3 =  squeeze(M2_All(a,x,:));
+                M2 = M1_All(b,:)';
+                M1 = M1_All(a,:)';
+        end
+
+        Sig   = (EJR2*A4).*(EJR1*M3).*(EJR1*M2).*(EJR1*M1);
+                
     otherwise
         disp('Spectral Type no supported yet...')
         return
@@ -180,7 +254,6 @@ if PlotCT
         colormap('jet')
         caxis([-Max_Rho(j),Max_Rho(j)])
         
-        
         % Figure title inherent the molecular plot
         if PlotSum
             M_Ind = EigVec_Ind;
@@ -188,10 +261,18 @@ if PlotCT
             Fig_Title = ['Contour map of mode ', Mode_Ind_Str];
 
         else
-            M_Ind = EigVec_Ind(j);
-            Mode_Ind_Str  = sprintf('#%d',M_Ind);
-            Mode_Freq_Str = sprintf(', @%6.2f cm^{-1}' ,SpecData.H.Sort_Ex_Freq(M_Ind+1));
-            Fig_Title = ['Contour map of mode ', Mode_Ind_Str, Mode_Freq_Str];
+            switch SpecType
+                case 2
+                    M_Ind = EigVec_Ind(j);
+                    Mode_Ind_Str  = sprintf('#%d',M_Ind);
+                    Mode_Freq_Str = sprintf(', @%6.2f cm^{-1}' ,SpecData.H.Sort_Ex_Freq(M_Ind+1));
+                    Fig_Title = ['Contour map of mode ', Mode_Ind_Str, Mode_Freq_Str];
+            
+                case 4
+                    PathType_Str = PathType_Total{PathType};
+                    PathInd_Str = sprintf('%s,%d,%d,%d,%d',PathType_Str,F(1),F(2),F(3),F(4));
+                    Fig_Title = ['Contour map of mode ', PathInd_Str];
+            end
         end
         
         hAx_C.Title.String = Fig_Title;

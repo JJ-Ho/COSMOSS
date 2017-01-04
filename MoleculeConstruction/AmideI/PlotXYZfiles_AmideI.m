@@ -107,6 +107,15 @@ hold on
         PlotRotMolFrame(hAx,Lab_Frame,R_MF_LF,COA)
     end
     
+    %% Draw labeled atoms
+    Plot_Label = 1;
+    if Plot_Label
+        L_Index = GUI_Inputs.L_Index;
+        plot3(Carbon_Pos(L_Index,1)  ,Carbon_Pos(L_Index,2)  ,Carbon_Pos(L_Index,3)  ,'LineStyle','none','Marker','o','MarkerFaceColor','g','MarkerSize',11)
+        plot3(Oxygen_Pos(L_Index,1)  ,Oxygen_Pos(L_Index,2)  ,Oxygen_Pos(L_Index,3)  ,'LineStyle','none','Marker','o','MarkerFaceColor','g','MarkerSize',11)
+        plot3(Nitrogen_Pos(L_Index,1),Nitrogen_Pos(L_Index,2),Nitrogen_Pos(L_Index,3),'LineStyle','none','Marker','o','MarkerFaceColor','g','MarkerSize',11)
+
+    end
 hold off
 
 %% figure setting

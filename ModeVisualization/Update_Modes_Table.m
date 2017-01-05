@@ -101,8 +101,8 @@ if or(strcmp(SpecType,'TwoDIR'),strcmp(SpecType,'TwoDSFG'))
     end
     
     % Apply intensity cutoff
-    CutOff_R = 1E-2; % [Improve] add GUI input for this 
-    CutOff_I = Int < max(abs(Int)*CutOff_R);
+    CutOff_R = 1E-3; % [Improve] add GUI input for this 
+    CutOff_I = abs(Int) < max(abs(Int)*CutOff_R);
     
     Int(CutOff_I)           = [];
     Pump_F(CutOff_I)        = [];

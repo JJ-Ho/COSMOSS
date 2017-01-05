@@ -1,11 +1,14 @@
 %% Prep varaibles
-Cut_F = 1611;
+Cut_F = 1720;
 
 GI = ParseGUI_Main(Data_COSMOSS.hGUIs);
+% TwoD = Data_COSMOSS.TwoDSFG;
+TwoD = Data_COSMOSS.TwoDIR;
 
-C = Data_COSMOSS.TwoDSFG.CVL;
-S = Data_COSMOSS.TwoDSFG.Int;
-F = Data_COSMOSS.TwoDSFG.Freq;
+
+C = TwoD.CVL;
+S = TwoD.Int;
+F = TwoD.Freq;
 
 %% Extract convoluted H-Cut
 F_Min = GI.F_Min;
@@ -44,8 +47,8 @@ for i = 1:length(Type)
     
     % remove terms out of range
     NG = length(C_Cut_X);
-    P_remove_Ind = X_P_Sub>NG;
-    N_remove_Ind = X_N_Sub>NG;
+    P_remove_Ind = or(X_P_Sub>NG,X_P_Sub<0);
+    N_remove_Ind = or(X_N_Sub>NG,X_N_Sub<0);
     
     X_P_Sub(P_remove_Ind) = [];
     Y_P_Sub(P_remove_Ind) = [];

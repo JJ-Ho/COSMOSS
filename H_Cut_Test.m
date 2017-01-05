@@ -1,5 +1,5 @@
 %% Prep varaibles
-Cut_F = 1720;
+Cut_F = 1680;
 
 GI = ParseGUI_Main(Data_COSMOSS.hGUIs);
 % TwoD = Data_COSMOSS.TwoDSFG;
@@ -55,16 +55,24 @@ for i = 1:length(Type)
     X_N_Sub(N_remove_Ind) = [];
     Y_N_Sub(N_remove_Ind) = [];
     
+    if isempty(X_P_Sub)
+        S_M_P(:,i+1) = zeros(length(C_Cut_X),1);
+    else
+        S_M_P(:,i+1) = accumarray(X_P_Sub,Y_P_Sub,[NG,1]);
+    end
     
-    S_M_P(:,i+1) = accumarray(X_P_Sub,Y_P_Sub,[NG,1]);
-    S_M_N(:,i+1) = accumarray(X_N_Sub,Y_N_Sub,[NG,1]);
-       
+    if isempty(X_N_Sub)
+        S_M_N(:,i+1) = zeros(length(C_Cut_X),1);
+    else
+        S_M_N(:,i+1) = accumarray(X_N_Sub,Y_N_Sub,[NG,1]);
+    end
     
 end
 
 %% Draw figure
 % plot convoluted curve
 hF = figure;
+yyaxis left
 plot(C_Cut_X,C_Cut_Y)
 hold on 
 
@@ -80,8 +88,9 @@ LColor = [255,  0,  0;...     % R1
             0,153,  0;...     % NR2
             0,255,255]./255;  % NR3
 
-LScale = max(C_Cut_Y)/max([sum(S_M_P,2);sum(-S_M_N,2)]);      
-
+% LScale = max(C_Cut_Y)/max([sum(S_M_P,2);sum(-S_M_N,2)]);
+LScale = 1;
+yyaxis right
 for j = 1:length(Type)    
     Tmp_X   = [C_Cut_X',C_Cut_X'];
     Tmp_Y_P = [sum(S_M_P(:,1:j),2),sum(S_M_P(:,1:j+1),2)].*LScale;
@@ -94,11 +103,11 @@ for j = 1:length(Type)
 
     line(  Tmp_X(CutOff_I_P,:)',...
          Tmp_Y_P(CutOff_I_P,:)',...
-        'Color',LColor(j,:),'LineWidth',LineWidth);
+        'Color',LColor(j,:),'LineWidth',LineWidth,'LineStyle','-');
     
     line(  Tmp_X(CutOff_I_N,:)',...
          Tmp_Y_N(CutOff_I_N,:)',...
-        'Color',LColor(j,:),'LineWidth',LineWidth);
+        'Color',LColor(j,:),'LineWidth',LineWidth,'LineStyle','-');
 
 end
 hold off
@@ -112,3 +121,7 @@ hAx.XLabel.String = 'cm^{-1}';
 hAx.XGrid = 'on';
 hAx.YGrid = 'on';
 hAx.XMinorGrid = 'on';
+
+yyaxis right
+YLim_max = 1.1*max(abs(hAx.YLim));
+hAx.YLim = [-YLim_max;YLim_max];

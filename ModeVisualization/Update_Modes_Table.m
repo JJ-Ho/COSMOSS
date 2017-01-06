@@ -57,9 +57,10 @@ if or(strcmp(SpecType,'FTIR'),strcmp(SpecType,'SFG'))
 
     % Transition dipole vector direction
     Ex_Mu = SD.Mu.M_Ex_01; % [Nx3]
-    Ex_Mu_N = bsxfun(@rdivide,Ex_Mu,sqrt(sum(Ex_Mu.^2,2))); % normalized vector components
-    C_Mu_V = ImportSortInd(C_Mu_V,Ex_Mu_N.^2); % (x^2,y^2,z^2)./(x^2+y^2+z^2) so when the sum of the three components = 1
-
+    Ex_Mu_N = bsxfun(@rdivide,Ex_Mu,sqrt(sum(Ex_Mu.^2,2))).^2; % normalized vector components (%/100)
+    C_Mu_V = ImportSortInd(C_Mu_V,Ex_Mu_N); % (x^2,y^2,z^2)./(x^2+y^2+z^2) so when the sum of the three components = 1
+    C_Mu_V.Data = num2cell(sign(Ex_Mu).*Ex_Mu_N); % update the displaied contents with signed values
+    
     % Transition dipole Intensity
     Ex_Mu_Int = sqrt(sum(Ex_Mu.^2,2));
     C_Mu_Int = ImportSortInd(C_Mu_Int,Ex_Mu_Int);
@@ -70,11 +71,6 @@ if strcmp(SpecType,'2DIR-2q')
     % Mode Frequency, 1q & 2q
     F_1q_V = SD.H.Sort_Ex_F1;
     F_2q_V = SD.H.Sort_Ex_F2;
-%     
-%     [F_1q_M,F_2q_M] = ndgrid(F_1q_V,F_2q_V);
-% 
-%     C_F_1q = ImportSortInd(C_F_1q,F_1q_M(:));
-%     C_F_2q = ImportSortInd(C_F_2q,F_2q_M(:));
     
     [I_1q,I_2q] = ndgrid(1:length(F_1q_V),1:length(F_2q_V));
     
@@ -84,14 +80,13 @@ if strcmp(SpecType,'2DIR-2q')
     C_F_diff = ImportSortInd(C_F_diff,F_2q_V(I_2q(:))-F_1q_V(I_1q(:)));
     
     % mode index
-%     Num_Ex_Mode = length(F_1q_M(:));
     Num_Ex_Mode = length(I_1q(:));
     Ex_Ind      = (1:Num_Ex_Mode)';
     C_Index = ImportSortInd(C_Index,Ex_Ind);
     
     % Participation number, percentage of local mode involve 
-    EigV1        = SD.H.Sort_Ex_V1;
-    EigV2        = SD.H.Sort_Ex_V2;  
+    EigV1 = SD.H.Sort_Ex_V1;
+    EigV2 = SD.H.Sort_Ex_V2;  
     N1 = length(F_1q_V);
     N2 = length(F_2q_V);
     P_Num = (1./sum(EigV1(:,I_1q(:)).^4,1)'./N1 ...
@@ -99,10 +94,11 @@ if strcmp(SpecType,'2DIR-2q')
     C_P_Num = ImportSortInd(C_P_Num,P_Num);
 
     % Transition dipole vector direction
-    Ex_Mu = reshape(SD.Mu.M_Ex_12,[],3);  %merge the first two index; [(N1*N2)x3]
-    Ex_Mu_N = bsxfun(@rdivide,Ex_Mu,sqrt(sum(Ex_Mu.^2,2))); % normalized vector components
-    C_Mu_V = ImportSortInd(C_Mu_V,Ex_Mu_N.^2); % (x^2,y^2,z^2)./(x^2+y^2+z^2) so when the sum of the three components = 1
-
+    Ex_Mu   = reshape(SD.Mu.M_Ex_12,[],3);  %merge the first two index; [(N1*N2)x3]
+    Ex_Mu_N = bsxfun(@rdivide,Ex_Mu,sqrt(sum(Ex_Mu.^2,2))).^2; % normalized vector components (%/100)
+    C_Mu_V  = ImportSortInd(C_Mu_V,Ex_Mu_N); % (x^2,y^2,z^2)./(x^2+y^2+z^2) so when the sum of the three components = 1
+    C_Mu_V.Data = num2cell(sign(Ex_Mu).*Ex_Mu_N); % update the displaied contents with signed values
+    
     % Transition dipole Intensity
     Ex_Mu_Int = sqrt(sum(Ex_Mu.^2,2));
     C_Mu_Int = ImportSortInd(C_Mu_Int,Ex_Mu_Int);
@@ -151,7 +147,7 @@ if or(strcmp(SpecType,'TwoDIR'),strcmp(SpecType,'TwoDSFG'))
     end
     
     % Apply intensity cutoff
-    CutOff_R = 0; % [Improve] add GUI input for this 
+    CutOff_R = 1e-2; % [Improve] add GUI input for this 
     CutOff_I = abs(Int) < max(abs(Int)*CutOff_R);
     
     Int(CutOff_I)           = [];

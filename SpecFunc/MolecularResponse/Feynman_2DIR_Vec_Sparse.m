@@ -53,7 +53,7 @@ N2 = length(F2);
 
 %% Reduce mode number base on the transition intensity
 Cut_Off_01 = 0;
-Cut_Off_12 = 2E-2;
+Cut_Off_12 = 0;
 % Cut_Off_01 = 0;
 % Cut_Off_12 = 0;
 
@@ -71,7 +71,7 @@ Ib = Ib(Ib>0);
 Ia = Ia(Ia>0);
 
 % 12
-Ind_Norm_M_01 = Norm_M_01 > Cut_Off_12 * Max_Norm_M_01;
+Ind_Norm_M_01 = Norm_M_01 > Cut_Off_01 * Max_Norm_M_01;
 
 Norm_M_12  = sqrt(sum(M_Ex_12.^2,3));
 Max_Norm_M_12 = max(Norm_M_12(:));

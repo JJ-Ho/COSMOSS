@@ -12,8 +12,10 @@ C_A_Int  = ColumnFormat('N[A]'  ,'bank' ,40);
 C_Norm1D = ColumnFormat('N[1D]' ,'bank' ,40);
 C_Sig    = ColumnFormat('Signal','bank' ,40);
 
-C_F_1q  = ColumnFormat('Freq 1q' ,'bank' ,55);
-C_F_2q  = ColumnFormat('Freq 2q' ,'bank' ,55);
+C_F_1q   = ColumnFormat('Freq 1q' ,'bank' ,55);
+C_F_2q   = ColumnFormat('Freq 2q' ,'bank' ,55);
+C_F_diff = ColumnFormat('F 2q-1q' ,'bank' ,55);
+
 
 C_PumpF  = ColumnFormat('Pump' ,'bank' ,55);
 C_ProbF  = ColumnFormat('Probe','bank' ,55);
@@ -29,9 +31,9 @@ switch SpecType
     case 'SFG'
         SD = OneDSFG_Main(Structure,COSMOSS_Inputs);
     case '2DIR-2q'
-        [~,SD] = TwoDIR_Main(Structure,COSMOSS_Inputs);
+        [~,SD] = TwoDIR_Main_Sparse(Structure,COSMOSS_Inputs);
     case 'TwoDIR'
-        [~,SD] = TwoDIR_Main(Structure,COSMOSS_Inputs);
+        [~,SD] = TwoDIR_Main_Sparse(Structure,COSMOSS_Inputs);
     case 'TwoDSFG'
         [~,SD] = TwoDSFG_Main_Sparse(Structure,COSMOSS_Inputs);
 end
@@ -77,9 +79,10 @@ if strcmp(SpecType,'2DIR-2q')
     [I_1q,I_2q] = ndgrid(1:length(F_1q_V),1:length(F_2q_V));
     
     
-    C_F_1q = ImportSortInd(C_F_1q,F_1q_V(I_1q(:)));
-    C_F_2q = ImportSortInd(C_F_2q,F_2q_V(I_2q(:)));
-
+    C_F_1q   = ImportSortInd(  C_F_1q,                F_1q_V(I_1q(:)));
+    C_F_2q   = ImportSortInd(  C_F_2q,F_2q_V(I_2q(:))                );
+    C_F_diff = ImportSortInd(C_F_diff,F_2q_V(I_2q(:))-F_1q_V(I_1q(:)));
+    
     % mode index
 %     Num_Ex_Mode = length(F_1q_M(:));
     Num_Ex_Mode = length(I_1q(:));
@@ -148,7 +151,7 @@ if or(strcmp(SpecType,'TwoDIR'),strcmp(SpecType,'TwoDSFG'))
     end
     
     % Apply intensity cutoff
-    CutOff_R = 1E-3; % [Improve] add GUI input for this 
+    CutOff_R = 0; % [Improve] add GUI input for this 
     CutOff_I = abs(Int) < max(abs(Int)*CutOff_R);
     
     Int(CutOff_I)           = [];
@@ -234,6 +237,7 @@ switch SpecType
         ModeList = merge2cell(C_Index,...
                               C_F_1q,...
                               C_F_2q,...
+                              C_F_diff,...
                               C_P_Num,...
                               C_Mu_Int,...
                               C_Mu_V);

@@ -459,6 +459,7 @@ if eq(GUI_Inputs.Sampling,1)
             Fluctuation = StandardDiv'.*randn(Num_Modes,1); 
         end
         Structure.freq = Freq_Orig + Fluctuation;
+        % disp(num2str(Freq_Orig + Fluctuation)) %[debug]
         
         %[Tmp_SG,Tmp_Res] = TwoDSFG_Main(Structure,GUI_Inputs);
         [Tmp_SG,Tmp_Res] = TwoDSFG_Main_Sparse(Structure,GUI_Inputs);

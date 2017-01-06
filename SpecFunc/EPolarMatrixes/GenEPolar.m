@@ -10,7 +10,7 @@
 % both 1DSFG and 2DSFG.
 % 
 % 130911 JJHo
-SaveAsFunc = 'y';
+SaveAsFunc = 'n';
 syms O_Sig O_Vi O_Pu1 O_Pu2 O_Pr
 
 E_Sig = [cos(O_Sig), sin(O_Sig)];

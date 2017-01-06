@@ -16,7 +16,7 @@
 
 % define incident angle of Pump, Probe, Visible probe, and Signal
 % all angle is defined by angle between surface normal and the light beams.
-SaveAsFunc = 'y';
+SaveAsFunc = 'n';
 
 syms A_Pu1 A_Pu2 A_Pr A_Vi A_Si
 

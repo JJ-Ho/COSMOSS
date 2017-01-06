@@ -71,7 +71,7 @@ Ib = Ib(Ib>0);
 Ia = Ia(Ia>0);
 
 % 12
-Ind_Norm_M_01 = Norm_M_01 > Cut_Off_01 * Max_Norm_M_01;
+% Ind_Norm_M_01 = Norm_M_01 > Cut_Off_01 * Max_Norm_M_01;
 
 Norm_M_12  = sqrt(sum(M_Ex_12.^2,3));
 Max_Norm_M_12 = max(Norm_M_12(:));

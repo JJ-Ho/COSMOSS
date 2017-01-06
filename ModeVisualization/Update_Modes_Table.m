@@ -12,6 +12,9 @@ C_A_Int  = ColumnFormat('N[A]'  ,'bank' ,40);
 C_Norm1D = ColumnFormat('N[1D]' ,'bank' ,40);
 C_Sig    = ColumnFormat('Signal','bank' ,40);
 
+C_F_1q  = ColumnFormat('Freq 1q' ,'bank' ,55);
+C_F_2q  = ColumnFormat('Freq 2q' ,'bank' ,55);
+
 C_PumpF  = ColumnFormat('Pump' ,'bank' ,55);
 C_ProbF  = ColumnFormat('Probe','bank' ,55);
 C_Int    = ColumnFormat('Intensity' ,'bank' ,70);
@@ -25,6 +28,8 @@ switch SpecType
         SD = FTIR_Main(Structure,COSMOSS_Inputs);
     case 'SFG'
         SD = OneDSFG_Main(Structure,COSMOSS_Inputs);
+    case '2DIR-2q'
+        [~,SD] = TwoDIR_Main(Structure,COSMOSS_Inputs);
     case 'TwoDIR'
         [~,SD] = TwoDIR_Main(Structure,COSMOSS_Inputs);
     case 'TwoDSFG'
@@ -35,8 +40,8 @@ end
 PathType = 'None';
 if or(strcmp(SpecType,'FTIR'),strcmp(SpecType,'SFG'))
     % Mode Frequency
-    Pump_F = SD.H.Sort_Ex_F1;
-    C_Freq = ImportSortInd(C_Freq,Pump_F);
+    F_1q_V = SD.H.Sort_Ex_F1;
+    C_Freq = ImportSortInd(C_Freq,F_1q_V);
 
     % mode index
     Num_Ex_Mode = SD.H.Num_Modes;
@@ -58,10 +63,52 @@ if or(strcmp(SpecType,'FTIR'),strcmp(SpecType,'SFG'))
     C_Mu_Int = ImportSortInd(C_Mu_Int,Ex_Mu_Int);
 end
 
+%% 2D-2q Common part
+if strcmp(SpecType,'2DIR-2q')
+    % Mode Frequency, 1q & 2q
+    F_1q_V = SD.H.Sort_Ex_F1;
+    F_2q_V = SD.H.Sort_Ex_F2;
+%     
+%     [F_1q_M,F_2q_M] = ndgrid(F_1q_V,F_2q_V);
+% 
+%     C_F_1q = ImportSortInd(C_F_1q,F_1q_M(:));
+%     C_F_2q = ImportSortInd(C_F_2q,F_2q_M(:));
+    
+    [I_1q,I_2q] = ndgrid(1:length(F_1q_V),1:length(F_2q_V));
+    
+    
+    C_F_1q = ImportSortInd(C_F_1q,F_1q_V(I_1q(:)));
+    C_F_2q = ImportSortInd(C_F_2q,F_2q_V(I_2q(:)));
+
+    % mode index
+%     Num_Ex_Mode = length(F_1q_M(:));
+    Num_Ex_Mode = length(I_1q(:));
+    Ex_Ind      = (1:Num_Ex_Mode)';
+    C_Index = ImportSortInd(C_Index,Ex_Ind);
+    
+    % Participation number, percentage of local mode involve 
+    EigV1        = SD.H.Sort_Ex_V1;
+    EigV2        = SD.H.Sort_Ex_V2;  
+    N1 = length(F_1q_V);
+    N2 = length(F_2q_V);
+    P_Num = (1./sum(EigV1(:,I_1q(:)).^4,1)'./N1 ...
+           + 1./sum(EigV2(:,I_2q(:)).^4,1)'./N2).*100./2; % Bilinear mixing coefficient
+    C_P_Num = ImportSortInd(C_P_Num,P_Num);
+
+    % Transition dipole vector direction
+    Ex_Mu = reshape(SD.Mu.M_Ex_12,[],3);  %merge the first two index; [(N1*N2)x3]
+    Ex_Mu_N = bsxfun(@rdivide,Ex_Mu,sqrt(sum(Ex_Mu.^2,2))); % normalized vector components
+    C_Mu_V = ImportSortInd(C_Mu_V,Ex_Mu_N.^2); % (x^2,y^2,z^2)./(x^2+y^2+z^2) so when the sum of the three components = 1
+
+    % Transition dipole Intensity
+    Ex_Mu_Int = sqrt(sum(Ex_Mu.^2,2));
+    C_Mu_Int = ImportSortInd(C_Mu_Int,Ex_Mu_Int);
+end
+
 %% 2D spectrum Common part
 if or(strcmp(SpecType,'TwoDIR'),strcmp(SpecType,'TwoDSFG'))
     PathType = {'R1','R2','R3','NR1','NR2','NR3'}; % [Improve] add GUI input for this 
-    Pump_F       = [];
+    F_1q_V       = [];
     Prob_F       = [];
     Int          = [];
     PathName_N   = [];
@@ -80,7 +127,7 @@ if or(strcmp(SpecType,'TwoDIR'),strcmp(SpecType,'TwoDSFG'))
     for L = 1:length(PathType)
         % Pump Frequency
         New_Pump_F = abs(SD.Freq.(PathType{L})(:,1));
-        Pump_F = [Pump_F ; New_Pump_F ];
+        F_1q_V = [F_1q_V ; New_Pump_F ];
         N_Path = length(New_Pump_F);
 
         % Probe Frequency
@@ -105,14 +152,14 @@ if or(strcmp(SpecType,'TwoDIR'),strcmp(SpecType,'TwoDSFG'))
     CutOff_I = abs(Int) < max(abs(Int)*CutOff_R);
     
     Int(CutOff_I)           = [];
-    Pump_F(CutOff_I)        = [];
+    F_1q_V(CutOff_I)        = [];
     Prob_F(CutOff_I)        = [];
     Index(CutOff_I)         = [];
     PathName_N(CutOff_I)    = [];
     PathInd_N(CutOff_I,:)   = [];
     
     % save data to formated column
-    C_PumpF     = ImportSortInd(C_PumpF    ,Pump_F);
+    C_PumpF     = ImportSortInd(C_PumpF    ,F_1q_V);
     C_ProbF     = ImportSortInd(C_ProbF    ,Prob_F);
     C_Index     = ImportSortInd(C_Index    ,Index);
     C_Int       = ImportSortInd(C_Int      ,Int);
@@ -183,7 +230,14 @@ switch SpecType
                               C_Mu_V,...
                               C_A_Int,...
                               C_A_V);
-                              
+    case '2DIR-2q'
+        ModeList = merge2cell(C_Index,...
+                              C_F_1q,...
+                              C_F_2q,...
+                              C_P_Num,...
+                              C_Mu_Int,...
+                              C_Mu_V);
+
     case 'TwoDIR'
         ModeList = merge2cell(C_Index,...
                               C_PumpF,...

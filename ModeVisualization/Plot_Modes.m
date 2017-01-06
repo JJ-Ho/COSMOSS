@@ -144,11 +144,15 @@ switch SpecType
         T = Update_Modes_Table('SFG',Structure,COSMOSS_Inputs);
         GUI_data.hGUIs.Raman_Plot.Value = 1;
         GUI_data.hGUIs.Raman_Plot.Enable = 'on';
-    case 3 %'2DIR'
+    case 3 %'2DIR-2q'
+        T = Update_Modes_Table('2DIR-2q',Structure,COSMOSS_Inputs);
+        GUI_data.hGUIs.Raman_Plot.Value = 0;
+        GUI_data.hGUIs.Raman_Plot.Enable = 'off';
+    case 4 %'2DIR'
         T = Update_Modes_Table('TwoDIR',Structure,COSMOSS_Inputs);
         GUI_data.hGUIs.Raman_Plot.Value = 0;
         GUI_data.hGUIs.Raman_Plot.Enable = 'off';
-    case 4 %'2DSFG'
+    case 5 %'2DSFG'
         T = Update_Modes_Table('TwoDSFG',Structure,COSMOSS_Inputs);
         GUI_data.hGUIs.Raman_Plot.Value = 1;
         GUI_data.hGUIs.Raman_Plot.Enable = 'on';

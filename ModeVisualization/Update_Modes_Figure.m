@@ -71,7 +71,7 @@ Mu_Loc_MF = SpecData.Mu.M_Lo_01;
 Mu_Ex_MF  = SpecData.Mu.M_Ex_01;
 
 % Raman Tensor
-if or(eq(SpecType,1),eq(SpecType,3)) % check if FTIR or 2DIR
+if or(eq(SpecType,1),eq(SpecType,4)) % check if FTIR or 2DIR
     Alpha_Loc_MF = zeros(size(Mu_Loc_MF,1),9); % size [N x 9]
     Alpha_Ex_MF  = zeros(size(Mu_Ex_MF,1),9);  % size [N x 9]
 else

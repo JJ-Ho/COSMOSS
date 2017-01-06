@@ -1,4 +1,4 @@
-% function [Grid,Freq,Int,Index] = Feynman_2DIR_Vec_Sparse(FreqRange,EJR,F1,F2,M_Ex_01,M_Ex_12)
+function [Grid,Freq,Int,Index] = Feynman_2DIR_Vec_Sparse(FreqRange,EJR,F1,F2,M_Ex_01,M_Ex_12)
 % 
 % This function generate Feynman pathway of 2DSFG with given polarization.
 % 
@@ -15,20 +15,23 @@
 % Copyright Jia-Jung Ho, 2014-2016
 
 %% debug
-GI = ParseGUI_Main(Data_COSMOSS.hGUIs);
-FreqRange = GI.FreqRange;
-
-
-R_Avg = LabFrameAvg('Isotropic',4); 
-J = JonesTrans4(pi/2,pi/2,pi/2,pi/2);
-E = EPolar4(0,0,0,0);
-EJR = E*J*R_Avg;
-
-TwoDIR = Data_COSMOSS.TwoDIR;
-F1 = TwoDIR.H.Sort_Ex_F1;
-F2 = TwoDIR.H.Sort_Ex_F2;
-M_Ex_01 = TwoDIR.Mu.M_Ex_01;
-M_Ex_12 = TwoDIR.Mu.M_Ex_12;
+% GI = ParseGUI_Main(Data_COSMOSS.hGUIs);
+% FreqRange = GI.FreqRange;
+% 
+% 
+% R_Avg = LabFrameAvg('Isotropic',4); 
+% J = JonesTrans4(pi/2,pi/2,pi/2,pi/2);
+% E = EPolar4(0,0,0,0);
+% EJR = E*J*R_Avg;
+% 
+% TwoDIR = Data_COSMOSS.TwoDIR;
+% F1 = TwoDIR.H.Sort_Ex_F1;
+% F2 = TwoDIR.H.Sort_Ex_F2;
+% M_Ex_01 = TwoDIR.Mu.M_Ex_01;
+% M_Ex_12 = TwoDIR.Mu.M_Ex_12;
+% 
+% % M_Ex_01(abs(M_Ex_01)<1e-10) = 0;
+% % M_Ex_12(abs(M_Ex_12)<1e-10) = 0;
 
 %% Rund up frequency for sparse accumulation
 F1 = round(F1);

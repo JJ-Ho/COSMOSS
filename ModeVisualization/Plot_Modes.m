@@ -234,6 +234,7 @@ else
     hGUIs.Mu_Alpha_Ind.String = num2str(Mode_Ind_Str_Full);
     hGUIs.EigVec_Ind.String   = num2str(Mode_Ind_Str_1st); % only take the first index of slection, since mixxing coefficient only take one mode
 end
+
 %% update handles
 GUI_data.Mode_Ind_Str = Mode_Ind_Str_Full;
 guidata(hObject,GUI_data)

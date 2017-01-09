@@ -112,7 +112,6 @@ M_Ex_12 = Mu.M_Ex_12;
 A_Ex_01 = Alpha.M_Ex_01;
 A_Ex_12 = Alpha.M_Ex_12;
 
-
 %% Decide what kinds of rod rotation average is
 
 Dimension = 5; % for 2DSFG
@@ -179,7 +178,14 @@ E = EPolar5(P_Sig2D,P_Vis2D,P_Probe,P_Pump2,P_Pump1); % Take [radius]
 %% Generate Feynman pathway for 2DSFG
 EJR = E*J*R_Avg;
 
-[Grid,Freq,Int,Index] = Feynman_2DSFG_Vec_Sparse(FreqRange,EJR,Ex_F1,Ex_F2,A_Ex_01,A_Ex_12,M_Ex_01,M_Ex_12);
+[Grid,Freq,Int,Index] = Feynman_2DSFG_Vec_Sparse(FreqRange,...
+                                                 EJR,...
+                                                 Ex_F1,...
+                                                 Ex_F2,...
+                                                 A_Ex_01,...
+                                                 A_Ex_12,...
+                                                 M_Ex_01,...
+                                                 M_Ex_12);
 
 %% Group up outputs
 Response.H = H;
@@ -189,6 +195,8 @@ Response.Alpha = Alpha;
 Response.Freq  = Freq;
 Response.Int   = Int;
 Response.Index = Index;
+
+Response.EJR = EJR;
 
 %% Rename binned signal
 SpectraGrid.SpecAccuR1  = Grid.R1;

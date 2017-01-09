@@ -52,7 +52,6 @@ Cut_Off_12 = 0;
 Norm_M_01  = sqrt(sum(M_Ex_01.^2,2));
 
 Max_Norm_M_01 = max(Norm_M_01);
-disp(num2str(Norm_M_01))
 Ind_Norm_M_01 = Norm_M_01 >= Cut_Off_01 * Max_Norm_M_01;
 
 [Mask_Ib,Mask_Ia] = ndgrid(Ind_Norm_M_01,Ind_Norm_M_01);
@@ -85,7 +84,7 @@ Kx(Kx==0) = NaN;
 Kb(Kb==0) = NaN;
 Ka(Ka==0) = NaN;
 
-% Indice of 2D version Mu_Ex, 
+% Indexes of 2D version Mu_Ex, 
 % Note [N,N*(N+1)/2] is the first two Dimension of Mu_Ex
 ind_ax = sub2ind([N1,N2],Ka(:),Kx(:));
 ind_bx = sub2ind([N1,N2],Kb(:),Kx(:));

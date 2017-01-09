@@ -45,7 +45,7 @@ if strcmp(CVL.Lineshape,'None')
     caxis([-Amp,Amp])
 else
     % plot convoluted spectrum
-    CVLRS = -1.*real(CVL.selected);
+    CVLRS = real(CVL.selected);
     contour(FreqRange,FreqRange,CVLRS,Num_Contour,'LineWidth',2)
     % Normalization
     % CVLRSN = CVLRS ./max(abs(CVLRS(:)));

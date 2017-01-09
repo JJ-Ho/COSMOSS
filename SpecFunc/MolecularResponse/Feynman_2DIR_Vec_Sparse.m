@@ -71,12 +71,11 @@ Ib = Ib(Ib>0);
 Ia = Ia(Ia>0);
 
 % 12
-% Ind_Norm_M_01 = Norm_M_01 > Cut_Off_01 * Max_Norm_M_01;
-
 Norm_M_12  = sqrt(sum(M_Ex_12.^2,3));
-Max_Norm_M_12 = max(Norm_M_12(:));
-Ind_Norm_M_12 = Norm_M_12 >= Cut_Off_12 * Max_Norm_M_12;
 
+Max_Norm_M_12 = max(Norm_M_12(:));
+
+Ind_Norm_M_12 = Norm_M_12 >= Cut_Off_12 * Max_Norm_M_12;
 
 Mask_Kx = repmat(Ind_Norm_M_12', 1,1,N1);
 Mask_Kb = repmat(Ind_Norm_M_01',N2,1,N1);
@@ -90,7 +89,7 @@ Kx(Kx==0) = NaN;
 Kb(Kb==0) = NaN;
 Ka(Ka==0) = NaN;
 
-% Indice of 2D version Mu_Ex, 
+% Indexes of 2D version Mu_Ex, 
 % Note [N,N*(N+1)/2] is the first two Dimension of Mu_Ex
 ind_ax = sub2ind([N1,N2],Ka(:),Kx(:));
 ind_bx = sub2ind([N1,N2],Kb(:),Kx(:));

@@ -210,6 +210,7 @@ switch SpecType
             Ex_Mu_N_P_Raman(i,:) = Ex_Mu_N(i,:) * V;
         end
         C_A_V = ImportSortInd(C_A_V,EigenV_Alpha.^2); % (x^2,y^2,z^2)./(x^2+y^2+z^2) so when the sum of the three components = 1
+        C_A_V.Data = num2cell(sign(EigenV_Alpha).*(EigenV_Alpha.^2)); % update the displaied contents with signed values
         
         % update the Principle axis projected transtion dipole components
         C_Mu_V.Name = {'Mu p1','Mu p2','Mu p3'};

@@ -1,25 +1,27 @@
-%% Prep varaibles
-Cut_F = 1680;
+function hF = H_Cut(Cut_F,FreqRange,TwoD_Data)
+%% Debug Prep varaibles
+% Cut_F = 1707;
+% 
+% GI = ParseGUI_Main(Data_COSMOSS.hGUIs);
+% FreqRange = GI.FreqRange;
+% 
+% % TwoD_Data = Data_COSMOSS.TwoDSFG;
+% TwoD_Data = Data_COSMOSS.TwoDIR;
 
-GI = ParseGUI_Main(Data_COSMOSS.hGUIs);
-% TwoD = Data_COSMOSS.TwoDSFG;
-TwoD = Data_COSMOSS.TwoDIR;
-
-
-C = TwoD.CVL;
-S = TwoD.Int;
-F = TwoD.Freq;
+%% Extract info from 2D data
+C = TwoD_Data.CVL;
+S = TwoD_Data.Int;
+F = TwoD_Data.Freq;
 
 %% Extract convoluted H-Cut
-F_Min = GI.F_Min;
-C_Ind = Cut_F - F_Min + 1;
+C_Cut_X = FreqRange;
+F_Min = FreqRange(1);
 
+C_Ind = Cut_F - F_Min + 1;
 C_Cut_Y = -real(C.sum(C_Ind,:));
-C_Cut_X = GI.FreqRange;
 
 %% Extract Sticks 
 Type = fieldnames(S);
-L_Max = zeros(length(Type),1);
 
 S_M_P = zeros(length(C_Cut_X),7); % first column zero for accumulation
 S_M_N = zeros(length(C_Cut_X),7);
@@ -47,8 +49,8 @@ for i = 1:length(Type)
     
     % remove terms out of range
     NG = length(C_Cut_X);
-    P_remove_Ind = or(X_P_Sub>NG,X_P_Sub<0);
-    N_remove_Ind = or(X_N_Sub>NG,X_N_Sub<0);
+    P_remove_Ind = or(X_P_Sub>NG,X_P_Sub<=0);
+    N_remove_Ind = or(X_N_Sub>NG,X_N_Sub<=0);
     
     X_P_Sub(P_remove_Ind) = [];
     Y_P_Sub(P_remove_Ind) = [];
@@ -122,6 +124,11 @@ hAx.XGrid = 'on';
 hAx.YGrid = 'on';
 hAx.XMinorGrid = 'on';
 
+yyaxis left
+YLim_max = 1.1*max(abs(hAx.YLim));
+hAx.YLim = [-YLim_max;YLim_max];
+
 yyaxis right
 YLim_max = 1.1*max(abs(hAx.YLim));
 hAx.YLim = [-YLim_max;YLim_max];
+

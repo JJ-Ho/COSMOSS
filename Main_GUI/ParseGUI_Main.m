@@ -71,7 +71,6 @@ O.Num_Contour  = str2double(get(hGUIs.Num_Contour ,'String'));
 O.PlotStick    =            get(hGUIs.PlotStick   ,'Value');
 O.PlotNorm     =            get(hGUIs.PlotNorm    ,'Value');
 O.PlotCursor   =            get(hGUIs.PlotCursor  ,'Value');
-O.IntegralArea =            get(hGUIs.IntegralArea,'Value');
 O.CMAP_Index   =            get(hGUIs.CMAP_Index  ,'Value');
 
 O.F_Min     = str2double(get(hGUIs.X_Min,'String'));
@@ -99,11 +98,13 @@ switch SpecType
     case 3
         O.SpecType = 'NR';
 end
-% ------------------------------------------------------------------------
+% -------------------------------------------------------------------------
 
-
-
-
+% For Analysis Tools ------------------------------------------------------
+O.IntegralArea =            get(hGUIs.IntegralArea,'Value');
+O.HCut_2DIR    = str2double(get(hGUIs.HCut_2DIR  ,'String'));
+O.HCut_2DSFG   = str2double(get(hGUIs.HCut_2DSFG ,'String'));
+% -------------------------------------------------------------------------
 
 
 

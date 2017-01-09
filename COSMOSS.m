@@ -518,3 +518,29 @@ TwoDSFG.CVL         = CVL;
 
 GUI_data.TwoDSFG = TwoDSFG;
 guidata(hObject,GUI_data);
+
+
+
+function HCut_Callback(hObject, eventdata, GUI_data)
+GUI_Inputs = ParseGUI_Main(GUI_data.hGUIs);
+FreqRange  = GUI_Inputs.FreqRange;
+
+SpecType = GUI_data.hGUIs.AnalysisTools.SelectedTab.Title;
+switch SpecType
+    case '2DIR'
+        Cut_F     = GUI_Inputs.HCut_2DIR;
+        TwoD_Data = GUI_data.TwoDIR;
+    case '2DSFG'
+        Cut_F     = GUI_Inputs.HCut_2DSFG;
+        TwoD_Data = GUI_data.TwoDSFG;
+    otherwise
+        disp('Spectra Type not supported')
+end
+
+hF_HCut = H_Cut(Cut_F,FreqRange,TwoD_Data);
+
+HCut.hF_HCut = hF_HCut;
+
+%% Update share data
+GUI_data.HCut = HCut;
+guidata(hObject,GUI_data);

@@ -52,7 +52,8 @@ Cut_Off_12 = 0;
 Norm_M_01  = sqrt(sum(M_Ex_01.^2,2));
 
 Max_Norm_M_01 = max(Norm_M_01);
-Ind_Norm_M_01 = Norm_M_01 > Cut_Off_01 * Max_Norm_M_01;
+disp(num2str(Norm_M_01))
+Ind_Norm_M_01 = Norm_M_01 >= Cut_Off_01 * Max_Norm_M_01;
 
 [Mask_Ib,Mask_Ia] = ndgrid(Ind_Norm_M_01,Ind_Norm_M_01);
 Ib = Mask_Ib.*Ib;
@@ -62,16 +63,14 @@ Ib = Ib(Ib>0);
 Ia = Ia(Ia>0);
 
 % 12
-% Ind_Norm_M_01 = Norm_M_01 > Cut_Off_01 * Max_Norm_M_01;
-
 Norm_M_12  = sqrt(sum(M_Ex_12.^2,3));
 Norm_A_12  = sqrt(sum(A_Ex_12.^2,3));
 
 Max_Norm_M_12 = max(Norm_M_12(:));
 Max_Norm_A_12 = max(Norm_A_12(:));
 
-Ind_Norm_M_12 = Norm_M_12 > Cut_Off_12 * Max_Norm_M_12;
-Ind_Norm_A_12 = Norm_A_12 > Cut_Off_12 * Max_Norm_A_12;
+Ind_Norm_M_12 = Norm_M_12 >= Cut_Off_12 * Max_Norm_M_12;
+Ind_Norm_A_12 = Norm_A_12 >= Cut_Off_12 * Max_Norm_A_12;
 Ind_Norm_AM_12 = and(Ind_Norm_M_12,Ind_Norm_A_12);
 
 Mask_Kx = repmat(Ind_Norm_AM_12', 1,1,N1);

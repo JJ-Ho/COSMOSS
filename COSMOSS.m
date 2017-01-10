@@ -545,3 +545,24 @@ HCut.hF_HCut = hF_HCut;
 %% Update share data
 GUI_data.HCut = HCut;
 guidata(hObject,GUI_data);
+
+function DiagCut_Callback(hObject, eventdata, GUI_data)
+GUI_Inputs = ParseGUI_Main(GUI_data.hGUIs);
+
+SpecType = GUI_data.hGUIs.AnalysisTools.SelectedTab.Title;
+switch SpecType
+    case '2DIR'
+        TwoD_Data = GUI_data.TwoDIR;
+    case '2DSFG'
+        TwoD_Data = GUI_data.TwoDSFG;
+    otherwise
+        disp('Spectra Type not supported')
+end
+
+hF_DiagCut = Diag_Cut(GUI_Inputs,TwoD_Data);
+
+DiagCut.hF_DiagCut = hF_DiagCut;
+
+%% Update share data
+GUI_data.DiagCut = DiagCut;
+guidata(hObject,GUI_data);

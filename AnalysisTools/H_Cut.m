@@ -1,9 +1,7 @@
 function hF = H_Cut(Cut_F,GUI_Inputs,TwoD_Data)
 %% Debug Prep varaibles
 % Cut_F = 1707;
-% 
-% GI = ParseGUI_Main(Data_COSMOSS.hGUIs);
-% FreqRange = GI.FreqRange;
+% GUI_Inputs = ParseGUI_Main(Data_COSMOSS.hGUIs);
 % 
 % % TwoD_Data = Data_COSMOSS.TwoDSFG;
 % TwoD_Data = Data_COSMOSS.TwoDIR;

@@ -398,6 +398,7 @@ Plot2DIR(hF_final,CVL,GUI_Inputs);
 TwoDIR             = Response;
 TwoDIR.SpectraGrid = SpectraGrid;
 TwoDIR.CVL         = CVL;
+TwoDIR.SpecType   = '2DIR';
 
 GUI_data.TwoDIR = TwoDIR;
 guidata(hObject,GUI_data);
@@ -515,6 +516,7 @@ Plot2DSFG(hF_final,CVL,GUI_Inputs);
 TwoDSFG             = Response;
 TwoDSFG.SpectraGrid = SpectraGrid;
 TwoDSFG.CVL         = CVL;
+TwoDSFG.SpecType    = '2DSFG';
 
 GUI_data.TwoDSFG = TwoDSFG;
 guidata(hObject,GUI_data);
@@ -523,7 +525,6 @@ guidata(hObject,GUI_data);
 
 function HCut_Callback(hObject, eventdata, GUI_data)
 GUI_Inputs = ParseGUI_Main(GUI_data.hGUIs);
-FreqRange  = GUI_Inputs.FreqRange;
 
 SpecType = GUI_data.hGUIs.AnalysisTools.SelectedTab.Title;
 switch SpecType
@@ -537,7 +538,7 @@ switch SpecType
         disp('Spectra Type not supported')
 end
 
-hF_HCut = H_Cut(Cut_F,FreqRange,TwoD_Data);
+hF_HCut = H_Cut(Cut_F,GUI_Inputs,TwoD_Data);
 
 HCut.hF_HCut = hF_HCut;
 

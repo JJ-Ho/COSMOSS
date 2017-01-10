@@ -60,6 +60,7 @@ else
     % plot convoluted spectrum
     CVLRS = real(CVL.selected);
     contour(FreqRange,FreqRange,CVLRS,Num_Contour,'LineWidth',2)
+    %contourf(FreqRange,FreqRange,CVLRS,Num_Contour,'LineWidth',1)
     % Normalization
     % CVLRSN = CVLRS ./max(abs(CVLRS(:)));
     % contour(GUI_Inputs.FreqRange,GUI_Inputs.FreqRange,CVLRSN,GUI_Inputs.Num_Contour,'LineWidth',2)
@@ -82,8 +83,6 @@ hAx.DataAspectRatio = [1,1,1];
 hAx.FontSize = 14;
 hAx.XLabel.String = 'Probe (cm^{-1})';
 hAx.YLabel.String = 'Pump (cm^{-1})';
-
-shading flat
 
 FilesName       = CVL.FilesName;
 FilesName_Reg   = regexprep(FilesName,'\_','\\_');

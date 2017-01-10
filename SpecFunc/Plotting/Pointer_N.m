@@ -49,6 +49,21 @@ S.tx(2) = uicontrol('style','tex',...
             
 set(S.fh,'windowbuttonmotionfcn',{@fh_wbmfcn,S}) % Set the motion detector.
 
+% Save hAx and hF into UserData of the figure
+set(S.fh,'Userdata',S)
+set(S.fh,'WindowKeyPressFcn',{@fh_wkpfcn,S}) % Set .
+
+% turn off listner
+% The workaround, to handle both HG1 and HG2:
+%
+% hManager = uigetmodemanager(S.fh);
+% try
+%     set(hManager.WindowListenerHandles, 'Enable', 'off');  % HG1
+% catch
+%    [hManager.WindowListenerHandles.Enabled] = deal(false);  % HG2
+% end
+
+
 function [] = fh_wbmfcn(varargin)
 % WindowButtonMotionFcn for the figure.
 S = varargin{3};  % Get the structure.
@@ -63,5 +78,12 @@ if tf1 && tf2
     Cy =  S.YLM(1) + (F(2)-S.AXP(2)).*(S.DFY/S.AXP(4));
     set(S.tx(2),'str',num2str([Cx,Cy],6))
 end
+
+function [] = fh_wkpfcn(varargin)
+S = varargin{3};  % Get the structure.
+disp('Key Pressed...')
+delete(S.tx)
+set(S.fh,'windowbuttonmotionfcn','')
+Pointer_N(S);
 
 

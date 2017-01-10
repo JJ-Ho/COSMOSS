@@ -55,13 +55,13 @@ set(S.fh,'WindowKeyPressFcn',{@fh_wkpfcn,S}) % Set .
 
 % turn off listner
 % The workaround, to handle both HG1 and HG2:
-%
-% hManager = uigetmodemanager(S.fh);
-% try
-%     set(hManager.WindowListenerHandles, 'Enable', 'off');  % HG1
-% catch
-%    [hManager.WindowListenerHandles.Enabled] = deal(false);  % HG2
-% end
+
+hManager = uigetmodemanager(S.fh);
+try
+    set(hManager.WindowListenerHandles, 'Enable', 'off');  % HG1
+catch
+   [hManager.WindowListenerHandles.Enabled] = deal(false);  % HG2
+end
 
 
 function [] = fh_wbmfcn(varargin)
@@ -81,7 +81,7 @@ end
 
 function [] = fh_wkpfcn(varargin)
 S = varargin{3};  % Get the structure.
-disp('Key Pressed...')
+disp('Cursor refreshed...')
 delete(S.tx)
 set(S.fh,'windowbuttonmotionfcn','')
 Pointer_N(S);

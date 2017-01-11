@@ -140,7 +140,8 @@ hold(hAx_SS,'on')
 
     % Draw stick sum
     Tmp_SS_X = [SS_X',SS_X'];
-    Tmp_SS_Y = [zeros(length(SS_Y),1),SS_Y'];
+    Tmp_SS_Y = [zeros(size(SS_Y)),SS_Y];
+    
     % Set intensity cut of to speed up 
     CutOff_I_SS = gt(abs(SS_Y(:)),max(abs(SS_Y(:)))*Int_CutOff);
     
@@ -158,7 +159,7 @@ hF.Units = 'normalized'; % use normalized scale
 % Individule Stick subplot
 hAx_SI.FontSize = 14;
 hAx_SI.XLim = [C_Cut_X(1);C_Cut_X(end)];
-hAx_SI.XTickLabel = '';
+% hAx_SI.XTickLabel = '';
 hAx_SI.XGrid = 'on';
 hAx_SI.YGrid = 'on';
 hAx_SI.XMinorGrid = 'on';

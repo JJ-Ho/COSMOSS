@@ -43,6 +43,10 @@ CouplingModelIndex = get(hGUIs.CouplingModelIndex,'Value');
 O.CouplingType     = CouplingList{CouplingModelIndex};
 
 O.Beta_NN       = str2double(get(hGUIs.Beta_NN      ,'String'));
+O.PCutOff       = str2double(get(hGUIs.PCutOff ,'String'));
+
+
+
 O.LineWidth     = str2double(get(hGUIs.LineWidth    ,'String'));
 
 Signal_Type = get(hGUIs.Sig_Type,'Value');

@@ -37,7 +37,6 @@ INPUT.KeepUnmatched = true;
 % Default values
 defaultFreqRange    = 1650:1750;
 defaultCouplingType = 'TDC'; 
-% expectedCoupling   = {'NN_Mix_TDC','TDC','Cho_PB','Cho_APB'};
 defaultBeta_NN      = 0.8; % 0.8 cm-1 according to Lauren's PNAS paper (doi/10.1073/pnas.1117704109); that originate from Min Cho's paper (doi:10.1063/1.1997151)
 defaultA_Pump1      = 90;
 defaultA_Pump2      = 90;
@@ -47,7 +46,7 @@ defaultP_Pump1      = 0;
 defaultP_Pump2      = 0;
 defaultP_Probe      = 0;
 defaultP_Sig2D      = 0;
-
+defaultPCutOff      = 0;
 
 addOptional(INPUT,'FreqRange'   ,defaultFreqRange);
 addOptional(INPUT,'Beta_NN'     ,defaultBeta_NN);
@@ -60,8 +59,7 @@ addOptional(INPUT,'P_Pump2'     ,defaultP_Pump2);
 addOptional(INPUT,'P_Probe'     ,defaultP_Probe);
 addOptional(INPUT,'P_Sig2D'     ,defaultP_Sig2D);
 addOptional(INPUT,'CouplingType',defaultCouplingType);
-% addParamValue(INPUT,'Coupling',defaultCoupling,...
-%                  @(x) any(validatestring(x,expectedCoupling)));
+addOptional(INPUT,'PCutOff'     ,defaultPCutOff);
          
 parse(INPUT,GUI_Inputs_C{:});
 
@@ -77,6 +75,7 @@ P_Pump1      = INPUT.Results.P_Pump1;
 P_Pump2      = INPUT.Results.P_Pump2;
 P_Probe      = INPUT.Results.P_Probe;
 P_Sig2D      = INPUT.Results.P_Sig2D;
+PCutOff      = INPUT.Results.PCutOff;
 
 %% Call TwoExcitonH to calculate H,mu and alpha under exciton basis
 H = ExcitonH(PDB_Data,...
@@ -120,7 +119,8 @@ E = EPolar4(P_Sig2D,P_Probe,P_Pump2,P_Pump1);
 %% Generate Feynman pathway for 2DSFG
 EJR = E*J*R_Avg;
 
-[Grid,Freq,Int,Index,CutOff] = Feynman_2DIR_Vec_Sparse(FreqRange,...
+[Grid,Freq,Int,Index,CutOff] = Feynman_2DIR_Vec_Sparse(PCutOff,...
+                                                       FreqRange,...
                                                        EJR,...
                                                        Ex_F1,...
                                                        Ex_F2,...

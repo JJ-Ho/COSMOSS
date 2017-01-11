@@ -1,4 +1,4 @@
-function [Grid,Freq,Int,Index,CutOff] = Feynman_2DSFG_Vec_Sparse(FreqRange,EJR,F1,F2,A01,A12,M01,M12)
+function [Grid,Freq,Int,Index,CutOff] = Feynman_2DSFG_Vec_Sparse(PCutOff,FreqRange,EJR,F1,F2,A01,A12,M01,M12)
 % 
 % This function generate Feynman pathway of 2DSFG with given polarization.
 % 
@@ -70,8 +70,6 @@ Iax = sub2ind([N1,N2],Ka,Kx);
 Ibx = sub2ind([N1,N2],Kb,Kx);
 
 %% Reduce mode number base on the transition intensity
-Intensity_CutOff = 1e-5;
-
 Norm_M_01 = sqrt(sum(M01.^2,2));
 Norm_A_01 = sqrt(sum(A01.^2,2));
 Norm_M_12 = sqrt(sum(M12.^2,2));
@@ -111,12 +109,12 @@ NR1_Max = max(I_NR1);
 NR2_Max = max(I_NR2);
 NR3_Max = max(I_NR3);
 
-PI_R1  = I_R1  >= (Intensity_CutOff *  R1_Max);
-PI_R2  = I_R2  >= (Intensity_CutOff *  R2_Max);
-PI_R3  = I_R3  >= (Intensity_CutOff *  R3_Max);
-PI_NR1 = I_NR1 >= (Intensity_CutOff * NR1_Max);
-PI_NR2 = I_NR2 >= (Intensity_CutOff * NR2_Max);
-PI_NR3 = I_NR3 >= (Intensity_CutOff * NR3_Max);
+PI_R1  = I_R1  >= (PCutOff *  R1_Max);
+PI_R2  = I_R2  >= (PCutOff *  R2_Max);
+PI_R3  = I_R3  >= (PCutOff *  R3_Max);
+PI_NR1 = I_NR1 >= (PCutOff * NR1_Max);
+PI_NR2 = I_NR2 >= (PCutOff * NR2_Max);
+PI_NR3 = I_NR3 >= (PCutOff * NR3_Max);
 
 %% Get 2DIR response from index version kronec product(GB SE)
 % R1
@@ -350,10 +348,10 @@ Index.NR1 = Ind_NR1;
 Index.NR2 = Ind_NR2;
 Index.NR3 = Ind_NR3;
 
-CutOff.PI_R1  = PI_R1;
-CutOff.PI_R2  = PI_R2;
-CutOff.PI_R3  = PI_R3;
-CutOff.PI_NR1 = PI_NR1;
-CutOff.PI_NR2 = PI_NR2;
-CutOff.PI_NR3 = PI_NR3;
-CutOff.Int_CutOff = Intensity_CutOff;
+CutOff.PI_R1   = PI_R1;
+CutOff.PI_R2   = PI_R2;
+CutOff.PI_R3   = PI_R3;
+CutOff.PI_NR1  = PI_NR1;
+CutOff.PI_NR2  = PI_NR2;
+CutOff.PI_NR3  = PI_NR3;
+CutOff.PCutOff = PCutOff;

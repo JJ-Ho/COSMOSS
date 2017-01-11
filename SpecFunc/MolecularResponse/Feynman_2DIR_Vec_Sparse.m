@@ -1,4 +1,4 @@
-function [Grid,Freq,Int,Index] = Feynman_2DIR_Vec_Sparse(FreqRange,EJR,F1,F2,M01,M12)
+function [Grid,Freq,Int,Index,CutOff] = Feynman_2DIR_Vec_Sparse(FreqRange,EJR,F1,F2,M01,M12)
 % 
 % This function generate Feynman pathway of 2DSFG with given polarization.
 % 
@@ -308,7 +308,7 @@ SparseMax = max([max(F1), max(F2(Kx(:)) - F1(Ka(:))), max(FreqRange)]);
 
 R1  = sparse( Freq_R1(:,1), Freq_R1(:,3),S_R1 ,SparseMax,SparseMax);
 R2  = sparse( Freq_R2(:,1), Freq_R2(:,3),S_R2 ,SparseMax,SparseMax);
-R3  = sparse( Freq_R3(:,1), Freq_R3(:,3),S_NR3,SparseMax,SparseMax);
+R3  = sparse( Freq_R3(:,1), Freq_R3(:,3),S_R3 ,SparseMax,SparseMax);
 NR1 = sparse(Freq_NR1(:,1),Freq_NR1(:,3),S_NR1,SparseMax,SparseMax);
 NR2 = sparse(Freq_NR2(:,1),Freq_NR2(:,3),S_NR2,SparseMax,SparseMax);
 NR3 = sparse(Freq_NR3(:,1),Freq_NR3(:,3),S_NR3,SparseMax,SparseMax);
@@ -326,7 +326,7 @@ Grid.NR3 = full(NR3(MinF:MaxF,MinF:MaxF)); % [Pumpx Probe]
 
 Int.R1  = S_R1;
 Int.R2  = S_R2;
-Int.R3  = S_NR3;
+Int.R3  = S_R3;
 Int.NR1 = S_NR1;
 Int.NR2 = S_NR2;
 Int.NR3 = S_NR3;
@@ -344,3 +344,11 @@ Index.R3  = Ind_R3;
 Index.NR1 = Ind_NR1;
 Index.NR2 = Ind_NR2;
 Index.NR3 = Ind_NR3;
+
+CutOff.PI_R1  = PI_R1;
+CutOff.PI_R2  = PI_R2;
+CutOff.PI_R3  = PI_R3;
+CutOff.PI_NR1 = PI_NR1;
+CutOff.PI_NR2 = PI_NR2;
+CutOff.PI_NR3 = PI_NR3;
+CutOff.Int_CutOff = Intensity_CutOff;

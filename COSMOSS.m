@@ -90,7 +90,7 @@ UseLayoutToolBox = any(strcmp(cellstr(char(T.Name)), 'GUI Layout Toolbox'));
 if UseLayoutToolBox
     hGUIs = GUI_COSMOSS(hCOSMOSS);
 else
-    diap('Please install GUI Layout toolbox...')
+    disp('Please install GUI Layout toolbox...')
     return
 end
 % ------------------------------------------------------------------------   

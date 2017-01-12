@@ -329,6 +329,7 @@ function TwoDIR_Callback(hObject, eventdata, GUI_data)
 %% Read GUI
 hGUIs = GUI_data.hGUIs;
 GUI_Inputs = ParseGUI_Main(hGUIs);
+FreqRange  = GUI_Inputs.FreqRange;
 RefreshTag = GUI_data.Refresh.TwoDIR;
 Structure  = GUI_data.Structure;
 DynamicUpdate = GUI_Inputs.DynamicUpdate;
@@ -356,17 +357,17 @@ if RefreshTag
     %% Calculate TwoD response
     if eq(GUI_Inputs.Sampling,1)
         % Pre-allocate
-        GridSize     = length(GUI_Inputs.FreqRange);
+        GridSize     = FreqRange(end);
 
-        Rephasing    = zeros(GridSize);
-        NonRephasing = zeros(GridSize);
-        SpecAccuR1   = zeros(GridSize);
-        SpecAccuR2   = zeros(GridSize);
-        SpecAccuR3   = zeros(GridSize);
-        SpecAccuNR1  = zeros(GridSize);
-        SpecAccuNR2  = zeros(GridSize);
-        SpecAccuNR3  = zeros(GridSize);
-
+        Rephasing    = sparse(GridSize,GridSize);
+        NonRephasing = sparse(GridSize,GridSize);
+        SpecAccuR1   = sparse(GridSize,GridSize);
+        SpecAccuR2   = sparse(GridSize,GridSize);
+        SpecAccuR3   = sparse(GridSize,GridSize);
+        SpecAccuNR1  = sparse(GridSize,GridSize);
+        SpecAccuNR2  = sparse(GridSize,GridSize);
+        SpecAccuNR3  = sparse(GridSize,GridSize);
+        
         Num_Modes = Structure.Num_Modes;
         Freq_Orig = Structure.freq;
 
@@ -398,16 +399,19 @@ if RefreshTag
 
             %[Tmp_SG,Tmp_Res] = TwoDIR_Main(Structure,GUI_Inputs);
             [Tmp_SG,Tmp_Res] = TwoDIR_Main_Sparse(Structure,GUI_Inputs);
-
-            Rephasing    = Rephasing    + Tmp_SG.Rephasing   ;
-            NonRephasing = NonRephasing + Tmp_SG.NonRephasing;
-            SpecAccuR1   = SpecAccuR1   + Tmp_SG.SpecAccuR1  ;
-            SpecAccuR2   = SpecAccuR2   + Tmp_SG.SpecAccuR2  ;
-            SpecAccuR3   = SpecAccuR3   + Tmp_SG.SpecAccuR3  ;
-            SpecAccuNR1  = SpecAccuNR1  + Tmp_SG.SpecAccuNR1 ;
-            SpecAccuNR2  = SpecAccuNR2  + Tmp_SG.SpecAccuNR2 ;
-            SpecAccuNR3  = SpecAccuNR3  + Tmp_SG.SpecAccuNR3 ;   
-
+            try
+                Rephasing    = Rephasing    + Tmp_SG.Rephasing   ;
+                NonRephasing = NonRephasing + Tmp_SG.NonRephasing;
+                SpecAccuR1   = SpecAccuR1   + Tmp_SG.SpecAccuR1  ;
+                SpecAccuR2   = SpecAccuR2   + Tmp_SG.SpecAccuR2  ;
+                SpecAccuR3   = SpecAccuR3   + Tmp_SG.SpecAccuR3  ;
+                SpecAccuNR1  = SpecAccuNR1  + Tmp_SG.SpecAccuNR1 ;
+                SpecAccuNR2  = SpecAccuNR2  + Tmp_SG.SpecAccuNR2 ;
+                SpecAccuNR3  = SpecAccuNR3  + Tmp_SG.SpecAccuNR3 ;   
+            catch
+                disp(['Frequency fluctuation out of range: ', num2str(GridSize),', dop this run...'])
+                continue
+            end
             TIME(i) = toc(TSTART(i));
             disp(['Run ' num2str(i) ' finished within '  num2str(TIME(i)) '...'])
 
@@ -421,7 +425,7 @@ if RefreshTag
             SpectraGrid.SpecAccuNR3  = SpecAccuNR3  ;
             Response = Tmp_Res;
 
-            while ~eq(DynamicUpdate,0)
+            while and(~eq(DynamicUpdate,0),eq(mod(i,10),0))
                 CVL = Conv2D(SpectraGrid,GUI_Inputs);
                 CVL.FilesName = [Structure.FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title
                 Plot2DIR(hF,CVL,GUI_Inputs);
@@ -464,6 +468,7 @@ function TwoDSFG_Callback(hObject, eventdata, GUI_data)
 %% Read GUI
 hGUIs = GUI_data.hGUIs;
 GUI_Inputs = ParseGUI_Main(hGUIs);
+FreqRange  = GUI_Inputs.FreqRange;
 RefreshTag = GUI_data.Refresh.TwoDSFG;
 Structure  = GUI_data.Structure;
 DynamicUpdate = GUI_Inputs.DynamicUpdate;
@@ -491,16 +496,16 @@ if RefreshTag
     %% Calculate TwoD response
     if eq(GUI_Inputs.Sampling,1)
         % Pre-allocate
-        GridSize     = length(GUI_Inputs.FreqRange);
+        GridSize     = FreqRange(end);
 
-        Rephasing    = zeros(GridSize);
-        NonRephasing = zeros(GridSize);
-        SpecAccuR1   = zeros(GridSize);
-        SpecAccuR2   = zeros(GridSize);
-        SpecAccuR3   = zeros(GridSize);
-        SpecAccuNR1  = zeros(GridSize);
-        SpecAccuNR2  = zeros(GridSize);
-        SpecAccuNR3  = zeros(GridSize);
+        Rephasing    = sparse(GridSize,GridSize);
+        NonRephasing = sparse(GridSize,GridSize);
+        SpecAccuR1   = sparse(GridSize,GridSize);
+        SpecAccuR2   = sparse(GridSize,GridSize);
+        SpecAccuR3   = sparse(GridSize,GridSize);
+        SpecAccuNR1  = sparse(GridSize,GridSize);
+        SpecAccuNR2  = sparse(GridSize,GridSize);
+        SpecAccuNR3  = sparse(GridSize,GridSize);
 
         Num_Modes = Structure.Num_Modes;
         Freq_Orig = Structure.freq;
@@ -534,16 +539,19 @@ if RefreshTag
 
             %[Tmp_SG,Tmp_Res] = TwoDSFG_Main(Structure,GUI_Inputs);
             [Tmp_SG,Tmp_Res] = TwoDSFG_Main_Sparse(Structure,GUI_Inputs);
-
-            Rephasing    = Rephasing    + Tmp_SG.Rephasing   ;
-            NonRephasing = NonRephasing + Tmp_SG.NonRephasing;
-            SpecAccuR1   = SpecAccuR1   + Tmp_SG.SpecAccuR1  ;
-            SpecAccuR2   = SpecAccuR2   + Tmp_SG.SpecAccuR2  ;
-            SpecAccuR3   = SpecAccuR3   + Tmp_SG.SpecAccuR3  ;
-            SpecAccuNR1  = SpecAccuNR1  + Tmp_SG.SpecAccuNR1 ;
-            SpecAccuNR2  = SpecAccuNR2  + Tmp_SG.SpecAccuNR2 ;
-            SpecAccuNR3  = SpecAccuNR3  + Tmp_SG.SpecAccuNR3 ;   
-
+            try
+                Rephasing    = Rephasing    + Tmp_SG.Rephasing   ;
+                NonRephasing = NonRephasing + Tmp_SG.NonRephasing;
+                SpecAccuR1   = SpecAccuR1   + Tmp_SG.SpecAccuR1  ;
+                SpecAccuR2   = SpecAccuR2   + Tmp_SG.SpecAccuR2  ;
+                SpecAccuR3   = SpecAccuR3   + Tmp_SG.SpecAccuR3  ;
+                SpecAccuNR1  = SpecAccuNR1  + Tmp_SG.SpecAccuNR1 ;
+                SpecAccuNR2  = SpecAccuNR2  + Tmp_SG.SpecAccuNR2 ;
+                SpecAccuNR3  = SpecAccuNR3  + Tmp_SG.SpecAccuNR3 ;   
+            catch
+                disp(['Frequency fluctuation out of range: ', num2str(GridSize),', dop this run...'])
+                continue
+            end
             TIME(i) = toc(TSTART(i));
             disp(['Run ' num2str(i) ' finished within '  num2str(TIME(i)) '...'])
 
@@ -557,7 +565,7 @@ if RefreshTag
             SpectraGrid.SpecAccuNR3  = SpecAccuNR3  ;
             Response = Tmp_Res;
 
-            while ~eq(DynamicUpdate,0)
+            while and(~eq(DynamicUpdate,0),eq(mod(i,10),0))
                 CVL = Conv2D(SpectraGrid,GUI_Inputs);
                 CVL.FilesName = [Structure.FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title
                 Plot2DSFG(hF,CVL,GUI_Inputs);

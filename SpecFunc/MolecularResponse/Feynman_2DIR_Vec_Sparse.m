@@ -312,15 +312,22 @@ NR2 = sparse(Freq_NR2(:,1),Freq_NR2(:,3),S_NR2,SparseMax,SparseMax);
 NR3 = sparse(Freq_NR3(:,1),Freq_NR3(:,3),S_NR3,SparseMax,SparseMax);
 
 %% Output
-MinF = min(FreqRange);
-MaxF = max(FreqRange);
+% MinF = min(FreqRange);
+% MaxF = max(FreqRange);
+% 
+% Grid.R1  = full( R1(MinF:MaxF,MinF:MaxF)); % [Pumpx Probe]
+% Grid.R2  = full( R2(MinF:MaxF,MinF:MaxF)); % [Pumpx Probe]
+% Grid.R3  = full( R3(MinF:MaxF,MinF:MaxF)); % [Pumpx Probe]
+% Grid.NR1 = full(NR1(MinF:MaxF,MinF:MaxF)); % [Pumpx Probe]
+% Grid.NR2 = full(NR2(MinF:MaxF,MinF:MaxF)); % [Pumpx Probe]
+% Grid.NR3 = full(NR3(MinF:MaxF,MinF:MaxF)); % [Pumpx Probe]
 
-Grid.R1  = full( R1(MinF:MaxF,MinF:MaxF)); % [Pumpx Probe]
-Grid.R2  = full( R2(MinF:MaxF,MinF:MaxF)); % [Pumpx Probe]
-Grid.R3  = full( R3(MinF:MaxF,MinF:MaxF)); % [Pumpx Probe]
-Grid.NR1 = full(NR1(MinF:MaxF,MinF:MaxF)); % [Pumpx Probe]
-Grid.NR2 = full(NR2(MinF:MaxF,MinF:MaxF)); % [Pumpx Probe]
-Grid.NR3 = full(NR3(MinF:MaxF,MinF:MaxF)); % [Pumpx Probe]
+Grid.R1  = R1;  % [Pumpx Probe]
+Grid.R2  = R2;  % [Pumpx Probe]
+Grid.R3  = R3;  % [Pumpx Probe]
+Grid.NR1 = NR1; % [Pumpx Probe]
+Grid.NR2 = NR2; % [Pumpx Probe]
+Grid.NR3 = NR3; % [Pumpx Probe]
 
 Int.R1  = S_R1;
 Int.R2  = S_R2;

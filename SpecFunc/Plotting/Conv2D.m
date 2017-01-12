@@ -1,4 +1,4 @@
-function CVL = Conv2D(SpectraGrid,GUI_Inputs)
+function CVL = Conv2D(SSG,GUI_Inputs)
 % 
 % This function convolute the input stick spectrum with spelected line
 % shape.
@@ -58,24 +58,38 @@ LineWidth   = INPUT.Results.LineWidth;
 Pathway     = INPUT.Results.Pathway;
 SpecType    = INPUT.Results.SpecType;
 
+%% Convert Sparse matrix back to full
+MinF = FreqRange(1);
+MaxF = FreqRange(end);
+
+SG.SpecAccuR1  = full(SSG.SpecAccuR1(MinF:MaxF,MinF:MaxF));
+SG.SpecAccuR2  = full(SSG.SpecAccuR2(MinF:MaxF,MinF:MaxF));
+SG.SpecAccuR3  = full(SSG.SpecAccuR3(MinF:MaxF,MinF:MaxF));
+SG.SpecAccuNR1 = full(SSG.SpecAccuNR1(MinF:MaxF,MinF:MaxF));
+SG.SpecAccuNR2 = full(SSG.SpecAccuNR2(MinF:MaxF,MinF:MaxF));
+SG.SpecAccuNR3 = full(SSG.SpecAccuNR3(MinF:MaxF,MinF:MaxF));
+
+SG.Rephasing    = full(SSG.Rephasing(MinF:MaxF,MinF:MaxF));
+SG.NonRephasing = full(SSG.NonRephasing(MinF:MaxF,MinF:MaxF));
+
 %% FFT on selected pathway
 
 switch Pathway
     case 'GB' % Ground state Bleach, R1
-        Re_phasing_Res = SpectraGrid.SpecAccuR1 ;
-        NR_phasing_Res = SpectraGrid.SpecAccuNR1;
+        Re_phasing_Res = SG.SpecAccuR1 ;
+        NR_phasing_Res = SG.SpecAccuNR1;
         
     case 'SE' % Stimulated Emission, R2
-        Re_phasing_Res = SpectraGrid.SpecAccuR2 ;
-        NR_phasing_Res = SpectraGrid.SpecAccuNR2;
+        Re_phasing_Res = SG.SpecAccuR2 ;
+        NR_phasing_Res = SG.SpecAccuNR2;
         
     case 'EA' % Excited state Absorption, R3
-        Re_phasing_Res = -SpectraGrid.SpecAccuR3 ;
-        NR_phasing_Res = -SpectraGrid.SpecAccuNR3;
+        Re_phasing_Res = -SG.SpecAccuR3 ;
+        NR_phasing_Res = -SG.SpecAccuNR3;
         
     case 'All'
-        Re_phasing_Res = SpectraGrid.Rephasing   ;
-        NR_phasing_Res = SpectraGrid.NonRephasing;
+        Re_phasing_Res = SG.Rephasing   ;
+        NR_phasing_Res = SG.NonRephasing;
         
 end
 

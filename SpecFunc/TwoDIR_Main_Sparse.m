@@ -137,6 +137,7 @@ Response.Index = Index;
 Response.CutOff = CutOff;
 
 Response.EJR = EJR;
+Response.SpecType = '2DIR';
 
 %% Binning of spectra
 SpectraGrid.SpecAccuR1  = Grid.R1;

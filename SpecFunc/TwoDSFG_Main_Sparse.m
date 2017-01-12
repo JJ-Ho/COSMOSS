@@ -202,6 +202,7 @@ Response.Index  = Index;
 Response.CutOff = CutOff;
 
 Response.EJR = EJR;
+Response.SpecType = '2DSFG';
 
 %% Rename binned signal
 SpectraGrid.SpecAccuR1  = Grid.R1;

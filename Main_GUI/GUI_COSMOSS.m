@@ -57,7 +57,7 @@ ButtonBox = uix.HBoxFlex(...
 % set sizes 
 set(MainLayout ,'Heights',[-1,35])
 set(PanelLayout,'Widths' ,[-1,-1])
-set(LBox       ,'Heights',[-1,155,75,140,20])
+set(LBox       ,'Heights',[-1,100,75,140,20])
 set(RBox       ,'Heights',[140,210,-1])
 
 %% Create buttons

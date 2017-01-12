@@ -6,6 +6,13 @@ function Export2GUIs(GUI_data)
 if isfield(GUI_data,'hCOSMOSS')
     GUI_data_COSMOSS           = guidata(GUI_data.hCOSMOSS);
     GUI_data_COSMOSS.Structure = GUI_data.Structure;
+    
+    % reset the all refresh tag to 1
+    Fname = fieldnames(GUI_data_COSMOSS.Refresh);
+    for i = 1:length(Fname)
+        GUI_data_COSMOSS.Refresh.(Fname{i}) = 1;
+    end
+    
     guidata(GUI_data.hCOSMOSS,GUI_data_COSMOSS)
     
     % change Name of Main GUI to help identifying which Structural Model is

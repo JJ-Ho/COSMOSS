@@ -58,8 +58,8 @@ if nargin > 3
             
             %PRE ASSIGN VALUES TO SUBSTITUTE MAIN GUI VALUES
             hGUIs_COSMOSS  = Data_COSMOSS.hGUIs;
-            set(hGUIs_COSMOSS.X_Min  ,'String','1650')
-            set(hGUIs_COSMOSS.X_Max  ,'String','1750')
+            set(hGUIs_COSMOSS.F_Min  ,'String','1650')
+            set(hGUIs_COSMOSS.F_Max  ,'String','1750')
             
             GUI_data.hCOSMOSS = hCOSMOSS;
             

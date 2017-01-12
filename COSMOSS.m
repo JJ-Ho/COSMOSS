@@ -99,6 +99,13 @@ end
 GUI_data.hCOSMOSS = hCOSMOSS; 
 GUI_data.hGUIs    = hGUIs; % export GUI handles to handles
 
+% initiate the vaue for spectral calculation function to tell if need to recalculate 
+Refresh.FTIR    = 0;
+Refresh.OneDSFG = 0;
+Refresh.TwoDIR  = 0;
+Refresh.TwoDSFG = 0;
+GUI_data.Refresh  = Refresh ; 
+
 guidata(hCOSMOSS, GUI_data);
 
 function varargout = COSMOSS_OutputFcn(hCOSMOSS, eventdata, GUI_data) 
@@ -116,7 +123,7 @@ assignin('base', 'Data_COSMOSS', GUI_data)
 disp('Updated GUI Data_COSMOSS exported!')
 %^ GUI Setup ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-
+% helper functions
 function onListSelection(hObject, eventdata, GUI_data)
 StructModel           = get(GUI_data.hGUIs.StructListBox,'Value');
 [fhModel,ModelList,~] = StructureModel(StructModel);
@@ -131,6 +138,26 @@ hModel.UserData = GUI_data.hCOSMOSS;
 GUI_data.hModel = hModel;
 guidata(hObject,GUI_data)
 
+function UpdateCalculation(hObject, eventdata, GUI_data)
+% if Refresh > 1 then recalculate 
+Refresh = GUI_data.Refresh;
+
+Refresh.FTIR    = Refresh.FTIR    + 1;
+Refresh.OneDSFG = Refresh.OneDSFG + 1;
+Refresh.TwoDIR  = Refresh.TwoDIR  + 1;
+Refresh.TwoDSFG = Refresh.TwoDSFG + 1;
+
+% debug
+disp(['FTIR  Refresh #: ',num2str(Refresh.FTIR)])
+disp(['SFG   Refresh #: ',num2str(Refresh.OneDSFG)])
+disp(['2DIR  Refresh #: ',num2str(Refresh.TwoDIR)])
+disp(['2DSFG Refresh #: ',num2str(Refresh.TwoDSFG)])
+% debug
+
+GUI_data.Refresh = Refresh;
+guidata(GUI_data.hCOSMOSS,GUI_data);
+
+% Spectral calculation functions
 function FTIR_Callback(hObject, eventdata, GUI_data)
 % update the laser seeting tab
 hGUIs = GUI_data.hGUIs;
@@ -211,6 +238,7 @@ end
 
 %% Update FTIR data into guidata 
 GUI_data.FTIR = FTIR;
+GUI_data.Refresh.FTIR = 0;
 guidata(hObject,GUI_data)
 
 function SFG_Callback(hObject, eventdata, GUI_data)
@@ -284,108 +312,121 @@ end
 
 %% Update share data
 GUI_data.OneDSFG = OneDSFG;
+GUI_data.Refresh.OneDSFG = 0;
 guidata(hObject,GUI_data);
 
 function TwoDIR_Callback(hObject, eventdata, GUI_data)
 %% Read GUI
 hGUIs = GUI_data.hGUIs;
 GUI_Inputs = ParseGUI_Main(hGUIs);
+Structure  = GUI_data.Structure;
+RefreshTag = GUI_data.Refresh.TwoDIR;
 
-% update the laser seeting tab
-hGUIs.LaserSetting.SelectedTab = hGUIs.Tab_2D;
-
-DynamicUpdate = GUI_Inputs.DynamicUpdate;
-if DynamicUpdate
-    hF = figure;
+if ~isfield(GUI_data,'TwoDIR')
+    RefreshTag = 0;
 end
 
-%% Calculate TwoD response
-Structure = GUI_data.Structure;
-
-if eq(GUI_Inputs.Sampling,1)
-    % Pre-allocate
-    GridSize     = length(GUI_Inputs.FreqRange);
-
-    Rephasing    = zeros(GridSize);
-    NonRephasing = zeros(GridSize);
-    SpecAccuR1   = zeros(GridSize);
-    SpecAccuR2   = zeros(GridSize);
-    SpecAccuR3   = zeros(GridSize);
-    SpecAccuNR1  = zeros(GridSize);
-    SpecAccuNR2  = zeros(GridSize);
-    SpecAccuNR3  = zeros(GridSize);
+if ~RefreshTag
+    GUI_data.Refresh.TwoDIR = 0;
     
-    Num_Modes = Structure.Num_Modes;
-    Freq_Orig = Structure.freq;
-    
-    StandardDiv = GUI_Inputs.FWHM./(2*sqrt(2*log(2)));
-    P_FlucCorr  = GUI_Inputs.P_FlucCorr/100; % turn percentage to number within 0~1
-    
-    TSTART = zeros(GUI_Inputs.Sample_Num,1,'uint64');
-    TIME   = zeros(GUI_Inputs.Sample_Num,1);
-    
-    for i = 1:GUI_Inputs.Sample_Num
+    % update the laser seeting tab
+    hGUIs.LaserSetting.SelectedTab = hGUIs.Tab_2D;
 
-        DynamicUpdate = hGUIs.DynamicUpdate.Value; % directly access the GUI elment so can get the most recnt values
-        UpdateStatus  = hGUIs.UpdateStatus.Value;
-        if and(~eq(i,1), and(eq(DynamicUpdate,1),~eq(UpdateStatus,1)))
-            break
-        end
-        
-        TSTART(i) = tic;
-        
-        % Add diagonal disorder
-        Correlation_Dice = rand;
-
-        if Correlation_Dice < P_FlucCorr
-            Fluctuation = StandardDiv'.*(randn(1,1).*ones(Num_Modes,1));
-        else 
-            Fluctuation = StandardDiv'.*randn(Num_Modes,1); 
-        end
-        Structure.freq = Freq_Orig + Fluctuation;
-       
-        %[Tmp_SG,Tmp_Res] = TwoDIR_Main(Structure,GUI_Inputs);
-        [Tmp_SG,Tmp_Res] = TwoDIR_Main_Sparse(Structure,GUI_Inputs);
-        
-        Rephasing    = Rephasing    + Tmp_SG.Rephasing   ;
-        NonRephasing = NonRephasing + Tmp_SG.NonRephasing;
-        SpecAccuR1   = SpecAccuR1   + Tmp_SG.SpecAccuR1  ;
-        SpecAccuR2   = SpecAccuR2   + Tmp_SG.SpecAccuR2  ;
-        SpecAccuR3   = SpecAccuR3   + Tmp_SG.SpecAccuR3  ;
-        SpecAccuNR1  = SpecAccuNR1  + Tmp_SG.SpecAccuNR1 ;
-        SpecAccuNR2  = SpecAccuNR2  + Tmp_SG.SpecAccuNR2 ;
-        SpecAccuNR3  = SpecAccuNR3  + Tmp_SG.SpecAccuNR3 ;   
-        
-        TIME(i) = toc(TSTART(i));
-        disp(['Run ' num2str(i) ' finished within '  num2str(TIME(i)) '...'])
-        
-        SpectraGrid.Rephasing    = Rephasing    ;
-        SpectraGrid.NonRephasing = NonRephasing ;
-        SpectraGrid.SpecAccuR1   = SpecAccuR1   ;
-        SpectraGrid.SpecAccuR2   = SpecAccuR2   ;
-        SpectraGrid.SpecAccuR3   = SpecAccuR3   ;
-        SpectraGrid.SpecAccuNR1  = SpecAccuNR1  ;
-        SpectraGrid.SpecAccuNR2  = SpecAccuNR2  ;
-        SpectraGrid.SpecAccuNR3  = SpecAccuNR3  ;
-        Response = Tmp_Res;
-        
-        while ~eq(DynamicUpdate,0)
-            CVL = Conv2D(SpectraGrid,GUI_Inputs);
-            CVL.FilesName = [Structure.FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title
-            Plot2DIR(hF,CVL,GUI_Inputs);
-            drawnow
-            DynamicUpdate = 0;
-        end
+    DynamicUpdate = GUI_Inputs.DynamicUpdate;
+    if DynamicUpdate
+        hF = figure;
     end
-   
-    Total_TIME = sum(TIME);
-    disp(['Total time: ' num2str(Total_TIME)])
-    
-else
-    %[SpectraGrid,Response] = TwoDIR_Main(Structure,GUI_Inputs);
-    [SpectraGrid,Response] = TwoDIR_Main_Sparse(Structure,GUI_Inputs);
-end
 
+    %% Calculate TwoD response
+    if eq(GUI_Inputs.Sampling,1)
+        % Pre-allocate
+        GridSize     = length(GUI_Inputs.FreqRange);
+
+        Rephasing    = zeros(GridSize);
+        NonRephasing = zeros(GridSize);
+        SpecAccuR1   = zeros(GridSize);
+        SpecAccuR2   = zeros(GridSize);
+        SpecAccuR3   = zeros(GridSize);
+        SpecAccuNR1  = zeros(GridSize);
+        SpecAccuNR2  = zeros(GridSize);
+        SpecAccuNR3  = zeros(GridSize);
+
+        Num_Modes = Structure.Num_Modes;
+        Freq_Orig = Structure.freq;
+
+        StandardDiv = GUI_Inputs.FWHM./(2*sqrt(2*log(2)));
+        P_FlucCorr  = GUI_Inputs.P_FlucCorr/100; % turn percentage to number within 0~1
+
+        TSTART = zeros(GUI_Inputs.Sample_Num,1,'uint64');
+        TIME   = zeros(GUI_Inputs.Sample_Num,1);
+
+        for i = 1:GUI_Inputs.Sample_Num
+
+            DynamicUpdate = hGUIs.DynamicUpdate.Value; % directly access the GUI elment so can get the most recnt values
+            UpdateStatus  = hGUIs.UpdateStatus.Value;
+            if and(~eq(i,1), and(eq(DynamicUpdate,1),~eq(UpdateStatus,1)))
+                break
+            end
+
+            TSTART(i) = tic;
+
+            % Add diagonal disorder
+            Correlation_Dice = rand;
+
+            if Correlation_Dice < P_FlucCorr
+                Fluctuation = StandardDiv'.*(randn(1,1).*ones(Num_Modes,1));
+            else 
+                Fluctuation = StandardDiv'.*randn(Num_Modes,1); 
+            end
+            Structure.freq = Freq_Orig + Fluctuation;
+
+            %[Tmp_SG,Tmp_Res] = TwoDIR_Main(Structure,GUI_Inputs);
+            [Tmp_SG,Tmp_Res] = TwoDIR_Main_Sparse(Structure,GUI_Inputs);
+
+            Rephasing    = Rephasing    + Tmp_SG.Rephasing   ;
+            NonRephasing = NonRephasing + Tmp_SG.NonRephasing;
+            SpecAccuR1   = SpecAccuR1   + Tmp_SG.SpecAccuR1  ;
+            SpecAccuR2   = SpecAccuR2   + Tmp_SG.SpecAccuR2  ;
+            SpecAccuR3   = SpecAccuR3   + Tmp_SG.SpecAccuR3  ;
+            SpecAccuNR1  = SpecAccuNR1  + Tmp_SG.SpecAccuNR1 ;
+            SpecAccuNR2  = SpecAccuNR2  + Tmp_SG.SpecAccuNR2 ;
+            SpecAccuNR3  = SpecAccuNR3  + Tmp_SG.SpecAccuNR3 ;   
+
+            TIME(i) = toc(TSTART(i));
+            disp(['Run ' num2str(i) ' finished within '  num2str(TIME(i)) '...'])
+
+            SpectraGrid.Rephasing    = Rephasing    ;
+            SpectraGrid.NonRephasing = NonRephasing ;
+            SpectraGrid.SpecAccuR1   = SpecAccuR1   ;
+            SpectraGrid.SpecAccuR2   = SpecAccuR2   ;
+            SpectraGrid.SpecAccuR3   = SpecAccuR3   ;
+            SpectraGrid.SpecAccuNR1  = SpecAccuNR1  ;
+            SpectraGrid.SpecAccuNR2  = SpecAccuNR2  ;
+            SpectraGrid.SpecAccuNR3  = SpecAccuNR3  ;
+            Response = Tmp_Res;
+
+            while ~eq(DynamicUpdate,0)
+                CVL = Conv2D(SpectraGrid,GUI_Inputs);
+                CVL.FilesName = [Structure.FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title
+                Plot2DIR(hF,CVL,GUI_Inputs);
+                drawnow
+                DynamicUpdate = 0;
+            end
+        end
+
+        Total_TIME = sum(TIME);
+        disp(['Total time: ' num2str(Total_TIME)])
+
+    else
+        %[SpectraGrid,Response] = TwoDIR_Main(Structure,GUI_Inputs);
+        [SpectraGrid,Response] = TwoDIR_Main_Sparse(Structure,GUI_Inputs);
+    end
+
+else 
+    Response    = GUI_data.TwoDIR;
+    SpectraGrid = GUI_data.TwoDIR.SpectraGrid;
+end
+    
 %% Conv2D linshape and make figure
 hF_final = figure;
 CVL = Conv2D(SpectraGrid,GUI_Inputs);
@@ -519,8 +560,8 @@ TwoDSFG.CVL         = CVL;
 TwoDSFG.SpecType    = '2DSFG';
 
 GUI_data.TwoDSFG = TwoDSFG;
+GUI_data.Refresh.TwoDSFG = 0;
 guidata(hObject,GUI_data);
-
 
 
 function HCut_Callback(hObject, eventdata, GUI_data)

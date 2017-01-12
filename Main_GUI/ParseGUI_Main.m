@@ -44,30 +44,6 @@ O.CouplingType     = CouplingList{CouplingModelIndex};
 
 O.Beta_NN       = str2double(get(hGUIs.Beta_NN      ,'String'));
 O.PCutOff       = str2double(get(hGUIs.PCutOff ,'String'));
-
-
-
-O.LineWidth     = str2double(get(hGUIs.LineWidth    ,'String'));
-
-Signal_Type = get(hGUIs.Sig_Type,'Value');
-switch Signal_Type
-    case 1 % heterodyne
-        O.Signal_Type = 'Hetero';
-    case 2 % homodyne
-        O.Signal_Type = 'Homo';
-end
-
-Pathway = get(hGUIs.Pathway,'Value');
-switch Pathway
-    case 1
-        O.Pathway = 'All';
-    case 2
-        O.Pathway = 'GB';
-    case 3
-        O.Pathway = 'SE';
-    case 4
-        O.Pathway = 'EA';
-end
 % -------------------------------------------------------------------------
 
 % For Figures -------------------------------------------------------------
@@ -77,11 +53,13 @@ O.PlotNorm     =            get(hGUIs.PlotNorm    ,'Value');
 O.PlotCursor   =            get(hGUIs.PlotCursor  ,'Value');
 O.CMAP_Index   =            get(hGUIs.CMAP_Index  ,'Value');
 
-O.F_Min     = str2double(get(hGUIs.X_Min,'String'));
-O.F_Max     = str2double(get(hGUIs.X_Max,'String'));
+O.F_Min     = str2double(get(hGUIs.F_Min,'String'));
+O.F_Max     = str2double(get(hGUIs.F_Max,'String'));
 O.FreqRange = O.F_Min:O.F_Max;
 
-LineShape = get(hGUIs.LineShape,'Value');
+
+O.LineWidth = str2double(get(hGUIs.LineWidth    ,'String'));
+LineShape   =            get(hGUIs.LineShape,'Value');
 switch LineShape
     case 1
         O.LineShape = 'G';
@@ -101,6 +79,26 @@ switch SpecType
         O.SpecType = 'R';
     case 3
         O.SpecType = 'NR';
+end
+
+Signal_Type = get(hGUIs.Signal_Type,'Value');
+switch Signal_Type
+    case 1 % heterodyne
+        O.Signal_Type = 'Hetero';
+    case 2 % homodyne
+        O.Signal_Type = 'Homo';
+end
+
+Pathway = get(hGUIs.Pathway,'Value');
+switch Pathway
+    case 1
+        O.Pathway = 'All';
+    case 2
+        O.Pathway = 'GB';
+    case 3
+        O.Pathway = 'SE';
+    case 4
+        O.Pathway = 'EA';
 end
 % -------------------------------------------------------------------------
 

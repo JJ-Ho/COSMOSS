@@ -76,6 +76,7 @@ mu_Mol_G09    = Monomer.TDV; % size [3 x N]
 alpha_Mol_G09 = Monomer.Raman_V; % note: RamanV = [9 x N], index: [xx xy xz yx yy yz zx zy zz]
 Center_Ind    = Monomer.Center_Ind;
 %Freq_G09      = Gaussian_Input.Freq;
+Atom_Name_G09 = Monomer.Atom_Name;
 
 % % shift monomer to origin
 % XYZ = bsxfun(@minus,XYZ,sum(XYZ,1)/Atom_Num);
@@ -128,6 +129,9 @@ end
 
 XYZ_Grid = reshape(permute(XYZ_Grid_M,[1,3,4,2]),[],3);
 
+%% Extend Atom_Name
+Atom_Name = repmat(Atom_Name_G09,Num_Modes,1);
+
 %% Make debug figure
 
 % Atom_Num_NM = Atom_Num*N_1*N_2;
@@ -152,7 +156,7 @@ XYZ_Grid = reshape(permute(XYZ_Grid_M,[1,3,4,2]),[],3);
 % axis equal
 
 %% Create Translational copy of Center
-Center_Ind = 7;
+% Center_Ind = 7;
 
 Center_M = sum(XYZ_Grid_M(Center_Ind,:,:,:),1);
 Center = reshape(permute(Center_M,[1,3,4,2]),[],3);
@@ -195,3 +199,4 @@ Output.N_Vec1       = N_1;
 Output.N_Vec2       = N_2;
 Output.Vec_1        = Vec_1;
 Output.Vec_2        = Vec_2;
+Output.Atom_Name    = Atom_Name;

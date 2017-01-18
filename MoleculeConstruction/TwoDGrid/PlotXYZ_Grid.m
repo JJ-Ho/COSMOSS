@@ -56,23 +56,21 @@ Center_LF = (R_MF_LF*Center_MF')';
 N_Vec1 = Structure.N_Vec1;
 N_Vec2 = Structure.N_Vec2;
 
-%% Decide connectivity
-Num_Modes = Structure.Num_Modes;
-Atom_Num  = Structure.Monomer.Atom_Num;
-
+%% Decide atoms types
 Carbon_Pos   = XYZ_LF(Structure.AtomSerNo(:,1),:);
 O_Double_Pos = XYZ_LF(Structure.AtomSerNo(:,2),:);
 O_Single_Pos = XYZ_LF(Structure.AtomSerNo(:,3),:);
+
+%% Decide connectivity
+Num_Modes = Structure.Num_Modes;
+Atom_Num  = Structure.Monomer.Atom_Num;
+Atom_Name = Structure.Atom_Name;
 
 hF = figure;
 hold on
     %% draw bonds
     if Plot_Bonds
-        Conn      = Connectivity(XYZ_LF);
-        % Add S-C connection for Ester
-        for k = 1:Num_Modes
-            Conn(13+(k-1)*Atom_Num,3+(k-1)*Atom_Num) = 1; 
-        end
+        Conn = Connectivity_New(Atom_Name,XYZ_LF);
         gplot3(Conn,XYZ_LF);
     end
     

@@ -10,9 +10,9 @@
 [Mode_Num] 1
 
 % XYZ, from std input of Freq output file
-[Atom] O    -1.06454    0.72802    0.00276
-[Atom] H    -0.07521    0.68542   -0.00195
-[Atom] H    -1.35390   -0.21328   -0.10125
+[Atom] O     0.000000    0.121237    0.000000
+[Atom] H     0.783034   -0.484955    0.000000
+[Atom] H    -0.783034   -0.484940    0.000000
 
 
 % Define New Molecule Orientation

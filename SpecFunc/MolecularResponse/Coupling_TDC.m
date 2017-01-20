@@ -1,4 +1,4 @@
-function Beta = Coupling_TDC(S)
+function [Beta,DistM] = Coupling_TDC(S)
 %% Reassign variable names from StrucInfo
 Num_Modes = S.Num_Modes;
 Center    = S.center;
@@ -32,3 +32,6 @@ Beta = reshape(Beta,Num_Modes,Num_Modes);
 
 Beta(isnan(Beta)) = 0; % Get ride of diagnal
 Beta = (Beta+Beta')./2; % remove numerical error, make the matrix exactly symmetric
+
+%% Construct distance matrix
+DistM = reshape(sqrt(sum(ModeDistVec.^2,2)),Num_Modes,Num_Modes);

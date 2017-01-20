@@ -34,11 +34,14 @@ if isstruct(StrucInfo)
 
         case 'NN_Mix_TDC'
             N_Modes = StrucInfo.Num_Modes;
-            Beta    = Coupling_TDC(StrucInfo);
-            Beta_NN = bsxfun(@times,ones(N_Modes-1,1),StrucInfo.Beta_NN);
+            [Beta,DistM] = Coupling_TDC(StrucInfo);
             
-            Beta(logical(diag(ones(N_Modes-1,1), 1))) = Beta_NN;
-            Beta(logical(diag(ones(N_Modes-1,1),-1))) = Beta_NN;
+            %Beta_NN = bsxfun(@times,ones(N_Modes-1,1),StrucInfo.Beta_NN);
+            %Beta(logical(diag(ones(N_Modes-1,1), 1))) = Beta_NN;
+            %Beta(logical(diag(ones(N_Modes-1,1),-1))) = Beta_NN;
+            
+            DistCutOff = 4;
+            Beta(DistM < DistCutOff) = StrucInfo.Beta_NN;
             
         case 'NN_Mix_TDC_Betasheet'
             % this is for betasheet only

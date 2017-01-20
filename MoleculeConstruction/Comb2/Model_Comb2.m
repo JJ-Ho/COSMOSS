@@ -294,8 +294,10 @@ TDV2_R = Conc_Scaling .* (RM*TDV2')';
 M_TDV = [TDV1;TDV2_R];
 
 % alpha matrix
-Raman_Matrix1 = StrucData1.alpha_matrix;
-Raman_Matrix2 = StrucData2.alpha_matrix;
+Raman_Matrix1 = reshape(StrucData1.alpha,[],3,3);
+Raman_Matrix2 = reshape(StrucData2.alpha,[],3,3);
+% Raman_Matrix1 = StrucData1.alpha_matrix;
+% Raman_Matrix2 = StrucData2.alpha_matrix;
 Num_Modes2    = StrucData2.Num_Modes;
 
 Raman_Matrix2_R = zeros(size(Raman_Matrix2));

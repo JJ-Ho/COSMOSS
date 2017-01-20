@@ -47,6 +47,8 @@ O.PCutOff       = str2double(get(hGUIs.PCutOff ,'String'));
 % -------------------------------------------------------------------------
 
 % For Figures -------------------------------------------------------------
+O.SaveFig      =            get(hGUIs.SaveFig     ,'Value');
+O.SavePath     =            get(hGUIs.SavePath    ,'String');
 O.Num_Contour  = str2double(get(hGUIs.Num_Contour ,'String'));
 O.PlotStick    =            get(hGUIs.PlotStick   ,'Value');
 O.PlotNorm     =            get(hGUIs.PlotNorm    ,'Value');

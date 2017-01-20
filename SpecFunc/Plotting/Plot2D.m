@@ -22,12 +22,16 @@ INPUT = inputParser;
 INPUT.KeepUnmatched = 1;
 
 % Default values
+defaultSaveFig     = 0;
+defaultSavePath    = '~/Desktop/';
 defaultFreqRange   = 1600:1800;
 defaultNum_Contour = 20;
 defaultPlotCursor  = 0;
 defaultCMAP_Index  = 1;
 
 % add Optional inputs / Parameters
+addOptional(INPUT,'SaveFig'    ,defaultSaveFig);
+addOptional(INPUT,'SavePath'   ,defaultSavePath);
 addOptional(INPUT,'FreqRange'  ,defaultFreqRange);
 addOptional(INPUT,'Num_Contour',defaultNum_Contour);
 addOptional(INPUT,'PlotCursor' ,defaultPlotCursor);
@@ -36,6 +40,8 @@ addOptional(INPUT,'CMAP_Index' ,defaultCMAP_Index);
 parse(INPUT,GUI_Inputs_C{:});
 
 % Re-assign variable names
+SaveFig     = INPUT.Results.SaveFig;
+SavePath    = INPUT.Results.SavePath;
 FreqRange   = INPUT.Results.FreqRange;
 Num_Contour = INPUT.Results.Num_Contour;
 PlotCursor  = INPUT.Results.PlotCursor;
@@ -99,3 +105,12 @@ if PlotCursor
 end
 
 title(Title_String,'FontSize',16);
+
+%% Auto Save
+if SaveFig
+    timeStamp    = datetime('now','TimeZone','local');
+    timeSamepStr = datestr(timeStamp,'yymmdd_HH-MM-SS');
+    FigName      = [SpecType,'_',FilesName_Reg,'_',timeSamepStr];
+    
+    SaveFigures(hF,SavePath,FigName)
+end

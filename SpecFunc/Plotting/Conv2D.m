@@ -164,4 +164,5 @@ switch SpecType
         CVL.selected_No_Conv = CVL.NR_No_Conv;
 end
 
-
+% export the frequency array that the Specteal grid has
+CVL.FreqRange = FreqRange;

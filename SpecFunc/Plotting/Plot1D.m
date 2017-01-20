@@ -31,10 +31,10 @@ INPUT = inputParser;
 INPUT.KeepUnmatched = 1;
 
 % Default values
+defaultSaveFig      = 0;
+defaultSavePath     = '~/Desktop/';
 defaultPlotStick    = 1;
 defaultPlotNorm     = 0;
-% defaultF_Min        = 1600;
-% defaultF_Max        = 1800;
 defaultLineWidth    = 5;
 defaultSignal_Type  = 'Hetero';
 defaultLineShape    = 'L';
@@ -43,10 +43,10 @@ defaultIntegralArea = 0;
 defaultFreqRange    = 1650:1750;
 
 % add Optional inputs / Parameters
+addOptional(INPUT,'SaveFig'     ,defaultSaveFig);
+addOptional(INPUT,'SavePath'    ,defaultSavePath);
 addOptional(INPUT,'PlotStick'   ,defaultPlotStick);
 addOptional(INPUT,'PlotNorm'    ,defaultPlotNorm);
-% addOptional(INPUT,'F_Min'       ,defaultF_Min);
-% addOptional(INPUT,'F_Max'       ,defaultF_Max);
 addOptional(INPUT,'LineWidth'   ,defaultLineWidth);
 addOptional(INPUT,'Signal_Type' ,defaultSignal_Type);
 addOptional(INPUT,'LineShape'   ,defaultLineShape);
@@ -57,10 +57,10 @@ addOptional(INPUT,'FreqRange'   ,defaultFreqRange);
 parse(INPUT,GUI_Inputs_C{:});
 
 % Re-assign variable names
+SaveFig      = INPUT.Results.SaveFig;
+SavePath     = INPUT.Results.SavePath;
 PlotStick    = INPUT.Results.PlotStick;
 PlotNorm     = INPUT.Results.PlotNorm;
-% F_Min        = INPUT.Results.F_Min;
-% F_Max        = INPUT.Results.F_Max;
 LineWidth    = INPUT.Results.LineWidth;
 Signal_Type  = INPUT.Results.Signal_Type;
 LineShape    = INPUT.Results.LineShape;
@@ -185,3 +185,11 @@ if IntegralArea
     % title(Title,'FontSize',16);
 end
 
+%% Auto Save
+if SaveFig
+    timeStamp    = datetime('now','TimeZone','local');
+    timeSamepStr = datestr(timeStamp,'yymmdd_HH-MM-SS');
+    FigName      = [OneD_Data.SpecType,'_',FilesName_Reg,'_',timeSamepStr];
+    
+    SaveFigures(hF,SavePath,FigName)
+end

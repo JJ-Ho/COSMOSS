@@ -6,7 +6,7 @@ function hF = Diag_Cut(GUI_Inputs,TwoD_Data)
 % TwoD_Data = Data_COSMOSS.TwoDIR;
 
 %% Extract info from 2D data
-FreqRange  = GUI_Inputs.FreqRange;
+FigFreqRange  = GUI_Inputs.FreqRange;
 PlotCursor = GUI_Inputs.PlotCursor;
 
 C  = TwoD_Data.CVL.selected;
@@ -14,9 +14,11 @@ SS = TwoD_Data.CVL.selected_No_Conv;
 SI = TwoD_Data.Int;
 F  = TwoD_Data.Freq;
 
+GridFreqRange  = TwoD_Data.CVL.FreqRange;
+
 %% Extract convoluted H-Cut
-C_Cut_X = FreqRange;
-F_Min = FreqRange(1);
+C_Cut_X = GridFreqRange;
+F_Min = GridFreqRange(1);
 
 % C_Ind = Cut_F - F_Min + 1;
 C_Cut_Y = diag(real(C));
@@ -73,7 +75,7 @@ for i = 1:length(Type)
 end
 
 %% Extract summed sticks
-SS_X = FreqRange;
+SS_X = GridFreqRange;
 SS_Y = diag(SS);
 
 SS_Ind = gt(abs(SS_Y),0);
@@ -158,7 +160,7 @@ hF.Units = 'normalized'; % use normalized scale
 
 % Individule Stick subplot
 hAx_SI.FontSize = 14;
-hAx_SI.XLim = [C_Cut_X(1);C_Cut_X(end)];
+hAx_SI.XLim = [FigFreqRange(1);FigFreqRange(end)];
 % hAx_SI.XTickLabel = '';
 hAx_SI.XGrid = 'on';
 hAx_SI.YGrid = 'on';
@@ -176,7 +178,7 @@ hAx_SI.YLabel.String = 'Stick Intensity';
 
 % Stick sum subplot
 hAx_SS.FontSize = 14;
-hAx_SS.XLim = [C_Cut_X(1);C_Cut_X(end)];
+hAx_SS.XLim = [FigFreqRange(1);FigFreqRange(end)];
 hAx_SS.XLabel.String = 'cm^{-1}';
 hAx_SS.XGrid = 'on';
 hAx_SS.YGrid = 'on';
@@ -203,5 +205,17 @@ if PlotCursor
     title(hAx_SS,Title_String,'FontSize',16);
 else
     title(hAx_SI,Title_String,'FontSize',16);
+end
+
+%% Auto Save
+SaveFig    = GUI_Inputs.SaveFig;
+SavePath   = GUI_Inputs.SavePath;
+
+if SaveFig
+    timeStamp    = datetime('now','TimeZone','local');
+    timeSamepStr = datestr(timeStamp,'yymmdd_HH-MM-SS');
+    FigName      = [SpecType,'_DCut',timeSamepStr];
+    
+    SaveFigures(hF,SavePath,FigName)
 end
 

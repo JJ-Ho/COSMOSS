@@ -126,7 +126,6 @@ disp('Updated GUI Data_COSMOSS exported!')
 
 
 %% helper functions -------------------------------------------------------
-
 function onListSelection(hObject, eventdata, GUI_data)
 StructModel           = get(GUI_data.hGUIs.StructListBox,'Value');
 [fhModel,ModelList,~] = StructureModel(StructModel);
@@ -162,12 +161,37 @@ Refresh.TwoDSFG = Refresh.TwoDSFG + 1;
 GUI_data.Refresh = Refresh;
 guidata(GUI_data.hCOSMOSS,GUI_data);
 
-%% helper functions -------------------------------------------------------
+function Toggle_Fig_Save_Callback(hObject,eventdata,handles)
+% hObject    handle to togglebutton1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of togglebutton1
+
+button_state = get(hObject,'Value');
+
+if button_state
+	set(handles.hGUIs.PlotCursor,'Value',0)
+end
+
+function Toggle_Fig_DataCursor_Callback(hObject,eventdata,handles)
+% hObject    handle to togglebutton1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of togglebutton1
+
+button_state = get(hObject,'Value');
+
+if button_state
+	set(handles.hGUIs.SaveFig,'Value',0)
+end
+
+% helper functions --------------------------------------------------------
 
 
 
 %% Spectral calculation functions -----------------------------------------
-
 function FTIR_Callback(hObject, eventdata, GUI_data)
 % update the laser seeting tab
 hGUIs = GUI_data.hGUIs;
@@ -419,12 +443,11 @@ TwoDSFG.SpecType    = '2DSFG';
 GUI_data.TwoDSFG = TwoDSFG;
 guidata(hObject,GUI_data);
 
-%% Spectral calculation functions -----------------------------------------
+% Spectral calculation functions ------------------------------------------
 
 
 
 %% Analysis Tools ---------------------------------------------------------
-
 function HCut_Callback(hObject, eventdata, GUI_data)
 %% Main
 GUI_Inputs = ParseGUI_Main(GUI_data.hGUIs);
@@ -471,6 +494,6 @@ DiagCut.hF_DiagCut = hF_DiagCut;
 GUI_data.DiagCut = DiagCut;
 guidata(hObject,GUI_data);
 
-%% Analysis Tools ---------------------------------------------------------
+% Analysis Tools ---------------------------------------------------------
 
 

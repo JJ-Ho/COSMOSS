@@ -1,5 +1,10 @@
 function SaveFigures(hF,PathName,FileName)
 
+% check if the folder exixt
+if ~exist(PathName,'dir')
+    mkdir(PathName)
+end
+
 SaveName = [PathName,'/',FileName];
 savefig(hF,SaveName)
 saveas (hF,SaveName,'png')

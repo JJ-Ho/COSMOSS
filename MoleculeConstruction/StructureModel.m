@@ -1,3 +1,4 @@
+
 function [hModel, ModelList, hPlotFunc, hGUIParser] = StructureModel(StructModel)
 %% List 
 ModelList = {'1:Two coupled oscillators',...

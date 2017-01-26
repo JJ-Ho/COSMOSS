@@ -188,6 +188,7 @@ else
 end
 
 %% output to GUI
+GUI_data.PDB.OrigPDB   = PDB;
 GUI_data.PDB.Num_Atoms = Num_Atoms;
 GUI_data.PDB.XYZ       = XYZ;
 GUI_data.PDB.AtomName  = AtomName;

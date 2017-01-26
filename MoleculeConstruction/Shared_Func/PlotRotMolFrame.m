@@ -1,7 +1,7 @@
 function PlotRotMolFrame(hAx,Lab_Frame,R_MF_LF,COA)
 
 %% Draw rotated molecular frame
-Frame_scale = 5;
+Frame_scale = 2;
 
 Lab_Frame_S = Frame_scale.*Lab_Frame;
 Mol_Frame_S  = (R_MF_LF\Lab_Frame_S')'; % inverse rotation for axes

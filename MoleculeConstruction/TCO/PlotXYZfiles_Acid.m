@@ -37,90 +37,96 @@ INPUT = inputParser;
 INPUT.KeepUnmatched = 1;
 
 % Default values
-defaultAvg_Phi    = 0;
-defaultAvg_Theta  = 0;
-defaultAvg_Psi    = 0;
+% defaultAvg_Phi    = 0;
+% defaultAvg_Theta  = 0;
+% defaultAvg_Psi    = 0;
 defaultPlot_Atoms = 1;
 defaultPlot_Bonds = 1;
 defaultPlot_Axis  = 1;
 
 % Add optional inputs to inputparser object
-addOptional(INPUT,'Avg_Phi'   ,defaultAvg_Phi);
-addOptional(INPUT,'Avg_Theta' ,defaultAvg_Theta);
-addOptional(INPUT,'Avg_Psi'   ,defaultAvg_Psi);
+% addOptional(INPUT,'Avg_Phi'   ,defaultAvg_Phi);
+% addOptional(INPUT,'Avg_Theta' ,defaultAvg_Theta);
+% addOptional(INPUT,'Avg_Psi'   ,defaultAvg_Psi);
 addOptional(INPUT,'Plot_Atoms',defaultPlot_Atoms);
 addOptional(INPUT,'Plot_Bonds',defaultPlot_Bonds);
 addOptional(INPUT,'Plot_Axis' ,defaultPlot_Axis);
 
 parse(INPUT,GUI_Inputs_C{:});
 
-Avg_Phi    = INPUT.Results.Avg_Phi;
-Avg_Theta  = INPUT.Results.Avg_Theta;
-Avg_Psi    = INPUT.Results.Avg_Psi;
+% Avg_Phi    = INPUT.Results.Avg_Phi;
+% Avg_Theta  = INPUT.Results.Avg_Theta;
+% Avg_Psi    = INPUT.Results.Avg_Psi;
 Plot_Atoms = INPUT.Results.Plot_Atoms;
 Plot_Bonds = INPUT.Results.Plot_Bonds;
 Plot_Axis  = INPUT.Results.Plot_Axis;
 
 %% Rotate the molecule to Lab frame
 
-XYZ_MF          = Struc_Data.XYZ;
-Center_MF       = Struc_Data.center;
-Displacement_MF = Struc_Data.Displacement;
+XYZ       = Struc_Data.XYZ;
+AtomName  = Struc_Data.AtomName;
+COM       = Struc_Data.COM;
+LocCenter = Struc_Data.LocCenter;
 
-% Orientation = Orientation/180*pi; % turn to radius unit
-Avg_Phi_R   =   Avg_Phi/180*pi;
-Avg_Psi_R   =   Avg_Psi/180*pi;
-Avg_Theta_R = Avg_Theta/180*pi;
+% % Orientation = Orientation/180*pi; % turn to radius unit
+% Avg_Phi_R   =   Avg_Phi/180*pi;
+% Avg_Psi_R   =   Avg_Psi/180*pi;
+% Avg_Theta_R = Avg_Theta/180*pi;
+% 
+% R_MF_LF = R1_ZYZ_0(Avg_Phi_R,Avg_Psi_R,Avg_Theta_R);
+% 
+% XYZ_LF = (R_MF_LF*XYZ_MF')';
+% Center_LF = (R_MF_LF*Center_MF')';
+% Displacement_LF = (R_MF_LF*Displacement_MF')';
 
-R_MF_LF = R1_ZYZ_0(Avg_Phi_R,Avg_Psi_R,Avg_Theta_R);
-
-XYZ_LF = (R_MF_LF*XYZ_MF')';
-Center_LF = (R_MF_LF*Center_MF')';
-Displacement_LF = (R_MF_LF*Displacement_MF')';
 
 %% Define C,OD,OS atom position
-Carbon_Pos   = XYZ_LF(Struc_Data.AtomSerNo(:,1),:);
-OxygenD_Pos  = XYZ_LF(Struc_Data.AtomSerNo(:,2),:);
-OxygenS_Pos  = XYZ_LF(Struc_Data.AtomSerNo(:,3),:);
-Hydrogen_Pos = XYZ_LF(Struc_Data.AtomSerNo(:,4),:);
+% Carbon_Pos   = XYZ(Struc_Data.AtomSerNo(:,1),:);
+% OxygenD_Pos  = XYZ(Struc_Data.AtomSerNo(:,2),:);
+% OxygenS_Pos  = XYZ(Struc_Data.AtomSerNo(:,3),:);
+% Hydrogen_Pos = XYZ(Struc_Data.AtomSerNo(:,4),:);
 
 hF = figure; 
 hold on
 
     %% draw bonds
     if Plot_Bonds
-        Conn = Connectivity(XYZ_LF);
+        Conn = Connectivity_New(AtomName,XYZ);
+        %Conn = Connectivity(XYZ);
             % add line between the two Carbon
             Conn(1,5) = 1;
             Conn(5,1) = 1;
 
-        gplot3(Conn,XYZ_LF);
+        gplot3(Conn,XYZ);
     end
     %%  Draw atoms
     if Plot_Atoms
-        plot3(Center_LF(:,1)  ,Center_LF(:,2)  ,Center_LF(:,3)  ,'LineStyle','none','Marker','d','MarkerFaceColor','w','MarkerSize',10)
-        plot3(Carbon_Pos(:,1)  ,Carbon_Pos(:,2)  ,Carbon_Pos(:,3)  ,'LineStyle','none','Marker','o','MarkerFaceColor','k','MarkerSize',10)
-        plot3(OxygenD_Pos(:,1) ,OxygenD_Pos(:,2) ,OxygenD_Pos(:,3) ,'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',10)
-        plot3(OxygenS_Pos(:,1) ,OxygenS_Pos(:,2) ,OxygenS_Pos(:,3) ,'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',10)
-        plot3(Hydrogen_Pos(:,1),Hydrogen_Pos(:,2),Hydrogen_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,1,1],'MarkerSize',10)
+        plot3(LocCenter(:,1)  ,LocCenter(:,2)  ,LocCenter(:,3)  ,'LineStyle','none','Marker','d','MarkerFaceColor','w','MarkerSize',10)
+        
+        C_Ind = strcmp(AtomName,'C');
+        O_Ind = strcmp(AtomName,'O');
+        H_Ind = strcmp(AtomName,'H');
+        plot3(XYZ(C_Ind,1),XYZ(C_Ind,2),XYZ(C_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,0],'MarkerSize',10)
+        plot3(XYZ(O_Ind,1),XYZ(O_Ind,2),XYZ(O_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',10)
+        plot3(XYZ(H_Ind,1),XYZ(H_Ind,2),XYZ(H_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,1,1],'MarkerSize',10)        
     end
     
     %% figure setting 
     hAx = findobj(hF,'type','axes');
 
-    LL = 5;
-    Orig_Box = [-LL,LL,-LL,LL,-LL,LL];
-
-    XMin = min( Orig_Box(1),Orig_Box(1)+ Displacement_LF(1));
-    XMax = max( Orig_Box(2),Orig_Box(2)+ Displacement_LF(1));
-    YMin = min( Orig_Box(3),Orig_Box(3)+ Displacement_LF(2));
-    YMax = max( Orig_Box(4),Orig_Box(4)+ Displacement_LF(2));
-    ZMin = min( Orig_Box(5),Orig_Box(5)+ Displacement_LF(3));
-    ZMax = max( Orig_Box(6),Orig_Box(6)+ Displacement_LF(3));
-
-    hAx.XLim = [XMin,XMax];
-    hAx.YLim = [YMin,YMax];
-    hAx.ZLim = [ZMin,ZMax];
+%     LL = 5;
+%     Orig_Box = [-LL,LL,-LL,LL,-LL,LL];
+% 
+%     XMin = min( Orig_Box(1),Orig_Box(1)+ Displacement_LF(1));
+%     XMax = max( Orig_Box(2),Orig_Box(2)+ Displacement_LF(1));
+%     YMin = min( Orig_Box(3),Orig_Box(3)+ Displacement_LF(2));
+%     YMax = max( Orig_Box(4),Orig_Box(4)+ Displacement_LF(2));
+%     ZMin = min( Orig_Box(5),Orig_Box(5)+ Displacement_LF(3));
+%     ZMax = max( Orig_Box(6),Orig_Box(6)+ Displacement_LF(3));
+% 
+%     hAx.XLim = [XMin,XMax];
+%     hAx.YLim = [YMin,YMax];
+%     hAx.ZLim = [ZMin,ZMax];
 
     rotate3d on
     grid on
@@ -132,6 +138,8 @@ hold on
 
     view([0,0])
     
+    axis equal
+    
     %% Draw molecular and Lab frame
     if Plot_Axis
         %hAx = findobj(hF,'type','axes');
@@ -139,11 +147,12 @@ hold on
                      0,1,0;
                      0,0,1 ];
                  
-        Box_Cornor = [hAx.XLim(1),hAx.YLim(1),hAx.ZLim(1)];
-        Box_length = [hAx.XLim(2),hAx.YLim(2),hAx.ZLim(2)] - [hAx.XLim(1),hAx.YLim(1),hAx.ZLim(1)];
-        COA = Box_Cornor + (0.1).*Box_length;
+        %Box_Cornor = [hAx.XLim(1),hAx.YLim(1),hAx.ZLim(1)];
+        %Box_length = [hAx.XLim(2),hAx.YLim(2),hAx.ZLim(2)] - [hAx.XLim(1),hAx.YLim(1),hAx.ZLim(1)];
+        %COA = Box_Cornor + (0.1).*Box_length;
         
-        PlotRotMolFrame(hAx,Lab_Frame,R_MF_LF,COA)
+        R_MF_LF = Lab_Frame;
+        PlotRotMolFrame(hAx,Lab_Frame,R_MF_LF,COM)
     end
     
 hold off

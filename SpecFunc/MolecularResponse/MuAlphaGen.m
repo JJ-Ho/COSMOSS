@@ -1,4 +1,4 @@
-function Output = MuAlphaGen(PDB_Data,H,varargin)
+function Output = MuAlphaGen(SData,H,varargin)
 %% MuAlphaGen 
 % 
 % This Script generate mu and alpha matrix in local mode basis. According
@@ -54,16 +54,16 @@ Mode = INPUT.Results.Mode;
 
 switch Mode   
     case 'Mu'
-       Trans_Moment = PDB_Data.mu; % size [N x 3]
+       Trans_Moment = SData.LocMu; % size [N x 3]
        
     case 'Alpha'  
-       Trans_Moment = PDB_Data.alpha; % note: RamanV = [N x 9], index: [xx xy xz yx yy yz zx zy zz]
+       Trans_Moment = SData.LocAlpha; % note: RamanV = [N x 9], index: [xx xy xz yx yy yz zx zy zz]
 end
 
 M = size(Trans_Moment,2);
 
 %% reassign variable names
-N      = PDB_Data.Num_Modes;
+N      = SData.Nmodes;
 ExMode = H.ExMode;
 
 % Zero to One exciton transition

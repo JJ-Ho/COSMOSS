@@ -1,4 +1,4 @@
-function Output = FTIR_Main(PDB_Data,GUI_Inputs)
+function Output = FTIR_Main(SData,GUI_Inputs)
 %% PlotFTIR
 %  
 % Given one exciton alpha, mu matrix and respective one exciton state
@@ -57,23 +57,23 @@ Beta_NN      = INPUT.Results.Beta_NN;
 FreqRange    = INPUT.Results.FreqRange;
 
 %% Main
-Num_Modes = PDB_Data.Num_Modes;
+Nmodes = SData.Nmodes;
 
-H = ExcitonH(PDB_Data,...
+H = ExcitonH(SData,...
             'ExMode','OneEx',...
             'CouplingType',CouplingType,...
             'Beta_NN',Beta_NN);
 
 % Mu = MuAlphaGen_full_M(PDB_Data,H,'Mode','Mu');
 % muEx = Mu.Trans_Ex;
-% M_Ex_01 = muEx(2:Num_Modes+1,1,:);
+% M_Ex_01 = muEx(2:Nmodes+1,1,:);
 % Freq01ExEx_F1 = H.Sort_Ex_Freq;
-% Ex_F1 = Freq01ExEx_F1(2:Num_Modes+1);
+% Ex_F1 = Freq01ExEx_F1(2:Nmodes+1);
 % Ex_F1 = round(Ex_F1); % bin the fre to 1cm^-1
 % mu2_OneD = sum(M_Ex_01.^2,3); % E-field of FTIR signal is mu^2 base on feynmann diagram! 
 
 
-Mu = MuAlphaGen(PDB_Data,H,'Mode','Mu');
+Mu = MuAlphaGen(SData,H,'Mode','Mu');
 
 Ex_F1   = H.Sort_Ex_F1;
 M_Ex_01 = Mu.M_Ex_01;
@@ -84,11 +84,11 @@ Response = sum(M_Ex_01.^2,2); % E-field of FTIR signal is mu^2 base on feynmann 
 AccuGrid = Bin1D(Ex_F1,Response,FreqRange);
 
 %% Output
-Output.Num_Modes    = Num_Modes;
+Output.Nmodes    = Nmodes;
 Output.Response1D   = AccuGrid;
 Output.freq_OneD    = FreqRange;
 Output.SpecType     = 'FTIR';
-Output.FilesName    = PDB_Data.FilesName;
+Output.FilesName    = SData.FilesName;
 Output.CouplingType = CouplingType;
 Output.H            = H;
 Output.Mu           = Mu;

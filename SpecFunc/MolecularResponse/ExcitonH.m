@@ -1,4 +1,4 @@
-function Output= ExcitonH(StrucInfo,varargin)
+function Output= ExcitonH(SData,varargin)
 
 %% TwoExcitonH
 %  
@@ -71,9 +71,9 @@ function Output= ExcitonH(StrucInfo,varargin)
 %% Initiation part
 
 % Reassign variable names from StrucInfo
-Num_Modes  = StrucInfo.Num_Modes;
-Freq       = StrucInfo.freq;
-Anharm     = StrucInfo.anharm;
+Nmodes    = SData.Nmodes;
+LocFreq   = SData.LocFreq;
+LocAnharm = SData.LocAnharm;
 
 %% Inputs parser
 INPUT = inputParser;
@@ -107,9 +107,9 @@ OffDiagDisorder = INPUT.Results.OffDiagDisorder;
 Beta_NN         = INPUT.Results.Beta_NN;
 
 if strcmp(ExMode,'TwoEx')
-    StatesNum = (Num_Modes+2)*(Num_Modes+1)/2; 
+    StatesNum = (Nmodes+2)*(Nmodes+1)/2; 
 else
-    StatesNum = (Num_Modes+1); 
+    StatesNum = (Nmodes+1); 
 end
 
 %% Zero exciton part of full Hamiltonain 
@@ -117,48 +117,47 @@ ZeroExPart = 0;
 
 %% One Exciton part of full Hamiltonian
 
-StrucInfo.Beta_NN = Beta_NN; 
-Beta = Coupling(StrucInfo,CouplingType);
+Beta = Coupling(SData,CouplingType,Beta_NN);
 
 % off diagonal disorder
-OffDisorder = sqrt(OffDiagDisorder)*randn(Num_Modes);
+OffDisorder = sqrt(OffDiagDisorder)*randn(Nmodes);
 OffDisorder = (OffDisorder + OffDisorder')./2; % symetrize
 
 Beta = Beta + OffDisorder;
 
 % The result is in cm-1 unit
-OneExPart = bsxfun(@times,eye(Num_Modes),Freq) + Beta;
+OneExPart = bsxfun(@times,eye(Nmodes),LocFreq) + Beta;
 
 %% Two Exciton block diag part of full Hamiltonian (TwoExOvertoneH & TwoExCombinationH)
 if strcmp(ExMode,'TwoEx')
 
     %- Pre-allocate the total matrix size
-    TwoExPart = zeros(StatesNum-1-Num_Modes,StatesNum-1-Num_Modes);
+    TwoExPart = zeros(StatesNum-1-Nmodes,StatesNum-1-Nmodes);
 
     %- Two Exciton Overtone Hamiltonian, TwoExOvertoneH
-    TwoExPart(1:Num_Modes,1:Num_Modes) = diag(2*Freq-Anharm);
+    TwoExPart(1:Nmodes,1:Nmodes) = diag(2*LocFreq-LocAnharm);
 
     %- Two Exciton Combination Hamiltonian, TwoExCombinationH
-    NumOfElementInBolcks = Num_Modes-1:-1:1;
-    TEDIndexEnd = zeros(Num_Modes-1,1);
-    TEDIndexBegin = zeros(Num_Modes-1,1);
+    NumOfElementInBolcks = Nmodes-1:-1:1;
+    TEDIndexEnd = zeros(Nmodes-1,1);
+    TEDIndexBegin = zeros(Nmodes-1,1);
 
-    for L=1:Num_Modes-1
+    for L=1:Nmodes-1
         TEDIndexEnd(L) = sum(NumOfElementInBolcks(1:L)); % TED =TwoExCombination
         TEDIndexBegin(L) = TEDIndexEnd(L) - NumOfElementInBolcks(L) + 1;
     end
 
     % Shift index for accomdation of TwoExOvertoneH
-    TEDIndexBegin = TEDIndexBegin+Num_Modes;
-    TEDIndexEnd = TEDIndexEnd+Num_Modes;
+    TEDIndexBegin = TEDIndexBegin+Nmodes;
+    TEDIndexEnd = TEDIndexEnd+Nmodes;
 
     % Off-block-Diagonal, Lower triangular part, of TwoExCombinationH
-    for k2=1:Num_Modes-1
-        for k1=k2+1:Num_Modes-1
+    for k2=1:Nmodes-1
+        for k1=k2+1:Nmodes-1
 
-            TempOffDiagMatrix = zeros(Num_Modes-k1,Num_Modes-k2);
+            TempOffDiagMatrix = zeros(Nmodes-k1,Nmodes-k2);
             TempOffDiagMatrix(:,k1-k2) = Beta(k1+1:end,k2);
-            TempOffDiagMatrix(:,k1-k2+1:end) = eye(Num_Modes-k1)*Beta(k1,k2);
+            TempOffDiagMatrix(:,k1-k2+1:end) = eye(Nmodes-k1)*Beta(k1,k2);
 
             TwoExPart(TEDIndexBegin(k1):TEDIndexEnd(k1),TEDIndexBegin(k2):TEDIndexEnd(k2))...
                 = TempOffDiagMatrix;
@@ -166,12 +165,12 @@ if strcmp(ExMode,'TwoEx')
     end
 
     % Off-block-Diagonal, Upper triangular part of TwoExCombinationH
-    for k2=2:Num_Modes-1
+    for k2=2:Nmodes-1
         for k1=1:k2-1
 
-            TempOffDiagMatrix = zeros(Num_Modes-k1,Num_Modes-k2);
+            TempOffDiagMatrix = zeros(Nmodes-k1,Nmodes-k2);
             TempOffDiagMatrix(k2-k1,:) = Beta(k2+1:end,k1);
-            TempOffDiagMatrix(k2-k1+1:end,:) = eye(Num_Modes-k2)*Beta(k2,k1);
+            TempOffDiagMatrix(k2-k1+1:end,:) = eye(Nmodes-k2)*Beta(k2,k1);
 
             TwoExPart(TEDIndexBegin(k1):TEDIndexEnd(k1),TEDIndexBegin(k2):TEDIndexEnd(k2))...
                 = TempOffDiagMatrix;
@@ -185,27 +184,27 @@ if strcmp(ExMode,'TwoEx')
     % --- Note ----------------------------------------------------------------
 
     % Bolck-Diagnonal Part of of TwoExCombinationH
-    for m=1:Num_Modes-1
+    for m=1:Nmodes-1
         TwoExPart(TEDIndexBegin(m):TEDIndexEnd(m),TEDIndexBegin(m):TEDIndexEnd(m))...
-            = bsxfun(@times,eye(Num_Modes-m),Freq(m+1:end)+Freq(m)) + Beta(m+1:end,m+1:end);
+            = bsxfun(@times,eye(Nmodes-m),LocFreq(m+1:end)+LocFreq(m)) + Beta(m+1:end,m+1:end);
     end
 
     %% Two Exciton Hamiltonian Cross part between TwoExOvertoneH and TwoExCombinationH
-    for n1=1:Num_Modes-1
-        TempOffDiagMatrix = zeros(Num_Modes,Num_Modes-n1);
-        TempOffDiagMatrix(n1,:) = Beta(n1,n1+1:Num_Modes).*sqrt(2);
-        TempOffDiagMatrix(n1+1:Num_Modes,:) = bsxfun(@times,eye(Num_Modes-n1),Beta(n1,n1+1:Num_Modes).*sqrt(2));
+    for n1=1:Nmodes-1
+        TempOffDiagMatrix = zeros(Nmodes,Nmodes-n1);
+        TempOffDiagMatrix(n1,:) = Beta(n1,n1+1:Nmodes).*sqrt(2);
+        TempOffDiagMatrix(n1+1:Nmodes,:) = bsxfun(@times,eye(Nmodes-n1),Beta(n1,n1+1:Nmodes).*sqrt(2));
 
-        TwoExPart(1:Num_Modes,TEDIndexBegin(n1):TEDIndexEnd(n1))...
+        TwoExPart(1:Nmodes,TEDIndexBegin(n1):TEDIndexEnd(n1))...
             = TempOffDiagMatrix;
     end
 
-    for n2=1:Num_Modes-1
-        TempOffDiagMatrix = zeros(Num_Modes-n2,Num_Modes);
-        TempOffDiagMatrix(:,n2) = Beta(n2+1:Num_Modes,n2).*sqrt(2);
-        TempOffDiagMatrix(:,n2+1:Num_Modes) = bsxfun(@times,eye(Num_Modes-n2),Beta(n2,n2+1:Num_Modes).*sqrt(2));
+    for n2=1:Nmodes-1
+        TempOffDiagMatrix = zeros(Nmodes-n2,Nmodes);
+        TempOffDiagMatrix(:,n2) = Beta(n2+1:Nmodes,n2).*sqrt(2);
+        TempOffDiagMatrix(:,n2+1:Nmodes) = bsxfun(@times,eye(Nmodes-n2),Beta(n2,n2+1:Nmodes).*sqrt(2));
 
-        TwoExPart(TEDIndexBegin(n2):TEDIndexEnd(n2),1:Num_Modes)...
+        TwoExPart(TEDIndexBegin(n2):TEDIndexEnd(n2),1:Nmodes)...
             = TempOffDiagMatrix;
     end
 
@@ -232,14 +231,14 @@ Ex_Freq = diag(D_Full);
 %Sort_Ex_V0 = Sort_Ex_V(1,1);
 %Output.Sort_Ex_V0 = Sort_Ex_V0;
 
-Sort_Ex_F1 = Sort_Ex_Freq(2:Num_Modes+1);
-Sort_Ex_V1 = Sort_Ex_V(2:Num_Modes+1,2:Num_Modes+1);
+Sort_Ex_F1 = Sort_Ex_Freq(2:Nmodes+1);
+Sort_Ex_V1 = Sort_Ex_V(2:Nmodes+1,2:Nmodes+1);
 Output.Sort_Ex_F1 = Sort_Ex_F1;
 Output.Sort_Ex_V1 = Sort_Ex_V1;
 
 if strcmp(ExMode,'TwoEx')
-    Sort_Ex_F2 = Sort_Ex_Freq(Num_Modes+2:end);
-    Sort_Ex_V2 = Sort_Ex_V(Num_Modes+2:end,Num_Modes+2:end);
+    Sort_Ex_F2 = Sort_Ex_Freq(Nmodes+2:end);
+    Sort_Ex_V2 = Sort_Ex_V(Nmodes+2:end,Nmodes+2:end);
     Output.Sort_Ex_F2 = Sort_Ex_F2;
     Output.Sort_Ex_V2 = Sort_Ex_V2;
 end 
@@ -256,7 +255,7 @@ end
 
 %% Output Variables
 Output.ExMode        = ExMode;
-Output.Num_Modes     = Num_Modes;
+Output.Nmodes     = Nmodes;
 Output.StatesNum     = StatesNum;
 Output.Sort_Ex_Freq  = Sort_Ex_Freq;
 Output.Sort_Ex_V     = Sort_Ex_V;

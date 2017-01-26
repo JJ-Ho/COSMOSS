@@ -39,7 +39,7 @@ O.UpdateStatus  =            get(hGUIs.UpdateStatus ,'Value');
 % For Coupling/Signal -----------------------------------------------------
 % Coupling model
 CouplingModelIndex = get(hGUIs.CouplingModelIndex,'Value');
-[~,CouplingList]   = Coupling('List','None');
+[~,CouplingList]   = Coupling('List','None','None');
 O.CouplingType     = CouplingList{CouplingModelIndex};
 
 O.Beta_NN       = str2double(get(hGUIs.Beta_NN      ,'String'));

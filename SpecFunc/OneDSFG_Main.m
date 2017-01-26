@@ -1,4 +1,4 @@
-function  OneDSFG = OneDSFG_Main(Structure_Data,GUI_Inputs)
+function  OneDSFG = OneDSFG_Main(SData,GUI_Inputs)
 %% TwoDSFG_AmideI_Main
 
 % ------- Version log -----------------------------------------------------
@@ -74,8 +74,7 @@ Beta_NN      = INPUT.Results.Beta_NN;
 FreqRange    = INPUT.Results.FreqRange;
 
 %% Call OneExcitonH to calculate H,mu and alpha under exciton basis
-Num_Modes = Structure_Data.Num_Modes;
-H = ExcitonH(Structure_Data,'ExMode','OneEx','CouplingType',CouplingType,'Beta_NN',Beta_NN);
+H = ExcitonH(SData,'ExMode','OneEx','CouplingType',CouplingType,'Beta_NN',Beta_NN);
 
 % Ex_F1 = H.Sort_Ex_Freq;
 % Ex_F1 = Ex_F1(2:Num_Modes+1); % => [N*1]
@@ -88,28 +87,28 @@ H = ExcitonH(Structure_Data,'ExMode','OneEx','CouplingType',CouplingType,'Beta_N
 % A_Ex_01  = squeeze(Alpha_Ex(2:Num_Modes+1,1,:))'; %=> [9*N]
 % M_Ex_01  = squeeze(   Mu_Ex(1,2:Num_Modes+1,:))'; %=> [3*N]
 
-Mu    = MuAlphaGen(Structure_Data,H,'Mode','Mu');
-Alpha = MuAlphaGen(Structure_Data,H,'Mode','Alpha');
+Mu    = MuAlphaGen(SData,H,'Mode','Mu');
+Alpha = MuAlphaGen(SData,H,'Mode','Alpha');
 
 Ex_F1   = H.Sort_Ex_F1;
 M_Ex_01 = Mu.M_Ex_01';    %=> [3*N]
 A_Ex_01 = Alpha.M_Ex_01'; %=> [9*N]
 
 %% Reduce mode number base on the transition intensity
-Cut_Off = -1; % this will cause problem in table generation of Plot_Mode, need to remove later
-
-Norm_M_01  = sum(M_Ex_01.^2,1);
-Norm_A_01  = sum(A_Ex_01.^2,1);
-Norm_AM_01 = Norm_A_01.* Norm_M_01;
-
-Max_Norm_AM_01 = max(Norm_AM_01);
-Ind_Norm_AM_01 = Norm_AM_01 > Cut_Off * Max_Norm_AM_01;
-
-Ex_F1   = Ex_F1(Ind_Norm_AM_01);
-M_Ex_01 = M_Ex_01(:,Ind_Norm_AM_01);
-A_Ex_01 = A_Ex_01(:,Ind_Norm_AM_01);
-
-Removed_Ind = (1:Num_Modes).* ~Ind_Norm_AM_01; % export removed mode list
+% Cut_Off = -1; % this will cause problem in table generation of Plot_Mode, need to remove later
+% 
+% Norm_M_01  = sum(M_Ex_01.^2,1);
+% Norm_A_01  = sum(A_Ex_01.^2,1);
+% Norm_AM_01 = Norm_A_01.* Norm_M_01;
+% 
+% Max_Norm_AM_01 = max(Norm_AM_01);
+% Ind_Norm_AM_01 = Norm_AM_01 > Cut_Off * Max_Norm_AM_01;
+% 
+% Ex_F1   = Ex_F1(Ind_Norm_AM_01);
+% M_Ex_01 = M_Ex_01(:,Ind_Norm_AM_01);
+% A_Ex_01 = A_Ex_01(:,Ind_Norm_AM_01);
+% 
+% Removed_Ind = (1:Nmodes).* ~Ind_Norm_AM_01; % export removed mode list
 
 %% Generate Molecular frame SFG Responses
 % vectorized version
@@ -188,7 +187,6 @@ AccuGrid = Bin1D(Ex_F1,E_J_ResLF_Avg,FreqRange);
 OneDSFG.H            = H;
 OneDSFG.Mu           = Mu;
 OneDSFG.Alpha        = Alpha;
-OneDSFG.Num_Modes    = Num_Modes;
 OneDSFG.MolFrame     = ResLF;
 OneDSFG.R_Avg        = R_Avg;
 OneDSFG.LabFrame     = ResLF_Avg;
@@ -196,9 +194,8 @@ OneDSFG.Jones        = J;
 OneDSFG.JLabFrame    = J_ResLF_Avg;
 OneDSFG.E            = E;
 OneDSFG.EJLabFrame   = E_J_ResLF_Avg;
-OneDSFG.FilesName    = Structure_Data.FilesName;
+OneDSFG.FilesName    = SData.FilesName;
 OneDSFG.CouplingType = CouplingType;
 OneDSFG.SpecType     = 'SFG';
 OneDSFG.Response1D   = AccuGrid;
 OneDSFG.freq_OneD    = FreqRange;
-OneDSFG.Removed_Ind  = Removed_Ind;

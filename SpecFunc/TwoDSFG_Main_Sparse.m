@@ -1,4 +1,4 @@
-function  [SpectraGrid,Response] = TwoDSFG_Main_Sparse(PDB_Data,GUI_Inputs)
+function  [SpectraGrid,Response] = TwoDSFG_Main_Sparse(SData,GUI_Inputs)
 %% TwoDSFG_AmideI
 %  
 %   Given a initial stucture (pdb), this script will simulate its 2DSFG
@@ -93,7 +93,7 @@ PCutOff      = INPUT.Results.PCutOff;
 
 %% Call TwoExcitonH to calculate H,mu and alpha under exciton basis
 
-H = ExcitonH(PDB_Data,...
+H = ExcitonH(SData,...
              'ExMode'  ,'TwoEx',...
              'CouplingType',CouplingType,...
              'Beta_NN' ,Beta_NN);
@@ -105,8 +105,8 @@ H = ExcitonH(PDB_Data,...
 % Mu_Ex        = Mu.Trans_Ex;
 % Alpha_Ex     = Alpha.Trans_Ex;         
 
-Mu    = MuAlphaGen(PDB_Data,H,'Mode','Mu');
-Alpha = MuAlphaGen(PDB_Data,H,'Mode','Alpha');
+Mu    = MuAlphaGen(SData,H,'Mode','Mu');
+Alpha = MuAlphaGen(SData,H,'Mode','Alpha');
 
 Ex_F1   = H.Sort_Ex_F1;
 Ex_F2   = H.Sort_Ex_F2;

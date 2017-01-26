@@ -89,11 +89,14 @@ Num_Modes = 2;
 XYZ_1 = [0.000,   0.000,   0.000;
          0.000,   0.000,   1.204;
          0.000,   1.142,  -0.730;
-         0.000,   1.905,   0.055];
+         0.000,   1.6380, -0.2197];
+         %0.000,   1.905,   0.055];
 
-AcidAtomSerNo = [1,2,3,4;
-                 5,6,7,8];
+% AcidAtomSerNo = [1,2,3,4;
+%                  5,6,7,8];
 
+AtomName = {'C','O','O','H'};             
+             
 % Rotate the first chromophore
 % Orientation = Orientation/180*pi; % turn to radius unit
 Phi_R1   = Phi_D1/180*pi;
@@ -126,6 +129,8 @@ XYZ_coor(2,:,:) = XYZ_2_Rot_Trans;
 XYZ = [ squeeze(XYZ_coor(1,:,:)) ;
         squeeze(XYZ_coor(2,:,:)) ];
 
+AtomName = [AtomName,AtomName];    
+    
 %% Define Acid modes coordinate system
 Vec_COD      = XYZ_coor(:,2,:)-XYZ_coor(:,1,:);
 Vec_COD      = squeeze(Vec_COD);
@@ -216,16 +221,29 @@ end
 alpha = reshape(permute(alpha_Sim,[1,3,2]),[Num_Modes,9]);
 
 %% Output Structure
-Output.center       = AcidCenter;
-Output.freq         = AmideIFreq;
-Output.anharm       = AmideIAnharm;
-Output.mu           = mu_Sim;
-Output.alpha        = alpha; % raman tensor vector form [N x 9]
-Output.alpha_matrix = alpha_Sim;
-Output.Num_Modes    = Num_Modes;
-Output.XYZ          = XYZ;
-Output.AtomSerNo    = AcidAtomSerNo;
-Output.FilesName    = 'Acid Dimer';
-Output.Displacement = Displacement;
+% Output.center       = AcidCenter;
+% Output.freq         = AmideIFreq;
+% Output.anharm       = AmideIAnharm;
+% Output.mu           = mu_Sim;
+% Output.alpha        = alpha; % raman tensor vector form [N x 9]
+% Output.alpha_matrix = alpha_Sim;
+% Output.Num_Modes    = Num_Modes;
+% Output.XYZ          = XYZ;
+% Output.AtomSerNo    = AcidAtomSerNo;
+% Output.FilesName    = 'Acid Dimer';
+% Output.Displacement = Displacement;
+
+Output = StructureData;
+Output.XYZ       = XYZ;
+Output.AtomName  = AtomName;
+Output.COM       = Displacement./2;
+
+Output.LocCenter = AcidCenter;
+Output.LocFreq   = AmideIFreq;
+Output.LocAnharm = AmideIAnharm;
+Output.LocMu     = mu_Sim;
+Output.LocAlpha  = alpha; % raman tensor vector form [N x 9]
+
+Output.FilesName = 'Acid Dimer';
 
 

@@ -12,6 +12,8 @@ classdef StructureData
        
        StructModel
        FilesName
+       
+       Extra
    end
    
    properties

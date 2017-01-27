@@ -145,31 +145,30 @@ GUI_Inputs = ParseGUI_Betasheet(hGUIs);
 
 %% Construct molecule
 BB        = ConstuctBetaSheet(GUI_Inputs);
-Structure = GetAmideI(BB.Num_Atoms,...
+Structure = GetAmideI(...
                       BB.XYZ,...
                       BB.AtomName,...
                       BB.FilesName,...
                       GUI_Inputs);
-
-%% Export extra info into Structure
-Structure.N_Residue         = BB.N_Residue;
-Structure.N_Strand          = BB.N_Strand;
-Structure.N_Mode_per_Starnd = BB.N_Residue-1;
-
-% C terminus Index
-Structure.Ind_H = BB.Ind_H;
-Structure.Ind_O = BB.Ind_O;
-
-% Betasheet orientation info export
-Structure.TransV = BB.TransV;
-Structure.TwistV = BB.TwistV;
-Structure.RotV   = [GUI_Inputs.Phi_D,GUI_Inputs.Psi_D,GUI_Inputs.Theta_D];
-
+                  
 % Export into Structure so it can be passsed around different GUIs
 Structure.StructModel = 4;
+%% Export extra info into Structure
+Structure.Extra.N_Residue         = BB.N_Residue;
+Structure.Extra.N_Strand          = BB.N_Strand;
+Structure.Extra.N_Mode_per_Starnd = BB.N_Residue-1;
+
+% C terminus Index
+Structure.Extra.Ind_H = BB.Ind_H;
+Structure.Extra.Ind_O = BB.Ind_O;
+
+% Betasheet orientation info export
+Structure.Extra.TransV = BB.TransV;
+Structure.Extra.TwistV = BB.TwistV;
+Structure.Extra.RotV   = [GUI_Inputs.Phi_D,GUI_Inputs.Psi_D,GUI_Inputs.Theta_D];
 
 % Include the whole BB info for debug
-Structure.BB = BB;
+Structure.Extra.BB = BB;
 
 %% Export result to Main guidata
 GUI_data.Structure = Structure;
@@ -190,22 +189,6 @@ function hF = PlotMolecule(hObject, eventdata, GUI_data)
 % Read GUI variables
 hGUIs  = GUI_data.hGUIs;
 GUI_Inputs = ParseGUI_Betasheet(hGUIs);
-
-%- This part is obsolete, since the lab frame ensemble avg should not take
-%  orientation inputs, will be removed later
-% Read the Molecule frame to Lab frame orientation from COSMOSS
-% hMain = handles.hMain;
-% GUI_Data_Main = guidata(hMain);
-% GUI_Inputs_Main = ParseGUI_Main(GUI_Data_Main);
-% % Pass the MF-LB Eular angles to Plotting function
-% GUI_Inputs.Avg_Phi   = GUI_Inputs_Main.Avg_Phi;
-% GUI_Inputs.Avg_Theta = GUI_Inputs_Main.Avg_Theta;
-% GUI_Inputs.Avg_Psi   = GUI_Inputs_Main.Avg_Psi;
-
-GUI_Inputs.Avg_Phi   = 0;
-GUI_Inputs.Avg_Theta = 0;
-GUI_Inputs.Avg_Psi   = 0;
-%--------------------------------------------------------------------------
 
 hF = Plot_Betasheet_AmideI(GUI_data.Structure,GUI_Inputs);
 

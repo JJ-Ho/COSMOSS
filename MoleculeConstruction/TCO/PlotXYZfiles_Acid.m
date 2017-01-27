@@ -91,7 +91,7 @@ hold on
 
     %% draw bonds
     if Plot_Bonds
-        Conn = Connectivity_New(AtomName,XYZ);
+        Conn = Connectivity(AtomName,XYZ);
         %Conn = Connectivity(XYZ);
             % add line between the two Carbon
             Conn(1,5) = 1;

@@ -80,7 +80,7 @@ hold on
             Atom_bond = AtomName(BB_Ind);
         end
         
-        Conn = Connectivity_New(Atom_bond,XYZ_bond);
+        Conn = Connectivity(Atom_bond,XYZ_bond);
         gplot3(Conn,XYZ_bond);
     end
     

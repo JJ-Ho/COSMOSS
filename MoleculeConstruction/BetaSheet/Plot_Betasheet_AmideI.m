@@ -114,7 +114,7 @@ hold on
     %% draws bonds
     if Plot_Bonds
         
-        Conn = Connectivity_New(AtomName,XYZ);
+        Conn = Connectivity(AtomName,XYZ);
         gplot3(Conn, XYZ);
         
 %         % Chain

@@ -17,14 +17,19 @@ classdef StructureData
    end
    
    properties
-       Nmodes
        LocAlphaM
+       Nmodes
+       NAtoms
        NStucture
    end
    
    methods
       function nmodes = get.Nmodes(obj)
            nmodes = size(obj.LocFreq,1);
+      end
+      
+      function nAtoms = get.NAtoms(obj)
+           nAtoms = size(obj.XYZ,1);
       end
        
       function nStucture = get.NStucture(obj)

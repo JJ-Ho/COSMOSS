@@ -77,9 +77,9 @@ TDV = (TDV{2})'; % [Vx, Vy, Vz]' size = [3xMode_Number]
 % [ Aizx Aizy Aizz ]
 % 
 Raman_Vector = textscan(fid,'[Raman] %s %f %f %f %f %f %f %f %f %f',Mode_Num,'CollectOutput',1,'commentStyle','%');
-Raman_Vector = (Raman_Vector{2})'; 
-Raman_Matrix = reshape(Raman_Vector,[3,3,Mode_Num]);
-Raman_Matrix = permute(Raman_Matrix,[2,1,3]);
+Raman_Vector = (Raman_Vector{2}); 
+% Raman_Matrix = reshape(Raman_Vector,[3,3,Mode_Num]);
+% Raman_Matrix = permute(Raman_Matrix,[2,1,3]);
 
 %% Intensity scaling of IR and Raman
 Int_Harm.IR      = textscan(fid,'[Int_Harm]   IR    %s %f',Mode_Num,'commentStyle','%');
@@ -130,15 +130,21 @@ Freq.Combination = FreqScaleFactor*Combination;
 fclose(fid);
 
 %% Formate Output
-P.FName        = FName;
-P.Atom_Num     = Atom_Num;
-P.Mode_Num     = Mode_Num;
-P.Atom_Name    = Atom_Name;
-P.Freq         = Freq;
-P.XYZ          = XYZ;
-P.TDV          = TDV;
-P.RamanV       = Raman_Vector;
-P.RamanM       = Raman_Matrix;
-P.Int_Harm     = Int_Harm;
-P.Int_AnHarm   = Int_AnHarm;
-P.Mol_Frame    = Mol_Frame;
+P = StructureData;
+
+P.XYZ       = XYZ;
+P.AtomName  = Atom_Name;
+P.COM       = sum(XYZ,1)./size(XYZ,1);
+
+P.LocCenter = XYZ(Center_Ind,:);
+P.LocFreq   = Freq.Fundamental;
+P.LocAnharm = Freq.Overtone - Freq.Fundamental;
+P.LocMu     = TDV;
+P.LocAlpha  = Raman_Vector; % raman tensor vector form [N x 9]
+
+P.FilesName = FName;
+
+Extra.Int_Harm   = Int_Harm;
+Extra.Int_AnHarm = Int_AnHarm;
+Extra.Mol_Frame  = Mol_Frame;
+P.Extra = Extra;

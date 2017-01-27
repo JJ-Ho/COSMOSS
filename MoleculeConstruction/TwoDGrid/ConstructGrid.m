@@ -71,15 +71,11 @@ Mute_Ind    = INPUT.Results.Mute_Ind   ;
 %% Read G09 structure and reassign variables
 
 XYZ_G09       = Monomer.XYZ;
-Atom_Num_G09  = Monomer.Atom_Num;
-mu_Mol_G09    = Monomer.TDV; % size [3 x N]
-alpha_Mol_G09 = Monomer.Raman_V; % note: RamanV = [9 x N], index: [xx xy xz yx yy yz zx zy zz]
-Center_Ind    = Monomer.Center_Ind;
-%Freq_G09      = Gaussian_Input.Freq;
-Atom_Name_G09 = Monomer.Atom_Name;
-
-% % shift monomer to origin
-% XYZ = bsxfun(@minus,XYZ,sum(XYZ,1)/Atom_Num);
+Atom_Num_G09  = Monomer.NAtoms;
+mu_Mol_G09    = Monomer.LocMu; % size [N x 3]
+alpha_Mol_G09 = Monomer.LocAlpha; % note: RamanV = [N x 9], index: [xx xy xz yx yy yz zx zy zz]
+Atom_Name_G09 = Monomer.AtomName;
+Center_Ind    = Monomer.Extra.Center_Ind;
 
 %% Define usefule constants
 
@@ -121,8 +117,8 @@ for j = 1:N_2
             XYZ_Grid_M(:,:,i,j) = bsxfun(@plus,XYZ_R,TransV);
 
             % Mu & Alpha
-               mu_Sim(i+(j-1)*N_1,:) = (R1_Fluc * mu_Mol_G09    )'; % note    mu_Mol_G09 = [3*N_Mode]
-            alpha_Sim(i+(j-1)*N_1,:) = (R2_Fluc * alpha_Mol_G09 )'; % note alpha_Mol_G09 = [9*N_Mode]
+               mu_Sim(i+(j-1)*N_1,:) = (R1_Fluc * mu_Mol_G09'    )'; % note    mu_Mol_G09 = [N_Mode*3]
+            alpha_Sim(i+(j-1)*N_1,:) = (R2_Fluc * alpha_Mol_G09' )'; % note alpha_Mol_G09 = [N_Mode*9]
         end
     end
 end
@@ -132,31 +128,7 @@ XYZ_Grid = reshape(permute(XYZ_Grid_M,[1,3,4,2]),[],3);
 %% Extend Atom_Name
 Atom_Name = repmat(Atom_Name_G09,Num_Modes,1);
 
-%% Make debug figure
-
-% Atom_Num_NM = Atom_Num*N_1*N_2;
-% 
-% [n,m] = ndgrid(1:Atom_Num_NM);
-% T1=XYZ_Grid(m(:),:)-XYZ_Grid(n(:),:);
-% T2=sqrt(sum(T1.^2,2));
-% Distance_matrix=reshape(T2,Atom_Num_NM,Atom_Num_NM);
-% lower=tril(Distance_matrix,-1);
-% [a,b]=find(lower<1.6 & lower>0);
-% C_index=[a,b];
-% Conn_Grid=false(Atom_Num_NM);
-% Conn_Grid(C_index(:,1)+(C_index(:,2)-1)*Atom_Num_NM)=true;
-% 
-% for k = 1:Num_Modes
-%     Conn_Grid(13+(k-1)*Atom_Num,3+(k-1)*Atom_Num) = 1; % Add S-C connection for Ester
-% end
-% 
-% Conn_Grid=Conn_Grid|Conn_Grid';
-% figure
-% gplot3(Conn_Grid,XYZ_Grid)
-% axis equal
-
 %% Create Translational copy of Center
-% Center_Ind = 7;
 
 Center_M = sum(XYZ_Grid_M(Center_Ind,:,:,:),1);
 Center = reshape(permute(Center_M,[1,3,4,2]),[],3);
@@ -174,29 +146,49 @@ Anharm = Anharm.*ones(Num_Modes,1);
 
 %% AtomSerNo
 
-AtomSerNo = zeros(Num_Modes,3);
-for jj = 1:Num_Modes
-    Shift_Ind = (jj-1)*Atom_Num_G09;
-    AtomSerNo(jj,:) = [7+Shift_Ind,10+Shift_Ind,8+Shift_Ind];
-end
+% AtomSerNo = zeros(Num_Modes,3);
+% for jj = 1:Num_Modes
+%     Shift_Ind = (jj-1)*Atom_Num_G09;
+%     AtomSerNo(jj,:) = [7+Shift_Ind,10+Shift_Ind,8+Shift_Ind];
+% end
 
 %% Deal with files name 
 Grid_FilesName = [ '2D_Grid_V1' num2str(N_1) 'V2' num2str(N_2)];
 
 %% Output Structure
-Output.center       = Center;
-Output.freq         = Loc_Freq;
-Output.anharm       = Anharm;
-Output.mu           = mu_Sim; % size [N x 3]
-Output.alpha        = alpha_Sim; % note: RamanV = [N x 9], index: [xx xy xz yx yy yz zx zy zz]
-Output.alpha_matrix = reshape(alpha_Sim,[Num_Modes,3,3]);
-Output.AtomSerNo    = AtomSerNo;
-Output.Num_Modes    = Num_Modes;
-Output.XYZ          = XYZ_Grid;
-Output.FilesName    = Grid_FilesName;
-Output.Monomer      = Monomer;
-Output.N_Vec1       = N_1;
-Output.N_Vec2       = N_2;
-Output.Vec_1        = Vec_1;
-Output.Vec_2        = Vec_2;
-Output.Atom_Name    = Atom_Name;
+Output = StructureData;
+
+Output.XYZ       = XYZ_Grid;
+Output.AtomName  = Atom_Name;
+Output.COM       = sum(XYZ_Grid,1)./size(XYZ_Grid,1);
+
+Output.LocCenter = Center;
+Output.LocFreq   = Loc_Freq;
+Output.LocAnharm = Anharm;
+Output.LocMu     = mu_Sim; % size [N x 3]
+Output.LocAlpha  = alpha_Sim; % raman tensor vector form [N x 9]
+
+Output.FilesName = Grid_FilesName;
+
+Extra.N_Vec1 = N_1;
+Extra.N_Vec2 = N_2;
+Extra.Vec_1  = Vec_1;
+Extra.Vec_2  = Vec_2;
+Output.Extra = Extra;
+
+% Output.center       = Center;
+% Output.freq         = Loc_Freq;
+% Output.anharm       = Anharm;
+% Output.mu           = mu_Sim; % size [N x 3]
+% Output.alpha        = alpha_Sim; % note: RamanV = [N x 9], index: [xx xy xz yx yy yz zx zy zz]
+% Output.alpha_matrix = reshape(alpha_Sim,[Num_Modes,3,3]);
+% Output.AtomSerNo    = AtomSerNo;
+% Output.Num_Modes    = Num_Modes;
+% Output.XYZ          = XYZ_Grid;
+% Output.FilesName    = Grid_FilesName;
+% Output.Monomer      = Monomer;
+% Output.N_Vec1       = N_1;
+% Output.N_Vec2       = N_2;
+% Output.Vec_1        = Vec_1;
+% Output.Vec_2        = Vec_2;
+% Output.Atom_Name    = Atom_Name;

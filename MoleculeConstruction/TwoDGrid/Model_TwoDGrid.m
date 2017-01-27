@@ -126,11 +126,11 @@ G09_Path = [PathName FilesName];
 disp([FilesName,' loaded...'])
 
 %% Load selected G09 file
-G09_Output = ReadG09Input(G09_Path);
-G09_Output.G09_Path = G09_Path;
+G09 = ReadG09Input(G09_Path);
+% G09_Output.G09_Path = G09_Path;
 
 %% Export to Model handles
-GUI_data.Structure.G09_Output = G09_Output;
+GUI_data.G09 = G09;
 guidata(hObject,GUI_data)
 
 %% update structure and the file name on GUI
@@ -141,11 +141,11 @@ end
 GUI_data.hModel_TwoDGrid.Name = [TitleStr, FilesName];
 
 % update mol frame Atom index
-hGUIs.MF_Center.String = num2str(G09_Output.Mol_Frame.Center_Ind);
-hGUIs.MF_Zi.String     = num2str(G09_Output.Mol_Frame.Z_i_Ind);
-hGUIs.MF_Zf.String     = num2str(G09_Output.Mol_Frame.Z_f_Ind);
-hGUIs.MF_XYi.String    = num2str(G09_Output.Mol_Frame.XY_i_Ind);
-hGUIs.MF_XYf.String    = num2str(G09_Output.Mol_Frame.XY_f_Ind);
+hGUIs.MF_Center.String = num2str(G09.Extra.Mol_Frame.Center_Ind);
+hGUIs.MF_Zi.String     = num2str(G09.Extra.Mol_Frame.Z_i_Ind);
+hGUIs.MF_Zf.String     = num2str(G09.Extra.Mol_Frame.Z_f_Ind);
+hGUIs.MF_XYi.String    = num2str(G09.Extra.Mol_Frame.XY_i_Ind);
+hGUIs.MF_XYf.String    = num2str(G09.Extra.Mol_Frame.XY_f_Ind);
 
 UpdateStructure(hObject, eventdata, GUI_data)
 
@@ -154,40 +154,34 @@ function UpdateStructure(hObject, eventdata, GUI_data)
 hGUIs  = GUI_data.hGUIs;
 GUI_Inputs = ParseGUI_TwoDGrid(hGUIs);
 
-G09_Output = GUI_data.Structure.G09_Output;
+G09 = GUI_data.G09;
 
 % update the mol frame info into G09_Output
-GUI_MF_Info.Center_Ind = GUI_Inputs.MF_Center;
-GUI_MF_Info.Z_i_Ind    = GUI_Inputs.MF_Zi;
-GUI_MF_Info.Z_f_Ind    = GUI_Inputs.MF_Zf;
-GUI_MF_Info.XY_i_Ind   = GUI_Inputs.MF_XYi;
-GUI_MF_Info.XY_f_Ind   = GUI_Inputs.MF_XYf;
-GUI_MF_Info.Frame_Type = GUI_Inputs.Frame_Type;
-GUI_MF_Info.BondAvg    = GUI_Inputs.BondAvg;
+MF_Info.Center_Ind = GUI_Inputs.MF_Center;
+MF_Info.Z_i_Ind    = GUI_Inputs.MF_Zi;
+MF_Info.Z_f_Ind    = GUI_Inputs.MF_Zf;
+MF_Info.XY_i_Ind   = GUI_Inputs.MF_XYi;
+MF_Info.XY_f_Ind   = GUI_Inputs.MF_XYf;
+MF_Info.Frame_Type = GUI_Inputs.Frame_Type;
+MF_Info.BondAvg    = GUI_Inputs.BondAvg;
 
-GUI_LF_Info.LF_Phi   = GUI_Inputs.LF_Phi./180*pi;
-GUI_LF_Info.LF_Psi   = GUI_Inputs.LF_Psi./180*pi;
-GUI_LF_Info.LF_Theta = GUI_Inputs.LF_Theta./180*pi;
-
-% update the molecule frame info into G09_Output
-G09_Output.MF_Info = GUI_MF_Info;
-G09_Output.LF_Info = GUI_LF_Info;
+LF_Info.LF_Phi   = GUI_Inputs.LF_Phi./180*pi;
+LF_Info.LF_Psi   = GUI_Inputs.LF_Psi./180*pi;
+LF_Info.LF_Theta = GUI_Inputs.LF_Theta./180*pi;
 
 %% Rot/Trans the raw ouput of G09 to molecule frame ane deal with rotatable bond average 
 % Rotate the structre from G09 simulation frame to defined molecule frame 
 % then do bond rotational average if selected. Finally rotate molecule into 
 % lab frame so the monomer is ready to form 2D grid.
-Monomer = R_GF2LF(G09_Output);
+Monomer = R_GF2LF(G09,MF_Info,LF_Info);
 
 %% Construct 2D grid
-Structure = ConstructGrid(Monomer.LF,GUI_Inputs);
+Structure = ConstructGrid(Monomer,GUI_Inputs);
 
 % Export into Structure so it can be passsed around different GUIs
 Structure.StructModel = 3;
 
 %% Export result to Main guidata
-% include G09 ouput to structure
-Structure.G09_Output = G09_Output;
 
 % include FieldName of GUI Inputs
 [~,~,~,fhGUIParser] = StructureModel(Structure.StructModel);
@@ -195,6 +189,7 @@ Structure.G09_Output = G09_Output;
 GUI_data.GUI_FieldName = GUI_FieldName;
 
 % update handles
+GUI_data.Monomer    = Monomer;
 GUI_data.Structure  = Structure;
 GUI_data.GUI_Inputs = GUI_Inputs;
 guidata(hObject,GUI_data)
@@ -208,24 +203,9 @@ function hF = PlotMolecule(hObject, eventdata, GUI_data)
 %% Read GUI
 hGUIs  = GUI_data.hGUIs;
 GUI_Inputs = ParseGUI_TwoDGrid(hGUIs);
+Structure = GUI_data.Structure;
 
-%- This part is obsolete, since the lab frame ensemble avg should not take
-%  orientation inputs, will be removed later
-% Read the Molecule frame to Lab frame orientation from COSMOSS
-% hMain = handles.hMain;
-% GUI_Data_Main = guidata(hMain);
-% GUI_Inputs_Main = ParseGUI_Main(GUI_Data_Main);
-% % Pass the MF-LB Eular angles to Plotting function
-% GUI_Inputs.Avg_Phi   = GUI_Inputs_Main.Avg_Phi;
-% GUI_Inputs.Avg_Theta = GUI_Inputs_Main.Avg_Theta;
-% GUI_Inputs.Avg_Psi   = GUI_Inputs_Main.Avg_Psi;
-
-GUI_Inputs.Avg_Phi   = 0;
-GUI_Inputs.Avg_Theta = 0;
-GUI_Inputs.Avg_Psi   = 0;
-%--------------------------------------------------------------------------
-
-hF = PlotXYZ_Grid(GUI_data.Structure,GUI_Inputs);
+hF = PlotXYZ_Grid(Structure,GUI_Inputs);
 
 function PlotModes(hObject, eventdata, GUI_data)
 Plot_Modes(GUI_data.hModel_TwoDGrid);

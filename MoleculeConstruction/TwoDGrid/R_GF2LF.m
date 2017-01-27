@@ -1,4 +1,4 @@
-function Output = R_GF2LF(S_Info)
+function Output = R_GF2LF(G09,MF_Info,LF_Info)
 % This function transform structural and mode related information from 
 % original coordinate frame (G09 simulation frame) to lab frame so that 
 % the rotatable bond aligned with z axis. This function take the atomic
@@ -8,13 +8,10 @@ function Output = R_GF2LF(S_Info)
 % rotatable.
 
 %% Process Inputs
-XYZ      = S_Info.XYZ;
-TDV      = S_Info.TDV;
-RamanV   = S_Info.RamanV;
-%Mode_Num = S_Info.Mode_Num;
+XYZ        = G09.XYZ;
+LocMu      = G09.LocMu;
+LocAlpha   = G09.LocAlpha;
 
-
-MF_Info = S_Info.MF_Info;
 Center_Ind = MF_Info.Center_Ind;
 Z_i_Ind    = MF_Info.Z_i_Ind;
 Z_f_Ind    = MF_Info.Z_f_Ind;
@@ -23,7 +20,6 @@ XY_f_Ind   = MF_Info.XY_f_Ind;
 Frame_Type = MF_Info.Frame_Type;
 BondAvg    = MF_Info.BondAvg;
 
-LF_Info = S_Info.LF_Info;
 LF_Phi   = LF_Info.LF_Phi;
 LF_Psi   = LF_Info.LF_Psi;
 LF_Theta = LF_Info.LF_Theta;
@@ -83,7 +79,7 @@ end
 Rot_Total_mode = Rot2LF*R_Bond_Avg*Rot2MF;
 
 % Coordination tranfrom of TDV from mol. frame to lab frame
-TDV_Rot = Rot_Total_mode*TDV; % note: TDV = [3 x N]
+TDV_Rot = Rot_Total_mode*LocMu; % note: TDV = [3 x N]
 
 % Coordination tranfrom of Raman tensor from mol. frame to lab frame
 % Raman_Rot = zeros(size(Raman));
@@ -96,25 +92,40 @@ Rot2MF_2 = kron(Rot2MF,Rot2MF);
 Rot2LF_2 = kron(Rot2LF,Rot2LF);
 Rot_Total_mode_2 = Rot2LF_2*R_Bond_Avg_2*Rot2MF_2;
 
-Raman_Rot_V = Rot_Total_mode_2*RamanV;  % note: RamanV = [9 x N], index: [xx xy xz yx yy yz zx zy zz]
+Raman_Rot_V = (Rot_Total_mode_2*LocAlpha')';  % note: Raman_Rot_V = [Nx9], index: [xx xy xz yx yy yz zx zy zz]
 Raman_Rot_V(abs(Raman_Rot_V)<1E-10) = 0; % remove numerical error
 
-Raman_Rot_M = reshape(Raman_Rot_V,3,3,[]);
 
 %% Output
-Output.LF            = S_Info;
-Output.LF.Center_Ind = Center_Ind;
-Output.LF.XYZ        = XYZ_T_R;
-Output.LF.TDV        = TDV_Rot; % size [3 x N]
-Output.LF.Raman_M    = Raman_Rot_M;
-Output.LF.Raman_V    = Raman_Rot_V; % size [9 x N]
+Output = StructureData;
 
-Output.Orig = S_Info;
+Output.XYZ       = XYZ_T_R;
+Output.AtomName  = G09.AtomName;
+Output.COM       = sum(XYZ,1)./size(XYZ,1);
 
-Output.Transformation.C_G09_Frame  = C_G09_Frame;
-Output.Transformation.Rot2MF       = Rot2MF;
-Output.Transformation.Rot2LF       = Rot2LF;
-Output.Transformation.Rot2MF_2     = Rot2MF_2;
-Output.Transformation.Rot2LF_2     = Rot2LF_2;
-Output.Transformation.R_Bond_Avg   = R_Bond_Avg;
-Output.Transformation.R_Bond_Avg_2 = R_Bond_Avg_2;
+Output.LocCenter = XYZ_T_R(Center_Ind,:);
+Output.LocFreq   = G09.LocFreq;
+Output.LocAnharm = G09.LocAnharm;
+Output.LocMu     = TDV_Rot'; % size [N x 3]
+Output.LocAlpha  = Raman_Rot_V; % raman tensor vector form [N x 9]
+
+Output.FilesName = G09.FilesName;
+
+Output.Extra.Center_Ind = Center_Ind;
+
+% Output.LF            = G09;
+% Output.LF.Center_Ind = Center_Ind;
+% Output.LF.XYZ        = XYZ_T_R;
+% Output.LF.TDV        = TDV_Rot; % size [3 x N]
+% Output.LF.Raman_M    = Raman_Rot_M;
+% Output.LF.Raman_V    = Raman_Rot_V; % size [9 x N]
+% 
+% Output.Orig = G09;
+% 
+% Output.Transformation.C_G09_Frame  = C_G09_Frame;
+% Output.Transformation.Rot2MF       = Rot2MF;
+% Output.Transformation.Rot2LF       = Rot2LF;
+% Output.Transformation.Rot2MF_2     = Rot2MF_2;
+% Output.Transformation.Rot2LF_2     = Rot2LF_2;
+% Output.Transformation.R_Bond_Avg   = R_Bond_Avg;
+% Output.Transformation.R_Bond_Avg_2 = R_Bond_Avg_2;

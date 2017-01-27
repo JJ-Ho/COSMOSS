@@ -1,4 +1,4 @@
-function Output = GetAmideI(Num_Atoms,XYZ,AtomName,FilesName,GUI_Inputs)
+function Output = GetAmideI(XYZ,AtomName,FilesName,GUI_Inputs)
 %% GetAmideI
 
 % Output = GetAmideI(Num_Atoms,XYZ,AtomName,FilesName,GUI_Inputs)
@@ -104,6 +104,8 @@ LFreq         = INPUT.Results.LFreq;
 L_Index       = INPUT.Results.L_Index;
 
 %% Main
+Num_Atoms = size(XYZ,1);
+
 Ind = (1:Num_Atoms)';
 Atom = [strcmp(AtomName,'C'),...
         strcmp(AtomName,'O'),...
@@ -247,16 +249,30 @@ end
 AmideIAnharm = ones(Num_Modes,1).*Anharm;
 
 %% Output Structure
-Output.center         = AmideICenter;
-Output.freq           = AmideIFreq;
-Output.anharm         = AmideIAnharm;
-Output.mu             = mu_Sim;
-Output.alpha          = alpha; % raman tensor vector form [N x 9]
-Output.AtomSerNo      = AmideIAtomSerNo;
-Output.Num_Modes      = Num_Modes;
-Output.XYZ            = XYZ_Rot;
-Output.FilesName      = FilesName;
-Output.mu_angle       = mu_angle/pi*180;    % unit degrees
-Output.alpha_angle    = alpha_angle/pi*180; % unit degrees
-Output.Mol_Frame_Rot  = Mol_Frame_Rot;
-Output.Mol_Frame_Orig = Mol_Frame_Orig;
+% Output.center         = AmideICenter;
+% Output.freq           = AmideIFreq;
+% Output.anharm         = AmideIAnharm;
+% Output.mu             = mu_Sim;
+% Output.alpha          = alpha; % raman tensor vector form [N x 9]
+% Output.AtomSerNo      = AmideIAtomSerNo;
+% Output.Num_Modes      = Num_Modes;
+% Output.XYZ            = XYZ_Rot;
+% Output.FilesName      = FilesName;
+% Output.mu_angle       = mu_angle/pi*180;    % unit degrees
+% Output.alpha_angle    = alpha_angle/pi*180; % unit degrees
+% Output.Mol_Frame_Rot  = Mol_Frame_Rot;
+% Output.Mol_Frame_Orig = Mol_Frame_Orig;
+
+
+Output = StructureData;
+Output.XYZ       = XYZ_Rot;
+Output.AtomName  = AtomName;
+Output.COM       = sum(XYZ_Rot,1)./size(XYZ_Rot,1);
+
+Output.LocCenter = AmideICenter;
+Output.LocFreq   = AmideIFreq;
+Output.LocAnharm = AmideIAnharm;
+Output.LocMu     = mu_Sim;
+Output.LocAlpha  = alpha; % raman tensor vector form [N x 9]
+
+Output.FilesName = FilesName;

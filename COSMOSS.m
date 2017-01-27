@@ -229,9 +229,9 @@ if eq(GUI_Inputs.Sampling,1) % GUI: Diag. Disorder
         
         S = Structure;
         % Replace mu and center if there are mutiple MD sanpshots
-        if isfield(S,'N_File') && gt(S.N_File,1)
-            S.mu = squeeze(S.mu(:,:,i));
-            S.center = S.center(:,:,i);
+        if isfield(S,'NStucture') && gt(S.NStucture,1)
+            S.LocMu = squeeze(S.LocMu(:,:,i));
+            S.LocCenter = S.LocCenter(:,:,i);
         end
         % Add diagonal disorder if any
         Correlation_Dice = rand;

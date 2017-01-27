@@ -27,7 +27,8 @@ N_Atom = length(Atom);
 RC = zeros(N_Atom,1); % [Nx1]
 
 for i = 1:N_Atom
-    RC(i) = Radii(strcmp(Atom(i),AtomName));
+    STR = Atom{i}; % this extra step if for PDB atom names which have multiple charaters, ex: CA => C atom
+    RC(i) = Radii(strcmp(STR(1),AtomName));
 end
 
 %% generate connectivity matrix ndgrid version

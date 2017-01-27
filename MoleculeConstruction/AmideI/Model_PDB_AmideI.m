@@ -188,7 +188,6 @@ else
 end
 
 %% output to GUI
-GUI_data.PDB.OrigPDB   = PDB;
 GUI_data.PDB.Num_Atoms = Num_Atoms;
 GUI_data.PDB.XYZ       = XYZ;
 GUI_data.PDB.AtomName  = AtomName;
@@ -214,27 +213,33 @@ FilesName = GUI_data.PDB.FilesName;
 N_File    = GUI_data.PDB.N_File;
 
 % test # modes and pre-allocate matix
-Tmp1 = GetAmideI(Num_Atoms,XYZ(:,:,1),AtomName,FilesName,GUI_Inputs);
-Num_Modes = Tmp1.Num_Modes;
-mu      = zeros(Num_Modes,3,N_File);
-alpha   = zeros(Num_Modes,9,N_File);
-center  = zeros(Num_Modes,3,N_File);
-XYZ_Rot = zeros(Num_Atoms,3,N_File);
+Tmp1 = GetAmideI(XYZ(:,:,1),AtomName,FilesName,GUI_Inputs);
+Nmodes = Tmp1.Nmodes;
+Tmp_LocMu     = zeros(Nmodes,3,N_File);
+Tmp_LocAlpha  = zeros(Nmodes,9,N_File);
+Tmp_LocCenter = zeros(Nmodes,3,N_File);
+Tmp_XYZ       = zeros(Num_Atoms,3,N_File);
 
 for i = 1:N_File
-    Tmp = GetAmideI(Num_Atoms,XYZ(:,:,i),AtomName,FilesName,GUI_Inputs);
-    mu(:,:,i)      = Tmp.mu;
-    alpha(:,:,i)   = Tmp.alpha;
-    center(:,:,i)  = Tmp.center;
-    XYZ_Rot(:,:,i) = Tmp.XYZ;
+    Tmp = GetAmideI(XYZ(:,:,i),AtomName,FilesName,GUI_Inputs);
+    Tmp_LocMu(:,:,i)     = Tmp.LocMu;
+    Tmp_LocAlpha(:,:,i)  = Tmp.LocAlpha;
+    Tmp_LocCenter(:,:,i) = Tmp.LocCenter;
+    Tmp_XYZ(:,:,i)       = Tmp.XYZ;
 end
 
-Structure = Tmp1;
-Structure.center = center;
-Structure.mu     = mu;
-Structure.alpha  = alpha;
-Structure.XYZ    = XYZ_Rot;
-Structure.N_File = N_File;
+Structure = StructureData;
+Structure.XYZ       = Tmp_XYZ;
+Structure.AtomName  = Tmp1.AtomName;
+Structure.COM       = Tmp1.COM;
+
+Structure.LocCenter = Tmp_LocCenter;
+Structure.LocFreq   = Tmp1.LocFreq;
+Structure.LocAnharm = Tmp1.LocAnharm;
+Structure.LocMu     = Tmp_LocMu;
+Structure.LocAlpha  = Tmp_LocAlpha;
+
+Structure.FilesName = Tmp1.FilesName;
 
 % Export into Structure so it can be passsed around different GUIs
 Structure.StructModel = 2;

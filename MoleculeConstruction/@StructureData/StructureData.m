@@ -39,6 +39,10 @@ classdef StructureData
       function locAlphaM = get.LocAlphaM(obj)
            locAlphaM = reshape(obj.LocAlpha,[],3,3);
       end
+      
+      obj_T = SD_Trans(obj,V)
+      obj_R = SD_Rot(obj,Phi,Psi,Theta)
+      
    end
 
 end

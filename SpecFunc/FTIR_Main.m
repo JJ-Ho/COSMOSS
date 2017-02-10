@@ -84,7 +84,7 @@ Response = sum(M_Ex_01.^2,2); % E-field of FTIR signal is mu^2 base on feynmann 
 AccuGrid = Bin1D(Ex_F1,Response,FreqRange);
 
 %% Output
-Output.Nmodes    = Nmodes;
+Output.Nmodes       = Nmodes;
 Output.Response1D   = AccuGrid;
 Output.freq_OneD    = FreqRange;
 Output.SpecType     = 'FTIR';

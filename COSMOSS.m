@@ -208,8 +208,8 @@ if eq(GUI_Inputs.Sampling,1) % GUI: Diag. Disorder
     % Pre-allocate
     
     GridSize   = length(GUI_Inputs.FreqRange);
-    Num_Modes  = Structure.Num_Modes;
-    Freq_Orig  = Structure.freq;
+    Num_Modes  = Structure.Nmodes;
+    Freq_Orig  = Structure.LocFreq;
     Response1D = zeros(GridSize,1);
     
     StandardDiv = GUI_Inputs.FWHM./(2*sqrt(2*log(2)));
@@ -241,7 +241,7 @@ if eq(GUI_Inputs.Sampling,1) % GUI: Diag. Disorder
         else 
             Fluctuation = StandardDiv'.*randn(Num_Modes,1); 
         end
-        S.freq = Freq_Orig + Fluctuation;
+        S.LocFreq = Freq_Orig + Fluctuation;
         
         % Calculate FTIR
         FTIR = FTIR_Main(S,GUI_Inputs);

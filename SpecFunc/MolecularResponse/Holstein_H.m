@@ -1,5 +1,4 @@
 function Output = Holstein_H(P)
-
 % Holstein-like Hamiltonian 
 % This hamiltonian consist of a dimer system compose of identical monomer. 
 % This system only invole 1 electronic state 1 vibrational state on the 1st
@@ -22,18 +21,16 @@ function Output = Holstein_H(P)
 % LineWidth = 40;
 % F_Min = 400;
 % F_Max = 800;
-% PlotStick = 1;
-
-% TitleString = ['J12 = ',num2str(J12/w0),' x w0, ',num2str(abs(theta2-theta1)),' degrees'];
-% SaveName    = ['w0_',num2str(w0),'_J12_',num2str(J12),'_',num2str(theta1),'_',num2str(theta2)];
 
 %% Read Inputs
 NV        = P.NV;
-w0        = P.w0;
+w0_1      = P.w0_1;
+w0_2      = P.w0_2;
 Lambda    = P.Lambda;
 J12       = P.J12;
 D         = P.D;
-w0_0      = P.w0_0;
+w0_0_1    = P.w0_0_1;
+w0_0_2    = P.w0_0_2;
 theta1    = P.theta1;
 theta2    = P.theta2;
 
@@ -41,11 +38,8 @@ LS        = P.LS;
 LineWidth = P.LineWidth;
 F_Min     = P.F_Min;
 F_Max     = P.F_Max;
-PlotStick = P.PlotStick;
-
 
 %% Construct local mode basis
-
 NS = (NV+2)*(NV+1)/2; % number of state
 
 [W1,W2] = ndgrid(NV+1:-1:1,1:NV+1);
@@ -55,8 +49,6 @@ WV1 = WV1(WV1>0)-1;
 
 WV2 = tril(W2);
 WV2 = WV2(WV2>0)-1;
-
-WV = [WV1;WV2];
 
 %% Construct vibrational ladder operators 
 % prep vib mode index in matrix form
@@ -71,10 +63,6 @@ V2_qn_diff = V2_Ind1 - V2_Ind2;
 V1_overlap = ~(V1_qn_diff);
 V2_overlap = ~(V2_qn_diff);
 
-% % FC using shifted parabolic approxi.
-% V1_overlap = 1./sqrt(factorial(abs(V1_qn_diff))).*exp(-Lambda.^2./2).*Lambda.^(abs(V1_qn_diff));
-% V2_overlap = 1./sqrt(factorial(abs(V2_qn_diff))).*exp(-Lambda.^2./2).*Lambda.^(abs(V2_qn_diff)); 
-
 % Creation/Anihilation operator for |1> state 
 B1_p_Ind = ~(V1_qn_diff-1);
 B1_n_Ind = ~(V1_qn_diff+1);
@@ -87,7 +75,7 @@ B2_n_Ind = ~(V2_qn_diff+1);
 B2_p = (      sqrt(WV2)*ones(size(WV2))') .* B2_p_Ind .* V1_overlap;
 B2_n = (ones(size(WV2))*sqrt(WV2)'      ) .* B2_n_Ind .* V1_overlap;
 
-%% Construct Hmiltonian
+%% Construct Hamiltonian
 % H = (H1) + (H2) + (H3) + (H4)
 % H1: w0(Bn_p.*Bn_n)
 % H2: lambda*w0*(Bn_p + Bn_n)|n><n|
@@ -96,10 +84,10 @@ B2_n = (ones(size(WV2))*sqrt(WV2)'      ) .* B2_n_Ind .* V1_overlap;
 
 % H1
 Bpn = B1_p*B1_n+B2_p*B2_n;
-H1 = w0 * blkdiag(Bpn,Bpn);
+H1 = blkdiag(w0_1.*Bpn,w0_2.*Bpn);
 
 % H2
-H2 = Lambda * w0 * blkdiag(B1_p+B1_n,B2_p+B2_n);
+H2 = Lambda * blkdiag( w0_1.*(B1_p+B1_n), w0_2.*(B2_p+B2_n) );
 
 % H3
 H3 = reshape(eye(size(H1)),size(H1,1),NS,2); % need replace eye with FC factor matrix
@@ -107,7 +95,10 @@ H3 = reshape(H3(:,:,[2,1]),size(H1));
 H3 = J12.*H3;
 
 % H4
-H4 = (D+w0_0+Lambda^2*w0).*eye(size(H1));
+H4 = D.*eye(size(H1)) + ...
+     blkdiag( ...
+             (w0_0_1 + Lambda^2*w0_1).*eye(size(B1_p)),...
+             (w0_0_2 + Lambda^2*w0_2).*eye(size(B2_p)) ) ;
 
 H = blkdiag(0,H1+H2+H3+H4);
 
@@ -121,7 +112,6 @@ Ex_Freq = diag(D_Full);
  Sort_Ex_V          = V_Full(:,Indx);
  
 %% Construct Transiton matrix
-
 % Transition dipole in local mode
 mu1 = [cosd(theta1),sind(theta1),0];
 mu2 = [cosd(theta2),sind(theta2),0];
@@ -135,13 +125,11 @@ Vib_overlap = V1G_overlap.*V2G_overlap;
 Trans_Monent1 = bsxfun(@times,Vib_overlap,mu1);
 Trans_Monent2 = bsxfun(@times,Vib_overlap,mu2);
 
-
 Trans_Loc = zeros([size(H),3]);
 Trans_Loc(1,   2:  NS+1,:) = Trans_Monent1;
 Trans_Loc(1,NS+2:2*NS+1,:) = Trans_Monent2;
 Trans_Loc(   2:  NS+1,1,:) = Trans_Monent1;
 Trans_Loc(NS+2:2*NS+1,1,:) = Trans_Monent2;
-
 
 Trans_Ex = zeros([size(H),3]);
 % [Improve], maybe able to do more sophisticated
@@ -175,10 +163,8 @@ switch LS
         LineShape = LineWidth./((spec_array2.^2)+(LineWidth^2));
 end
 
-
 CVL = bsxfun(@times,LineShape,IntM); 
 CVL_Total = sum(CVL,1);
-% CVL_Total = CVL_Total.*max(abs(IntM(:)))./max(abs(CVL_Total)); 
 CVL_Total = CVL_Total./max(abs(CVL_Total)); 
 
 %% Output

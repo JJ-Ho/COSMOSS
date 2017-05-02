@@ -46,7 +46,7 @@ if or(strcmp(SpecType,'FTIR'),strcmp(SpecType,'SFG'))
     C_Freq = ImportSortInd(C_Freq,F_1q_V);
 
     % mode index
-    Num_Ex_Mode = SD.H.Num_Modes;
+    Num_Ex_Mode = SD.H.Nmodes;
     Ex_Ind      = (1:Num_Ex_Mode)';
     C_Index = ImportSortInd(C_Index,Ex_Ind);
     

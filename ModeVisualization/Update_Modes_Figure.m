@@ -58,13 +58,13 @@ EigVec_Scale   = INPUT.Results.EigVec_Scale  ;
 SpecType       = INPUT.Results.SpecType      ;
 
 %% Define useful parameters
-N_Mode_Total  = Structure.Num_Modes;
+N_Mode_Total  = Structure.Nmodes;
 %Mode_Index    = (1:N_Mode_Total)+1;
 N_Mode_Select = length(Mu_Alpha_Ind);
 
 %% molecular frame (need to rename to ab frame)
 % center
-Center_Loc_MF = Structure.center;
+Center_Loc_MF = Structure.LocCenter;
 
 % Transition dipole
 Mu_Loc_MF = SpecData.Mu.M_Lo_01;
@@ -83,7 +83,7 @@ end
 % Eigen vectors
 EigVecM      = SpecData.H.Sort_Ex_V1;
 EigVecM2     = EigVecM.^2;
-Center_Ex_MF = EigVecM2*(Structure.center);
+Center_Ex_MF = EigVecM2*(Structure.LocCenter);
 
 %% Retreive Axes from input figure with molecule plotted
 hAx = findobj(hF,'type','axes');
@@ -119,7 +119,7 @@ if Plot_EigVec
     switch EigVec_Conv
         case 1 % just the coefficient
            [X0,Y0,Z0] = sphere(50);
-           for k = 1:Structure.Num_Modes
+           for k = 1:Structure.Nmodes
                
                RR   = abs(Mix_Coeft(k));
                Sign = sign(Mix_Coeft(k));

@@ -255,7 +255,7 @@ end
 
 %% Output Variables
 Output.ExMode        = ExMode;
-Output.Nmodes     = Nmodes;
+Output.Nmodes        = Nmodes;
 Output.StatesNum     = StatesNum;
 Output.Sort_Ex_Freq  = Sort_Ex_Freq;
 Output.Sort_Ex_V     = Sort_Ex_V;

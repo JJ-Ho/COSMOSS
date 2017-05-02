@@ -177,7 +177,7 @@ if Plot3D
     % Center of Exciton mode
     EigVecM      = SpecData.H.Sort_Ex_V(2:end,2:end); % get ride of ground state
     EigVecM2     = EigVecM.^2;
-    Center_Ex_MF = EigVecM2*(Structure.center);
+    Center_Ex_MF = EigVecM2*(Structure.LocCenter);
     
     if PlotSum
         Center = sum(Center_Ex_MF(EigVec_Ind,:),1)./length(EigVec_Ind);

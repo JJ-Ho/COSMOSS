@@ -443,6 +443,9 @@ TwoDSFG.SpecType    = '2DSFG';
 GUI_data.TwoDSFG = TwoDSFG;
 guidata(hObject,GUI_data);
 
+function AR_SFG_Callback(hObject, eventdata, GUI_data)
+SFG_AR_BNO055(GUI_data)
+
 % Spectral calculation functions ------------------------------------------
 
 

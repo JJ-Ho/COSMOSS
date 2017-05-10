@@ -150,7 +150,7 @@ Freq_NR2 = [ Ea_5, Ea_5-Eb_5, Ea_5]; % [pump,diff,probe]
 
 %% Prep for R3/NR3
 % estimate of largest array size and break it down to several for loop
-MEM_CutOff = 1e-1; %[GB]
+MEM_CutOff = 3e-1; %[GB]
 Ele_Max = round(MEM_CutOff/(81 * 8 / 1e9)) + 1; % number of elements to reach MEM_CufOff
 
 %% R3

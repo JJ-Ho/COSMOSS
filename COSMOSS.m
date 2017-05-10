@@ -290,8 +290,8 @@ hAx = axes('Parent',hF);
 if eq(GUI_Inputs.Sampling,1)
     % Pre-allocate
     GridSize   = length(GUI_Inputs.FreqRange);
-    Num_Modes  = Structure.Num_Modes;
-    Freq_Orig  = Structure.freq;
+    Num_Modes  = Structure.Nmodes;
+    Freq_Orig  = Structure.LocFreq;
     Response1D = zeros(GridSize,1);
     
     
@@ -317,7 +317,7 @@ if eq(GUI_Inputs.Sampling,1)
         else 
             Fluctuation = StandardDiv'.*randn(Num_Modes,1); 
         end
-        Structure.freq = Freq_Orig + Fluctuation;
+        Structure.LocFreq = Freq_Orig + Fluctuation;
         OneDSFG = OneDSFG_Main(Structure,GUI_Inputs);
         
         % recursive part

@@ -13,8 +13,10 @@ end
 %% Calculate TwoD response
 if eq(GUI_Inputs.Sampling,1)
     % Pre-allocate
-    GridSize     = FreqRange(end);
-
+    FreqRange = FreqRange(1):FreqRange(end)+100; % add 100 cm-1 range to prevent fluctuation out of range
+    GUI_Inputs.FreqRange = FreqRange; % pass the extended Frequency Range to the TwoD main function
+    GridSize  = FreqRange(end); 
+    
     Rephasing    = sparse(GridSize,GridSize);
     NonRephasing = sparse(GridSize,GridSize);
     SpecAccuR1   = sparse(GridSize,GridSize);
@@ -24,8 +26,8 @@ if eq(GUI_Inputs.Sampling,1)
     SpecAccuNR2  = sparse(GridSize,GridSize);
     SpecAccuNR3  = sparse(GridSize,GridSize);
 
-    Num_Modes = Structure.Num_Modes;
-    Freq_Orig = Structure.freq;
+    Num_Modes = Structure.Nmodes;
+    Freq_Orig = Structure.LocFreq;
 
     StandardDiv = GUI_Inputs.FWHM./(2*sqrt(2*log(2)));
     P_FlucCorr  = GUI_Inputs.P_FlucCorr/100; % turn percentage to number within 0~1
@@ -50,7 +52,7 @@ if eq(GUI_Inputs.Sampling,1)
         else 
             Fluctuation = StandardDiv'.*randn(Num_Modes,1); 
         end
-        Structure.freq = Freq_Orig + Fluctuation;
+        Structure.LocFreq = Freq_Orig + Fluctuation;
 
         % run main function
         [Tmp_SG,Tmp_Res] = h2DFunc(Structure,GUI_Inputs);
@@ -80,7 +82,7 @@ if eq(GUI_Inputs.Sampling,1)
         SpectraGrid.SpecAccuNR3  = SpecAccuNR3  ;
         Response = Tmp_Res;
 
-        % Dynamic update of figure
+        % Dynamic update of figure % update every 10 run
         while and(~eq(DynamicUpdate,0),eq(mod(i,10),0))
             CVL = Conv2D(SpectraGrid,GUI_Inputs);
             CVL.FilesName = [Structure.FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title

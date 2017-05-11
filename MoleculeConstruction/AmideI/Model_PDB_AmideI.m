@@ -240,6 +240,7 @@ Structure.LocMu     = Tmp_LocMu;
 Structure.LocAlpha  = Tmp_LocAlpha;
 
 Structure.FilesName = Tmp1.FilesName;
+Structure.Extra.AmideIAtomSerNo = Tmp1.Extra.AmideIAtomSerNo;
 
 % Export into Structure so it can be passsed around different GUIs
 Structure.StructModel = 2;

@@ -303,3 +303,5 @@ Output.LocMu     = mu_Sim;
 Output.LocAlpha  = alpha; % raman tensor vector form [N x 9]
 
 Output.FilesName = FilesName;
+Output.Extra.AmideIAtomSerNo = AmideIAtomSerNo;
+

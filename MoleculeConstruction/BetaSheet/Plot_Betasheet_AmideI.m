@@ -60,33 +60,37 @@ INPUT.KeepUnmatched = 1;
 defaultPlot_Atoms = 1;
 defaultPlot_Bonds = 1;
 defaultPlot_Axis  = 1;
+defaultL_Index    = [];
 
 % Add optional inputs to inputparser object
 addOptional(INPUT,'Plot_Atoms',defaultPlot_Atoms);
 addOptional(INPUT,'Plot_Bonds',defaultPlot_Bonds);
 addOptional(INPUT,'Plot_Axis' ,defaultPlot_Axis);
+addOptional(INPUT,'L_Index'   ,defaultL_Index);
 
 parse(INPUT,GUI_Inputs_C{:});
 
 Plot_Atoms = INPUT.Results.Plot_Atoms;
 Plot_Bonds = INPUT.Results.Plot_Bonds;
 Plot_Axis  = INPUT.Results.Plot_Axis;
+L_Index    = INPUT.Results.L_Index;
 
 %% Rotate the molecule to Lab frame
 XYZ      = SData.XYZ;
 AtomName = SData.AtomName;
 Center   = SData.LocCenter;
 COM      = SData.COM;
+AmideIAtomSerNo = SData.Extra.AmideIAtomSerNo;
 
 %% Position info
-C_Ind = strcmp(AtomName,'C');
-O_Ind = strcmp(AtomName,'O');
-N_Ind = strcmp(AtomName,'N');
+C_Ind = AmideIAtomSerNo(:,1);
+O_Ind = AmideIAtomSerNo(:,2);
+N_Ind = AmideIAtomSerNo(:,3);
 
-% Carbon_Pos   = XYZ(SData.AtomSerNo(:,1),:);
-% Oxygen_Pos   = XYZ(SData.AtomSerNo(:,2),:);
-% Nitrogen_Pos = XYZ(SData.AtomSerNo(:,3),:);
-% CarbonA_Pos  = XYZ(Structure.AtomSerNo(:,4),:);
+XYZ_C = XYZ(C_Ind,:);
+XYZ_O = XYZ(O_Ind,:);
+XYZ_N = XYZ(N_Ind,:);
+
 
 % C terminus H/O atoms
 C_Ind_H = SData.Extra.Ind_H;
@@ -101,9 +105,9 @@ hold on
     if Plot_Atoms
         plot3(Center(:,1)  ,Center(:,2)  ,Center(:,3)  ,'LineStyle','none','Marker','d','MarkerFaceColor','w')
 
-        plot3(XYZ(C_Ind,1),XYZ(C_Ind,2),XYZ(C_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,0],'MarkerSize',10)
-        plot3(XYZ(O_Ind,1),XYZ(O_Ind,2),XYZ(O_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',10)
-        plot3(XYZ(N_Ind,1),XYZ(N_Ind,2),XYZ(N_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,1],'MarkerSize',10)        
+        plot3(XYZ_C(:,1),XYZ_C(:,2),XYZ_C(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,0],'MarkerSize',10)
+        plot3(XYZ_O(:,1),XYZ_O(:,2),XYZ_O(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',10)
+        plot3(XYZ_N(:,1),XYZ_N(:,2),XYZ_N(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,1],'MarkerSize',10)        
 
         plot3(C_H_Pos(:,1),C_H_Pos(:,2),C_H_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','w','MarkerSize',10)
         plot3(C_O_Pos(:,1),C_O_Pos(:,2),C_O_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','r','MarkerSize',10)
@@ -113,26 +117,8 @@ hold on
 
     %% draws bonds
     if Plot_Bonds
-        
         Conn = Connectivity(AtomName,XYZ);
-        gplot3(Conn, XYZ);
-        
-%         % Chain
-%             if eq(size(Carbon_Pos,1),1)
-%                 % only one carbon, don't draw peptide chain
-%             else
-%                 Conn0 = Connectivity(Carbon_Pos,'BondLength',3.5);
-%                 gplot3(Conn0, Carbon_Pos);
-%             end
-%         % C=O bond
-%             C_O_XYZ = [Carbon_Pos;Oxygen_Pos];
-%             Conn1 = Connectivity(C_O_XYZ,'BondLength',1.6);
-%             gplot3(Conn1,C_O_XYZ,'LineWidth',2,'Color',[0,0,0]);
-%         % C-N bond
-%             C_N_XYZ = [Carbon_Pos;Nitrogen_Pos];
-%             Conn2 = Connectivity(C_N_XYZ,'BondLength',1.6);
-%             gplot3(Conn2,C_N_XYZ,'LineWidth',1,'Color',[0,0,0]);
-
+        gplot3(Conn,XYZ,'LineWidth',1,'Color',[0,0,0]);
     end  
 
     %% Draw molecular and Lab frame
@@ -148,11 +134,12 @@ hold on
     %% Draw labeled atoms
     Plot_Label = 1;
     if Plot_Label
-        
-        L_Index = GUI_Inputs.L_Index;
-        L_C = Center(L_Index,:);
-        plot3(L_C(:,1),L_C(:,2),L_C(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','g','MarkerSize',11)
-
+        L_C = XYZ_C(L_Index,:);
+        L_O = XYZ_O(L_Index,:);
+        L_N = XYZ_N(L_Index,:);
+        plot3(L_C(:,1),L_C(:,2),L_C(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,1,0],'MarkerSize',10)
+        plot3(L_O(:,1),L_O(:,2),L_O(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,1,0],'MarkerSize',10)
+        plot3(L_N(:,1),L_N(:,2),L_N(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,1,0],'MarkerSize',10)        
     end
     
 hold off

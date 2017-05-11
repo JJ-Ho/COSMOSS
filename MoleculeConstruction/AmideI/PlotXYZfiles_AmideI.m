@@ -23,10 +23,9 @@ function hF = PlotXYZfiles_AmideI(SData,GUI_Inputs)
 % Copyright Jia-Jung Ho, 2013
 
 %% Debug
-
-% PDB_Data    = ConstructGrid('Debug');
-% PDB_Data = TwoMolConstruct;
-% Orientation = [0,0,0];
+% SData = Data_PDB_AmideI.Structure;
+% GUI_Inputs.L_Index = [1,2];
+% GUI_Inputs.Plot_SideChain = 0;
 
 %% Input parser
 GUI_Inputs_C      = fieldnames(GUI_Inputs);
@@ -41,12 +40,16 @@ defaultPlot_Atoms     = 1;
 defaultPlot_Bonds     = 1;
 defaultPlot_Axis      = 1;
 defaultPlot_SideChain = 0;
+defaultPlot_Label     = 1;
+defaultL_Index        = [];
 
 % Add optional inputs to inputparser object
 addOptional(INPUT,'Plot_Atoms'     ,defaultPlot_Atoms);
 addOptional(INPUT,'Plot_Bonds'     ,defaultPlot_Bonds);
 addOptional(INPUT,'Plot_Axis'      ,defaultPlot_Axis);
 addOptional(INPUT,'Plot_SideChain' ,defaultPlot_SideChain);
+addOptional(INPUT,'Plot_Label'     ,defaultPlot_Label);
+addOptional(INPUT,'L_Index'        ,defaultL_Index);
 
 parse(INPUT,GUI_Inputs_C{:});
 
@@ -54,43 +57,56 @@ Plot_Atoms     = INPUT.Results.Plot_Atoms;
 Plot_Bonds     = INPUT.Results.Plot_Bonds;
 Plot_Axis      = INPUT.Results.Plot_Axis;
 Plot_SideChain = INPUT.Results.Plot_SideChain;
+Plot_Label     = INPUT.Results.Plot_Label;
+L_Index        = INPUT.Results.L_Index;
 
 %% Main
 XYZ      = SData.XYZ;
 AtomName = SData.AtomName;
 Center   = SData.LocCenter;
 COM      = SData.COM;
+AmideIAtomSerNo = SData.Extra.AmideIAtomSerNo;
 
 %% Position info
-C_Ind = strcmp(AtomName,'C');
-O_Ind = strcmp(AtomName,'O');
-N_Ind = strcmp(AtomName,'N');
-BB_Ind = or(or(C_Ind,O_Ind),N_Ind);
+C_Ind = AmideIAtomSerNo(:,1);
+O_Ind = AmideIAtomSerNo(:,2);
+N_Ind = AmideIAtomSerNo(:,3);
+
+% Add C_Alpha atom to complelet the backbone
+Index_All = 1:length(AtomName);
+CA_Ind = Index_All(strcmp(AtomName,'CA'))';
+BB_Ind = [C_Ind;O_Ind;N_Ind;CA_Ind];
+
+XYZ_C = XYZ(C_Ind,:);
+XYZ_O = XYZ(O_Ind,:);
+XYZ_N = XYZ(N_Ind,:);
 
 hF = figure; 
 hold on
 
     %% draw bonds
     if Plot_Bonds
-        if Plot_SideChain
-            XYZ_bond = XYZ;
-            Atom_bond = AtomName;
-        else
-            XYZ_bond = XYZ(BB_Ind,:);
-            Atom_bond = AtomName(BB_Ind);
-        end
+        XYZ_bond = XYZ(BB_Ind,:);
+        Atom_bond = AtomName(BB_Ind);
         
         Conn = Connectivity(Atom_bond,XYZ_bond);
-        gplot3(Conn,XYZ_bond);
+        gplot3(Conn,XYZ_bond,'LineWidth',1,'Color',[0,0,0]);
     end
     
+    if Plot_SideChain
+        XYZ_Side = XYZ;
+        Atom_Side = AtomName;
+        
+        Conn = Connectivity(Atom_Side,XYZ_Side);
+        gplot3(Conn,XYZ_Side);
+    end
     %% Draw atoms
     if Plot_Atoms
         plot3(Center(:,1)  ,Center(:,2)  ,Center(:,3)  ,'LineStyle','none','Marker','d','MarkerFaceColor','w')
-
-        plot3(XYZ(C_Ind,1),XYZ(C_Ind,2),XYZ(C_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,0],'MarkerSize',10)
-        plot3(XYZ(O_Ind,1),XYZ(O_Ind,2),XYZ(O_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',10)
-        plot3(XYZ(N_Ind,1),XYZ(N_Ind,2),XYZ(N_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,1],'MarkerSize',10)        
+        
+        plot3(XYZ_C(:,1),XYZ_C(:,2),XYZ_C(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,0],'MarkerSize',10)
+        plot3(XYZ_O(:,1),XYZ_O(:,2),XYZ_O(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',10)
+        plot3(XYZ_N(:,1),XYZ_N(:,2),XYZ_N(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,1],'MarkerSize',10)        
     end
     
     %% Draw molecular and Lab frame
@@ -104,11 +120,18 @@ hold on
     end
     
     %% Draw labeled atoms
-    Plot_Label = 1;
     if Plot_Label
-        L_Index = GUI_Inputs.L_Index;
-        L_C = Center(L_Index,:);
-        plot3(L_C(:,1),L_C(:,2),L_C(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','g','MarkerSize',11)
+        %L_Index = GUI_Inputs.L_Index;
+        %L_Center = Center(L_Index,:);
+        L_C = XYZ_C(L_Index,:);
+        L_O = XYZ_O(L_Index,:);
+        L_N = XYZ_N(L_Index,:);
+
+        %plot3(L_Center(:,1),L_Center(:,2),L_Center(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','g','MarkerSize',11)
+        plot3(L_C(:,1),L_C(:,2),L_C(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,1,0],'MarkerSize',10)
+        plot3(L_O(:,1),L_O(:,2),L_O(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,1,0],'MarkerSize',10)
+        plot3(L_N(:,1),L_N(:,2),L_N(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,1,0],'MarkerSize',10)        
+
     end
 hold off
 

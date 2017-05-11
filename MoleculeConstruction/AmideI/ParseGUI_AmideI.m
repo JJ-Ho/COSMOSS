@@ -18,6 +18,7 @@ O.Plot_Atoms      = get(hGUI.Plot_Atoms ,'Value' );
 O.Plot_Bonds      = get(hGUI.Plot_Bonds ,'Value' );
 O.Plot_Axis       = get(hGUI.Plot_Axis  ,'Value' );
 O.Plot_SideChain  = get(hGUI.Plot_SideChain ,'Value' );
+O.Plot_Label      = get(hGUI.Plot_Label ,'Value' );
 
 %% Export field name for each parameter
 % Orientation -------------------------------------------------------------

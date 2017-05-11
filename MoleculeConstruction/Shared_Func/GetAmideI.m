@@ -60,10 +60,27 @@ function Output = GetAmideI(XYZ,AtomName,FilesName,GUI_Inputs)
 % Copyright Jia-Jung Ho, 2013
 
 %% Debug
-% Num_Atoms = Test.Num_Atoms;
-% AtomName  = Test.AtomName;
-% XYZ       = Test.XYZ;
-% FilesName = Test.FilesName;
+% PWD = pwd;
+% PDB_Path = [PWD, '/StructureFiles/PDB/'];
+% 
+% [FilesName,PathName,~] = uigetfile({'*.pdb','PDB file'; ...
+%                                     '*,*','All Files'},...
+%                                     'MultiSelect','on',...
+%                                     'Select inputs',PDB_Path);
+% 
+% PDB = pdbread([PathName FilesName]);
+% Atom_Data = PDB.Model.Atom;
+% Num_Atoms = size(Atom_Data,2);
+% 
+% % Get coordination data
+% XYZ = zeros(Num_Atoms,3);
+% AtomName = cell(Num_Atoms,1);
+% for II = 1:Num_Atoms
+%     A = Atom_Data(II);
+%     XYZ(II,:) = [A.X, A.Y, A.Z];
+%     AtomName{II} = Atom_Data(II).AtomName;
+% end
+% 
 % GUI_Inputs.Debug = 'Debug';
 
 %% Inputs parser
@@ -155,6 +172,16 @@ IndX = Ind(Array_Mask(:));
 % IndX(~any(IndX,1))   = [];
 
 AmideIAtomSerNo = reshape(IndX,3,[])';
+
+%% Check if C-N distance >> typical bond length
+%  if so, this is the end group and will be deleted
+XYZ_C = XYZ(AmideIAtomSerNo(:,1),:);
+XYZ_N = XYZ(AmideIAtomSerNo(:,3),:);
+D_CN = sum((XYZ_C-XYZ_N).^2,2);
+D_CN_CutOff = 3; % CutOff distance in Ang
+EndGroupInd = gt(D_CN,D_CN_CutOff);
+
+AmideIAtomSerNo(EndGroupInd,:) = []; 
 
 %% Read molecule XYZ and rotate molecule in Molecule frame
 Num_Modes = size(AmideIAtomSerNo,1);

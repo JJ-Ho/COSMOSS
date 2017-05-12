@@ -129,7 +129,7 @@ XYZ_coor(2,:,:) = XYZ_2_Rot_Trans;
 XYZ = [ squeeze(XYZ_coor(1,:,:)) ;
         squeeze(XYZ_coor(2,:,:)) ];
 
-AtomName = [AtomName,AtomName];    
+AtomName = [AtomName,AtomName]';    
     
 %% Define Acid modes coordinate system
 Vec_COD      = XYZ_coor(:,2,:)-XYZ_coor(:,1,:);

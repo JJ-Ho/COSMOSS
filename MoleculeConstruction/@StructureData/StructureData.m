@@ -43,6 +43,8 @@ classdef StructureData
       obj_T = SD_Trans(obj,V)
       obj_R = SD_Rot(obj,Phi,Psi,Theta)
       
+      obj_comb2 = SD_Comb2(obj1,obj2)
+      
    end
 
 end

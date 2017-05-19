@@ -127,6 +127,7 @@ Ind = (1:Num_Atoms)';
 Atom = [strcmp(AtomName,'C'),...
         strcmp(AtomName,'O'),...
         strcmp(AtomName,'N'),...
+        strcmp(AtomName,'CA'),...
        ];
 
 % delete irrelevent lines with no above atoms 
@@ -136,7 +137,7 @@ Atom(~any(Atom,2),:) = [];
 %% Remove first few rows not start with 'C'
 Head   = 'y';
 while strcmp(Head,'y')
-    if eq(Atom(1,:), [1,0,0])
+    if eq(Atom(1,:), [1,0,0,0])
         Head = 'n';
     else
         Atom(1,:) = [];
@@ -144,10 +145,10 @@ while strcmp(Head,'y')
     end
 end
 
-% Remove first few rows not start with 'N'
+% Remove last few rows not end with 'CA'
 Tail   = 'y';
 while strcmp(Tail,'y')
-    if eq(Atom(end,:), [0,0,1])
+    if eq(Atom(end,:), [0,0,0,1])
         Tail = 'n';
     else
         Atom(end,:) = [];
@@ -157,21 +158,22 @@ end
 
 % Remove any lines that does not have all three atoms
 % ex:
-%   i [1,0,0]     [1,0,0]
-%   j [0,1,0]  vs [0,1,0]  by clapse the ijk dimemsion
-%   k [0,0,1]     [0,1,0]
-%        ||          ||
-%        \/          \/
-%     [1,1,1]     [1,2,0]  
-AtomX = sum(permute(reshape(Atom,3,[],3),[3,2,1]),3);
+%   i [1,0,0,0]     [1,0,0,0]
+%   j [0,1,0,0]  vs [0,1,0,0]  by clapse the ijk dimemsion
+%   k [0,0,1,0]     [0,1,0,0]
+%   l [0,0,0,1]     [0,0,0,1]
+%        ||            ||
+%        \/            \/
+%     [1,1,1,1]     [1,2,0,1]  
+AtomX = sum(permute(reshape(Atom,4,[],4),[3,2,1]),3);
 Mask = ones(size(AtomX));
-Array_Mask = logical(bsxfun(@times,all(~(AtomX - Mask)),[1,1,1]'));
+Array_Mask = logical(bsxfun(@times,all(~(AtomX - Mask)),[1,1,1,1]'));
 IndX = Ind(Array_Mask(:));
 
 % IndX = bsxfun(@times,IndX,Array_Mask);
 % IndX(~any(IndX,1))   = [];
 
-AmideIAtomSerNo = reshape(IndX,3,[])';
+AmideIAtomSerNo = reshape(IndX,4,[])';
 
 %% Check if C-N distance >> typical bond length
 %  if so, this is the end group and will be deleted
@@ -276,21 +278,6 @@ end
 AmideIAnharm = ones(Num_Modes,1).*Anharm;
 
 %% Output Structure
-% Output.center         = AmideICenter;
-% Output.freq           = AmideIFreq;
-% Output.anharm         = AmideIAnharm;
-% Output.mu             = mu_Sim;
-% Output.alpha          = alpha; % raman tensor vector form [N x 9]
-% Output.AtomSerNo      = AmideIAtomSerNo;
-% Output.Num_Modes      = Num_Modes;
-% Output.XYZ            = XYZ_Rot;
-% Output.FilesName      = FilesName;
-% Output.mu_angle       = mu_angle/pi*180;    % unit degrees
-% Output.alpha_angle    = alpha_angle/pi*180; % unit degrees
-% Output.Mol_Frame_Rot  = Mol_Frame_Rot;
-% Output.Mol_Frame_Orig = Mol_Frame_Orig;
-
-
 Output = StructureData;
 Output.XYZ       = XYZ_Rot;
 Output.AtomName  = AtomName;

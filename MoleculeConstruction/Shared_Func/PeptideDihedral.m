@@ -1,4 +1,20 @@
 function [Phi,Psi] = PeptideDihedral(Structure)
+% Index Definition 
+%     O(1)                     O(2)                      O(n)                     O
+%     ||                       ||                        ||                       ||
+% H2N-C(1) -> N(1) -> Ca(1) -> C(2) -> N(2) - ...    ... C(n) -> N(n) -> Ca(n) -> C-OH
+%                Phi(1)    Psi(1)                                    Phi(n)   Psi(n)
+% 
+% General:
+%        O(i)                     O(i+1)
+%        ||                       ||
+% (N)... C(i) -> N(i) -> Ca(i) -> C(i+1) -> N(i+1) - ... (C)
+%                   Phi(i)    Psi(i)
+% 
+% Note: the n-th dihedrals will be removed since there is no (n+1)-th amide
+%       mode, thus no definition of n-th vector V4, as a result:
+%       Input: N modes =>  Output: N-1 dihedrals 
+
 %% Debug
 % Structure = Data_COSMOSS.Structure;
 
@@ -7,10 +23,10 @@ Ind_CONCa = Structure.Extra.AmideIAtomSerNo; %[C,O,N,CA]
 XYZ       = Structure.XYZ;
 
 %% prep bond vectors
-%     O(i)                     O(i+1)
-%     ||                       ||
-% ... C(i) -> N(i) -> Ca(i) -> C(i+1) -> N(i+1) - ...
-%          V1      V2       V3        V4
+%        O(i)                     O(i+1)
+%        ||                       ||
+% (N)... C(i) -> N(i) -> Ca(i) -> C(i+1) -> N(i+1) - ... (C)
+%            V1(i)   V2(i)    V3(i)     V4(i)
 
 V1 = XYZ(Ind_CONCa(    :,3),:) - XYZ(Ind_CONCa(      :,1),:); % Vec:   N(i) <-   C(i)
 V2 = XYZ(Ind_CONCa(    :,4),:) - XYZ(Ind_CONCa(      :,3),:); % Vec:  Ca(i) <-   N(i)

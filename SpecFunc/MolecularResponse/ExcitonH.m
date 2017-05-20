@@ -118,6 +118,10 @@ if ~Sampling
 end
 
 %% Diagonal disorder if any
+if strcmp(CouplingType,'Jansen_TDC')
+    [~,dF_Jansen] = Coupling_Jansen(Structure);
+    LocFreq = LocFreq + dF_Jansen;
+end
 
 DD_std     = DD_FWHM/(2*sqrt(2*log(2)));
 P_FlucCorr = P_FlucCorr/100; % turn percentage to number within 0~1

@@ -130,8 +130,12 @@ hold on
         %plot3(L_Center(:,1),L_Center(:,2),L_Center(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','g','MarkerSize',11)
         plot3(L_C(:,1),L_C(:,2),L_C(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,1,0],'MarkerSize',10)
         plot3(L_O(:,1),L_O(:,2),L_O(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,1,0],'MarkerSize',10)
-        plot3(L_N(:,1),L_N(:,2),L_N(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,1,0],'MarkerSize',10)        
-
+        plot3(L_N(:,1),L_N(:,2),L_N(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,1,0],'MarkerSize',10)    
+%         MarkerSize = 150;
+%         s_C = scatter3(L_C(:,1),L_C(:,2),L_C(:,3),MarkerSize,'MarkerFaceColor',[0,1,0],'MarkerEdgeColor','none');
+%         s_O = scatter3(L_O(:,1),L_O(:,2),L_O(:,3),MarkerSize,'MarkerFaceColor',[0,1,0],'MarkerEdgeColor','none');
+%         s_N = scatter3(L_N(:,1),L_N(:,2),L_N(:,3),MarkerSize,'MarkerFaceColor',[0,1,0],'MarkerEdgeColor','none');
+%         alpha([s_C,s_O,s_N],0.5)
     end
 hold off
 

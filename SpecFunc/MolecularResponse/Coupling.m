@@ -39,7 +39,7 @@ switch CoupleType
 
     case 'Jansen_TDC'
         Beta = Coupling_TDC(Structure);
-        Beta_Jansen_NN = Coupling_Jansen(Structure);
+        [Beta_Jansen_NN,~] = Coupling_Jansen(Structure);
         
         Sub_Ind = ~eq(Beta_Jansen_NN,0);
         Beta(Sub_Ind) = Beta_Jansen_NN(Sub_Ind);

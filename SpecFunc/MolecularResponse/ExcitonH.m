@@ -1,4 +1,4 @@
-function Output= ExcitonH(SData,varargin)
+function Output= ExcitonH(Structure,GUI_Inputs,ExMode)
 
 %% TwoExcitonH
 %  
@@ -9,10 +9,8 @@ function Output= ExcitonH(SData,varargin)
 % use "Mode" key word to select which H want to generate.
 % expectedModes = {'OneEx','TwoEx'};
 % 
-
 % Todo: fix [Improve] part
 %       Integrate Diagonal disorder part in.
-
 % 
 % ------- Version log -----------------------------------------------------
 %
@@ -65,46 +63,48 @@ function Output= ExcitonH(SData,varargin)
 % Copyright Jia-Jung Ho, 2013
 
 %% Debug
-% varargin = {'OffDiagDisorder',0,'CouplingType','NN_Mix_TDC'};
-
-
-%% Initiation part
-
-% Reassign variable names from StrucInfo
-Nmodes    = SData.Nmodes;
-LocFreq   = SData.LocFreq;
-LocAnharm = SData.LocAnharm;
+% Structure  = Data_COSMOSS.Structure;
+% GUI_Inputs = ParseGUI_Main(Data_COSMOSS.hGUIs);
+% ExMode     = 'OneEx'; % 'OneEx' or 'TwoEx'
 
 %% Inputs parser
+% Turn Output from Read GUI to cell array
+GUI_Inputs_C      = fieldnames(GUI_Inputs);
+GUI_Inputs_C(:,2) = struct2cell(GUI_Inputs);
+GUI_Inputs_C      = GUI_Inputs_C';
+
 INPUT = inputParser;
+INPUT.KeepUnmatched = true;
 
-% Default values
-defaultExMode            = 'OneEx';
-expectedExModes          = {'OneEx','TwoEx'};
-defaultCouplingType      = 'NN_Mix_TDC';
-% expectedCouplingType    = {'NN_Mix_TDC','TDC','Cho_PB','Cho_APB'}; % TDC = Transition Dipole Coupling; NN = Nearest Neighbor.
-defaultOffDiagDisorder   = 0;
-defaultBeta_NN           = 0.8; % 0.8 cm-1 according to Lauren's PNAS paper (doi/10.1073/pnas.1117704109); that originate from Min Cho's paper (doi:10.1063/1.1997151)
+defaultCouplingType = 'TDC';
+defaultSampling     = 0;
+defaultP_FlucCorr   = 100;
+defaultDD_FWHM      = 0;
+defaultODD_FWHM     = 0;
+defaultBeta_NN      = 0.8; % 0.8 cm-1 according to Lauren's PNAS paper (doi/10.1073/pnas.1117704109); that originate from Min Cho's paper (doi:10.1063/1.1997151)
 
+addOptional(INPUT,'CouplingType',defaultCouplingType);
+addOptional(INPUT,'Sampling'    ,defaultSampling);
+addOptional(INPUT,'P_FlucCorr'  ,defaultP_FlucCorr);
+addOptional(INPUT,'DD_FWHM'     ,defaultDD_FWHM);
+addOptional(INPUT,'ODD_FWHM'    ,defaultODD_FWHM);
+addOptional(INPUT,'Beta_NN'     ,defaultBeta_NN);
 
-% Add optional inputs to inputparser object
-addParamValue(INPUT,'ExMode',defaultExMode,...
-                 @(x) any(validatestring(x,expectedExModes)));
-             
-% addParamValue(INPUT,'CouplingType',defaultCouplingType,...
-%                  @(x) any(validatestring(x,expectedCouplingType))); 
-
-addOptional(INPUT,'CouplingType'   ,defaultCouplingType);
-addOptional(INPUT,'OffDiagDisorder',defaultOffDiagDisorder);
-addOptional(INPUT,'Beta_NN'        ,defaultBeta_NN);
-
-parse(INPUT,varargin{:});
+parse(INPUT,GUI_Inputs_C{:});
 
 % Reassign Variable names
-ExMode          = INPUT.Results.ExMode;
-CouplingType    = INPUT.Results.CouplingType;
-OffDiagDisorder = INPUT.Results.OffDiagDisorder;
-Beta_NN         = INPUT.Results.Beta_NN;
+CouplingType = INPUT.Results.CouplingType;
+Sampling     = INPUT.Results.Sampling;
+P_FlucCorr   = INPUT.Results.P_FlucCorr;
+DD_FWHM      = INPUT.Results.DD_FWHM;
+ODD_FWHM     = INPUT.Results.ODD_FWHM;
+Beta_NN      = INPUT.Results.Beta_NN;
+
+%% Initiation part
+% Reassign variable names from StrucInfo
+Nmodes    = Structure.Nmodes;
+LocFreq   = Structure.LocFreq;
+LocAnharm = Structure.LocAnharm;
 
 if strcmp(ExMode,'TwoEx')
     StatesNum = (Nmodes+2)*(Nmodes+1)/2; 
@@ -112,19 +112,34 @@ else
     StatesNum = (Nmodes+1); 
 end
 
+%% Diagonal disorder if any
+if ~Sampling
+    DD_FWHM  = 0;
+    ODD_FWHM = 0;
+end
+
+DD_std     = DD_FWHM./(2*sqrt(2*log(2)));
+P_FlucCorr = P_FlucCorr/100; % turn percentage to number within 0~1
+
+Correlation_Dice = rand;
+if Correlation_Dice < P_FlucCorr
+    dF = DD_std*(randn(1,1).*ones(Nmodes,1));
+else 
+    dF = DD_std*randn(Nmodes,1); 
+end
+LocFreq = LocFreq + dF;
+
+%% Off diagonal disorder
+ODD_std = ODD_FWHM./(2*sqrt(2*log(2)));
+dBeta   = ODD_std*randn(Nmodes);
+dBeta   = (dBeta + dBeta')./2; % symetrize
+Beta    = Coupling(Structure,CouplingType,Beta_NN); % Coupling
+Beta    = Beta + dBeta;
+
 %% Zero exciton part of full Hamiltonain 
 ZeroExPart = 0;
 
 %% One Exciton part of full Hamiltonian
-
-Beta = Coupling(SData,CouplingType,Beta_NN);
-
-% off diagonal disorder
-OffDisorder = sqrt(OffDiagDisorder)*randn(Nmodes);
-OffDisorder = (OffDisorder + OffDisorder')./2; % symetrize
-
-Beta = Beta + OffDisorder;
-
 % The result is in cm-1 unit
 OneExPart = bsxfun(@times,eye(Nmodes),LocFreq) + Beta;
 
@@ -252,7 +267,6 @@ end
 % [V_TwoExOvertone,D_TwoExOvertone] = eig(TwoExOvertoneH);
 % [V_TwoExCombination,D_TwoExCombination] = eig(TwoExCombinationH);
 
-
 %% Output Variables
 Output.ExMode        = ExMode;
 Output.Nmodes        = Nmodes;
@@ -269,9 +283,3 @@ if strcmp(ExMode,'TwoEx')
     Output.TEDIndexBegin = TEDIndexBegin;
     Output.TEDIndexEnd   = TEDIndexEnd;
 end
-
-% Output.V_Full        = V_Full;
-% Output.Indx          = Indx;
-% Output.Ex_Freq       = Ex_Freq;
-% Output.OneExH        = blkdiag(ZeroExPart,OneExPart);
-% Output.TwoExH        = TwoExH;

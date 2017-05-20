@@ -1,4 +1,4 @@
-function  [SpectraGrid,Response] = TwoDIR_Main_Sparse(SData,GUI_Inputs)
+function  [SpectraGrid,Response] = TwoDIR_Main_Sparse(Structure,GUI_Inputs)
 %% TwoDIR_Main(PDB_Data,GUI_Inputs)
 %  
 %   Given a initial stucture (pdb), this script will simulate its 2DIR
@@ -36,8 +36,6 @@ INPUT.KeepUnmatched = true;
 
 % Default values
 defaultFreqRange    = 1650:1750;
-defaultCouplingType = 'TDC'; 
-defaultBeta_NN      = 0.8; % 0.8 cm-1 according to Lauren's PNAS paper (doi/10.1073/pnas.1117704109); that originate from Min Cho's paper (doi:10.1063/1.1997151)
 defaultA_Pump1      = 90;
 defaultA_Pump2      = 90;
 defaultA_Probe      = 90;
@@ -49,7 +47,6 @@ defaultP_Sig2D      = 0;
 defaultPCutOff      = 0;
 
 addOptional(INPUT,'FreqRange'   ,defaultFreqRange);
-addOptional(INPUT,'Beta_NN'     ,defaultBeta_NN);
 addOptional(INPUT,'A_Pump1'     ,defaultA_Pump1);
 addOptional(INPUT,'A_Pump2'     ,defaultA_Pump2);
 addOptional(INPUT,'A_Probe'     ,defaultA_Probe);
@@ -58,15 +55,12 @@ addOptional(INPUT,'P_Pump1'     ,defaultP_Pump1);
 addOptional(INPUT,'P_Pump2'     ,defaultP_Pump2);
 addOptional(INPUT,'P_Probe'     ,defaultP_Probe);
 addOptional(INPUT,'P_Sig2D'     ,defaultP_Sig2D);
-addOptional(INPUT,'CouplingType',defaultCouplingType);
 addOptional(INPUT,'PCutOff'     ,defaultPCutOff);
          
 parse(INPUT,GUI_Inputs_C{:});
 
 % Reassign Variable names
 FreqRange    = INPUT.Results.FreqRange;
-CouplingType = INPUT.Results.CouplingType;
-Beta_NN      = INPUT.Results.Beta_NN;
 A_Pump1      = INPUT.Results.A_Pump1;
 A_Pump2      = INPUT.Results.A_Pump2;
 A_Probe      = INPUT.Results.A_Probe;
@@ -78,16 +72,9 @@ P_Sig2D      = INPUT.Results.P_Sig2D;
 PCutOff      = INPUT.Results.PCutOff;
 
 %% Call TwoExcitonH to calculate H,mu and alpha under exciton basis
-H = ExcitonH(SData,...
-             'ExMode'  ,'TwoEx',...
-             'CouplingType',CouplingType,...
-             'Beta_NN' ,Beta_NN);
+H = ExcitonH(Structure,GUI_Inputs,'TwoEx');
 
-% Mu = MuAlphaGen_full_M(PDB_Data,H,'Mode','Mu');
-% Sort_Ex_Freq = H.Sort_Ex_Freq;
-% Mu_Ex        = Mu.Trans_Ex;
-
-Mu = MuAlphaGen(SData,H,'Mode','Mu');
+Mu = MuAlphaGen(Structure,H,'Mode','Mu');
 
 Ex_F1   = H.Sort_Ex_F1;
 Ex_F2   = H.Sort_Ex_F2;

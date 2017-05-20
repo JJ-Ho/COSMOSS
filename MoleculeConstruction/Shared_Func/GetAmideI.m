@@ -60,6 +60,10 @@ function Output = GetAmideI(XYZ,AtomName,FilesName,GUI_Inputs)
 % Copyright Jia-Jung Ho, 2013
 
 %% Debug
+% XYZ = BB.XYZ;
+% AtomName = BB.AtomName;
+% FilesName = BB.FilesName;
+% 
 % PWD = pwd;
 % PDB_Path = [PWD, '/StructureFiles/PDB/'];
 % 

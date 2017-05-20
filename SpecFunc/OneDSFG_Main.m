@@ -1,4 +1,4 @@
-function  OneDSFG = OneDSFG_Main(SData,GUI_Inputs)
+function  OneDSFG = OneDSFG_Main(Structure,GUI_Inputs)
 %% TwoDSFG_AmideI_Main
 
 % ------- Version log -----------------------------------------------------
@@ -41,7 +41,7 @@ defaultA_Sig1D      = 90;
 defaultP_IR         = 0;
 defaultP_Vis1D      = 0;
 defaultP_Sig1D      = 0;
-defaultBeta_NN      = 0.8;
+% defaultBeta_NN      = 0.8;
 defaultFreqRange    = 1650:1750;
 
 % add Optional inputs / Parameters
@@ -54,14 +54,14 @@ addOptional(INPUT,'A_Sig1D'     ,defaultA_Sig1D);
 addOptional(INPUT,'P_IR'        ,defaultP_IR);
 addOptional(INPUT,'P_Vis1D'     ,defaultP_Vis1D);
 addOptional(INPUT,'P_Sig1D'     ,defaultP_Sig1D);
-addOptional(INPUT,'Beta_NN'     ,defaultBeta_NN);
+% addOptional(INPUT,'Beta_NN'     ,defaultBeta_NN);
 addOptional(INPUT,'FreqRange'   ,defaultFreqRange);
 
 parse(INPUT,GUI_Inputs_C{:});
 
 % Re-assign variable names
 
-CouplingType = INPUT.Results.CouplingType;
+% CouplingType = INPUT.Results.CouplingType;
 Avg_Rot      = INPUT.Results.Avg_Rot;
 Avg_Mirror   = INPUT.Results.Avg_Mirror;
 A_IR         = INPUT.Results.A_IR;
@@ -70,45 +70,19 @@ A_Sig1D      = INPUT.Results.A_Sig1D;
 P_IR         = INPUT.Results.P_IR;
 P_Vis1D      = INPUT.Results.P_Vis1D;
 P_Sig1D      = INPUT.Results.P_Sig1D;
-Beta_NN      = INPUT.Results.Beta_NN;
+% Beta_NN      = INPUT.Results.Beta_NN;
 FreqRange    = INPUT.Results.FreqRange;
 
 %% Call OneExcitonH to calculate H,mu and alpha under exciton basis
-H = ExcitonH(SData,'ExMode','OneEx','CouplingType',CouplingType,'Beta_NN',Beta_NN);
+% H = ExcitonH(SData,'ExMode','OneEx','CouplingType',CouplingType,'Beta_NN',Beta_NN);
+H = ExcitonH(Structure,GUI_Inputs,'OneEx');
 
-% Ex_F1 = H.Sort_Ex_Freq;
-% Ex_F1 = Ex_F1(2:Num_Modes+1); % => [N*1]
-% 
-% %construct mu,alpha
-% Mu    = MuAlphaGen_full_M(Structure_Data,H,'Mode','Mu');
-% Alpha = MuAlphaGen_full_M(Structure_Data,H,'Mode','Alpha');
-% Mu_Ex    = Mu.Trans_Ex;
-% Alpha_Ex = Alpha.Trans_Ex;
-% A_Ex_01  = squeeze(Alpha_Ex(2:Num_Modes+1,1,:))'; %=> [9*N]
-% M_Ex_01  = squeeze(   Mu_Ex(1,2:Num_Modes+1,:))'; %=> [3*N]
-
-Mu    = MuAlphaGen(SData,H,'Mode','Mu');
-Alpha = MuAlphaGen(SData,H,'Mode','Alpha');
+Mu    = MuAlphaGen(Structure,H,'Mode','Mu');
+Alpha = MuAlphaGen(Structure,H,'Mode','Alpha');
 
 Ex_F1   = H.Sort_Ex_F1;
 M_Ex_01 = Mu.M_Ex_01';    %=> [3*N]
 A_Ex_01 = Alpha.M_Ex_01'; %=> [9*N]
-
-%% Reduce mode number base on the transition intensity
-% Cut_Off = -1; % this will cause problem in table generation of Plot_Mode, need to remove later
-% 
-% Norm_M_01  = sum(M_Ex_01.^2,1);
-% Norm_A_01  = sum(A_Ex_01.^2,1);
-% Norm_AM_01 = Norm_A_01.* Norm_M_01;
-% 
-% Max_Norm_AM_01 = max(Norm_AM_01);
-% Ind_Norm_AM_01 = Norm_AM_01 > Cut_Off * Max_Norm_AM_01;
-% 
-% Ex_F1   = Ex_F1(Ind_Norm_AM_01);
-% M_Ex_01 = M_Ex_01(:,Ind_Norm_AM_01);
-% A_Ex_01 = A_Ex_01(:,Ind_Norm_AM_01);
-% 
-% Removed_Ind = (1:Nmodes).* ~Ind_Norm_AM_01; % export removed mode list
 
 %% Generate Molecular frame SFG Responses
 % vectorized version
@@ -116,7 +90,6 @@ A_Ex_01 = Alpha.M_Ex_01'; %=> [9*N]
 ResLF = A_Ex_01(A_Ind(:),:).* M_Ex_01(M_Ind(:),:); %=> [27*N]
 
 %% Decide what kinds of ensemble average
-
 Dimension = 3; % for SFG
 
 switch Avg_Rot
@@ -194,8 +167,8 @@ OneDSFG.Jones        = J;
 OneDSFG.JLabFrame    = J_ResLF_Avg;
 OneDSFG.E            = E;
 OneDSFG.EJLabFrame   = E_J_ResLF_Avg;
-OneDSFG.FilesName    = SData.FilesName;
-OneDSFG.CouplingType = CouplingType;
+OneDSFG.FilesName    = Structure.FilesName;
+% OneDSFG.CouplingType = CouplingType;
 OneDSFG.SpecType     = 'SFG';
 OneDSFG.Response1D   = AccuGrid;
 OneDSFG.freq_OneD    = FreqRange;

@@ -1,4 +1,4 @@
-function  [SpectraGrid,Response] = TwoDSFG_Main_Sparse(SData,GUI_Inputs)
+function  [SpectraGrid,Response] = TwoDSFG_Main_Sparse(Structure,GUI_Inputs)
 %% TwoDSFG_AmideI
 %  
 %   Given a initial stucture (pdb), this script will simulate its 2DSFG
@@ -38,8 +38,6 @@ INPUT.KeepUnmatched = true;
 
 % Default values
 defaultFreqRange    = 1650:1750;
-defaultCouplingType = 'TDC'; 
-defaultBeta_NN      = 0.8; % 0.8 cm-1 according to Lauren's PNAS paper (doi/10.1073/pnas.1117704109); that originate from Min Cho's paper (doi:10.1063/1.1997151)
 defaultAvg_Rot      = 1;
 defaultAvg_Mirror   = 1;
 defaultA_Pump1      = 90;
@@ -55,8 +53,6 @@ defaultP_Sig2D      = 0;
 defaultPCutOff      = 0;
 
 addOptional(INPUT,'FreqRange'   ,defaultFreqRange);
-addOptional(INPUT,'CouplingType',defaultCouplingType);
-addOptional(INPUT,'Beta_NN'     ,defaultBeta_NN);
 addOptional(INPUT,'Avg_Rot'     ,defaultAvg_Rot);
 addOptional(INPUT,'Avg_Mirror'  ,defaultAvg_Mirror);
 addOptional(INPUT,'A_Pump1'     ,defaultA_Pump1);
@@ -75,8 +71,6 @@ parse(INPUT,GUI_Inputs_C{:});
 
 % Reassign Variable names
 FreqRange    = INPUT.Results.FreqRange;
-CouplingType = INPUT.Results.CouplingType;
-Beta_NN      = INPUT.Results.Beta_NN;
 Avg_Rot      = INPUT.Results.Avg_Rot;
 Avg_Mirror   = INPUT.Results.Avg_Mirror; 
 A_Pump1      = INPUT.Results.A_Pump1;
@@ -92,21 +86,10 @@ P_Sig2D      = INPUT.Results.P_Sig2D;
 PCutOff      = INPUT.Results.PCutOff;
 
 %% Call TwoExcitonH to calculate H,mu and alpha under exciton basis
+H = ExcitonH(Structure,GUI_Inputs,'TwoEx');    
 
-H = ExcitonH(SData,...
-             'ExMode'  ,'TwoEx',...
-             'CouplingType',CouplingType,...
-             'Beta_NN' ,Beta_NN);
-         
-% Old version with full matrix export, use "Feynman_2DSFG_Vec_Full_M" function in next section   
-% Mu    = MuAlphaGen_full_M(PDB_Data,H,'Mode','Mu');
-% Alpha = MuAlphaGen_full_M(PDB_Data,H,'Mode','Alpha');
-% Sort_Ex_Freq = H.Sort_Ex_Freq;
-% Mu_Ex        = Mu.Trans_Ex;
-% Alpha_Ex     = Alpha.Trans_Ex;         
-
-Mu    = MuAlphaGen(SData,H,'Mode','Mu');
-Alpha = MuAlphaGen(SData,H,'Mode','Alpha');
+Mu    = MuAlphaGen(Structure,H,'Mode','Mu');
+Alpha = MuAlphaGen(Structure,H,'Mode','Alpha');
 
 Ex_F1   = H.Sort_Ex_F1;
 Ex_F2   = H.Sort_Ex_F2;

@@ -26,33 +26,17 @@ if eq(GUI_Inputs.Sampling,1)
     SpecAccuNR2  = sparse(GridSize,GridSize);
     SpecAccuNR3  = sparse(GridSize,GridSize);
 
-    Num_Modes = Structure.Nmodes;
-    Freq_Orig = Structure.LocFreq;
-
-    StandardDiv = GUI_Inputs.FWHM./(2*sqrt(2*log(2)));
-    P_FlucCorr  = GUI_Inputs.P_FlucCorr/100; % turn percentage to number within 0~1
-
     TSTART = zeros(GUI_Inputs.Sample_Num,1,'uint64');
     TIME   = zeros(GUI_Inputs.Sample_Num,1);
 
     for i = 1:GUI_Inputs.Sample_Num
-
+        TSTART(i) = tic;
+        
         DynamicUpdate = hGUIs.DynamicUpdate.Value; % directly access the GUI elment so can get the most recnt values
         UpdateStatus  = hGUIs.UpdateStatus.Value;
         if and(~eq(i,1), and(eq(DynamicUpdate,1),~eq(UpdateStatus,1)))
             break
         end
-
-        TSTART(i) = tic;
-
-        % Add diagonal disorder
-        Correlation_Dice = rand;
-        if Correlation_Dice < P_FlucCorr
-            Fluctuation = StandardDiv'.*(randn(1,1).*ones(Num_Modes,1));
-        else 
-            Fluctuation = StandardDiv'.*randn(Num_Modes,1); 
-        end
-        Structure.LocFreq = Freq_Orig + Fluctuation;
 
         % run main function
         [Tmp_SG,Tmp_Res] = h2DFunc(Structure,GUI_Inputs);

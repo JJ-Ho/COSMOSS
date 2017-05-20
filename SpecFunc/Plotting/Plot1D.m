@@ -158,7 +158,7 @@ hAx.XMinorGrid = 'on';
 
 FilesName       = OneD_Data.FilesName;
 FilesName_Reg   = regexprep(FilesName,'\_','\\_');
-Coupling        = OneD_Data.CouplingType;
+Coupling        = GUI_Inputs.CouplingType;
 Coupling_Reg    = regexprep(Coupling,'\_','\\_');
 Title_String{1} = [Signal_Type_Title,'-',OneD_Data.SpecType,' ',FilesName_Reg,', Coupling:',Coupling_Reg]; 
 

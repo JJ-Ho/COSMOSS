@@ -31,12 +31,7 @@ function Output = ConstuctBetaSheet(GUI_Inputs)
 % Copyright Jia-Jung Ho, 2016
 
 % ---[Debug]--------------------------------------------------------------
-% clear all
-% SheetType = 'Anti';
-% N_Residue= 7;
-% N_Strand = 1;
-% TransV = [0,0,4.75];
-% TwistV = [0,0,4];
+% GUI_Inputs.Debug = 'Debug';
 % ------------------------------------------------------------------------
 
 %% Inputs parser
@@ -48,7 +43,7 @@ INPUT = inputParser;
 INPUT.KeepUnmatched = 1;
 
 % Default values
-defaultSheetTypeV = 'Anti';
+defaultSheetTypeV = 1;
 defaultN_Residue  = 3;
 defaultN_Strand   = 2;
 defaultTrans_X    = 0;
@@ -158,10 +153,12 @@ end
 
 AtomName_1strand = reshape(AtomName_1strand',[],1);
 %% substitute the last N and CA to O and H on C terminus for the first strand
+% add x at the end of the atom name so it does not confuse the GetAmideI.m
 Ind_H_1strand = length(AtomName_1strand);
-Ind_O_1strand = length(AtomName_1strand)-1;
-AtomName_1strand{Ind_O_1strand} = 'O';
-AtomName_1strand{Ind_H_1strand} = 'H';
+AtomName_1strand{Ind_H_1strand-3} = 'Cx';
+AtomName_1strand{Ind_H_1strand-2} = 'Ox';
+AtomName_1strand{Ind_H_1strand-1} = 'Ox';
+AtomName_1strand{Ind_H_1strand}   = 'Hx';
 
 %% Define flipping center for the fliping operation in creating antiparallel betasheet
 if mod(N_Residue,2)

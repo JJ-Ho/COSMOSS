@@ -205,48 +205,34 @@ hF  = figure;
 hAx = axes('Parent',hF);
 
 if eq(GUI_Inputs.Sampling,1) % GUI: Diag. Disorder
-    % Pre-allocate
-    
+    % Pre-allocate  
     GridSize   = length(GUI_Inputs.FreqRange);
-    Num_Modes  = Structure.Nmodes;
-    Freq_Orig  = Structure.LocFreq;
     Response1D = zeros(GridSize,1);
-    
-    StandardDiv = GUI_Inputs.FWHM./(2*sqrt(2*log(2)));
-    P_FlucCorr  = GUI_Inputs.P_FlucCorr/100; % turn percentage to number within 0~1
     
     TSTART = zeros(GUI_Inputs.Sample_Num,1,'uint64');
     TIME   = zeros(GUI_Inputs.Sample_Num,1);
     
     for i = 1:GUI_Inputs.Sample_Num
+        TSTART(i) = tic;
+        
+        % Read GUI input directly from obj handle
         DynamicUpdate = GUI_data.hGUIs.DynamicUpdate.Value;
         UpdateStatus  = GUI_data.hGUIs.UpdateStatus.Value;
         if and(~eq(i,1), and(eq(DynamicUpdate,1),~eq(UpdateStatus,1)))
             break
         end
         
-        TSTART(i) = tic;
-        
+        % deal with MD snapshots(Need to modify the reading mechanism later)
         S = Structure;
-        % Replace mu and center if there are mutiple MD sanpshots
         if isfield(S,'NStucture') && gt(S.NStucture,1)
             S.LocMu = squeeze(S.LocMu(:,:,i));
             S.LocCenter = S.LocCenter(:,:,i);
         end
-        % Add diagonal disorder if any
-        Correlation_Dice = rand;
 
-        if Correlation_Dice < P_FlucCorr
-            Fluctuation = StandardDiv'.*(randn(1,1).*ones(Num_Modes,1));
-        else 
-            Fluctuation = StandardDiv'.*randn(Num_Modes,1); 
-        end
-        S.LocFreq = Freq_Orig + Fluctuation;
-        
         % Calculate FTIR
         FTIR = FTIR_Main(S,GUI_Inputs);
         
-        % recursive part
+        % recursive accumulation of signal
         Response1D = Response1D + FTIR.Response1D; % note freq is binned and sorted, so direct addition work
         FTIR.Response1D = Response1D;
         
@@ -290,37 +276,25 @@ hAx = axes('Parent',hF);
 if eq(GUI_Inputs.Sampling,1)
     % Pre-allocate
     GridSize   = length(GUI_Inputs.FreqRange);
-    Num_Modes  = Structure.Nmodes;
-    Freq_Orig  = Structure.LocFreq;
     Response1D = zeros(GridSize,1);
-    
-    
-    StandardDiv = GUI_Inputs.FWHM./(2*sqrt(2*log(2)));
-    P_FlucCorr  = GUI_Inputs.P_FlucCorr/100; % turn percentage to number within 0~1
     
     TSTART = zeros(GUI_Inputs.Sample_Num,1,'uint64');
     TIME   = zeros(GUI_Inputs.Sample_Num,1);
     
     for i = 1:GUI_Inputs.Sample_Num
+        TSTART(i) = tic;
+        
+        % Read GUI input directly from obj handle
         DynamicUpdate = GUI_data.hGUIs.DynamicUpdate.Value;
         UpdateStatus  = GUI_data.hGUIs.UpdateStatus.Value;
         if and(~eq(i,1), and(eq(DynamicUpdate,1),~eq(UpdateStatus,1)))
             break
         end
         
-        TSTART(i) = tic;
-        % Add diagonal disorder
-        Correlation_Dice = rand;
-
-        if Correlation_Dice < P_FlucCorr
-            Fluctuation = StandardDiv'.*(randn(1,1).*ones(Num_Modes,1));
-        else 
-            Fluctuation = StandardDiv'.*randn(Num_Modes,1); 
-        end
-        Structure.LocFreq = Freq_Orig + Fluctuation;
+        % Calculate SFG
         OneDSFG = OneDSFG_Main(Structure,GUI_Inputs);
         
-        % recursive part
+        % recursive accumulation of signal
         Response1D = Response1D + OneDSFG.Response1D; % note freq is binned and sported, so direct addition work
         OneDSFG.Response1D = Response1D;
         

@@ -27,10 +27,11 @@ O.P_Vis2D      = str2double(get(hGUIs.P_Vis2D    ,'String'));
 O.P_Sig2D      = str2double(get(hGUIs.P_Sig2D    ,'String'));
 % -------------------------------------------------------------------------
 
-% For DD ------------------------------------------------------------------
+% For DD/ODD --------------------------------------------------------------
 O.Sampling      =            get(hGUIs.Sampling     ,'Value');
 O.Sample_Num    = str2double(get(hGUIs.Sample_Num   ,'String'));
-O.FWHM          =    str2num(get(hGUIs.FWHM         ,'String')); 
+O.DD_FWHM       = str2double(get(hGUIs.DD_FWHM      ,'String'));
+O.ODD_FWHM      = str2double(get(hGUIs.ODD_FWHM     ,'String'));
 O.P_FlucCorr    = str2double(get(hGUIs.P_FlucCorr   ,'String')); 
 O.DynamicUpdate =            get(hGUIs.DynamicUpdate,'Value');
 O.UpdateStatus  =            get(hGUIs.UpdateStatus ,'Value');

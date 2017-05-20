@@ -1,17 +1,20 @@
 function [SpectraGrid,Response] = TwoD_Iteration(h2DFunc,GUI_data,GUI_Inputs,hGUIs)
 %% Read GUI
+Sampling      = GUI_Inputs.Sampling;
 DynamicUpdate = GUI_Inputs.DynamicUpdate;
+Sample_Num    = GUI_Inputs.Sample_Num;
 FreqRange     = GUI_Inputs.FreqRange;
 Structure     = GUI_data.Structure;
 
 %% Pre-calculation settings
 % Create figure object for dynamics figure update
-if DynamicUpdate
+if DynamicUpdate && Sampling
     hF = figure;
+    hAx = axes('Parent',hF);
 end
 
 %% Calculate TwoD response
-if eq(GUI_Inputs.Sampling,1)
+if Sampling
     % Pre-allocate
     FreqRange = FreqRange(1):FreqRange(end)+100; % add 100 cm-1 range to prevent fluctuation out of range
     GUI_Inputs.FreqRange = FreqRange; % pass the extended Frequency Range to the TwoD main function
@@ -26,10 +29,10 @@ if eq(GUI_Inputs.Sampling,1)
     SpecAccuNR2  = sparse(GridSize,GridSize);
     SpecAccuNR3  = sparse(GridSize,GridSize);
 
-    TSTART = zeros(GUI_Inputs.Sample_Num,1,'uint64');
-    TIME   = zeros(GUI_Inputs.Sample_Num,1);
+    TSTART = zeros(Sample_Num,1,'uint64');
+    TIME   = zeros(Sample_Num,1);
 
-    for i = 1:GUI_Inputs.Sample_Num
+    for i = 1:Sample_Num
         TSTART(i) = tic;
         
         DynamicUpdate = hGUIs.DynamicUpdate.Value; % directly access the GUI elment so can get the most recnt values
@@ -71,7 +74,7 @@ if eq(GUI_Inputs.Sampling,1)
             CVL = Conv2D(SpectraGrid,GUI_Inputs);
             CVL.FilesName = [Structure.FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title
             SpecType = Response.SpecType;
-            Plot2D(hF,CVL,GUI_Inputs,SpecType);
+            Plot2D(hAx,CVL,GUI_Inputs,SpecType);
             drawnow
             DynamicUpdate = 0;
         end

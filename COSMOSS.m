@@ -355,11 +355,12 @@ end
     
 %% Conv2D linshape and make figure
 hF_final = figure;
+hAx_final = axes('Parent',hF_final);
 CVL = Conv2D(SpectraGrid,GUI_Inputs);
 CVL.FilesName = Structure.FilesName; % pass filesname for figure title
 
 SpecType = Response.SpecType;
-Plot2D(hF_final,CVL,GUI_Inputs,SpecType);
+Plot2D(hAx_final,CVL,GUI_Inputs,SpecType);
 
 %% update TwoDIR_Response into guidata
 TwoDIR             = Response;
@@ -402,11 +403,12 @@ end
 
 %% Covolution and make figure
 hF_final = figure;
+hAx_final = axes('Parent',hF_final);
 CVL = Conv2D(SpectraGrid,GUI_Inputs);
 CVL.FilesName = Structure.FilesName; % pass filesname for figure title
 
 SpecType = Response.SpecType;
-Plot2D(hF_final,CVL,GUI_Inputs,SpecType);
+Plot2D(hAx_final,CVL,GUI_Inputs,SpecType);
 
 %% update TwoDSFG_Response into guidata
 TwoDSFG             = Response;

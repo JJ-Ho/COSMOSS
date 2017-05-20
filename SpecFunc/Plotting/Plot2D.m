@@ -1,4 +1,4 @@
-function hF = Plot2D(hF,CVL,GUI_Inputs,SpecType)
+function hF = Plot2D(hAx,CVL,GUI_Inputs,SpecType)
 % 
 % This function plot 2DIR and other information
 
@@ -48,13 +48,11 @@ PlotCursor  = INPUT.Results.PlotCursor;
 CMAP_Index  = INPUT.Results.CMAP_Index;
 
 %% Main
-hAx = findobj(hF,'type','axes');
 cla(hAx)
-axes(hAx)
 if strcmp(CVL.Lineshape,'None')
     % plot stick spectrum
-    imagesc(FreqRange,FreqRange,CVL.selected_No_Conv)
-    set(gca,'Ydir','normal')
+    imagesc(hAx,FreqRange,FreqRange,CVL.selected_No_Conv)
+    set(hAx,'Ydir','normal')
     
     % Set colorbar
     colorbar
@@ -65,12 +63,8 @@ if strcmp(CVL.Lineshape,'None')
 else
     % plot convoluted spectrum
     CVLRS = real(CVL.selected);
-    contour(FreqRange,FreqRange,CVLRS,Num_Contour,'LineWidth',2)
-    %contourf(FreqRange,FreqRange,CVLRS,Num_Contour,'LineWidth',1)
-    % Normalization
-    % CVLRSN = CVLRS ./max(abs(CVLRS(:)));
-    % contour(GUI_Inputs.FreqRange,GUI_Inputs.FreqRange,CVLRSN,GUI_Inputs.Num_Contour,'LineWidth',2)
-    
+    contour(hAx,FreqRange,FreqRange,CVLRS,Num_Contour,'LineWidth',2)
+
     % Set colorbar
     colorbar
     CMAP = SelectColormap(CMAP_Index);
@@ -80,11 +74,12 @@ else
 end
 
 % Plot diagonal line
-hold on; plot(FreqRange,FreqRange); hold off
+hold on; plot(hAx,FreqRange,FreqRange); hold off
 
 %% figure setting 
+hF = hAx.Parent;
 hF.Units = 'normalized'; % use normalized scale
-hAx = hF.CurrentAxes;
+
 hAx.DataAspectRatio = [1,1,1];
 hAx.FontSize = 14;
 hAx.XLabel.String = 'Probe (cm^{-1})';

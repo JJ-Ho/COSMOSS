@@ -226,21 +226,23 @@ for j = 2:N_Strand
             XYZ_j_tmp1 = bsxfun(@times,XYZ_1strand_COF,Flip_V);
         end
         
-        if mod(j-1,2)
-            % Flip the sequence of index so the numbering of residue will all
-            % strat from left to right
-            XYZ_j_tmp2 = reshape(XYZ_j_tmp1,4,[],3);
-            XYZ_j_tmp3 = flip(XYZ_j_tmp2,2);
-            XYZ_j_flip = reshape(XYZ_j_tmp3,[],3);
-
-            % Flip the atom name accordingly 
-            AtomName_1strand_tmp1 = reshape(AtomName_1strand,4,[]);
-            AtomName_1strand_tmp2 = flip(AtomName_1strand_tmp1,2);
-            AtomName_1strand_j    = reshape(AtomName_1strand_tmp2,[],1);
-        else 
-            XYZ_j_flip = XYZ_j_tmp1;
-            AtomName_1strand_j = AtomName_1strand;
-        end
+%         if mod(j-1,2)
+%             % Flip the sequence of index so the numbering of residue will all
+%             % start from left to right
+%             XYZ_j_tmp2 = reshape(XYZ_j_tmp1,4,[],3);
+%             XYZ_j_tmp3 = flip(XYZ_j_tmp2,2);
+%             XYZ_j_flip = reshape(XYZ_j_tmp3,[],3);
+% 
+%             % Flip the atom name accordingly 
+%             AtomName_1strand_tmp1 = reshape(AtomName_1strand,4,[]);
+%             AtomName_1strand_tmp2 = flip(AtomName_1strand_tmp1,2);
+%             AtomName_1strand_j    = reshape(AtomName_1strand_tmp2,[],1);
+%         else 
+%             XYZ_j_flip = XYZ_j_tmp1;
+%             AtomName_1strand_j = AtomName_1strand;
+%         end
+        XYZ_j_flip = XYZ_j_tmp1;
+        AtomName_1strand_j = AtomName_1strand;
           
     else 
         % for PB doing notheing here

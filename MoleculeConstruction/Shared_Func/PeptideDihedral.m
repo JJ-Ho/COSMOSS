@@ -1,6 +1,6 @@
-function [Phi,Psi] = PeptideDihedral(Structure)
+% function [Phi,Psi] = PeptideDihedral(Structure)
 %% Debug
-% Structure = Data_COSMOSS.Structure;
+Structure = Data_COSMOSS.Structure;
 
 %% Prep parameters
 Ind_CONCa = Structure.Extra.AmideIAtomSerNo; %[C,O,N,CA]
@@ -22,6 +22,10 @@ V1(end,:) = [];
 V2(end,:) = [];
 V4(  1,:) = []; % shift index to the next amide group
 
+%% Check if the two peptide group close in distance
+dV3 = sqrt(sum(V3.^2,2));
+Remove_Ind = gt(dV3,3); % set cutOff distance to be 3 A
+
 %% normalize all vectors
 V1 = bsxfun(@rdivide,V1,sqrt(sum(V1.^2,2)));
 V2 = bsxfun(@rdivide,V2,sqrt(sum(V2.^2,2)));
@@ -42,6 +46,10 @@ N_34 = cross(V3,V4,2);
 X2 = dot(cross(N_23,N_34,2),V3,2);
 Y2 = dot(N_23,N_34,2);
 Psi = atan2d(X2,Y2);
+
+%% Remove not close by amide group
+Phi(Remove_Ind) = nan;
+Psi(Remove_Ind) = nan;
 
 %% Debug plot
 % ramachandran('2lmq.pdb')

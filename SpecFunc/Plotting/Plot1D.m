@@ -95,6 +95,8 @@ switch LineShape
         Im = (1/pi)*(LineWidth)./(spec_array.^2+(LineWidth)^2);
         Re = kkimbook2(FreqRange,Im,1);
         LineShape = Im+Re;    
+    case 'None'
+        LineShape = ones(1,N_Grid);
 end
 CVL_Total = conv(Response1D,LineShape,'same');
 

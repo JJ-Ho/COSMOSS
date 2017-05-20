@@ -76,6 +76,7 @@ GUI_Inputs_C      = GUI_Inputs_C';
 INPUT = inputParser;
 INPUT.KeepUnmatched = true;
 
+defaultLocFreqType  = 1;
 defaultCouplingType = 'TDC';
 defaultSampling     = 0;
 defaultP_FlucCorr   = 100;
@@ -83,6 +84,7 @@ defaultDD_FWHM      = 0;
 defaultODD_FWHM     = 0;
 defaultBeta_NN      = 0.8; % 0.8 cm-1 according to Lauren's PNAS paper (doi/10.1073/pnas.1117704109); that originate from Min Cho's paper (doi:10.1063/1.1997151)
 
+addOptional(INPUT,'LocFreqType' ,defaultLocFreqType);
 addOptional(INPUT,'CouplingType',defaultCouplingType);
 addOptional(INPUT,'Sampling'    ,defaultSampling);
 addOptional(INPUT,'P_FlucCorr'  ,defaultP_FlucCorr);
@@ -93,6 +95,7 @@ addOptional(INPUT,'Beta_NN'     ,defaultBeta_NN);
 parse(INPUT,GUI_Inputs_C{:});
 
 % Reassign Variable names
+LocFreqType  = INPUT.Results.LocFreqType;
 CouplingType = INPUT.Results.CouplingType;
 Sampling     = INPUT.Results.Sampling;
 P_FlucCorr   = INPUT.Results.P_FlucCorr;
@@ -118,7 +121,7 @@ if ~Sampling
 end
 
 %% Diagonal disorder if any
-if strcmp(CouplingType,'Jansen_TDC')
+if eq(LocFreqType,2)
     [~,dF_Jansen] = Coupling_Jansen(Structure);
     LocFreq = LocFreq + dF_Jansen;
 end

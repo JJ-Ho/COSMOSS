@@ -38,6 +38,8 @@ O.UpdateStatus  =            get(hGUIs.UpdateStatus ,'Value');
 % -------------------------------------------------------------------------
 
 % For Coupling/Signal -----------------------------------------------------
+O.LocFreqType   = get(hGUIs.LocFreqType,'Value');
+
 % Coupling model
 CouplingModelIndex = get(hGUIs.CouplingModelIndex,'Value');
 [~,CouplingList]   = Coupling('List','None','None');

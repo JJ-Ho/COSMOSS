@@ -1,6 +1,6 @@
-% function [Phi,Psi] = PeptideDihedral(Structure)
+function [Phi,Psi] = PeptideDihedral(Structure)
 %% Debug
-Structure = Data_COSMOSS.Structure;
+% Structure = Data_COSMOSS.Structure;
 
 %% Prep parameters
 Ind_CONCa = Structure.Extra.AmideIAtomSerNo; %[C,O,N,CA]

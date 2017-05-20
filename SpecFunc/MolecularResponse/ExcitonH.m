@@ -100,7 +100,7 @@ DD_FWHM      = INPUT.Results.DD_FWHM;
 ODD_FWHM     = INPUT.Results.ODD_FWHM;
 Beta_NN      = INPUT.Results.Beta_NN;
 
-%% Initiation part
+%% para variables
 % Reassign variable names from StrucInfo
 Nmodes    = Structure.Nmodes;
 LocFreq   = Structure.LocFreq;
@@ -112,13 +112,14 @@ else
     StatesNum = (Nmodes+1); 
 end
 
-%% Diagonal disorder if any
 if ~Sampling
     DD_FWHM  = 0;
     ODD_FWHM = 0;
 end
 
-DD_std     = DD_FWHM./(2*sqrt(2*log(2)));
+%% Diagonal disorder if any
+
+DD_std     = DD_FWHM/(2*sqrt(2*log(2)));
 P_FlucCorr = P_FlucCorr/100; % turn percentage to number within 0~1
 
 Correlation_Dice = rand;
@@ -130,7 +131,7 @@ end
 LocFreq = LocFreq + dF;
 
 %% Off diagonal disorder
-ODD_std = ODD_FWHM./(2*sqrt(2*log(2)));
+ODD_std = ODD_FWHM/(2*sqrt(2*log(2)));
 dBeta   = ODD_std*randn(Nmodes);
 dBeta   = (dBeta + dBeta')./2; % symetrize
 Beta    = Coupling(Structure,CouplingType,Beta_NN); % Coupling

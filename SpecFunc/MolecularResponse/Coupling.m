@@ -1,4 +1,4 @@
-function [Beta,CouplingList] = Coupling(SData,CoupleType,Beta_NN)
+function [Beta,CouplingList] = Coupling(Structure,CoupleType,Beta_NN)
 %% Coupling
 %  
 % Coupling.m is a function to generate mode coupling with a given model. 
@@ -14,10 +14,14 @@ function [Beta,CouplingList] = Coupling(SData,CoupleType,Beta_NN)
 % 
 % ------------------------------------------------------------------------
 % Copyright Jia-Jung Ho, 2014
+%% debug
+% Structure = Data_COSMOSS.Structure;
+% CoupleType = 'Jasen_TDC';
 
 %% List for COSMOSS GUI and matching popmenu value-name pair
 CouplingList = {'TDC',...
                 'NN_Mix_TDC',...
+                'Jansen_TDC',...
                 'Zero',...
                 };
 
@@ -25,20 +29,27 @@ CouplingList = {'TDC',...
 
 switch CoupleType
     case 'TDC'
-        Beta = Coupling_TDC(SData);
-
+        Beta = Coupling_TDC(Structure);
+        
     case 'NN_Mix_TDC'
-        [Beta,DistM] = Coupling_TDC(SData);
+        [Beta,DistM] = Coupling_TDC(Structure);
 
         DistCutOff = 4;
         Beta(DistM < DistCutOff) = Beta_NN;
 
+    case 'Jansen_TDC'
+        Beta = Coupling_TDC(Structure);
+        Beta_Jansen_NN = Coupling_Jansen(Structure);
+        
+        Sub_Ind = ~eq(Beta_Jansen_NN,0);
+        Beta(Sub_Ind) = Beta_Jansen_NN(Sub_Ind);
+        
     case 'NN_Mix_TDC_Betasheet'
         % this is for betasheet only
         % othe structure do not have N_residue and N_Strand
-        Beta      = Coupling_TDC(SData);
-        N_Residue = SData.N_Residue;
-        N_Strand  = SData.N_Strand;
+        Beta      = Coupling_TDC(Structure);
+        N_Residue = Structure.N_Residue;
+        N_Strand  = Structure.N_Strand;
 
         N_Mode_per_Starnd = N_Residue -1;
 
@@ -55,29 +66,30 @@ switch CoupleType
 
     case 'Cho_PB'
         % this is for betasheet only
-        Beta = Coupling_Cho_PB(SData);
+        Beta = Coupling_Cho_PB(Structure);
 
     case 'Cho_APB'
         % this is for betasheet only
-        Beta = Coupling_Cho_APB(SData);
+        Beta = Coupling_Cho_APB(Structure);
 
     case 'TDC+Cho_APB'
         % this is for betasheet only
-        Beta_TDC_all = Coupling_TDC(SData);
-        Nmodes1 = SData.StrucData1.Nmodes;
-        Beta_APB = Coupling_Cho_APB(SData.StrucData2);
+        Beta_TDC_all = Coupling_TDC(Structure);
+        Nmodes1 = Structure.StrucData1.Nmodes;
+        Beta_APB = Coupling_Cho_APB(Structure.StrucData2);
 
         Beta_Mix = Beta_TDC_all;
-        Beta_APB_Ind = Nmodes1+1:SData.Nmodes;
+        Beta_APB_Ind = Nmodes1+1:Structure.Nmodes;
         Beta_Mix(Beta_APB_Ind,Beta_APB_Ind) = Beta_APB;
 
         Beta = Beta_Mix;
 
     case 'Zero'
-        Nmodes = SData.Nmodes;
+        Nmodes = Structure.Nmodes;
         Beta = zeros(Nmodes);
+        
     case 'TDC_PBC'
-        Beta = Coupling_TDC_PBC(SData);
+        Beta = Coupling_TDC_PBC(Structure);
 
     case 'None'
         % do nothing, this is for generating the coupling list 

@@ -29,9 +29,9 @@ Psi_Ind(NaN_Ind) = 1;
 
 %% Nearest Neighbor Couping
 % Index map
-% Couping(i,i+1) <= (phi(i),psi(i))
+% Couping(i,i+1) <= (psi(i),phi(i))
 
-NNC_Ind = sub2ind(size(Jansen_Map),Phi_Ind,Psi_Ind);
+NNC_Ind = sub2ind(size(Jansen_Map),Psi_Ind,Phi_Ind);
 Beta_NN = Jansen_Map(NNC_Ind);
 Beta_NN(NaN_Ind,:) = 0; % zeros the non-NN
 

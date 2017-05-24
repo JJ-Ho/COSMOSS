@@ -1,4 +1,4 @@
-function O = ParseGUI_TCO(hGUI)
+function [O,T] = ParseGUI_TCO(hGUI)
 
 O.Phi_D1        = str2double(get(hGUI.Phi1  ,'String'));
 O.Psi_D1        = str2double(get(hGUI.Psi1  ,'String'));
@@ -22,3 +22,28 @@ O.L_Index =    str2num(get(hGUI.L_Index,'String'));
 O.Plot_Atoms  = get(hGUI.Plot_Atoms ,'Value' );
 O.Plot_Bonds  = get(hGUI.Plot_Bonds ,'Value' );
 O.Plot_Axis   = get(hGUI.Plot_Axis  ,'Value' );
+
+%% Export field name for each parameter
+T.Phi_D1        = 'String';
+T.Psi_D1        = 'String';
+T.Theta_D1      = 'String';
+T.Phi_D2        = 'String';
+T.Psi_D2        = 'String';
+T.Theta_D2      = 'String';
+T.Displacement  = 'String';
+
+T.Rot_X        = 'String';
+T.Rot_Y        = 'String';
+T.Rot_Z        = 'String';
+
+% For Local Mode frequencies ----------------------------------------------
+T.NLFreq  = 'String';
+T.LFreq   = 'String';
+T.Anharm  = 'String';
+T.L_Index = 'String';
+
+% For molecule ploting ----------------------------------------------------
+T.Plot_Atoms  = 'Value';
+T.Plot_Bonds  = 'Value';
+T.Plot_Axis   = 'Value';
+

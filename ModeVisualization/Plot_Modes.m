@@ -22,7 +22,7 @@ function varargout = Plot_Modes(varargin)
 
 % Edit the above text to modify the response to help Plot_Modes
 
-% Last Modified by GUIDE v2.5 10-Feb-2016 16:58:08
+% Last Modified by GUIDE v2.5 01-Nov-2016 23:52:13
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 0;
@@ -30,7 +30,7 @@ gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
                    'gui_OpeningFcn', @Plot_Modes_OpeningFcn, ...
                    'gui_OutputFcn',  @Plot_Modes_OutputFcn, ...
-                   'gui_LayoutFcn',  [] , ...
+                   'gui_LayoutFcn',  @GUI_Base_Plot_Modes, ...
                    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
     gui_State.gui_Callback = str2func(varargin{1});
@@ -43,155 +43,226 @@ else
 end
 % End initialization code - DO NOT EDIT
 
-% --- Executes just before Plot_Modes is made visible.
-function Plot_Modes_OpeningFcn(hObject, eventdata, handles, varargin)
+function hPlot_Modes = GUI_Base_Plot_Modes(Singleton)
+% this function create base figure. To utilize the original GUI building
+% mechanism of Matlab and avoid Matlab default way to export GUI element 
+% handles, this function only create the base layer with no GUI elements.
+% Aftter calling "gui_mainfcn" we will call "GUI_COSMOSS" to build GUI
+% elements.
+
+% Create base figure
+hPlot_Modes = figure;
+
+hPlot_Modes.Units            = 'Pixels';
+hPlot_Modes.Position         = [2 53 610 600];
+hPlot_Modes.Name             = 'Plot_Modes';
+hPlot_Modes.ToolBar          = 'none';
+hPlot_Modes.MenuBar          = 'none';
+hPlot_Modes.NumberTitle      = 'off';
+hPlot_Modes.IntegerHandle    = 'off';
+hPlot_Modes.Tag              = 'hPlot_Modes'; % tag to distinguish type of GUI
+hPlot_Modes.HandleVisibility = 'Callback';
+
+gui_Options.syscolorfig = 1;
+setappdata(hPlot_Modes,'GUIDEOptions',gui_Options);
+
+disp('Creating Plot_Modes GUI Using GUI Layout Toolbox!')
+disp('...')
+
+function Plot_Modes_OpeningFcn(hPlot_Modes, eventdata, GUI_data, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to Plot_Modes (see VARARGIN)
-
-% Choose default command line output for Plot_Modes
-handles.output = hObject;
-
-% Call createInterface to create GUI elements
-GUI_Modes = GUI_Plot_Modes(hObject);
-
-% Get Structural modeling GUI's handles
 if nargin > 3    
+    % Get Structural modeling GUI's handles
     if ishandle(varargin{1}) 
        hModel = varargin{1};
     end
 else
-    disp('Running in stand alone mode, using TCO modle for debug purpose')  
-    hModel = Model_TCO(handles);
+    disp('Plot_Modes cannot run without COSMOSS... ')  
+    return
 end
 
-% Change Names on Plot_Exciton GUI to identify which Structural model is
-% using
-Model_Name = hModel.Name;
-Plot_Modes_GUI_Name = GUI_Modes.hPlot_Modes.Name;
-GUI_Modes.hPlot_Modes.Name = [Plot_Modes_GUI_Name, ': ', Model_Name];
+% Call createInterface to create GUI elements
+hGUIs = GUI_Plot_Modes(hPlot_Modes);
 
-% Export the handle of Structure Modle to guidata of Plot_Exciton
-handles.hModel = hModel;
-handles.GUI_Modes = GUI_Modes; % export GUI handles to handles
-guidata(hObject, handles);
+% Change Names on Plot_Modes GUI to identify which Structural model is
+% plotting
+Model_Name = hModel.Name;
+Title_Str  = hGUIs.hPlot_Modes.Name;
+hGUIs.hPlot_Modes.Name = [Title_Str, ': ', Model_Name];
+
+% Prep necessary data to be saved in GUI_data
+GUI_data.hPlot_Modes = hPlot_Modes;
+GUI_data.hGUIs       = hGUIs; % export GUI handles to handles
+GUI_data.hModel      = hModel;
+GUI_data.hCOSMOSS    = hModel.UserData; % get hCOSMOSS from the UserData of model fig file
+guidata(hPlot_Modes, GUI_data);
 
 % update exciton info in Plot_Exciton
-Update_Modes(hObject, eventdata, handles)
+Update_Modes(hPlot_Modes, eventdata, GUI_data)
 
-% --- Outputs from this function are returned to the command line.
-function varargout = Plot_Modes_OutputFcn(hObject, eventdata, handles) 
+function varargout = Plot_Modes_OutputFcn(hPlot_Modes, eventdata, GUI_data) 
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
 % Get default command line output from handles structure
-varargout{1} = handles.output;
+varargout{1} = hPlot_Modes;
+
+function Export_Handle_Callback(hPlot_Modes, eventdata, GUI_data)
+% export handles back to work space
+assignin('base', 'Data_Plot_Modes', GUI_data)
+disp('Updated GUI Data_Plot_Modes exported!')
+%^ GUI Setup ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 
-function Update_Modes(hObject, eventdata, handles)
-% Run OneDSFG to get the corresponding mu and alpha of exciton modes
-% Retrieve Label index and Coupling model from COSMOSS GUI if any, if
-% running Plot_Exciton stand alone for debug testing, give a field 'debug'
-% to use the default values in OneDSFG_Main.m
-GUI_Data_hModel = guidata(handles.hModel);
-if isfield(GUI_Data_hModel,'hMain')
-    GUI_Data_hMain = guidata(GUI_Data_hModel.hMain);
-    MainGUI_Inputs = ParseGUI_Main(GUI_Data_hMain);
-    %disp('Plot_Modes: Using coupling info from Main GUI')
-else
-    MainGUI_Inputs.debug = 'debug';
-    GUI_Data_hModel.hMain = 'debug';
-    %disp('Plot_Modes: Coupling info comes from defulat setting of OneDSFG_Main.m')
+
+function Update_Modes(hObject, eventdata, GUI_data)
+%% Gather GUI inputs
+GUI_Data_hMain  = guidata(GUI_data.hCOSMOSS);
+COSMOSS_Inputs  = ParseGUI_Main(GUI_Data_hMain.hGUIs);
+
+GUI_Data_hModel = guidata(GUI_data.hModel);
+Structure       = GUI_Data_hModel.Structure;
+
+GUI_Inputs      = ParseGUI_Modes(GUI_data.hGUIs);
+SpecType        = GUI_Inputs.SpecType;
+
+%% Update GUI
+% update table contents
+switch SpecType
+    case 1 %'FTIR'
+        T = Update_Modes_Table('FTIR',Structure,COSMOSS_Inputs);
+        GUI_data.hGUIs.Raman_Plot.Value = 0;
+        GUI_data.hGUIs.Raman_Plot.Enable = 'off';
+    case 2 %'SFG'
+        T = Update_Modes_Table('SFG',Structure,COSMOSS_Inputs);
+        GUI_data.hGUIs.Raman_Plot.Value = 1;
+        GUI_data.hGUIs.Raman_Plot.Enable = 'on';
+    case 3 %'2DIR-2q'
+        T = Update_Modes_Table('2DIR-2q',Structure,COSMOSS_Inputs);
+        GUI_data.hGUIs.Raman_Plot.Value = 0;
+        GUI_data.hGUIs.Raman_Plot.Enable = 'off';
+    case 4 %'2DIR'
+        T = Update_Modes_Table('TwoDIR',Structure,COSMOSS_Inputs);
+        GUI_data.hGUIs.Raman_Plot.Value = 0;
+        GUI_data.hGUIs.Raman_Plot.Enable = 'off';
+    case 5 %'2DSFG'
+        T = Update_Modes_Table('TwoDSFG',Structure,COSMOSS_Inputs);
+        GUI_data.hGUIs.Raman_Plot.Value = 1;
+        GUI_data.hGUIs.Raman_Plot.Enable = 'on';
 end
 
-Structure = GUI_Data_hModel.Structure;
-Modes     = Update_Modes_Table(Structure, MainGUI_Inputs);
+GUI_data.hGUIs.ModeList.ColumnName   = T.ModeList.Name;
+GUI_data.hGUIs.ModeList.ColumnFormat = T.ModeList.Format;
+GUI_data.hGUIs.ModeList.ColumnWidth  = T.ModeList.Width;
+GUI_data.hGUIs.ModeList.Data         = T.ModeList.Data;
+
+GUI_data.hGUIs.SortInd.String        = T.ModeList.Name;
+GUI_data.hGUIs.PathType.String       = T.PathType;
 
 %% Update handles structure
-handles.FTIR           = Modes.FTIR;
-handles.ModeList       = Modes.ModeList;
-handles.Structure      = Structure;
-handles.hMain          = GUI_Data_hModel.hMain;
-% handles.MianGUI_Inputs = MainGUI_Inputs;
-guidata(hObject, handles);
+GUI_data.Table     = T.ModeList;
+GUI_data.SpecData  = T.SpecData;
+GUI_data.Structure = Structure;
 
-% update the list on hPlot_Exciton GUI
-set(handles.GUI_Modes.ModeList,'Data',Modes.ModeList)
+guidata(hObject, GUI_data);
 
-% call sorting to sort table with the same GUI setting
-uitable_SortCallback(hObject, eventdata, handles)
-
-function Update_Figure(hObject, eventdata, handles)
-%% Use Update Modes to update the structure and the corresponding Mu & Alpha 
-Update_Modes(hObject, eventdata, handles)
-handles = guidata(hObject);
-
-GUI_Inputs = ParseGUI_Modes(handles);
-Structure  = handles.Structure;
-OneDSFG    = handles.FTIR;
-hModel     = handles.hModel;
-
-% Read the Molecule frame to Lab frame orientation from COSMOSS
-hMain = handles.hMain;
-GUI_Data_Main = guidata(hMain);
-GUI_Inputs_Main = ParseGUI_Main(GUI_Data_Main);
-% Pass the MF-LB Eular angles to Plotting function
-GUI_Inputs.Avg_Phi   = GUI_Inputs_Main.Avg_Phi;
-GUI_Inputs.Avg_Theta = GUI_Inputs_Main.Avg_Theta;
-GUI_Inputs.Avg_Psi   = GUI_Inputs_Main.Avg_Psi;
+function Update_TDV_Raman(hObject, eventdata, GUI_data)
+%% Gather necessary inputs
+GUI_Inputs = ParseGUI_Modes(GUI_data.hGUIs);
+Structure  = GUI_data.Structure;
+SpecData   = GUI_data.SpecData;
+hModel     = GUI_data.hModel;
 
 %% Draw molecule by calling the PlotMolecule function in each model
 [hFunc_Model,~,~] = StructureModel(Structure.StructModel);
 hF = hFunc_Model('PlotMolecule',hModel,eventdata,guidata(hModel));
 
 %% Call Update Figure function
-Fig_Output = Update_Modes_Figure(hF, GUI_Inputs, Structure, OneDSFG);
+Fig_Output = Update_Modes_Figure(hF, GUI_Inputs, Structure, SpecData);
 
 %% update handles
-handles.hF      = hF;
-handles.Loc_Ind = Fig_Output.Loc_Ind;
-handles.Ex_Ind  = Fig_Output.Ex_Ind;
-guidata(hObject,handles)
+GUI_data.hF           = hF;
+GUI_data.Mu_Alpha_Ind = Fig_Output.Mu_Alpha_Ind;
+guidata(hObject,GUI_data)
 
-function uitable_CellSelectionCallback(hObject, eventdata, handles)
-% hObject    handle to uitable1 (see GCBO)
-% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.TABLE)
-% handles    structure with handles and user data (see GUIDATA)
+function Update_Response(hObject, eventdata, GUI_data)
+%% Gather necessary inputs
+GUI_Inputs      = ParseGUI_Modes(GUI_data.hGUIs);
+Structure       = GUI_data.Structure;
+SpecData        = GUI_data.SpecData;
+hModel          = GUI_data.hModel;
+GUI_Data_Main   = guidata(GUI_data.hCOSMOSS);
+GUI_Inputs_Main = ParseGUI_Main(GUI_Data_Main.hGUIs);
 
-TableData = handles.GUI_Modes.ModeList.Data;
+%% Call Update RespF function
+% Response = Fig_Response(hModel, GUI_Inputs, Structure, SpecData, GUI_Inputs_Main);
+Response = Fig_Response_Scalar(hModel, GUI_Inputs, Structure, SpecData, GUI_Inputs_Main);
 
+%% update handles
+GUI_data.Response = Response;
+guidata(hObject,GUI_data)
+
+function uitable_CellSelection(hObject, eventdata, GUI_data)
+%% Gather GUI inputs
+hGUIs       = GUI_data.hGUIs;
+GUI_Inputs  = ParseGUI_Modes(hGUIs);
+SpecType    = GUI_Inputs.SpecType;
+TableNData  = GUI_data.Table.SortInd;
 CurrentCell = eventdata.Indices;
-CurrentRowInd = CurrentCell(:,1)';
-Mode_Ind_Str = num2str(TableData(CurrentRowInd,1)');
 
-% Update the Mode index on GUI
-set(handles.GUI_Modes.Loc_Ind,'String', Mode_Ind_Str);
-set(handles.GUI_Modes.Ex_Ind,'String', Mode_Ind_Str);
+if isempty(CurrentCell)
+    disp('No mode selected, please select at least one mode...')
+    return
+else
+    CurrentRowInd = CurrentCell(:,1)';
+    Mode_Ind_Str_Full = TableNData(CurrentRowInd,1)';
+    Mode_Ind_Str_1st  = Mode_Ind_Str_Full(1);
+    
+    if gt(SpecType,2)
+        PathType = TableNData(CurrentRowInd,5)';
+        hGUIs.PathType.Value = PathType;
+    end
+    
+    % Update the Mode index on GUI
+    hGUIs.Mu_Alpha_Ind.String = num2str(Mode_Ind_Str_Full);
+    hGUIs.EigVec_Ind.String   = num2str(Mode_Ind_Str_1st); % only take the first index of slection, since mixxing coefficient only take one mode
+end
 
 %% update handles
-handles.Mode_Ind_Str = Mode_Ind_Str;
-guidata(hObject,handles)
+GUI_data.Mode_Ind_Str = Mode_Ind_Str_Full;
+guidata(hObject,GUI_data)
 
-function uitable_SortCallback(hObject, eventdata, handles)
-% hObject    handle to uitable1 (see GCBO)
-% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.TABLE)
-% handles    structure with handles and user data (see GUIDATA)
+function uitable_Sort(hObject, eventdata, GUI_data)
+Table      = GUI_data.Table;
+Data       = Table.Data;
+SortInd    = Table.SortInd;
+SortColumn = GUI_data.hGUIs.SortInd.Value;
 
-TableData = handles.GUI_Modes.ModeList.Data;
-SortColumn = handles.GUI_Modes.SortInd.Value;
+SC = SortInd(:,SortColumn); 
 
-[~,SortInd] = sort(abs(TableData(:,SortColumn)),'descend');
-SortedData = TableData(SortInd,:);
+if eq(SortColumn,1) 
+    % for sorting index
+    [~,Ind] = sort(SC,'ascend');
+else
+    [~,Ind] = sort(SC,'descend');
+end
+
+SortedData    = Data(Ind,:);
+SortedSortInd = SortInd(Ind,:);
 
 % Update Table on GUI
-set(handles.GUI_Modes.ModeList,'Data', SortedData);
+set(GUI_data.hGUIs.ModeList,'Data', SortedData);
 
-function Export_Handle_Callback(hObject, eventdata, handles)
-% export handles back to work space
-assignin('base', 'hPlot_Modes', handles)
-disp('Updated handles exported!')
+% Update Table in GUID_data
+Table.Data     = SortedData;
+Table.SortInd  = SortedSortInd;
+GUI_data.Table = Table;
+guidata(hObject,GUI_data)
+

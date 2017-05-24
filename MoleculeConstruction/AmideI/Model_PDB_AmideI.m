@@ -1,3 +1,4 @@
+%^ GUI Setup ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function varargout = Model_PDB_AmideI(varargin)
 % Model_PDB_AmideI MATLAB code for Model_PDB_AmideI.fig
 %      Model_PDB_AmideI, by itself, creates a new Model_PDB_AmideI or raises the existing
@@ -43,157 +44,232 @@ else
 end
 % End initialization code - DO NOT EDIT
 
-
-% --- Executes just before Model_PDB_AmideI is made visible.
-function Model_PDB_AmideI_OpeningFcn(hObject, eventdata, handles, varargin)
+function Model_PDB_AmideI_OpeningFcn(hModel_PDB_AmideI, eventdata, GUI_data, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to Model_PDB_AmideI (see VARARGIN)
-
-% Choose default command line output for Model_PDB_AmideI
-handles.output = hObject;
-
-% Call createInterface to create GUI elements
-GUI_Struc = GUI_PDB_AmideI(hObject);
-handles.GUI_Struc = GUI_Struc; % export GUI handles to handles
-
-% Reset Non-Label Frequency, anharmonicity, and F_min/F_Max to fit amideI mode
-% check if run this GUI stand along
-if nargin > 3    
-    if ishandle(varargin{1}) 
-        hMain = varargin{1};
-        Data_Main = guidata(hMain);
-        
-        handles.hMain = hMain;
-        handles.Data_Main = Data_Main;
-        
-        % PRE ASSIGN VALUES TO SUBSTITUTE MAIN GUI VALUES
-        GUI_Main  = Data_Main.GUI_Main;
-        set(GUI_Main.NLFreq ,'String','1644')
-        set(GUI_Main.LFreq  ,'String','1604')
-        set(GUI_Main.Anharm ,'String','12')
-        set(GUI_Main.Beta_NN,'String','0.8')
-        set(GUI_Main.X_Min  ,'String','1550')
-        set(GUI_Main.X_Max  ,'String','1700')
+if nargin > 3
+    switch varargin{1}
+        case 'COSMOSS'
+            hCOSMOSS = varargin{2};
+            Data_COSMOSS = guidata(hCOSMOSS);
+            
+            %PRE ASSIGN VALUES TO SUBSTITUTE MAIN GUI VALUES
+            hGUIs_COSMOSS  = Data_COSMOSS.hGUIs;
+            set(hGUIs_COSMOSS.Beta_NN,'String','0.8')
+            set(hGUIs_COSMOSS.F_Min  ,'String','1550')
+            set(hGUIs_COSMOSS.F_Max  ,'String','1750')
+            
+            GUI_data.hCOSMOSS = hCOSMOSS;
+            
+            disp('Running Model_PDB_AmideI directly from COSMOSS...')
+        case 'Comb2'
+            hModel_Comb2 = varargin{2};
+            Comb2_Order  = varargin{3};
+            
+            GUI_data.hModel_Comb2 = hModel_Comb2;
+            GUI_data.Comb2_Order  = Comb2_Order;
+            
+            % Add comb2 order # to GUI title, if necessary
+            TitleStr = hModel_PDB_AmideI.Name;
+            if ~strcmp(TitleStr(1),'#')
+                hModel_PDB_AmideI.Name = ['#',int2str(Comb2_Order),', ',TitleStr];
+            end
+            
+            disp('Running Model_PDB_AmideI as a sub GUI of Comb2...')
     end
 else
-    disp('Running Model_PDB_AmideI in stand alone mode.')    
+    disp('Running Model_PDB_AmideI in stand alone mode...')
 end
 
+% Call create Interface to create GUI elements
+hGUIs = GUI_PDB_AmideI(hModel_PDB_AmideI);
+
+% Prep necessary data to be saved in GUI_data
+GUI_data.hModel_PDB_AmideI = hModel_PDB_AmideI;
+GUI_data.hGUIs             = hGUIs;
+
 % Update handles structure
-guidata(hObject, handles);
+guidata(hModel_PDB_AmideI, GUI_data);
 
-% UIWAIT makes Model_PDB_AmideI wait for user response (see UIRESUME)
-% uiwait(handles.Model_PDB_AmideI);
-
-
-% --- Outputs from this function are returned to the command line.
-function varargout = Model_PDB_AmideI_OutputFcn(hObject, eventdata, handles) 
+function varargout = Model_PDB_AmideI_OutputFcn(hModel_PDB_AmideI, GUI_data, handles) 
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
 % Get default command line output from handles structure
-varargout{1} = handles.output;
+varargout{1} = hModel_PDB_AmideI;
 
-function LoadStructure(hObject, eventdata, handles)
+function Export_Handle_Callback(hObject, eventdata, GUI_data)
+% export handles back to work space
+assignin('base', 'Data_PDB_AmideI', GUI_data)
+disp('Updated GUI Data_PDB_AmideI exported!')
+%^ GUI Setup ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+function LoadStructure(hObject, eventdata, GUI_data)
+%% Read GUI variables
+hGUIs  = GUI_data.hGUIs;
+COSMOSS_GUI_Inputs = ParseGUI_AmideI(hGUIs);
+Preprocessed = COSMOSS_GUI_Inputs.Preprocessed;
+
 %% Get pdb file location 
 PWD = pwd;
 PDB_Path = [PWD, '/StructureFiles/PDB/'];
 
 [FilesName,PathName,~] = uigetfile({'*.pdb','PDB file'; ...
                                     '*,*','All Files'},...
+                                    'MultiSelect','on',...
                                     'Select inputs',PDB_Path);
-
+                                
 %% Parse molecule structure
+if Preprocessed
+    % read the pre-processed MD sanpshots with the same molecule
+    TextPattern = 'ATOM %*f %s %*s %*s %*f %f %f %f %*f %*f %*s';
+    if iscell(FilesName)
+        N_File = size(FilesName,2);
+        fid = fopen([PathName FilesName{1}]);
+        ATest = textscan(fid,TextPattern,'CollectOutput',1);
+        fclose(fid);
+        XYZ = zeros([size(ATest{2}),N_File]); % Creat all zeros RawData Matrix
+        
+        progressbar;
+        for i=1:N_File
+            progressbar(i/N_File)
+            % read preprocessed pdb file
+            fid = fopen([PathName FilesName{i}]);
+            A = textscan(fid,TextPattern,'CollectOutput',1);
+            fclose(fid);
 
-PDB = pdbread([PathName FilesName]);
-Atom_Data = PDB.Model.Atom;
-Num_Atoms = size(Atom_Data,2);
+            XYZ(:,:,i) = A{2};
+        end
+        AtomName  = A{1};
+        Num_Atoms = size(XYZ,1);
+        
+        C = strsplit(PathName,'/');
+        FilesName  = C{end-1};
+        
+        % deal with the GUI inputs in COSMOSS
+        hCOSMOSS = GUI_data.hCOSMOSS;
+        Data_COSMOSS = guidata(hCOSMOSS);
+        COSMOSS_hGUIs = Data_COSMOSS.hGUIs;
+        COSMOSS_hGUIs.Sampling.Value = 1;
+        COSMOSS_hGUIs.Sample_Num.String = num2str(N_File);
+        COSMOSS_hGUIs.FWHM.String = num2str(0);
+        
+    else
+        N_File = 1;
+        fid = fopen([PathName FilesName]);
+        A = textscan(fid,TextPattern,'CollectOutput',1);
+        fclose(fid);
+        
+        AtomName   = A{1};
+        XYZ(:,:,1) = A{2};
+        Num_Atoms = size(XYZ,1);
+    end
+else 
+    N_File = 1;
+    PDB = pdbread([PathName FilesName]);
+    Atom_Data = PDB.Model.Atom;
+    Num_Atoms = size(Atom_Data,2);
 
-% Get coordination data
-XYZ = zeros(Num_Atoms,3);
-AtomName = cell(Num_Atoms,1);
-for II = 1:Num_Atoms
-    A = Atom_Data(II);
-    XYZ(II,:) = [A.X, A.Y, A.Z];
-    AtomName{II} = Atom_Data(II).AtomName;
+    % Get coordination data
+    XYZ = zeros(Num_Atoms,3);
+    AtomName = cell(Num_Atoms,1);
+    for II = 1:Num_Atoms
+        A = Atom_Data(II);
+        XYZ(II,:) = [A.X, A.Y, A.Z];
+        AtomName{II} = Atom_Data(II).AtomName;
+    end
 end
 
 %% output to GUI
-handles.Num_Atoms = Num_Atoms;
-handles.XYZ       = XYZ;
-handles.AtomName  = AtomName;
-handles.FilesName = FilesName;
+GUI_data.PDB.Num_Atoms = Num_Atoms;
+GUI_data.PDB.XYZ       = XYZ;
+GUI_data.PDB.AtomName  = AtomName;
+GUI_data.PDB.FilesName = FilesName;
+GUI_data.PDB.N_File    = N_File;
 
-guidata(hObject,handles)
+guidata(hObject,GUI_data)
 
 %% Update PDB name and data to GUI
-set(handles.GUI_Struc.PDB_Name,'String',FilesName)
-UpdateStructure(hObject, eventdata, handles)
+set(GUI_data.hGUIs.PDB_Name,'String',FilesName)
+UpdateStructure(hObject, eventdata, GUI_data)
 
-function UpdateStructure(hObject, eventdata, handles)
+function UpdateStructure(hObject, eventdata, GUI_data)
 %% Read GUI variables
-GUI_Struc  = handles.GUI_Struc;
-GUI_Inputs = ParseGUI_AmideI(GUI_Struc);
+hGUIs  = GUI_data.hGUIs;
+GUI_Inputs = ParseGUI_AmideI(hGUIs);
     
 %% Construct molecule
-Num_Atoms = handles.Num_Atoms;
-XYZ       = handles.XYZ;
-AtomName  = handles.AtomName;
-FilesName = handles.FilesName;
+Num_Atoms = GUI_data.PDB.Num_Atoms;
+XYZ       = GUI_data.PDB.XYZ;
+AtomName  = GUI_data.PDB.AtomName;
+FilesName = GUI_data.PDB.FilesName;
+N_File    = GUI_data.PDB.N_File;
 
-Structure = GetAmideI(Num_Atoms,XYZ,AtomName,FilesName,GUI_Inputs);
-                  
-% Export into Structure so it can be passsed around different GUIs
-Structure.StructModel = 3;
+% test # modes and pre-allocate matix
+Tmp1 = GetAmideI(XYZ(:,:,1),AtomName,FilesName,GUI_Inputs);
+Nmodes = Tmp1.Nmodes;
+Tmp_LocMu     = zeros(Nmodes,3,N_File);
+Tmp_LocAlpha  = zeros(Nmodes,9,N_File);
+Tmp_LocCenter = zeros(Nmodes,3,N_File);
+Tmp_XYZ       = zeros(Num_Atoms,3,N_File);
 
-%% Export result to Main guidata
-
-% check if this program run stand along
-if isfield(handles,'hMain')
-    Data_Main = guidata(handles.hMain);
-    Data_Main.Structure = Structure;
-    guidata(handles.hMain,Data_Main)
-    
-    % change Name of Main GUI to help identifying which Structural Model is
-    % using
-    Model_Name    = handles.hModel.Name;
-    handles.hMain.Name = ['COSMOSS: ' Model_Name];
+for i = 1:N_File
+    Tmp = GetAmideI(XYZ(:,:,i),AtomName,FilesName,GUI_Inputs);
+    Tmp_LocMu(:,:,i)     = Tmp.LocMu;
+    Tmp_LocAlpha(:,:,i)  = Tmp.LocAlpha;
+    Tmp_LocCenter(:,:,i) = Tmp.LocCenter;
+    Tmp_XYZ(:,:,i)       = Tmp.XYZ;
 end
 
-handles.Structure = Structure;
-guidata(hObject,handles)
+Structure = StructureData;
+Structure.XYZ       = Tmp_XYZ;
+Structure.AtomName  = Tmp1.AtomName;
+
+Structure.LocCenter = Tmp_LocCenter;
+Structure.LocFreq   = Tmp1.LocFreq;
+Structure.LocAnharm = Tmp1.LocAnharm;
+Structure.LocMu     = Tmp_LocMu;
+Structure.LocAlpha  = Tmp_LocAlpha;
+
+Structure.FilesName = Tmp1.FilesName;
+Structure.Extra.AmideIAtomSerNo = Tmp1.Extra.AmideIAtomSerNo;
+
+% Export into Structure so it can be passsed around different GUIs
+Structure.StructModel = 2;
+
+%% Export result to Main guidata
+GUI_data.Structure = Structure;
+
+% include FieldName of GUI Inputs
+[~,~,~,hGUIParser] = StructureModel(Structure.StructModel);
+[~,GUI_FieldName] = hGUIParser(hGUIs);
+GUI_data.GUI_FieldName = GUI_FieldName;
+
+guidata(hObject,GUI_data)
+
+% update to other GUIs
+Export2GUIs(GUI_data)
 
 disp('Structure file generated!')
 
-function hF = PlotMolecule(hObject, eventdata, handles)
+function hF = PlotMolecule(hObject, eventdata, GUI_data)
 % Read GUI variables
-GUI_Struc  = handles.GUI_Struc;
-GUI_Inputs = ParseGUI_AmideI(GUI_Struc);
+hGUIs  = GUI_data.hGUIs;
+GUI_Inputs = ParseGUI_AmideI(hGUIs);
 
-% Read the Molecule frame to Lab frame orientation from COSMOSS
-hMain = handles.hMain;
-GUI_Data_Main = guidata(hMain);
-GUI_Inputs_Main = ParseGUI_Main(GUI_Data_Main);
-% Pass the MF-LB Eular angles to Plotting function
-GUI_Inputs.Avg_Phi   = GUI_Inputs_Main.Avg_Phi;
-GUI_Inputs.Avg_Theta = GUI_Inputs_Main.Avg_Theta;
-GUI_Inputs.Avg_Psi   = GUI_Inputs_Main.Avg_Psi;
+hF = PlotXYZfiles_AmideI(GUI_data.Structure,GUI_Inputs);
 
-hF = PlotXYZfiles_AmideI(handles.Structure,GUI_Inputs);
+function PlotModes(hObject, eventdata, GUI_data)
+Plot_Modes(GUI_data.hModel_PDB_AmideI);
 
-function PlotModes(hObject, eventdata, handles)
-Plot_Modes(handles.hModel);
 
-function Export_Handle_Callback(hObject, eventdata, handles)
-% export handles back to work space
-assignin('base', 'hModel_PDB_AmideI', handles)
-disp('Updated handles exported!')
-    
 
 
 

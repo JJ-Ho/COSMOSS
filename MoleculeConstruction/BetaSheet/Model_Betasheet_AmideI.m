@@ -30,7 +30,7 @@ gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
                    'gui_OpeningFcn', @Model_Betasheet_AmideI_OpeningFcn, ...
                    'gui_OutputFcn',  @Model_Betasheet_AmideI_OutputFcn, ...
-                   'gui_LayoutFcn',  [] , ...
+                   'gui_LayoutFcn',  @GUI_Base_Betasheet_AmideI, ...
                    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
     gui_State.gui_Callback = str2func(varargin{1});
@@ -43,131 +43,155 @@ else
 end
 % End initialization code - DO NOT EDIT
 
+function hModel = GUI_Base_Betasheet_AmideI(Singleton)
+% this function create base figure. To utilize the original GUI building
+% mechanism of Matlab and avoid Matlab default way to export GUI element 
+% handles, this function only create the base layer with no GUI elements.
+% Aftter calling "gui_mainfcn" we will call "GUI_COSMOSS" to build GUI
+% elements.
 
-% --- Executes just before Model_Betasheet_AmideI is made visible.
-function Model_Betasheet_AmideI_OpeningFcn(hObject, eventdata, handles, varargin)
+% Create base figure
+hModel = figure;
+
+hModel.Units            = 'Pixels';
+hModel.Position         = [2 406 250 600];
+hModel.Name             = 'Model_Betasheet_AmideI';
+hModel.ToolBar          = 'none';
+hModel.MenuBar          = 'none';
+hModel.NumberTitle      = 'off';
+hModel.IntegerHandle    = 'off';
+hModel.Tag              = 'hModel'; % tag to distinguish type of GUI
+hModel.HandleVisibility = 'Callback';
+
+gui_Options.syscolorfig = 1;
+setappdata(hModel,'GUIDEOptions',gui_Options);
+
+
+function Model_Betasheet_AmideI_OpeningFcn(hModel_Betasheet_AmideI, eventdata, GUI_data, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to Model_Betasheet_AmideI (see VARARGIN)
-
-% Choose default command line output for Model_Betasheet_AmideI
-handles.output = hObject;
-
-% Call createInterface to create GUI elements
-GUI_Struc = GUI_Betasheet_AmideI(hObject);
-handles.GUI_Struc = GUI_Struc; % export GUI handles to handles
-
-% Get Main function's handles
-% Reset Non-Label Frequency, anharmonicity, and F_min/F_Max to fit amideI mode
-% check if run this GUI stand along
-
-% Get Main function's handles
-if nargin > 3    
-    if ishandle(varargin{1}) 
-       hMain = varargin{1};
-       Data_Main = guidata(hMain);
-
-       handles.hMain = hMain;
-       handles.Data_Main = Data_Main;
-       
-       % PRE ASSIGN VALUES TO SUBSTITUTE MAIN GUI VALUES
-       GUI_Main  = Data_Main.GUI_Main;
-       set(GUI_Main.Beta_NN,'String','0.8')
-       set(GUI_Main.X_Min  ,'String','1550')
-       set(GUI_Main.X_Max  ,'String','1700')
+if nargin > 3
+    switch varargin{1}
+        case 'COSMOSS'
+            hCOSMOSS = varargin{2};
+            Data_COSMOSS = guidata(hCOSMOSS);
+            
+            %PRE ASSIGN VALUES TO SUBSTITUTE MAIN GUI VALUES
+            hGUIs_COSMOSS  = Data_COSMOSS.hGUIs;
+            set(hGUIs_COSMOSS.Beta_NN,'String','0.8')
+            set(hGUIs_COSMOSS.F_Min  ,'String','1550')
+            set(hGUIs_COSMOSS.F_Max  ,'String','1750')
+            
+            GUI_data.hCOSMOSS = hCOSMOSS;
+            
+            disp('Running Model_Betasheet_AmideI directly from COSMOSS...')
+        case 'Comb2'
+            hModel_Comb2 = varargin{2};
+            Comb2_Order  = varargin{3};
+            
+            GUI_data.hModel_Comb2 = hModel_Comb2;
+            GUI_data.Comb2_Order  = Comb2_Order;
+            
+            % Add comb2 order # to GUI title, if necessary
+            TitleStr = hModel_Betasheet_AmideI.Name;
+            if ~strcmp(TitleStr(1),'#')
+                hModel_Betasheet_AmideI.Name = ['#',int2str(Comb2_Order),', ',TitleStr];
+            end
+            
+            disp('Running Model_Betasheet_AmideI as a sub GUI of Comb2...')
     end
 else
-    disp('Running Model_Betasheet_AmideI in stand alone mode.')    
+    disp('Running Model_Betasheet_AmideI in stand alone mode...')
 end
 
+% Call createInterface to create GUI elements
+hGUIs = GUI_Betasheet_AmideI(hModel_Betasheet_AmideI);
+
+% Prep necessary data to be saved in GUI_data
+GUI_data.hModel_Betasheet_AmideI = hModel_Betasheet_AmideI;
+GUI_data.hGUIs                   = hGUIs;
 
 % Update handles structure
-guidata(hObject, handles);
+guidata(hModel_Betasheet_AmideI, GUI_data);
 
-% UIWAIT makes Model_Betasheet_AmideI wait for user response (see UIRESUME)
-% uiwait(handles.hModel);
+% Generate default structure from GUI inputs
+UpdateStructure(hModel_Betasheet_AmideI, eventdata, GUI_data)
 
-
-% --- Outputs from this function are returned to the command line.
-function varargout = Model_Betasheet_AmideI_OutputFcn(hObject, eventdata, handles) 
+function varargout = Model_Betasheet_AmideI_OutputFcn(hModel_Betasheet_AmideI, eventdata, GUI_data) 
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
 % Get default command line output from handles structure
-varargout{1} = handles.output;
+varargout{1} = hModel_Betasheet_AmideI;
 
-function UpdateStructure(hObject, eventdata, handles)
+function Export_Handle_Callback(hObject, eventdata, GUI_data)
+% export handles back to work space
+assignin('base', 'Data_Betasheet_AmideI', GUI_data)
+disp('Updated GUI Data_Betasheet_AmideI exported!')
+%^ GUI Setup ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+
+function UpdateStructure(hObject, eventdata, GUI_data)
 %% Read GUI variables
-GUI_Struc  = handles.GUI_Struc;
-GUI_Inputs = ParseGUI_Betasheet(GUI_Struc);
+hGUIs  = GUI_data.hGUIs;
+GUI_Inputs = ParseGUI_Betasheet(hGUIs);
 
 %% Construct molecule
 BB        = ConstuctBetaSheet(GUI_Inputs);
-Structure = GetAmideI(BB.Num_Atoms,...
+Structure = GetAmideI(...
                       BB.XYZ,...
                       BB.AtomName,...
                       BB.FilesName,...
                       GUI_Inputs);
-
-%% Export extra info into Structure                   
-Structure.N_Residue         = BB.N_Residue;
-Structure.N_Strand          = BB.N_Strand;
-Structure.N_Mode_per_Starnd = BB.N_Residue-1;
+                  
+% Export into Structure so it can be passsed around different GUIs
+Structure.StructModel = 4;
+%% Export extra info into Structure
+Structure.Extra.N_Residue         = BB.N_Residue;
+Structure.Extra.N_Strand          = BB.N_Strand;
+Structure.Extra.N_Mode_per_Starnd = BB.N_Residue-1;
 
 % C terminus Index
-Structure.Ind_H = BB.Ind_H;
-Structure.Ind_O = BB.Ind_O;
+Structure.Extra.Ind_H = BB.Ind_H;
+Structure.Extra.Ind_O = BB.Ind_O;
 
 % Betasheet orientation info export
-Structure.TransV = BB.TransV;
-Structure.TwistV = BB.TwistV;
-Structure.RotV   = [GUI_Inputs.Phi_D,GUI_Inputs.Psi_D,GUI_Inputs.Theta_D];
+Structure.Extra.TransV = BB.TransV;
+Structure.Extra.TwistV = BB.TwistV;
+Structure.Extra.RotV   = [GUI_Inputs.Phi_D,GUI_Inputs.Psi_D,GUI_Inputs.Theta_D];
 
-% Export into Structure so it can be passsed around different GUIs
-Structure.StructModel = 2;
+% Include the whole BB info for debug
+Structure.Extra.BB = BB;
 
 %% Export result to Main guidata
-% check if this program run stand along
-if isfield(handles,'hMain')
-    Data_Main = guidata(handles.hMain);
-    Data_Main.Structure = Structure;
-    guidata(handles.hMain,Data_Main)
-    
-    % change Name of Main GUI to help identifying which Structural Model is
-    % using
-    Model_Name    = handles.hModel.Name;
-    handles.hMain.Name = ['COSMOSS: ' Model_Name];
-end
+GUI_data.Structure = Structure;
 
-handles.Structure = Structure;
-guidata(hObject,handles)
+% include FieldName of GUI Inputs
+[~,~,~,hGUIParser] = StructureModel(Structure.StructModel);
+[~,GUI_FieldName] = hGUIParser(hGUIs);
+GUI_data.GUI_FieldName = GUI_FieldName;
+
+guidata(hObject,GUI_data)
+
+% update to other GUIs
+Export2GUIs(GUI_data)
 
 disp('Structure file generated!')
 
-function hF = PlotMolecule(hObject, eventdata, handles)
+function hF = PlotMolecule(hObject, eventdata, GUI_data)
 % Read GUI variables
-GUI_Struc  = handles.GUI_Struc;
-GUI_Inputs = ParseGUI_Betasheet(GUI_Struc);
+hGUIs  = GUI_data.hGUIs;
+GUI_Inputs = ParseGUI_Betasheet(hGUIs);
 
-% Read the Molecule frame to Lab frame orientation from COSMOSS
-hMain = handles.hMain;
-GUI_Data_Main = guidata(hMain);
-GUI_Inputs_Main = ParseGUI_Main(GUI_Data_Main);
-% Pass the MF-LB Eular angles to Plotting function
-GUI_Inputs.Avg_Phi   = GUI_Inputs_Main.Avg_Phi;
-GUI_Inputs.Avg_Theta = GUI_Inputs_Main.Avg_Theta;
-GUI_Inputs.Avg_Psi   = GUI_Inputs_Main.Avg_Psi;
+hF = Plot_Betasheet_AmideI(GUI_data.Structure,GUI_Inputs);
 
-hF = Plot_Betasheet_AmideI(handles.Structure,GUI_Inputs);
+function PlotModes(hObject, eventdata, GUI_data)
+Plot_Modes(GUI_data.hModel_Betasheet_AmideI);
 
-function PlotModes(hObject, eventdata, handles)
-Plot_Modes(handles.hModel);
-
-function Export_Handle_Callback(hObject, eventdata, handles)
-% export handles back to work space
-assignin('base', 'hModel_Betasheet_AmideI', handles)
-disp('Updated handles exported!')

@@ -34,20 +34,35 @@ S.DFX = diff(S.XLM);
 S.DFY = diff(S.YLM);
 S.tx(1) = uicontrol('style','tex',...
                     'unit','normalized',...
-                    'posit',[0.1 0.95 0.4 0.05],...
+                    'posit',[0.2 0.90 0.4 0.05],...
                     'backg',get(S.fh,'color'),...
                     'fontsize',14,'fontweight','bold',...
                     'HorizontalAlignment','left',...
-                    'string','Current Pointer Location:');
+                    'string','Current Location:');
 % This textbox will display the current position of the mouse.
 S.tx(2) = uicontrol('style','tex',...
                     'unit','normalized',...
-                    'position',[0.45 0.95 0.4 0.05],...
+                    'position',[0.50 0.90 0.4 0.05],...
                     'backg',get(S.fh,'color'),...
                     'fontsize',14,'fontweight','bold',...
                     'HorizontalAlignment','left');
             
 set(S.fh,'windowbuttonmotionfcn',{@fh_wbmfcn,S}) % Set the motion detector.
+
+% Save hAx and hF into UserData of the figure
+set(S.fh,'Userdata',S)
+set(S.fh,'WindowKeyPressFcn',{@fh_wkpfcn,S}) % Set .
+
+% turn off listner
+% The workaround, to handle both HG1 and HG2:
+
+hManager = uigetmodemanager(S.fh);
+try
+    set(hManager.WindowListenerHandles, 'Enable', 'off');  % HG1
+catch
+   [hManager.WindowListenerHandles.Enabled] = deal(false);  % HG2
+end
+
 
 function [] = fh_wbmfcn(varargin)
 % WindowButtonMotionFcn for the figure.
@@ -63,5 +78,12 @@ if tf1 && tf2
     Cy =  S.YLM(1) + (F(2)-S.AXP(2)).*(S.DFY/S.AXP(4));
     set(S.tx(2),'str',num2str([Cx,Cy],6))
 end
+
+function [] = fh_wkpfcn(varargin)
+S = varargin{3};  % Get the structure.
+disp('Cursor refreshed...')
+delete(S.tx)
+set(S.fh,'windowbuttonmotionfcn','')
+Pointer_N(S);
 
 

@@ -1,4 +1,4 @@
-function [Phi,Psi] = SD_PeptideDihedral(Structure)
+function Dihedral = SD_PeptideDihedral(Structure)
 % Index Definition 
 %     O(1)                     O(2)                      O(n)                     O
 %     ||                       ||                        ||                       ||
@@ -74,6 +74,10 @@ Psi = atan2d(X2,Y2);
 %% Remove not close by amide group
 Phi(Remove_Ind) = nan;
 Psi(Remove_Ind) = nan;
+
+%% output
+Dihedral.Psi = Psi;
+Dihedral.Phi = Phi;
 
 %% Debug plot
 % ramachandran('2lmq.pdb')

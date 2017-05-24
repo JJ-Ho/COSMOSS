@@ -12,20 +12,22 @@ load('Jansen_Map.mat')
 % (N)... C(i) -> N(i) -> Ca(i) -> C(i+1) -> N(i+1) - ... (C)
 %                   Phi(i)    Psi(i)
 
-[Phi,Psi] = SD_PeptideDihedral(Structure);
+Dihedral = SD_PeptideDihedral(Structure);
+Psi = Dihedral.Psi;
+Phi = Dihedral.Phi;
 
 % Convert phi,psi to map index, [-180,180] => [0,360]
-Phi_Ind = round(Phi + 180);
 Psi_Ind = round(Psi + 180);
+Phi_Ind = round(Phi + 180);
 
 % if index = 0, move it to 1, [0,360] => [1,360]
-Phi_Ind(eq(Phi_Ind,0)) = 1;
 Psi_Ind(eq(Psi_Ind,0)) = 1;
+Phi_Ind(eq(Phi_Ind,0)) = 1;
 
 % temporary assign nan inde to 1, will delete them later
-NaN_Ind = isnan(Phi_Ind);
-Phi_Ind(NaN_Ind) = 1;
+NaN_Ind = isnan(Psi_Ind);
 Psi_Ind(NaN_Ind) = 1;
+Phi_Ind(NaN_Ind) = 1;
 
 %% Nearest Neighbor Couping
 % Index map
@@ -41,8 +43,8 @@ Beta = diag(Beta_NN,1) + diag(Beta_NN,-1);
 %% Local Mode Frequency Shift
 % Index mapping
 % # Amide         1,2,3,4,5,6,...7,8,9,10,...
-% # N(Phi,Psi)    x,1,2,3,4,5,...x,7,8, 9,...
-% # C(Phi,Psi)    1,2,3,4,5,x,...7,8,9, x,...
+% # N(Psi,Phi)    x,1,2,3,4,5,...x,7,8, 9,...
+% # C(Psi,Phi)    1,2,3,4,5,x,...7,8,9, x,...
 
 dF_N_Ind = [1;NNC_Ind];
 dF_N = Jansen_wn(dF_N_Ind);

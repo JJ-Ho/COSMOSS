@@ -1,4 +1,4 @@
-function [Phi,Psi] = PeptideDihedral(Structure)
+function [Phi,Psi] = SD_PeptideDihedral(Structure)
 % Index Definition 
 %     O(1)                     O(2)                      O(n)                     O
 %     ||                       ||                        ||                       ||
@@ -17,6 +17,14 @@ function [Phi,Psi] = PeptideDihedral(Structure)
 
 %% Debug
 % Structure = Data_COSMOSS.Structure;
+
+%% Check if the structure contains amide groups
+if ~isfield(Structure.Extra,'AmideIAtomSerNo')
+    disp('The structure does not have amide groups, abort...')
+    Phi = nan;
+    Psi = nan;
+    return
+end
 
 %% Prep parameters
 Ind_CONCa = Structure.Extra.AmideIAtomSerNo; %[C,O,N,CA]

@@ -12,7 +12,7 @@ load('Jansen_Map.mat')
 % (N)... C(i) -> N(i) -> Ca(i) -> C(i+1) -> N(i+1) - ... (C)
 %                   Phi(i)    Psi(i)
 
-[Phi,Psi] = PeptideDihedral(Structure);
+[Phi,Psi] = SD_PeptideDihedral(Structure);
 
 % Convert phi,psi to map index, [-180,180] => [0,360]
 Phi_Ind = round(Phi + 180);

@@ -231,7 +231,6 @@ end
 Structure = StructureData;
 Structure.XYZ       = Tmp_XYZ;
 Structure.AtomName  = Tmp1.AtomName;
-Structure.COM       = Tmp1.COM;
 
 Structure.LocCenter = Tmp_LocCenter;
 Structure.LocFreq   = Tmp1.LocFreq;

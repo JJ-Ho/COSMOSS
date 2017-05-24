@@ -65,7 +65,7 @@ Plot_Axis  = INPUT.Results.Plot_Axis;
 
 XYZ       = Struc_Data.XYZ;
 AtomName  = Struc_Data.AtomName;
-COM       = Struc_Data.COM;
+CoM       = Struc_Data.CoM;
 LocCenter = Struc_Data.LocCenter;
 
 % % Orientation = Orientation/180*pi; % turn to radius unit
@@ -152,7 +152,7 @@ hold on
         %COA = Box_Cornor + (0.1).*Box_length;
         
         R_MF_LF = Lab_Frame;
-        PlotRotMolFrame(hAx,Lab_Frame,R_MF_LF,COM)
+        PlotRotMolFrame(hAx,Lab_Frame,R_MF_LF,CoM)
     end
     
 hold off

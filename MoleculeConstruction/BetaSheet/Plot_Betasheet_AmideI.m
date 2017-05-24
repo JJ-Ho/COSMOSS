@@ -79,7 +79,7 @@ L_Index    = INPUT.Results.L_Index;
 XYZ      = SData.XYZ;
 AtomName = SData.AtomName;
 Center   = SData.LocCenter;
-COM      = SData.COM;
+CoM      = SData.CoM;
 AmideIAtomSerNo = SData.Extra.AmideIAtomSerNo;
 
 %% Position info
@@ -128,7 +128,7 @@ hold on
                      0,1,0;
                      0,0,1 ];
         
-        PlotRotMolFrame(hAx,Lab_Frame,Lab_Frame,COM)
+        PlotRotMolFrame(hAx,Lab_Frame,Lab_Frame,CoM)
     end
     
     %% Draw labeled atoms

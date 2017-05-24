@@ -134,7 +134,6 @@ P = StructureData;
 
 P.XYZ       = XYZ;
 P.AtomName  = Atom_Name;
-P.COM       = sum(XYZ,1)./size(XYZ,1);
 
 P.LocCenter = XYZ(Center_Ind,:);
 P.LocFreq   = Freq.Fundamental;

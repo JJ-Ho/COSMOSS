@@ -33,7 +33,7 @@ Plot_Atom_Index = INPUT.Results.Plot_Atom_Index;
 XYZ      = SData.XYZ;
 AtomName = SData.AtomName;
 Center   = SData.LocCenter;
-COM      = SData.COM;
+CoM      = SData.CoM;
 Nmodes   = SData.Nmodes;
 Atom_Num = SData.NAtoms;
 
@@ -99,7 +99,7 @@ hold on
                      0,1,0;
                      0,0,1 ];
                  
-        PlotRotMolFrame(hAx,Lab_Frame,Lab_Frame,COM)
+        PlotRotMolFrame(hAx,Lab_Frame,Lab_Frame,CoM)
     end
     
     %% Draw lattice, for MBA now

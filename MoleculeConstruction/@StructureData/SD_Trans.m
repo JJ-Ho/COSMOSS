@@ -1,6 +1,5 @@
 function obj_T = SD_Trans(obj,V)
     XYZ       = obj.XYZ;
-    COM       = obj.COM;
     LocCenter = obj.LocCenter;
 
     % check if V is [1x3]
@@ -16,12 +15,10 @@ function obj_T = SD_Trans(obj,V)
         end
     else
         XYZ_T       = bsxfun(@plus,XYZ,V);
-        COM_T       = COM+V;
         LocCenter_T = bsxfun(@plus,LocCenter,V);
 
         obj_T           = obj;
         obj_T.XYZ       = XYZ_T;
-        obj_T.COM       = COM_T;
         obj_T.LocCenter = LocCenter_T;
     end   
 end

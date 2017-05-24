@@ -160,7 +160,6 @@ Output = StructureData;
 
 Output.XYZ       = XYZ_Grid;
 Output.AtomName  = Atom_Name;
-Output.COM       = sum(XYZ_Grid,1)./size(XYZ_Grid,1);
 
 Output.LocCenter = Center;
 Output.LocFreq   = Loc_Freq;

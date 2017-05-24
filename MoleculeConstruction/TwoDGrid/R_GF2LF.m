@@ -101,7 +101,6 @@ Output = StructureData;
 
 Output.XYZ       = XYZ_T_R;
 Output.AtomName  = G09.AtomName;
-Output.COM       = sum(XYZ,1)./size(XYZ,1);
 
 Output.LocCenter = XYZ_T_R(Center_Ind,:);
 Output.LocFreq   = G09.LocFreq;

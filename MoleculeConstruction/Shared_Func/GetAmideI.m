@@ -285,7 +285,6 @@ AmideIAnharm = ones(Num_Modes,1).*Anharm;
 Output = StructureData;
 Output.XYZ       = XYZ_Rot;
 Output.AtomName  = AtomName;
-Output.COM       = sum(XYZ_Rot,1)./size(XYZ_Rot,1);
 
 Output.LocCenter = AmideICenter;
 Output.LocFreq   = AmideIFreq;

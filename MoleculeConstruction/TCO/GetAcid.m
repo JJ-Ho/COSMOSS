@@ -236,7 +236,6 @@ alpha = reshape(permute(alpha_Sim,[1,3,2]),[Num_Modes,9]);
 Output = StructureData;
 Output.XYZ       = XYZ;
 Output.AtomName  = AtomName;
-Output.COM       = Displacement./2;
 
 Output.LocCenter = AcidCenter;
 Output.LocFreq   = AmideIFreq;

@@ -19,10 +19,10 @@ Rot_Theta    = GUI_Inputs.Rot_Theta/180*pi;
 
 TransV = [Trans_X,Trans_Y,Trans_Z];
 
-%% Move the molecules before merge the two Structure
-% Move both COM to [0,0,0]
-StrucData1_0 = SD_Trans(S1,-S1.COM);
-StrucData2_0 = SD_Trans(S2,-S2.COM);
+%% Move the molecules before merge the two Structures
+% Move both CoM to [0,0,0]
+StrucData1_0 = SD_Trans(S1,-S1.CoM);
+StrucData2_0 = SD_Trans(S2,-S2.CoM);
 
 StrucData2_R  = SD_Rot(StrucData2_0,Rot_Phi,Rot_Psi,Rot_Theta);
 StrucData2_RT = SD_Trans(StrucData2_R,TransV);

@@ -18,7 +18,7 @@ Currently COSMOSS support the following structure construction models:
 * Amide-I mode of an ideal betasheet
 * Combination of any two structures above
 
-This code is designed to be used for other molecules as well. You can generate your interested molecule and their spectra. Check [structure mode wiki page][wiki-Structure] for more infomation.
+This code is designed to be used for other molecules as well. You can generate your interested molecule and their spectra. Check [structure model wiki page][wiki-Structure] for more infomation.
 
 ### Installation
 To use this code, please download COSMOSS into your Matlab path and excute COSMOSS.m.

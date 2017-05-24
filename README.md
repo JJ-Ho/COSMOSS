@@ -1,5 +1,7 @@
-# COSMOSS
-### COSMOSS = *Coupled OScillator MOdel Spectrum Simulator*  
+# COSMOSS 
+COSMOSS = *Coupled OScillator MOdel Spectrum Simulator*
+
+### DESCRIPTION
 Given a molecule structure, this Matlab code can simulate vibrational spectrum base on coupled oscillator model (Frankle Exiton Model).  
 For now COSMOSS can be used to simulate:
 * Fourier Transform Infared spectrum (FTIR)
@@ -24,12 +26,11 @@ To use this code, please download COSMOSS into your Matlab path and excute COSMO
 Note:
 The GUI portion is created base on the "GUI Layout Toolbox" wrote by David Sampson. Further information about GUI Layout Tool box can be found in: [GUI Layout Tool Box](GUILayoutToolbox)
 
-License
-----
+### License
 
 GPL2
 
-**Free Software, Hell Yeah!**
+
 
 [//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
    [wiki-Home]: <https://gitlab.com/jjho/COSMOSS/wikis/home>

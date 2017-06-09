@@ -24,7 +24,7 @@ Phi_Ind = round(Phi + 180);
 Psi_Ind(eq(Psi_Ind,0)) = 1;
 Phi_Ind(eq(Phi_Ind,0)) = 1;
 
-% temporary assign nan inde to 1, will delete them later
+% temporary assign nan index to 1, will delete them later
 NaN_Ind = isnan(Psi_Ind);
 Psi_Ind(NaN_Ind) = 1;
 Phi_Ind(NaN_Ind) = 1;

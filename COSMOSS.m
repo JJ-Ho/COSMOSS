@@ -201,8 +201,13 @@ hGUIs.LaserSetting.SelectedTab = hGUIs.Tab_1D;
 GUI_Inputs = ParseGUI_Main(GUI_data.hGUIs);
 Structure  = GUI_data.Structure;
 
-hF  = figure;
-hAx = axes('Parent',hF);
+if strcmp(eventdata.Source,'External')
+    hF  = eventdata.hF;
+    hAx = eventdata.hAx;
+else
+    hF  = figure;
+    hAx = axes('Parent',hF);
+end
 
 if eq(GUI_Inputs.Sampling,1) % GUI: Diag. Disorder
     % Pre-allocate  
@@ -270,8 +275,13 @@ hGUIs.LaserSetting.SelectedTab = hGUIs.Tab_1D;
 GUI_Inputs = ParseGUI_Main(GUI_data.hGUIs);
 Structure  = GUI_data.Structure;
 
-hF  = figure;
-hAx = axes('Parent',hF);
+if strcmp(eventdata.Source,'External')
+    hF  = eventdata.hF;
+    hAx = eventdata.hAx;
+else
+    hF  = figure;
+    hAx = axes('Parent',hF);
+end
 
 if eq(GUI_Inputs.Sampling,1)
     % Pre-allocate
@@ -354,8 +364,13 @@ else
 end
     
 %% Conv2D linshape and make figure
-hF_final = figure;
-hAx_final = axes('Parent',hF_final);
+if strcmp(eventdata.Source,'External')
+    hF_final  = eventdata.hF;
+    hAx_final = eventdata.hAx;
+else
+    hF_final = figure;
+    hAx_final = axes('Parent',hF_final);
+end
 CVL = Conv2D(SpectraGrid,GUI_Inputs);
 CVL.FilesName = Structure.FilesName; % pass filesname for figure title
 
@@ -402,8 +417,14 @@ else
 end
 
 %% Covolution and make figure
-hF_final = figure;
-hAx_final = axes('Parent',hF_final);
+if strcmp(eventdata.Source,'External')
+    hF_final  = eventdata.hF;
+    hAx_final = eventdata.hAx;
+else
+    hF_final = figure;
+    hAx_final = axes('Parent',hF_final);
+end
+
 CVL = Conv2D(SpectraGrid,GUI_Inputs);
 CVL.FilesName = Structure.FilesName; % pass filesname for figure title
 

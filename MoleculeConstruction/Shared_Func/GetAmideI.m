@@ -60,10 +60,6 @@ function Output = GetAmideI(XYZ,AtomName,FilesName,GUI_Inputs)
 % Copyright Jia-Jung Ho, 2013
 
 %% Debug
-% XYZ = BB.XYZ;
-% AtomName = BB.AtomName;
-% FilesName = BB.FilesName;
-% 
 % PWD = pwd;
 % PDB_Path = [PWD, '/StructureFiles/PDB/'];
 % 
@@ -131,7 +127,7 @@ Ind = (1:Num_Atoms)';
 Atom = [strcmp(AtomName,'C'),...
         strcmp(AtomName,'O'),...
         strcmp(AtomName,'N'),...
-        strcmp(AtomName,'CA'),...
+        or(strcmp(AtomName,'CA'),strcmp(AtomName,'CH3')),... % CH3 is for Emory's special case
        ];
 
 % delete irrelevent lines with no above atoms 

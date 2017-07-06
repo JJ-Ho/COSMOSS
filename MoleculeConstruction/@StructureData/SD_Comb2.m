@@ -40,7 +40,7 @@ if isfield(Extra_1,'AmideIAtomSerNo')
 end 
 
 if isfield(Extra_2,'AmideIAtomSerNo')
-    AmideIAtomSerNo_2 = Extra_1.AmideIAtomSerNo + obj2.NAtoms;
+    AmideIAtomSerNo_2 = Extra_2.AmideIAtomSerNo + obj1.NAtoms;
 end
 
 AmideIAtomSerNo = [AmideIAtomSerNo_1;AmideIAtomSerNo_2];

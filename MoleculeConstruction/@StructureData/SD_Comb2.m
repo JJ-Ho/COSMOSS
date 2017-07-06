@@ -1,5 +1,5 @@
 function obj_comb2 = SD_Comb2(obj1,obj2)
-
+%% General properties
 XYZ_1       = obj1.XYZ;
 AtomName_1  = obj1.AtomName;
 LocCenter_1 = obj1.LocCenter;
@@ -28,11 +28,27 @@ FilesName_1 = obj1.FilesName;
 FilesName_2 = obj2.FilesName;
 FilesName   = ['Comb2: ',FilesName_1,' & ',FilesName_2];
 
+%% Model specific properties
 Extra_1 = obj1.Extra;
 Extra_2 = obj2.Extra;
 Extra.Extra_1 = Extra_1;
 Extra.Extra_2 = Extra_2;
 
+% AmideIAtomSerNo for peptides
+if isfield(Extra_1,'AmideIAtomSerNo')
+    AmideIAtomSerNo_1 = Extra_1.AmideIAtomSerNo;
+end 
+
+if isfield(Extra_2,'AmideIAtomSerNo')
+    AmideIAtomSerNo_2 = Extra_2.AmideIAtomSerNo + obj1.NAtoms;
+end
+
+AmideIAtomSerNo = [AmideIAtomSerNo_1;AmideIAtomSerNo_2];
+if ~isempty(AmideIAtomSerNo)
+    Extra.AmideIAtomSerNo = AmideIAtomSerNo;
+end
+
+%% Reassign StructureData
 obj_comb2 = StructureData;
 obj_comb2.StructModel = 5;
 obj_comb2.XYZ         = XYZ;

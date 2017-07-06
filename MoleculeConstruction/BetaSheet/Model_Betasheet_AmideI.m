@@ -190,6 +190,13 @@ function hF = PlotMolecule(hObject, eventdata, GUI_data)
 hGUIs  = GUI_data.hGUIs;
 GUI_Inputs = ParseGUI_Betasheet(hGUIs);
 
+if isstruct(eventdata)
+    if strcmp(eventdata.Source,'External')
+        GUI_Inputs.External.hF  = eventdata.hF;
+        GUI_Inputs.External.hAx = eventdata.hAx;
+    end
+end
+
 hF = Plot_Betasheet_AmideI(GUI_data.Structure,GUI_Inputs);
 
 function PlotModes(hObject, eventdata, GUI_data)

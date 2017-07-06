@@ -75,7 +75,7 @@ Plot_Bonds = INPUT.Results.Plot_Bonds;
 Plot_Axis  = INPUT.Results.Plot_Axis;
 L_Index    = INPUT.Results.L_Index;
 
-%% Rotate the molecule to Lab frame
+%% reassign variable names
 XYZ      = SData.XYZ;
 AtomName = SData.AtomName;
 Center   = SData.LocCenter;
@@ -91,67 +91,68 @@ XYZ_C = XYZ(C_Ind,:);
 XYZ_O = XYZ(O_Ind,:);
 XYZ_N = XYZ(N_Ind,:);
 
-
 % C terminus H/O atoms
 C_Ind_H = SData.Extra.Ind_H;
 C_Ind_O = SData.Extra.Ind_O;
 C_H_Pos = XYZ(C_Ind_H,:);
 C_O_Pos = XYZ(C_Ind_O,:);
 
-hF = figure;
-hold on
+% Use assigned hF and hAx
+if isfield(GUI_Inputs,'External')
+    hF  = GUI_Inputs.External.hF;
+    hAx = GUI_Inputs.External.hAx;
+else
+    hF = figure;
+    hAx = axes('Parent',hF);
+end
 
+hold(hAx,'on')
     %% draw atoms  
     if Plot_Atoms
-        plot3(Center(:,1)  ,Center(:,2)  ,Center(:,3)  ,'LineStyle','none','Marker','d','MarkerFaceColor','w')
+        plot3(hAx,Center(:,1),Center(:,2),Center(:,3),'LineStyle','none','Marker','d','MarkerFaceColor','w')
 
-        plot3(XYZ_C(:,1),XYZ_C(:,2),XYZ_C(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,0],'MarkerSize',10)
-        plot3(XYZ_O(:,1),XYZ_O(:,2),XYZ_O(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',10)
-        plot3(XYZ_N(:,1),XYZ_N(:,2),XYZ_N(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,1],'MarkerSize',10)        
+        plot3(hAx,XYZ_C(:,1),XYZ_C(:,2),XYZ_C(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,0],'MarkerSize',10)
+        plot3(hAx,XYZ_O(:,1),XYZ_O(:,2),XYZ_O(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',10)
+        plot3(hAx,XYZ_N(:,1),XYZ_N(:,2),XYZ_N(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,1],'MarkerSize',10)        
 
-        plot3(C_H_Pos(:,1),C_H_Pos(:,2),C_H_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','w','MarkerSize',10)
-        plot3(C_O_Pos(:,1),C_O_Pos(:,2),C_O_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','r','MarkerSize',10)
-
+        plot3(hAx,C_H_Pos(:,1),C_H_Pos(:,2),C_H_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','w','MarkerSize',10)
+        plot3(hAx,C_O_Pos(:,1),C_O_Pos(:,2),C_O_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','r','MarkerSize',10)
     end
-
-
     %% draws bonds
     if Plot_Bonds
         Conn = Connectivity(AtomName,XYZ);
-        gplot3(Conn,XYZ,'LineWidth',1,'Color',[0,0,0]);
+        gplot3(Conn,XYZ,'LineWidth',1,'Color',[0,0,0],'Parent',hAx);
     end  
-
     %% Draw molecular and Lab frame
     if Plot_Axis
-        hAx = findobj(hF,'type','axes');
+        %hAx = findobj(hF,'type','axes');
         Lab_Frame = [1,0,0;
                      0,1,0;
                      0,0,1 ];
         
         PlotRotMolFrame(hAx,Lab_Frame,Lab_Frame,CoM)
-    end
-    
+    end    
     %% Draw labeled atoms
     Plot_Label = 1;
     if Plot_Label
         L_C = XYZ_C(L_Index,:);
         L_O = XYZ_O(L_Index,:);
         L_N = XYZ_N(L_Index,:);
-        plot3(L_C(:,1),L_C(:,2),L_C(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,1,0],'MarkerSize',10)
-        plot3(L_O(:,1),L_O(:,2),L_O(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,1,0],'MarkerSize',10)
-        plot3(L_N(:,1),L_N(:,2),L_N(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,1,0],'MarkerSize',10)        
-    end
-    
-hold off
+        plot3(hAx,L_C(:,1),L_C(:,2),L_C(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,1,0],'MarkerSize',10)
+        plot3(hAx,L_O(:,1),L_O(:,2),L_O(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,1,0],'MarkerSize',10)
+        plot3(hAx,L_N(:,1),L_N(:,2),L_N(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,1,0],'MarkerSize',10)        
+    end    
+hold(hAx,'off')
 
 %% figure setting
-axis image;
-rotate3d on
-grid on
-box on
-view([0,0])
-xlabel('X')
-ylabel('Y')
+axis(hAx,'image');
+rotate3d(hAx,'on')
+grid(hAx,'on')
+box(hAx,'on')
+view(hAx,[0,0])
+hAx.XLabel.String = 'X';
+hAx.YLabel.String = 'Y';
+hAx.ZLabel.String = 'Z';
 
 % title
 Extra = SData.Extra;
@@ -161,4 +162,4 @@ TransV_String = sprintf('T: %1.2f, %1.2f, %1.2f; ' ,Extra.TransV(1),Extra.TransV
 TwistV_String = sprintf('Tw: %3.0f, %3.0f, %3.0f; ',Extra.TwistV(1),Extra.TwistV(2),Extra.TwistV(3));
 RotV_String   = sprintf('R: %3.0f, %3.0f, %3.0f; ' ,Extra.RotV(1),Extra.RotV(2),Extra.RotV(3));
 Title_String  = {[FilesName_Reg, ', ', TransV_String], [TwistV_String, RotV_String]};
-title(Title_String,'FontSize',14); 
+title(hAx,Title_String,'FontSize',14); 

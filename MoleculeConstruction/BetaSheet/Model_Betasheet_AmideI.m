@@ -202,7 +202,8 @@ if isstruct(eventdata)
     end
 end
 
-hF = Plot_Betasheet_AmideI(GUI_data.Structure,GUI_Inputs);
+hAx = 'New';
+hF = Plot_Betasheet_AmideI(hAx,GUI_data.Structure,GUI_Inputs);
 
 function PlotModes(hObject, eventdata, GUI_data)
 Plot_Modes(GUI_data.hModel_Betasheet_AmideI);

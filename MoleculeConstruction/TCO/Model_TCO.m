@@ -150,7 +150,8 @@ function hF = PlotMolecule(hObject, eventdata, GUI_data)
 hGUIs = GUI_data.hGUIs;
 GUI_Inputs = ParseGUI_TCO(hGUIs);
 
-hF = PlotXYZfiles_Acid(GUI_data.Structure,GUI_Inputs);
+hAx = 'New';
+hF = PlotXYZfiles_Acid(hAx,GUI_data.Structure,GUI_Inputs);
 
 function PlotModes(hObject, eventdata, GUI_data)
 Plot_Modes(GUI_data.hModel);

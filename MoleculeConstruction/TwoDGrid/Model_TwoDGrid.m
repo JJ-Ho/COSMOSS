@@ -210,7 +210,8 @@ hGUIs  = GUI_data.hGUIs;
 GUI_Inputs = ParseGUI_TwoDGrid(hGUIs);
 Structure = GUI_data.Structure;
 
-hF = PlotXYZ_Grid(Structure,GUI_Inputs);
+hAx = 'New';
+hF = PlotXYZ_Grid(hAx,Structure,GUI_Inputs);
 
 function PlotModes(hObject, eventdata, GUI_data)
 Plot_Modes(GUI_data.hModel_TwoDGrid);

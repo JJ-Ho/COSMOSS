@@ -244,6 +244,11 @@ Structure.Extra.AmideIAtomSerNo = Tmp1.Extra.AmideIAtomSerNo;
 % Export into Structure so it can be passsed around different GUIs
 Structure.StructModel = 2;
 
+% export necessary handle and functions
+Structure.hPlotFunc = @PlotXYZfiles_AmideI;
+Structure.hParseGUIFunc = @ParseGUI_AmideI;
+Structure.hGUIs = hGUIs;
+
 %% Export result to Main guidata
 GUI_data.Structure = Structure;
 

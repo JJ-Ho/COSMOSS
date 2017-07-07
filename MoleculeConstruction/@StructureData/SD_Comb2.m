@@ -37,16 +37,37 @@ Extra.Extra_2 = Extra_2;
 % AmideIAtomSerNo for peptides
 if isfield(Extra_1,'AmideIAtomSerNo')
     AmideIAtomSerNo_1 = Extra_1.AmideIAtomSerNo;
+else
+    AmideIAtomSerNo_1 =[];
 end 
 
 if isfield(Extra_2,'AmideIAtomSerNo')
     AmideIAtomSerNo_2 = Extra_2.AmideIAtomSerNo + obj1.NAtoms;
+else
+    AmideIAtomSerNo_2 =[];
 end
 
 AmideIAtomSerNo = [AmideIAtomSerNo_1;AmideIAtomSerNo_2];
 if ~isempty(AmideIAtomSerNo)
     Extra.AmideIAtomSerNo = AmideIAtomSerNo;
 end
+
+%% Inherent all Children
+N_Child1 = length(obj1.Children);
+N_Child2 = length(obj2.Children);
+
+if N_Child1
+    Children = obj1.Children;
+else
+    Children = obj1;
+end
+
+if N_Child2
+    Children = [Children,obj2.Children];
+else
+    Children = [Children,obj2];
+end
+    
 
 %% Reassign StructureData
 obj_comb2 = StructureData;
@@ -61,4 +82,5 @@ obj_comb2.LocAlpha    = LocAlpha;
 
 obj_comb2.FilesName   = FilesName;
 obj_comb2.Extra       = Extra;
+obj_comb2.Children    = Children;
     

@@ -170,9 +170,10 @@ CVL_Total = CVL_Total./max(abs(CVL_Total));
 %% Output
 Output.X     = spec_range;
 Output.Y     = CVL_Total;
-Output.Modes = freq_OneD;
 Output.IntM  = IntM;
 Output.IntMx = IntMx;
 Output.IntMy = IntMy;
 Output.IntMz = IntMz;
 
+Output.Modes = freq_OneD;
+Output.Trans_Ex = Trans_Ex;

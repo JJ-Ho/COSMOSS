@@ -123,7 +123,12 @@ GUI_Inputs = ParseGUI_TCO(hGUIs);
 Structure = GetAcid(GUI_Inputs);
 
 % Export into Structure so it can be passsed around different GUIs
-Structure.StructModel = 1;                
+Structure.StructModel = 1;   
+
+% export necessary handle and functions
+Structure.hPlotFunc = @PlotXYZfiles_Acid;
+Structure.hParseGUIFunc = @ParseGUI_TCO;
+Structure.hGUIs = hGUIs;
 
 %% Export result to Main guidata
 GUI_data.Structure = Structure;

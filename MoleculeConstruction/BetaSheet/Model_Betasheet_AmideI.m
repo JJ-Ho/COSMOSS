@@ -170,6 +170,11 @@ Structure.Extra.RotV   = [GUI_Inputs.Phi_D,GUI_Inputs.Psi_D,GUI_Inputs.Theta_D];
 % Include the whole BB info for debug
 Structure.Extra.BB = BB;
 
+% export necessary handle and functions
+Structure.hPlotFunc = @Plot_Betasheet_AmideI;
+Structure.hParseGUIFunc = @ParseGUI_Betasheet;
+Structure.hGUIs = hGUIs;
+
 %% Export result to Main guidata
 GUI_data.Structure = Structure;
 

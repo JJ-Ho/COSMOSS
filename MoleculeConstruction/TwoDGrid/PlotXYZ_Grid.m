@@ -99,7 +99,6 @@ hold(hAx,'on')
     
     %% Draw molecular and Lab frame
     if Plot_Axis
-        hAx = findobj(hF,'type','axes');
         Lab_Frame = [1,0,0;
                      0,1,0;
                      0,0,1 ];

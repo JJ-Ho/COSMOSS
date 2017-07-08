@@ -24,3 +24,30 @@ obj.LocAlpha  = LocAlpha_R;
 
 % Translate the CoM back to where it was
 obj = SD_Trans(obj,CoM_0);
+
+%% propagate the action to Children
+NChild = length(obj.Children);
+if NChild
+    for i = 1:NChild
+        obj_Child = obj.Children(i);
+        CoM_Child = obj_Child.CoM;
+
+        % Translate the CoM to origin
+        obj_Child = SD_Trans(obj_Child,-CoM_Child);
+        
+        % Apply rotation
+        XYZ_Child       = obj_Child.XYZ;
+        LocCenter_Child = obj_Child.LocCenter;
+        LocMu_Child     = obj_Child.LocMu;
+        LocAlpha_Child  = obj_Child.LocAlpha;
+
+        obj_Child.XYZ       = (R1*      XYZ_Child')';
+        obj_Child.LocCenter = (R1*LocCenter_Child')';
+        obj_Child.LocMu     = (R1*    LocMu_Child')';
+        obj_Child.LocAlpha  = (R2* LocAlpha_Child')';
+
+        % Translate the CoM back to where it was
+        SD_Trans(obj_Child,CoM_Child);
+       
+    end
+end

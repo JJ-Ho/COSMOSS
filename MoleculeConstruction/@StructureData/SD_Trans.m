@@ -20,15 +20,15 @@ else
     obj.XYZ       = XYZ_T;
     obj.LocCenter = LocCenter_T;
     
-%     % propagate the action to Children
-%     NChild = length(obj.Children);
-%     if NChild
-%         for i = 1:NChild
-%             XYZ_Child       = obj.Childen(i).XYZ;
-%             LocCenter_Child = obj.Childen(i).LocCenter;
-%             
-%             obj.Childen(i).XYZ = bsxfun(@plus,XYZ_Child,V);
-%             obj.Childen(i).LocCenter = bsxfun(@plus,LocCenter_Child,V);
-%         end
-%     end
+    % propagate the action to Children
+    NChild = length(obj.Children);
+    if NChild
+        for i = 1:NChild
+            XYZ_Child       = obj.Children(i).XYZ;
+            LocCenter_Child = obj.Children(i).LocCenter;
+            
+            obj.Children(i).XYZ = bsxfun(@plus,XYZ_Child,V);
+            obj.Children(i).LocCenter = bsxfun(@plus,LocCenter_Child,V);
+        end
+    end
 end   

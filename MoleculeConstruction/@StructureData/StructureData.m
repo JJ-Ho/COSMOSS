@@ -1,4 +1,4 @@
-classdef StructureData
+classdef StructureData < handle
    properties
        XYZ
        AtomName
@@ -13,6 +13,11 @@ classdef StructureData
        FilesName
        
        Extra
+       
+       Children
+       hPlotFunc
+       hParseGUIFunc
+       hGUIs
    end
    
    properties

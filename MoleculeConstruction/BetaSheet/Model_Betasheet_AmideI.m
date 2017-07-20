@@ -170,6 +170,11 @@ Structure.Extra.RotV   = [GUI_Inputs.Phi_D,GUI_Inputs.Psi_D,GUI_Inputs.Theta_D];
 % Include the whole BB info for debug
 Structure.Extra.BB = BB;
 
+% export necessary handle and functions
+Structure.hPlotFunc = @Plot_Betasheet_AmideI;
+Structure.hParseGUIFunc = @ParseGUI_Betasheet;
+Structure.hGUIs = hGUIs;
+
 %% Export result to Main guidata
 GUI_data.Structure = Structure;
 
@@ -197,7 +202,8 @@ if isstruct(eventdata)
     end
 end
 
-hF = Plot_Betasheet_AmideI(GUI_data.Structure,GUI_Inputs);
+hAx = 'New';
+hF = Plot_Betasheet_AmideI(hAx,GUI_data.Structure,GUI_Inputs);
 
 function PlotModes(hObject, eventdata, GUI_data)
 Plot_Modes(GUI_data.hModel_Betasheet_AmideI);

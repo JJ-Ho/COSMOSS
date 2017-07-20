@@ -1,4 +1,4 @@
-function [SC,S1_New,S2_New] = Comb2(S1,S2,GUI_Inputs)
+function SC = Comb2(S1,S2,GUI_Inputs)
 %% Debug
 % hStruc1        = Data_Comb2.hStruc1;
 % hStruc2        = Data_Comb2.hStruc2;
@@ -21,16 +21,14 @@ TransV = [Trans_X,Trans_Y,Trans_Z];
 
 %% Move the molecules before merge the two Structures
 % Move both CoM to [0,0,0]
-StrucData1_0 = SD_Trans(S1,-S1.CoM);
-StrucData2_0 = SD_Trans(S2,-S2.CoM);
+S1 = SD_Trans(S1,-S1.CoM);
+S2 = SD_Trans(S2,-S2.CoM);
 
-StrucData2_R  = SD_Rot(StrucData2_0,Rot_Phi,Rot_Psi,Rot_Theta);
-StrucData2_RT = SD_Trans(StrucData2_R,TransV);
+S2 = SD_Rot(S2,Rot_Phi,Rot_Psi,Rot_Theta);
+S2 = SD_Trans(S2,TransV);
 
 %% Merge the two and Output
-S1_New = StrucData1_0;
-S2_New = StrucData2_RT;
-SC = SD_Comb2(S1_New,S2_New);
+SC = SD_Comb2(S1,S2);
 
 % % Export into Structure so it can be passsed around different GUIs
 % Structure.StrucData1  = StrucData1_0;

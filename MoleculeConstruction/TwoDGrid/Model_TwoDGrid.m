@@ -181,6 +181,11 @@ Structure = ConstructGrid(Monomer,GUI_Inputs);
 % Export into Structure so it can be passsed around different GUIs
 Structure.StructModel = 3;
 
+% export necessary handle and functions
+Structure.hPlotFunc = @PlotXYZ_Grid;
+Structure.hParseGUIFunc = @ParseGUI_TwoDGrid;
+Structure.hGUIs = hGUIs;
+
 %% Export result to Main guidata
 
 % include FieldName of GUI Inputs
@@ -205,7 +210,8 @@ hGUIs  = GUI_data.hGUIs;
 GUI_Inputs = ParseGUI_TwoDGrid(hGUIs);
 Structure = GUI_data.Structure;
 
-hF = PlotXYZ_Grid(Structure,GUI_Inputs);
+hAx = 'New';
+hF = PlotXYZ_Grid(hAx,Structure,GUI_Inputs);
 
 function PlotModes(hObject, eventdata, GUI_data)
 Plot_Modes(GUI_data.hModel_TwoDGrid);

@@ -244,6 +244,11 @@ Structure.Extra.AmideIAtomSerNo = Tmp1.Extra.AmideIAtomSerNo;
 % Export into Structure so it can be passsed around different GUIs
 Structure.StructModel = 2;
 
+% export necessary handle and functions
+Structure.hPlotFunc = @PlotXYZfiles_AmideI;
+Structure.hParseGUIFunc = @ParseGUI_AmideI;
+Structure.hGUIs = hGUIs;
+
 %% Export result to Main guidata
 GUI_data.Structure = Structure;
 
@@ -264,7 +269,8 @@ function hF = PlotMolecule(hObject, eventdata, GUI_data)
 hGUIs  = GUI_data.hGUIs;
 GUI_Inputs = ParseGUI_AmideI(hGUIs);
 
-hF = PlotXYZfiles_AmideI(GUI_data.Structure,GUI_Inputs);
+hAx = 'New';
+hF = PlotXYZfiles_AmideI(hAx,GUI_data.Structure,GUI_Inputs);
 
 function PlotModes(hObject, eventdata, GUI_data)
 Plot_Modes(GUI_data.hModel_PDB_AmideI);

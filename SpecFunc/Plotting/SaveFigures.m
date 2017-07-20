@@ -6,7 +6,7 @@ if ~exist(PathName,'dir')
 end
 
 SaveName = [PathName,'/',FileName];
-savefig(hF,SaveName)
+savefig(hF,[SaveName,'.fig'])
 saveas (hF,SaveName,'png')
 
 hAx = findobj(hF,'Type','Axes');

@@ -56,3 +56,23 @@ dF_C([NaN_Ind;true]) = 0;
 
 dF = dF_N + dF_C;
 
+%% check if the size of Beta_Jansen_NN = Beta
+Nmodes = Structure.Nmodes;
+
+if ~eq(Nmodes,size(Beta,1))
+    AmideModeIndex = Structure.Extra.AmideModeIndex;
+    
+    %disp('only amide I mode is using Jensen coupling/diagaonl frequency maps')
+    Beta_Extend = zeros(Nmodes,Nmodes);
+    dF_Extended = zeros(Nmodes,1);
+    
+    Matrix_Ind = 1:Nmodes;
+    Jansen_NN_Ind = Matrix_Ind(AmideModeIndex);
+    
+    Beta_Extend(Jansen_NN_Ind,Jansen_NN_Ind) = Beta;
+    Beta = Beta_Extend;
+    
+    dF_Extended(Jansen_NN_Ind) = dF;
+    dF = dF_Extended;
+end
+

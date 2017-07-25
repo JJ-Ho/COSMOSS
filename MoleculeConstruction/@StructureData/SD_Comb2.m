@@ -35,14 +35,22 @@ Extra.Extra_1 = Extra_1;
 Extra.Extra_2 = Extra_2;
 
 % AmideIAtomSerNo for peptides
+N_Mode_1 = obj1.Nmodes;
+N_Mode_2 = obj2.Nmodes;
+N_Mode_total = N_Mode_1 + N_Mode_2;
+
+AmideModeIndex = zeros(size(LocFreq,1),1);
+
 if isfield(Extra_1,'AmideIAtomSerNo')
     AmideIAtomSerNo_1 = Extra_1.AmideIAtomSerNo;
+    AmideModeIndex(1:N_Mode_1) = 1;
 else
     AmideIAtomSerNo_1 =[];
 end 
 
 if isfield(Extra_2,'AmideIAtomSerNo')
     AmideIAtomSerNo_2 = Extra_2.AmideIAtomSerNo + obj1.NAtoms;
+    AmideModeIndex(N_Mode_1+1:N_Mode_total) = 1;
 else
     AmideIAtomSerNo_2 =[];
 end
@@ -50,6 +58,7 @@ end
 AmideIAtomSerNo = [AmideIAtomSerNo_1;AmideIAtomSerNo_2];
 if ~isempty(AmideIAtomSerNo)
     Extra.AmideIAtomSerNo = AmideIAtomSerNo;
+    Extra.AmideModeIndex  = logical(AmideModeIndex);
 end
 
 %% Inherent all Children

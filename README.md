@@ -9,7 +9,7 @@ For now COSMOSS can be used to simulate:
 * Two dimentional Infared spectrum (2DIR)
 * Two dimentional Sum-Frequency Generation spectrum (2DSFG)
 
-For more information check [Wiki page][wiki-Home]
+For more information check [Wiki page](../../wiki)
 
 Currently COSMOSS support the following structure construction models:
 * Two coupled oscillators

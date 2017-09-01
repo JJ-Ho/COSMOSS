@@ -18,7 +18,7 @@ Currently COSMOSS support the following structure construction models:
 * Amide-I mode of an ideal betasheet
 * Combination of any two structures above
 
-This code is designed to be used for other molecules as well. You can generate your interested molecule and their spectra. Check [structure model wiki page][wiki-Structure] for more infomation.
+This code is designed to be used for other molecules as well. You can generate your interested molecule and their spectra. Check [Wiki page](../../wiki) for more infomation.
 
 ### Installation
 To use this code, please download COSMOSS into your Matlab path and excute COSMOSS.m.
@@ -34,6 +34,5 @@ GPL2
 
 [//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
    [wiki-Home]: https://gitlab.com/jjho/COSMOSS/wikis/home
-   [wiki-Structure]: https://gitlab.com/jjho/COSMOSS/wikis/Structure-Model
    [GUILayoutToolbox]: http://www.mathworks.com/matlabcentral/fileexchange/47982-gui-layout-toolbox
    

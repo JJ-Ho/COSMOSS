@@ -10,8 +10,6 @@ COSMOSS can be used to simulate:
 * Two-dimensional Infrared spectrum (2DIR)
 * Two-dimensional Sum-Frequency Generation spectrum (2DSFG)
 
-For more information check [Wiki page](../../wiki)
-
 Currently, COSMOSS support the following structure construction models:
 * Two coupled oscillators
 * Extract Amide-I mode from PDB file

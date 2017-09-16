@@ -13,7 +13,7 @@ COSMOSS can be used to simulate:
 Currently, COSMOSS supports the following structural construction models:
 * Two coupled-oscillators
 * Amide-I modes of peptide from PDB file
-* Build a 2D-Grid from formatted quantum simulation outputs, such as Gaussian 09. 
+* 2D-Grid built from formatted quantum simulation outputs, such as Gaussian 09. 
 * Amide-I modes of an ideal beta-sheet
 * Combination of any two models above
 

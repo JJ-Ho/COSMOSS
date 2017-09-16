@@ -22,26 +22,25 @@ Currently, COSMOSS support the following structure construction models:
 This code is designed to be used for other molecules as well. You can generate your interested molecule and their spectra. Check [Wiki page](../../wiki) for more information.
 
 ### Installation
-To use COSMOSS, please clone or download it from GitHub and place the whole folder in your Matlab path.  Executing the "COSMOSS.m" file will bring up the main GUI.
-
-You can also download the application package(maybe outdated) from Matlab file exchange. 
+The easiest way to install and use the COSMOSS is downloading the Matlab application package from here:
 
 https://www.mathworks.com/matlabcentral/fileexchange/64433-cosmoss
 
-The package is integrated with the Matlab App Installation process. Once installed, you can directly access COSMOSS from your App banner of Matlab.
+The package contains all the necessary files and the "GUI Layout Toolbox V2.0". The package is integrated with the Matlab App Installation process. Once installed, you can directly access COSMOSS from your App banner of Matlab.
 
+The package currently wraps up v1.7.3 so it may be outdated. If you want to use the newest version, read the next paragraph.
+
+If you want to read or edit the source code, please clone or download it from GitHub and place the whole folder in your Matlab path.  Executing the "COSMOSS.m" file will bring up the main GUI.
 
 
 Note:
-The GUI is built upon the "GUI Layout Toolbox",  written by David Sampson. Further information about GUI Layout Toolbox can be found in: [GUI Layout Tool Box][GUILayoutToolbox]
+The GUI is built upon the "GUI Layout Toolbox",  written by David Sampson. Further information about GUI Layout Toolbox can be found in: 
+
+https://www.mathworks.com/matlabcentral/fileexchange/47982-gui-layout-toolbox
+
 
 ### License
 
 GPL2
 
-
-
-[//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
-   [wiki-Home]: https://gitlab.com/jjho/COSMOSS/wikis/home
-   [GUILayoutToolbox]: http://www.mathworks.com/matlabcentral/fileexchange/47982-gui-layout-toolbox
    

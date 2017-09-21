@@ -18,8 +18,5 @@ MS = abs(V)./max(abs(V)).*markersize*2;
 X_j = X(J);
 Y_i = Y(I);
 
-if isempty(I), I = NaN; J = NaN; end
-if isempty(Z), marker = 'none'; end
-
 scatter(hAx,X_j,Y_i,MS,V,'filled')
 

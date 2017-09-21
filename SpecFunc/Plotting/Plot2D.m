@@ -70,6 +70,12 @@ switch CVL.Lineshape
     case 'Spy' % plot stick spectrum
         spyXY(hAx,X,Y,Z_NC)  
         set(hAx,'Ydir','normal')
+        
+        StickC_Map = load('Sign');
+        colormap(StickC_Map.MAP)
+        caxis([-1,1])
+        
+        DiagColor = 'k';
 
     case 'None' % plot stick spectrum  w/ colormap
         spyXYZ(hAx,X,Y,Z_NC)    
@@ -83,6 +89,8 @@ switch CVL.Lineshape
         Amp = max(abs(Z_NC(:)));
         caxis([-Amp,Amp])
         
+        DiagColor = 'g';
+        
     otherwise % plot convoluted spectrum
         contour(hAx,X,Y,Z,Num_Contour,'LineWidth',2)
 
@@ -92,10 +100,12 @@ switch CVL.Lineshape
         colormap(CMAP)      
         Amp = max(abs(Z(:)));
         caxis([-Amp,Amp])
+        
+        DiagColor = 'k';
 end
 
 % Plot diagonal line
-hold on; plot(hAx,X,Y); hold off
+hold on; plot(hAx,X,Y,'Color',DiagColor,'LineStyle','--'); hold off
 
 %% figure setting 
 hF = hAx.Parent;

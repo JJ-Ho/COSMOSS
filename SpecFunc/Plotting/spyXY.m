@@ -2,10 +2,6 @@ function spyXY(hAx,X,Y,Z)
 % spyXY Visualize sparsity pattern with X Y inputs.
 % This code is modified from the original spy by JJH
 % Copyright 1984-2013 The MathWorks, Inc. 
-marker    = '.'; 
-color     = 'b'; 
-linestyle = 'none';
-
 [m,n] = size(Z);
 markersize = 0; 
 if markersize == 0
@@ -16,14 +12,11 @@ if markersize == 0
    set(gca,'units',units);
 end
 
-[I,J] = find(Z);
+[I,J,V] = find(Z);
 
 X_j = X(J);
 Y_i = Y(I);
-
-if isempty(I), I = NaN; J = NaN; end
-if isempty(Z), marker = 'none'; end
-
-plot(hAx,X_j,Y_i,'marker',marker,'markersize',markersize, ...
-                 'linestyle',linestyle,'color',color);
+          
+Sign = sign(V);
+scatter(hAx,X_j,Y_i,markersize,Sign,'filled')
 

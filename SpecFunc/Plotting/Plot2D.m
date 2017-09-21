@@ -28,6 +28,7 @@ defaultFreqRange   = 1600:1800;
 defaultNum_Contour = 20;
 defaultPlotCursor  = 0;
 defaultCMAP_Index  = 1;
+defaultPlotNorm    = 0;
 
 % add Optional inputs / Parameters
 addOptional(INPUT,'SaveFig'    ,defaultSaveFig);
@@ -36,6 +37,7 @@ addOptional(INPUT,'FreqRange'  ,defaultFreqRange);
 addOptional(INPUT,'Num_Contour',defaultNum_Contour);
 addOptional(INPUT,'PlotCursor' ,defaultPlotCursor);
 addOptional(INPUT,'CMAP_Index' ,defaultCMAP_Index);
+addOptional(INPUT,'PlotNorm'   ,defaultPlotNorm);
 
 parse(INPUT,GUI_Inputs_C{:});
 
@@ -46,51 +48,49 @@ FreqRange   = INPUT.Results.FreqRange;
 Num_Contour = INPUT.Results.Num_Contour;
 PlotCursor  = INPUT.Results.PlotCursor;
 CMAP_Index  = INPUT.Results.CMAP_Index;
+PlotNorm    = INPUT.Results.PlotNorm;
 
 %% Main
 cla(hAx)
+X = FreqRange;
+Y = FreqRange;
+
+NC = CVL.selected_No_Conv;
+C  = real(CVL.selected);
+
+if PlotNorm
+    Z_NC = NC ./ max(abs(NC(:)));
+    Z    =  C ./ max(abs( C(:)));
+else
+    Z_NC = NC;
+    Z    =  C;
+end
+
 switch CVL.Lineshape
-    case 'None'
-        % plot stick spectrum
-        X = FreqRange;
-        Y = FreqRange;
-        Z = CVL.selected_No_Conv;
-        
-        imagesc(hAx,X,Y,Z)
+    case 'Spy' % plot stick spectrum
+        spyXY(hAx,X,Y,Z_NC)  
         set(hAx,'Ydir','normal')
 
-        % Set colorbar
+    case 'None' % plot stick spectrum  w/ colormap
+        spyXYZ(hAx,X,Y,Z_NC)    
+        
+        set(hAx,'Ydir','normal')
+        hAx.Color = [0,0,0];
+        
         colorbar
-        StickC_Map = load('CoolBlack');
+        StickC_Map = load('CoolWhite');
         colormap(StickC_Map.MAP) 
-        Amp = max(abs(CVL.selected_No_Conv(:)));
+        Amp = max(abs(Z_NC(:)));
         caxis([-Amp,Amp])
-
-    case 'Spy'
-        %X = 0:length(FreqRange);
-        %Y = 0:length(FreqRange);
         
-        X = FreqRange;
-        Y = FreqRange;
-        Z = CVL.selected_No_Conv;
-        
-        axes(hAx);
-        spyXY(X,Y,Z)    
-        %spy(Z)
-        set(hAx,'Ydir','normal')
-    otherwise
-        % plot convoluted spectrum
-        X = FreqRange;
-        Y = FreqRange;
-
-        CVLRS = real(CVL.selected);
-        contour(hAx,X,Y,CVLRS,Num_Contour,'LineWidth',2)
+    otherwise % plot convoluted spectrum
+        contour(hAx,X,Y,Z,Num_Contour,'LineWidth',2)
 
         % Set colorbar
         colorbar
         CMAP = SelectColormap(CMAP_Index);
         colormap(CMAP)      
-        Amp = max(abs(CVLRS(:)));
+        Amp = max(abs(Z(:)));
         caxis([-Amp,Amp])
 end
 

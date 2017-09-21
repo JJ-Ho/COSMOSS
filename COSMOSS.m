@@ -494,6 +494,29 @@ DiagCut.hF_DiagCut = hF_DiagCut;
 GUI_data.DiagCut = DiagCut;
 guidata(hObject,GUI_data);
 
+function TransitionStrength_Callback(hObject, eventdata, GUI_data)
+%% Main
+GUI_Inputs = ParseGUI_Main(GUI_data.hGUIs);
+
+SpecType = GUI_data.hGUIs.AnalysisTools.SelectedTab.Title;
+switch SpecType
+    case '2DIR'
+        H  = GUI_data.TwoDIR.H;
+        TV = GUI_data.TwoDIR.Mu;
+    case '2DSFG'
+        H  = GUI_data.TwoDSFG.H;
+        switch GUI_Inputs.TS_Type
+            case 1
+                TV = GUI_data.TwoDSFG.Mu;
+            case 2
+                TV = GUI_data.TwoDSFG.Alpha;
+        end
+    otherwise
+        disp('Spectra Type not supported')
+end
+
+Transition_Strength(H,TV)
+
 % Analysis Tools ---------------------------------------------------------
 
 

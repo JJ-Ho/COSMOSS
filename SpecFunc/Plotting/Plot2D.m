@@ -49,32 +49,53 @@ CMAP_Index  = INPUT.Results.CMAP_Index;
 
 %% Main
 cla(hAx)
-if strcmp(CVL.Lineshape,'None')
-    % plot stick spectrum
-    imagesc(hAx,FreqRange,FreqRange,CVL.selected_No_Conv)
-    set(hAx,'Ydir','normal')
-    
-    % Set colorbar
-    colorbar
-    StickC_Map = load('CoolBlack');
-    colormap(StickC_Map.MAP) 
-    Amp = max(abs(CVL.selected_No_Conv(:)));
-    caxis([-Amp,Amp])
-else
-    % plot convoluted spectrum
-    CVLRS = real(CVL.selected);
-    contour(hAx,FreqRange,FreqRange,CVLRS,Num_Contour,'LineWidth',2)
+switch CVL.Lineshape
+    case 'None'
+        % plot stick spectrum
+        X = FreqRange;
+        Y = FreqRange;
+        Z = CVL.selected_No_Conv;
+        
+        imagesc(hAx,X,Y,Z)
+        set(hAx,'Ydir','normal')
 
-    % Set colorbar
-    colorbar
-    CMAP = SelectColormap(CMAP_Index);
-    colormap(CMAP)      
-    Amp = max(abs(CVLRS(:)));
-    caxis([-Amp,Amp])
+        % Set colorbar
+        colorbar
+        StickC_Map = load('CoolBlack');
+        colormap(StickC_Map.MAP) 
+        Amp = max(abs(CVL.selected_No_Conv(:)));
+        caxis([-Amp,Amp])
+
+    case 'Spy'
+        %X = 0:length(FreqRange);
+        %Y = 0:length(FreqRange);
+        
+        X = FreqRange;
+        Y = FreqRange;
+        Z = CVL.selected_No_Conv;
+        
+        axes(hAx);
+        spyXY(X,Y,Z)    
+        %spy(Z)
+        set(hAx,'Ydir','normal')
+    otherwise
+        % plot convoluted spectrum
+        X = FreqRange;
+        Y = FreqRange;
+
+        CVLRS = real(CVL.selected);
+        contour(hAx,X,Y,CVLRS,Num_Contour,'LineWidth',2)
+
+        % Set colorbar
+        colorbar
+        CMAP = SelectColormap(CMAP_Index);
+        colormap(CMAP)      
+        Amp = max(abs(CVLRS(:)));
+        caxis([-Amp,Amp])
 end
 
 % Plot diagonal line
-hold on; plot(hAx,FreqRange,FreqRange); hold off
+hold on; plot(hAx,X,Y); hold off
 
 %% figure setting 
 hF = hAx.Parent;
@@ -84,6 +105,9 @@ hAx.DataAspectRatio = [1,1,1];
 hAx.FontSize = 14;
 hAx.XLabel.String = 'Probe (cm^{-1})';
 hAx.YLabel.String = 'Pump (cm^{-1})';
+hAx.XLim = [FreqRange(1),FreqRange(end)];
+hAx.YLim = [FreqRange(1),FreqRange(end)];
+
 
 FilesName       = CVL.FilesName;
 FilesName_Reg   = regexprep(FilesName,'\_','\\_');

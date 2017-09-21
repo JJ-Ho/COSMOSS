@@ -29,7 +29,7 @@ INPUT.KeepUnmatched = 1;
 % Default values
 defaultFreqRange   = 1650:1750;
 defaultLineShape   = 'L';
-expectedLineShape  = {'L','G','None'};
+expectedLineShape  = {'L','G','KK','None','Spy'};
 defauleLineWidth   = 5;
 defaultSpecType    = 'Abs';
 expectedSpecType   = {'R','NR','Abs'};
@@ -113,7 +113,7 @@ switch LineShape
         lnshpf_N = ngaussval(sqrt((p1-center).^2+(p2-center).^2),LineWidth);
     case 'KK'
         disp('not support KK lineshape in 2D yet...')
-    case 'None'
+    otherwise
         lnshpf_R = 1;
         lnshpf_N = 1;
         disp('Plotting stick spectrum')     

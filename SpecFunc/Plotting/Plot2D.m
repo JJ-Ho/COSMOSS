@@ -118,22 +118,19 @@ hAx.YLabel.String = 'Pump (cm^{-1})';
 hAx.XLim = [FreqRange(1),FreqRange(end)];
 hAx.YLim = [FreqRange(1),FreqRange(end)];
 
-
 FilesName       = CVL.FilesName;
 FilesName_Reg   = regexprep(FilesName,'\_','\\_');
 Coupling        = GUI_Inputs.CouplingType;
 Coupling_Reg    = regexprep(Coupling,'\_','\\_');
-Title_String{1} = [SpecType,' ',FilesName_Reg,', Coupling:',Coupling_Reg];
- 
-if PlotCursor
-    Title_String{2} = '';
-    % Call pointer
-    S.fh = hF;
-    S.ax = hAx;
-    Pointer_N(S) % use normalized scale
-end
 
+Title_String = [SpecType,' ',FilesName_Reg,', Coupling:',Coupling_Reg];
 title(Title_String,'FontSize',16);
+
+if PlotCursor
+    S.hF = hF;
+    S.hAx = hAx;
+    Pointer_T(S);
+end
 
 %% Auto Save
 if SaveFig

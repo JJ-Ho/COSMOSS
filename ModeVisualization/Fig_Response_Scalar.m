@@ -62,7 +62,7 @@ switch SpecType
         Mu    =    M_All(EigVec_Ind,:)';
         Sig   = (EJR2*Alpha).*(EJR1*Mu);
         
-    case 4 % 2DSFG
+    case 5 % 2DSFG
         % decode the unified index to type + index
         PathType_Total = fieldnames(SpecData.Index);
         TypeVec  = [];
@@ -139,7 +139,8 @@ switch SpecType
         Sig   = (EJR2*A4).*(EJR1*M3).*(EJR1*M2).*(EJR1*M1);
                 
     otherwise
-        disp('Spectral Type no supported yet...')
+        disp('Spectral type has not supported yet...')
+        Output = 'Null';
         return
 end
 

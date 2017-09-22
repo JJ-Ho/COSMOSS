@@ -1,6 +1,7 @@
 function [Grid,Freq,Int,Index,CutOff] = Feynman_2DIR_Vec_Sparse(PCutOff,FreqRange,EJR,F1,F2,M01,M12)
 % 
-% This function generate Feynman pathway of 2DSFG with given polarization.
+% This function generate Feynman pathway of 2DIR and bin them into 1cm-1
+% bucket
 % 
 % Since "kron" function use reshape alot, the overall speed of kron product
 % version is slower than for loop version
@@ -16,8 +17,8 @@ function [Grid,Freq,Int,Index,CutOff] = Feynman_2DIR_Vec_Sparse(PCutOff,FreqRang
 
 %% debug
 % GI = ParseGUI_Main(Data_COSMOSS.hGUIs);
+% PCutOff = GI.PCutOff;
 % FreqRange = GI.FreqRange;
-% 
 % 
 % R_Avg = LabFrameAvg('Isotropic',4); 
 % J = JonesTrans4(pi/2,pi/2,pi/2,pi/2);
@@ -29,11 +30,10 @@ function [Grid,Freq,Int,Index,CutOff] = Feynman_2DIR_Vec_Sparse(PCutOff,FreqRang
 % F2 = TwoDIR.H.Sort_Ex_F2;
 % M01 = TwoDIR.Mu.M_Ex_01;
 % M12 = TwoDIR.Mu.M_Ex_12;
-% 
-% % M_Ex_01(abs(M_Ex_01)<1e-10) = 0;
-% % M_Ex_12(abs(M_Ex_12)<1e-10) = 0;
 
 %% Rund up frequency for sparse accumulation
+% Round off so the sparse matrix accumulation will bin the response into
+% 1cm-1 bucket. For finer bin modify this part
 F1 = round(F1);
 F2 = round(F2);
 
@@ -110,7 +110,7 @@ PI_NR1 = I_NR1 >= (PCutOff * NR1_Max);
 PI_NR2 = I_NR2 >= (PCutOff * NR2_Max);
 PI_NR3 = I_NR3 >= (PCutOff * NR3_Max);
 
-%% Get 2DIR response from index version kronec product(GB SE)
+%% Get 2DIR response from index version kronecker product(GB SE)
 % R1
 Ib_R1   = Ib(PI_R1);
 Ia_R1   = Ia(PI_R1);
@@ -302,6 +302,7 @@ Ind_NR2 = [Ia,Ib,Ib,Ia]; % SE
 Ind_NR3 = [Kb,Kx,Kb,Ka]; % EA
 
 %% Construct sparse matrix version of Responses
+% This part also deal with binning
 SparseMax = max([max(F1), max(F2(Kx(:)) - F1(Ka(:))), max(FreqRange)]); 
 
 R1  = sparse( Freq_R1(:,1), Freq_R1(:,3),S_R1 ,SparseMax,SparseMax);

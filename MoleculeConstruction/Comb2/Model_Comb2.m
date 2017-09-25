@@ -250,9 +250,13 @@ StrucGUI_Data1 = guidata(hStruc1);
 StrucGUI_Data2 = guidata(hStruc2);
 StrucData1     = StrucGUI_Data1.Structure;
 StrucData2     = StrucGUI_Data2.Structure;
-GUI_Inputs = ParseGUI_Comb2(hGUIs);
+GUI_Inputs     = ParseGUI_Comb2(hGUIs);
 
-SC =Comb2(StrucData1,StrucData2,GUI_Inputs);
+SC = Comb2(StrucData1,StrucData2,GUI_Inputs);
+
+SC.hPlotFunc     = @PlotComb2;
+SC.hParseGUIFunc = @ParseGUI_Comb2;
+SC.hGUIs         = hGUIs;
 
 %% export back to handles and Main GUI if any
 GUI_data.GUI_Inputs  = GUI_Inputs;
@@ -272,7 +276,7 @@ disp('Structure file generated!')
 
 function hF = PlotMolecule(hObject, eventdata, GUI_data)
 %% Read GUI
-hF = PlotComb2(GUI_data);
+hF = GUI_data.Structure.Draw;
 
 function PlotModes(hObject, eventdata, GUI_data)
 Plot_Modes(GUI_data.hModel_Comb2);

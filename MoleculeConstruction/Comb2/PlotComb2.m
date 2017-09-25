@@ -1,18 +1,17 @@
-function hF = PlotComb2(GUI_data)
+function hF = PlotComb2(hAx,Structure,~)
 %% Prep
-Structure = GUI_data.Structure;
-
-hF = figure;
-hAx = axes('Parent',hF);
+if ~ishandle(hAx)
+    hF = figure; 
+    hAx = axes('Parent',hF);
+else
+    hF = hAx.Parent;
+end
 
 % run through all sub-structures
 N_S = length(Structure.Children);
 for i = 1:N_S
-    S = Structure.Children(i);
-    hPlotFunc = S.hPlotFunc;
-    GUI_Data = feval(S.hParseGUIFunc,S.hGUIs);
-
-    feval(hPlotFunc,hAx,S,GUI_Data);
+    S = Structure.Children(i);    
+    S.Draw(hAx);
 end
 
 %% figure options

@@ -63,7 +63,8 @@ LocCenter = Struc_Data.LocCenter;
 if ~ishandle(hAx)
     hF = figure; 
     hAx = axes('Parent',hF);
-    %disp('Draw in new figure')
+else
+    hF = hAx.Parent;
 end
 
 hold(hAx,'on')

@@ -42,17 +42,29 @@ classdef StructureData < handle
            locAlphaM = reshape(obj.LocAlpha,[],3,3);
       end      
       function CoM = get.CoM(obj)
-        AP   = SD_AtomicProperties(obj);
-        Mass = AP.Mass;
-        CoM  = sum(bsxfun(@times,obj.XYZ,Mass),1)./sum(Mass);
+           AP   = SD_AtomicProperties(obj);
+           Mass = AP.Mass;
+           CoM  = sum(bsxfun(@times,obj.XYZ,Mass),1)./sum(Mass);
+      end
+      function hF = Draw(obj,varargin)
+          % Simplify the structure drawing syntex
+          hAx = 'New';
+          if nargin > 1 
+              hAx = varargin{:};
+          end
+          if isa(obj.hPlotFunc,'function_handle')
+              hF = obj.hPlotFunc(hAx,obj,obj.hParseGUIFunc(obj.hGUIs));
+          else
+              hF = '';
+              disp('No @hPlotFunc defined, method "Draw" would not work...')
+          end
       end
       
+      AP        = SD_AtomicProperties(obj)
       obj_T     = SD_Trans(obj,V)
       obj_R     = SD_Rot(obj,Phi,Psi,Theta)
       obj_comb2 = SD_Comb2(obj1,obj2)
       Dihedral  = SD_PeptideDihedral(obj)
-      AP        = SD_AtomicProperties(obj)
-      
    end
 
 end

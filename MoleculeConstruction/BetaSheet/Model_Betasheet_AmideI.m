@@ -191,19 +191,7 @@ Export2GUIs(GUI_data)
 disp('Structure file generated!')
 
 function hF = PlotMolecule(hObject, eventdata, GUI_data)
-% Read GUI variables
-hGUIs  = GUI_data.hGUIs;
-GUI_Inputs = ParseGUI_Betasheet(hGUIs);
-
-if isstruct(eventdata)
-    if strcmp(eventdata.Source,'External')
-        GUI_Inputs.External.hF  = eventdata.hF;
-        GUI_Inputs.External.hAx = eventdata.hAx;
-    end
-end
-
-hAx = 'New';
-hF = Plot_Betasheet_AmideI(hAx,GUI_data.Structure,GUI_Inputs);
+hF = GUI_data.Structure.Draw;
 
 function PlotModes(hObject, eventdata, GUI_data)
 Plot_Modes(GUI_data.hModel_Betasheet_AmideI);

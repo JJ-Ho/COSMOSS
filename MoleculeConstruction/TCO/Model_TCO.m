@@ -146,12 +146,7 @@ Export2GUIs(GUI_data)
 disp('Structure file generated!')
 
 function hF = PlotMolecule(hObject, eventdata, GUI_data)
-%% Read GUI variables
-hGUIs = GUI_data.hGUIs;
-GUI_Inputs = ParseGUI_TCO(hGUIs);
-
-hAx = 'New';
-hF = PlotXYZfiles_Acid(hAx,GUI_data.Structure,GUI_Inputs);
+hF = GUI_data.Structure.Draw;
 
 function PlotModes(hObject, eventdata, GUI_data)
 Plot_Modes(GUI_data.hModel);

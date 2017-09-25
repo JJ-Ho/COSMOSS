@@ -205,13 +205,7 @@ Export2GUIs(GUI_data)
 disp('Structure file generated!')
 
 function hF = PlotMolecule(hObject, eventdata, GUI_data)
-%% Read GUI
-hGUIs  = GUI_data.hGUIs;
-GUI_Inputs = ParseGUI_TwoDGrid(hGUIs);
-Structure = GUI_data.Structure;
-
-hAx = 'New';
-hF = PlotXYZ_Grid(hAx,Structure,GUI_Inputs);
+hF = GUI_data.Structure.Draw;
 
 function PlotModes(hObject, eventdata, GUI_data)
 Plot_Modes(GUI_data.hModel_TwoDGrid);

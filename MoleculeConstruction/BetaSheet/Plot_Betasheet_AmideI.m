@@ -110,7 +110,8 @@ C_O_Pos = XYZ(C_Ind_O,:);
 if ~ishandle(hAx)
     hF = figure; 
     hAx = axes('Parent',hF);
-    disp('Draw in new figure')
+else
+    hF = hAx.Parent;
 end
 
 hold(hAx,'on')

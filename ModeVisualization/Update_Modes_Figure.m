@@ -59,7 +59,6 @@ SpecType       = INPUT.Results.SpecType      ;
 
 %% Define useful parameters
 N_Mode_Total  = Structure.Nmodes;
-%Mode_Index    = (1:N_Mode_Total)+1;
 N_Mode_Select = length(Mu_Alpha_Ind);
 
 %% molecular frame (need to rename to ab frame)
@@ -79,13 +78,7 @@ else
     Alpha_Ex_MF  = SpecData.Alpha.M_Ex_01;
 end
 
-
-% Eigen vectors
-EigVecM      = SpecData.H.Sort_Ex_V1;
-EigVecM2     = EigVecM.^2;
-Center_Ex_MF = EigVecM2*(Structure.LocCenter);
-
-%% Retreive Axes from input figure with molecule plotted
+%% Plot TDV/Raman
 hAx = findobj(hF,'type','axes');
 hold on
 
@@ -98,21 +91,35 @@ if Mu_Alpha_Plot
             Mu     =     Mu_Loc_MF(Mu_Alpha_Ind,:);
             Alpha  =  Alpha_Loc_MF(Mu_Alpha_Ind,:);            
         case 2 % Exciton mode
-            Center = Center_Ex_MF(Mu_Alpha_Ind,:);
+            Center =                Structure.CoM;
             Mu     =     Mu_Ex_MF(Mu_Alpha_Ind,:);
             Alpha  =  Alpha_Ex_MF(Mu_Alpha_Ind,:);
     end
     
     if TDV_Plot
-       Plot_Mu(hAx,N_Mode_Select,Center,Mu,Mode_Colors,TDV_Scale,Normalize)
+        if Normalize % normalize to unit vector for direction comparison
+            Mu_Int = sqrt(sum(Mu.^2,2));
+            Mu = bsxfun(@rdivide,Mu,Mu_Int);
+        end
+        Mu_S = TDV_Scale .* Mu; % Scale TDV vector in plot  
+        
+        Plot_Mu(hAx,Center,Mu_S,Mode_Colors)
     end
     
     if Raman_Plot
-       Plot_Alpha(hAx,N_Mode_Select,Center,Alpha,Mode_Colors,Raman_Scale,Raman_Type,Normalize)
+        if Normalize % normalize to unit vector for direction comparison
+            Alpha_Norm = sqrt(sum(Alpha(:,:).^2,2)); % Norm defined in Silby's paper: JCP 1992, 97, 5607?5615.
+            Alpha = bsxfun(@rdivide,Alpha,Alpha_Norm);
+        end
+        Alpha_S = Raman_Scale .* Alpha;
+          
+        Plot_Alpha(hAx,Center,Alpha_S,Mode_Colors,Raman_Type)
     end
 end
 
-% Plot Mixing coefficients
+%% Plot Mixing coefficients
+% Eigen vectors
+EigVecM = SpecData.H.Sort_Ex_V1;
 if Plot_EigVec
     Mode_Colors = bsxfun(@times,ones(N_Mode_Total,3),[255,128,0]./256);
     Mix_Coeft   = EigVecM(:,EigVec_Ind).* EigVec_Scale;
@@ -184,34 +191,21 @@ hAx.DataAspectRatio = [1,1,1];
 %% Output
 Output.Mu_Alpha_Ind = Mu_Alpha_Ind;
 
-function Plot_Mu(hAx,N_Plot_Mode,Center,Mu,Mode_colors,TDV_Scale,Normalize)
-if Normalize
-    % normalize to unit vector for direction comparison
-    Mu_Int = sqrt(sum(Mu.^2,2));
-    Mu = bsxfun(@rdivide,Mu,Mu_Int);
-end
-Mu_Loc_S = TDV_Scale .* Mu; % Scale TDV vector in plot 
-
+function Plot_Mu(hAx,Center,Mu_S,Mode_colors)
+N_Plot_Mode = size(Center,1);
 for j = 1: N_Plot_Mode
     quiver3(hAx,...
             Center(j,1),Center(j,2),Center(j,3),...
-            Mu_Loc_S(j,1),Mu_Loc_S(j,2),Mu_Loc_S(j,3),0,...
+            Mu_S(j,1),Mu_S(j,2),Mu_S(j,3),0,...
             'LineWidth',2,...
             'MaxHeadSize',0.6,...
             'Color',Mode_colors(j,:));
 end
 
-function Plot_Alpha(hAx,N_Plot_Mode,Center,Alpha,Mode_colors,Raman_Scale,Raman_Type,Normalize)
-% plot Raman tensors
-
-N_mesh   = 20;
-if Normalize
-    % normalize to unit vector for direction comparison
-    Alpha_Norm = sqrt(sum(Alpha(:,:).^2,2)); % Norm defined in Silby's paper: JCP 1992, 97, 5607?5615.
-    Alpha = bsxfun(@rdivide,Alpha,Alpha_Norm);
-end
-
+function Plot_Alpha(hAx,Center,Alpha,Mode_colors,Raman_Type)
+N_Plot_Mode = size(Center,1);
+N_mesh = 20;
 for i = 1: N_Plot_Mode
     RamanM = reshape(Alpha(i,:),3,3);
-    plot_Raman(hAx,RamanM,Center(i,:),Raman_Scale,N_mesh,Mode_colors(i,:),Raman_Type)
+    plot_Raman(hAx,RamanM,Center(i,:),N_mesh,Mode_colors(i,:),Raman_Type)
 end

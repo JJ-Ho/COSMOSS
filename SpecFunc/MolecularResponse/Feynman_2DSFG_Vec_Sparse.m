@@ -298,13 +298,13 @@ Ex_6 = F2(Kx(PI_NR3));
 Freq_NR3 = [ Ea_6 , Ea_6 - Eb_6 , Ex_6 - Eb_6 ];
 
 %% Prep for export mode index
-Ind_R1  = [Ib,Ib,Ia,Ia]; % GB
-Ind_R2  = [Ib,Ia,Ib,Ia]; % SE
-Ind_R3  = [Ka,Kx,Kb,Ka]; % EA
+Ind_R1  = [Ib_R1,Ib_R1,Ia_R1,Ia_R1]; % GB
+Ind_R2  = [Ib_R2,Ia_R2,Ib_R2,Ia_R2]; % SE
+Ind_R3  = [Iax_R3,Ibx_R3,Ib_R3,Ia_R3]; % EA
 
-Ind_NR1 = [Ib,Ib,Ia,Ia]; % GB
-Ind_NR2 = [Ia,Ib,Ib,Ia]; % SE
-Ind_NR3 = [Kb,Kx,Kb,Ka]; % EA
+Ind_NR1 = [Ib_NR1,Ib_NR1,Ia_NR1,Ia_NR1]; % GB
+Ind_NR2 = [Ia_NR2,Ib_NR2,Ib_NR2,Ia_NR2]; % SE
+Ind_NR3 = [Iax_NR3,Ibx_NR3,Ib_NR3,Ia_NR3]; % EA
 
 %% Construct sparse matrix version of Responses
 SparseMax = max([max(F1), max(F2(Kx(:)) - F1(Ka(:))), max(FreqRange)]);  

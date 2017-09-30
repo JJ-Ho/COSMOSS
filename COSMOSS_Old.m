@@ -1,4 +1,4 @@
-function varargout = COSMOSS(varargin)
+function varargout = COSMOSS_Old(varargin)
 % COSMOSS MATLAB code for COSMOSS.fig
 %      COSMOSS, by itself, creates a new COSMOSS or raises the existing
 %      singleton*.

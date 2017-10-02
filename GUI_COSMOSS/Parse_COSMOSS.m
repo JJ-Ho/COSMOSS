@@ -1,119 +1,72 @@
 function O = Parse_COSMOSS(app)
-
-% For Sample Symmetry -----------------------------------------------------
-O.Avg_Rot      =            get(hGUIs.Avg_Rot    ,'Value');
-O.Avg_Mirror   =            get(hGUIs.Avg_Mirror ,'Value');
-% -------------------------------------------------------------------------
-
-% For 1D ------------------------------------------------------------------
-O.P_IR         = str2double(get(hGUIs.P_IR       ,'String'));
-O.P_Vis1D      = str2double(get(hGUIs.P_Vis1D    ,'String'));
-O.P_Sig1D      = str2double(get(hGUIs.P_Sig1D    ,'String'));
-O.A_IR         = str2double(get(hGUIs.A_IR       ,'String'));
-O.A_Vis1D      = str2double(get(hGUIs.A_Vis1D    ,'String'));
-O.A_Sig1D      = str2double(get(hGUIs.A_Sig1D    ,'String'));
-% -------------------------------------------------------------------------
-
-% For 2D ------------------------------------------------------------------
-O.A_Pump1      = str2double(get(hGUIs.A_Pump1    ,'String'));
-O.A_Pump2      = str2double(get(hGUIs.A_Pump2    ,'String'));
-O.A_Probe      = str2double(get(hGUIs.A_Probe    ,'String'));
-O.A_Vis2D      = str2double(get(hGUIs.A_Vis2D    ,'String'));
-O.A_Sig2D      = str2double(get(hGUIs.A_Sig2D    ,'String'));
-O.P_Pump1      = str2double(get(hGUIs.P_Pump1    ,'String'));
-O.P_Pump2      = str2double(get(hGUIs.P_Pump2    ,'String'));
-O.P_Probe      = str2double(get(hGUIs.P_Probe    ,'String'));
-O.P_Vis2D      = str2double(get(hGUIs.P_Vis2D    ,'String'));
-O.P_Sig2D      = str2double(get(hGUIs.P_Sig2D    ,'String'));
-% -------------------------------------------------------------------------
-
-% For DD/ODD --------------------------------------------------------------
-O.Sampling      =            get(hGUIs.Sampling     ,'Value');
-O.Sample_Num    = str2double(get(hGUIs.Sample_Num   ,'String'));
-O.DD_FWHM       = str2double(get(hGUIs.DD_FWHM      ,'String'));
-O.ODD_FWHM      = str2double(get(hGUIs.ODD_FWHM     ,'String'));
-O.P_FlucCorr    = str2double(get(hGUIs.P_FlucCorr   ,'String')); 
-O.DynamicUpdate =            get(hGUIs.DynamicUpdate,'Value');
-O.UpdateStatus  =            get(hGUIs.UpdateStatus ,'Value');
-% -------------------------------------------------------------------------
-
-% For Coupling/Signal -----------------------------------------------------
-O.LocFreqType   = get(hGUIs.LocFreqType,'Value');
+% Molecular response ------------------------------------------------------
+O.LocFreqType = app.DropDown_LocFreq.Value;
 
 % Coupling model
-CouplingModelIndex = get(hGUIs.CouplingModelIndex,'Value');
-[~,CouplingList]   = Coupling('List','None','None');
-O.CouplingType     = CouplingList{CouplingModelIndex};
+O.CouplingType = app.DropDown_Coupling.Value;
+O.Beta_NN      = app.EditField_NN.Value;
+O.PCutOff      = app.EditField_FeynmannCutoff.Value;
+% -------------------------------------------------------------------------
 
-O.Beta_NN       = str2double(get(hGUIs.Beta_NN      ,'String'));
-O.PCutOff       = str2double(get(hGUIs.PCutOff ,'String'));
+% For Sample Symmetry -----------------------------------------------------
+O.Avg_Rot    = app.DropDown_RotAvg.Value;
+O.Avg_Mirror = app.DropDown_MirrorPlane.Value;
+% -------------------------------------------------------------------------
+
+% Esemble average ---------------------------------------------------------
+O.Sampling      = app.CheckBox_Sampling.Value;
+O.Sample_Num    = app.EditField_SampleN.Value;
+O.DynamicUpdate = app.CheckBox_DynamicFigUpdate.Value;
+O.UpdateStatus  = app.CheckBox_Continue.Value;
+O.P_FlucCorr    = app.EditField_FluctuationCorrelation.Value;
+O.DD_FWHM       = app.EditField_DD.Value;
+O.ODD_FWHM      = app.EditField_ODD.Value;
+% -------------------------------------------------------------------------
+
+% Exp parameters 1D -------------------------------------------------------
+Exp1D = app.UITable_1D.Data;
+O.A_IR         = Exp1D(1,1);
+O.A_Vis1D      = Exp1D(1,2);
+O.A_Sig1D      = Exp1D(1,3);
+O.P_IR         = Exp1D(2,1);
+O.P_Vis1D      = Exp1D(2,2);
+O.P_Sig1D      = Exp1D(2,3);
+% -------------------------------------------------------------------------
+
+% Exp parameters 2D -------------------------------------------------------
+Exp2D = app.UITable_2D.Data;
+O.A_Pump1      = Exp2D(1,1);
+O.A_Pump2      = Exp2D(1,2);
+O.A_Probe      = Exp2D(1,3);
+O.A_Vis2D      = Exp2D(1,4);
+O.A_Sig2D      = Exp2D(1,5);
+O.P_Pump1      = Exp2D(2,1);
+O.P_Pump2      = Exp2D(2,2);
+O.P_Probe      = Exp2D(2,3);
+O.P_Vis2D      = Exp2D(2,4);
+O.P_Sig2D      = Exp2D(2,5);
 % -------------------------------------------------------------------------
 
 % For Figures -------------------------------------------------------------
-O.SaveFig      =            get(hGUIs.SaveFig     ,'Value');
-O.SavePath     =            get(hGUIs.SavePath    ,'String');
-O.Num_Contour  = str2double(get(hGUIs.Num_Contour ,'String'));
-O.PlotStick    =            get(hGUIs.PlotStick   ,'Value');
-O.PlotNorm     =            get(hGUIs.PlotNorm    ,'Value');
-O.PlotCursor   =            get(hGUIs.PlotCursor  ,'Value');
-O.CMAP_Index   =            get(hGUIs.CMAP_Index  ,'Value');
-
-O.F_Min     = str2double(get(hGUIs.F_Min,'String'));
-O.F_Max     = str2double(get(hGUIs.F_Max,'String'));
-O.FreqRange = O.F_Min:O.F_Max;
-
-
-O.LineWidth = str2double(get(hGUIs.LineWidth    ,'String'));
-LineShape   =            get(hGUIs.LineShape,'Value');
-switch LineShape
-    case 1
-        O.LineShape = 'G';
-    case 2
-        O.LineShape = 'L';
-    case 3
-        O.LineShape = 'KK';
-    case 4
-        O.LineShape = 'None'; 
-    case 5
-        O.LineShape = 'Spy'; 
-end
-
-SpecType = get(hGUIs.SpecType, 'Value');
-switch SpecType
-    case 1
-        O.SpecType = 'Abs';
-    case 2
-        O.SpecType = 'R';
-    case 3
-        O.SpecType = 'NR';
-end
-
-Signal_Type = get(hGUIs.Signal_Type,'Value');
-switch Signal_Type
-    case 1 % heterodyne
-        O.Signal_Type = 'Hetero';
-    case 2 % homodyne
-        O.Signal_Type = 'Homo';
-end
-
-Pathway = get(hGUIs.Pathway,'Value');
-switch Pathway
-    case 1
-        O.Pathway = 'All';
-    case 2
-        O.Pathway = 'GB';
-    case 3
-        O.Pathway = 'SE';
-    case 4
-        O.Pathway = 'EA';
-end
+O.SaveFig      = app.CheckBox_SaveFig.Value;
+O.SavePath     = app.EditField_SavePath.Value;
+O.PlotStick    = app.CheckBox_Sticks.Value;
+O.PlotNorm     = app.CheckBox_Normalize.Value;
+O.PlotCursor   = app.CheckBox_Cursor.Value;
+O.F_Min        = app.EditField_FreqMin.Value;
+O.F_Max        = app.EditField_FreqMax.Value;
+O.FreqRange    = O.F_Min:O.F_Max;
+O.LineShape    = app.DropDown_LineShape.Value; % Need to debug
+O.LineWidth    = app.EditField_Width.Value;
+O.Num_Contour  = app.EditField_Contour.Value;
+O.CMAP_Index   = app.DropDown_ColorMap.Value; % Need to debug
+O.SpecType     = app.DropDown_SignalType.Value; % Need to debug
+O.Signal_Type  = app.DropDown_SpectralType; % Need to debug
+O.Pathway      = app.DropDown_Pathway.Value; % Need to debug
 % -------------------------------------------------------------------------
 
 % For Analysis Tools ------------------------------------------------------
-O.IntegralArea =            get(hGUIs.IntegralArea,'Value');
-O.HCut_2DIR    = str2double(get(hGUIs.HCut_2DIR   ,'String'));
-O.HCut_2DSFG   = str2double(get(hGUIs.HCut_2DSFG  ,'String'));
-O.TS_Type      =            get(hGUIs.TS_Type     ,'Value');
+
 % -------------------------------------------------------------------------
 
 

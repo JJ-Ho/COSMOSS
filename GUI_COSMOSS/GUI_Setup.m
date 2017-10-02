@@ -4,6 +4,10 @@ function GUI_Setup(app)
 app.ListBox_Model.Items = StructureModelList;
 app.ListBox_Model.ItemsData = 1:length(StructureModelList);
 
+% Setup Coupling model items
+[~,CouplingList] = Coupling('','List','');
+app.DropDown_Coupling.Items = CouplingList;
+
 % Setup initial values of the experimental setups
 Exp_1D = zeros(2,3);
 Exp_1D(1,:) = 90;

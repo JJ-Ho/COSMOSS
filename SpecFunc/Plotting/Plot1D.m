@@ -71,7 +71,7 @@ FreqRange    = INPUT.Results.FreqRange;
 %% Determine spectrum type  
 switch OneD_Data.SpecType
     case 'FTIR'
-        Signal_Type = 'Hetero'; % self heterodyne!!
+        Signal_Type = 'Heterodyne'; % self heterodyne!!
     case 'SFG'
 end
 
@@ -84,9 +84,9 @@ N_Grid = length(FreqRange);
 spec_array = (1:N_Grid) - ceil(N_Grid/2);
 
 switch LineShape 
-    case 'G' % Gaussian
+    case 'Gaussian'
         LineShape = 1i*exp(-(spec_array.^2)./(LineWidth^2));
-    case 'L' % Lorentzain 
+    case 'Lorentzian' 
         LineWidth = LineWidth/2;
         LineShape = spec_array./((spec_array.^2)+(LineWidth^2)) + 1i*LineWidth./(spec_array.^2+LineWidth^2);
 
@@ -95,17 +95,17 @@ switch LineShape
         Im = (1/pi)*(LineWidth)./(spec_array.^2+(LineWidth)^2);
         Re = kkimbook2(FreqRange,Im,1);
         LineShape = Im+Re;    
-    case 'None'
+    case {'No Conv','Spy'}
         LineShape = ones(1,N_Grid);
 end
 CVL_Total = conv(Response1D,LineShape,'same');
 
 switch Signal_Type
-    case 'Hetero' % heterodyne
+    case 'Heterodyne' % heterodyne
         PlotY = imag(CVL_Total);
         Stick = Response1D;
         Signal_Type_Title = 'Hetero';
-    case 'Homo' % homodyne
+    case 'Homodyne' % homodyne
         PlotY = abs(CVL_Total).^2;
         Stick = Response1D.^2;
         Signal_Type_Title = 'Homo';

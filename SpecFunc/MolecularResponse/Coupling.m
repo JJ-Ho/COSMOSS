@@ -91,7 +91,7 @@ switch CoupleType
     case 'TDC_PBC'
         Beta = Coupling_TDC_PBC(Structure);
 
-    case 'None'
+    case 'List'
         % do nothing, this is for generating the coupling list 
         Beta = [];
         

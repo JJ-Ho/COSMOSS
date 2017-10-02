@@ -77,7 +77,7 @@ switch CVL.Lineshape
         
         DiagColor = 'k';
 
-    case 'None' % plot stick spectrum  w/ colormap
+    case 'No Conv' % plot stick spectrum  w/ colormap
         spyXYZ(hAx,X,Y,Z_NC)    
         
         set(hAx,'Ydir','normal')

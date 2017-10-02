@@ -1,4 +1,4 @@
-function CVL = Conv2D(SSG,GUI_Inputs)
+function CVL = Conv2D(SG,GUI_Inputs)
 % 
 % This function convolute the input stick spectrum with spelected line
 % shape.
@@ -28,27 +28,17 @@ INPUT.KeepUnmatched = 1;
 
 % Default values
 defaultFreqRange   = 1650:1750;
-defaultLineShape   = 'L';
-expectedLineShape  = {'L','G','KK','None','Spy'};
+defaultLineShape   = 'Lorentzian';
 defauleLineWidth   = 5;
-defaultSpecType    = 'Abs';
-expectedSpecType   = {'R','NR','Abs'};
+defaultSpecType    = 'Absorptive';
 defaultPathway     = 'All';
-expectedPathway    = {'GB','SE','EA','All'};
 
 addOptional(INPUT,'FreqRange',defaultFreqRange);
-
-addParamValue(INPUT,'LineShape',defaultLineShape,...
-                @(x) any(validatestring(x,expectedLineShape)));
-            
+addOptional(INPUT,'LineShape',defaultLineShape);
 addOptional(INPUT,'LineWidth',defauleLineWidth);
+addOptional(INPUT,'SpecType',defaultSpecType);
+addOptional(INPUT,'Pathway',defaultPathway);
 
-addParamValue(INPUT,'SpecType',defaultSpecType,...
-                @(x) any(validatestring(x,expectedSpecType)));
-            
-addParamValue(INPUT,'Pathway',defaultPathway,...
-                @(x) any(validatestring(x,expectedPathway))); 
-            
 parse(INPUT,GUI_Inputs_C{:});
 
 % Reassign Variable names
@@ -62,15 +52,15 @@ SpecType    = INPUT.Results.SpecType;
 MinF = FreqRange(1);
 MaxF = FreqRange(end);
 
-SG.SpecAccuR1  = full(SSG.SpecAccuR1(MinF:MaxF,MinF:MaxF));
-SG.SpecAccuR2  = full(SSG.SpecAccuR2(MinF:MaxF,MinF:MaxF));
-SG.SpecAccuR3  = full(SSG.SpecAccuR3(MinF:MaxF,MinF:MaxF));
-SG.SpecAccuNR1 = full(SSG.SpecAccuNR1(MinF:MaxF,MinF:MaxF));
-SG.SpecAccuNR2 = full(SSG.SpecAccuNR2(MinF:MaxF,MinF:MaxF));
-SG.SpecAccuNR3 = full(SSG.SpecAccuNR3(MinF:MaxF,MinF:MaxF));
+SG.SpecAccuR1  = full(SG.SpecAccuR1(MinF:MaxF,MinF:MaxF));
+SG.SpecAccuR2  = full(SG.SpecAccuR2(MinF:MaxF,MinF:MaxF));
+SG.SpecAccuR3  = full(SG.SpecAccuR3(MinF:MaxF,MinF:MaxF));
+SG.SpecAccuNR1 = full(SG.SpecAccuNR1(MinF:MaxF,MinF:MaxF));
+SG.SpecAccuNR2 = full(SG.SpecAccuNR2(MinF:MaxF,MinF:MaxF));
+SG.SpecAccuNR3 = full(SG.SpecAccuNR3(MinF:MaxF,MinF:MaxF));
 
-SG.Rephasing    = full(SSG.Rephasing(MinF:MaxF,MinF:MaxF));
-SG.NonRephasing = full(SSG.NonRephasing(MinF:MaxF,MinF:MaxF));
+SG.Rephasing    = full(SG.Rephasing(MinF:MaxF,MinF:MaxF));
+SG.NonRephasing = full(SG.NonRephasing(MinF:MaxF,MinF:MaxF));
 
 %% FFT on selected pathway
 
@@ -157,13 +147,13 @@ CVL.sum_No_Conv = Re_phasing_Res + NR_phasing_Res;
 
 % Output selected SpecType
 switch SpecType
-    case 'Abs'
+    case 'Absorptive'
         CVL.selected = CVL.sum;
         CVL.selected_No_Conv = CVL.sum_No_Conv;
-    case 'R'
+    case 'Rephasing'
         CVL.selected = CVL.R;
         CVL.selected_No_Conv = CVL.R_No_Conv;
-    case 'NR'
+    case 'Non-rephasing'
         CVL.selected = CVL.NR;
         CVL.selected_No_Conv = CVL.NR_No_Conv;
 end

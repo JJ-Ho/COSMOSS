@@ -83,7 +83,7 @@ M_Ex_12 = Mu.M_Ex_12;
 
 %% Decide what kinds of rod rotation average is and applied rotational 
 % average on Response in molecular frame
-R_Avg = LabFrameAvg('Isotropic',4); 
+[R_Avg,~,~,~] = LabFrameAvg('Isotropic','No',4);
 
 %% Jones Matrix convert XYZ to PS frame
 % Turn degrees into radius (not work for BoxCard geometry yet)

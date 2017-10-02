@@ -99,47 +99,9 @@ A_Ex_01 = Alpha.M_Ex_01;
 A_Ex_12 = Alpha.M_Ex_12;
 
 %% Decide what kinds of rod rotation average is
-
-Dimension = 5; % for 2DSFG
-
-switch Avg_Rot
-        
-    case 1 %'Phi' C_Inf
-        R_Avg = LabFrameAvg('C4',Dimension);
-        
-    case 4 %'Isotropic'
-        R_Avg = LabFrameAvg('Isotropic',Dimension);
-                
-    case 5 %'No Average'
-        R_Avg = LabFrameAvg('C1',Dimension);
-        
-    otherwise
-        disp('Avg_Angle is not support, dont know how to apply Rotational average...')
-        return
-end
-
-
-% Decide Mirror planes
-switch Avg_Mirror
-    
-    case 1 % no mirror plane
-        V = [1;1;1];
-        
-        Mirror_Mask = kron(kron(kron(kron(V,V),V),V),V);
-        
-    case 2 % sigma v, X=-X, Y=-Y
-        V1 = [-1; 1;1];
-        V2 = [ 1;-1;1];
-        
-        Sigma_X = kron(kron(kron(kron(V1,V1),V1),V1),V1);
-        Sigma_Y = kron(kron(kron(kron(V2,V2),V2),V2),V2);
-        Sigma_X(eq(Sigma_X,-1)) = 0;
-        Sigma_Y(eq(Sigma_Y,-1)) = 0;
-        
-        Mirror_Mask = and(Sigma_X,Sigma_Y);
-end
-
 % note:sparse version dose not have mirror plane impemented, yet...
+[R_Avg,Mirror_Mask,~,~] = LabFrameAvg(Avg_Rot,Avg_Mirror,5);
+
 
 %% Jones Matrix convert XYZ to PS frame
 % Laser incident angles between laser beam and surface normal.

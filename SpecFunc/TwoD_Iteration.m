@@ -1,10 +1,11 @@
-function [SpectraGrid,Response] = TwoD_Iteration(h2DFunc,GUI_data,GUI_Inputs,hGUIs)
+function [SpectraGrid,Response] = TwoD_Iteration(h2DFunc,app)
 %% Read GUI
-Sampling      = GUI_Inputs.Sampling;
-DynamicUpdate = GUI_Inputs.DynamicUpdate;
-Sample_Num    = GUI_Inputs.Sample_Num;
-FreqRange     = GUI_Inputs.FreqRange;
-Structure     = GUI_data.Structure;
+I = Parse_COSMOSS(app);
+Sampling      = I.Sampling;
+DynamicUpdate = I.DynamicUpdate;
+Sample_Num    = I.Sample_Num;
+FreqRange     = I.FreqRange;
+Structure     = app.Structure;
 
 %% Pre-calculation settings
 % Create figure object for dynamics figure update
@@ -17,7 +18,7 @@ end
 if Sampling
     % Pre-allocate
     FreqRange = FreqRange(1):FreqRange(end)+100; % add 100 cm-1 range to prevent fluctuation out of range
-    GUI_Inputs.FreqRange = FreqRange; % pass the extended Frequency Range to the TwoD main function
+    I.FreqRange = FreqRange; % pass the extended Frequency Range to the TwoD main function
     GridSize  = FreqRange(end); 
     
     Rephasing    = sparse(GridSize,GridSize);
@@ -35,14 +36,15 @@ if Sampling
     for i = 1:Sample_Num
         TSTART(i) = tic;
         
-        DynamicUpdate = hGUIs.DynamicUpdate.Value; % directly access the GUI elment so can get the most recnt values
-        UpdateStatus  = hGUIs.UpdateStatus.Value;
+        % Read GUI input directly from obj handle
+        DynamicUpdate = app.CheckBox_DynamicFigUpdate.Value;
+        UpdateStatus  = app.CheckBox_Continue.Value;
         if and(~eq(i,1), and(eq(DynamicUpdate,1),~eq(UpdateStatus,1)))
             break
         end
 
         % run main function
-        [Tmp_SG,Tmp_Res] = h2DFunc(Structure,GUI_Inputs);
+        [Tmp_SG,Tmp_Res] = h2DFunc(Structure,I);
         
         % Accumulate result
         try
@@ -71,10 +73,10 @@ if Sampling
 
         % Dynamic update of figure % update every 10 run
         while and(~eq(DynamicUpdate,0),eq(mod(i,10),0))
-            CVL = Conv2D(SpectraGrid,GUI_Inputs);
+            CVL = Conv2D(SpectraGrid,I);
             CVL.FilesName = [Structure.FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title
             SpecType = Response.SpecType;
-            Plot2D(hAx,CVL,GUI_Inputs,SpecType);
+            Plot2D(hAx,CVL,I,SpecType);
             drawnow
             DynamicUpdate = 0;
         end
@@ -86,5 +88,5 @@ if Sampling
     disp(['Total time: ' num2str(Total_TIME)])
 
 else
-    [SpectraGrid,Response] = h2DFunc(Structure,GUI_Inputs);
+    [SpectraGrid,Response] = h2DFunc(Structure,I);
 end

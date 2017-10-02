@@ -36,7 +36,7 @@ defaultSavePath     = '~/Desktop/';
 defaultPlotStick    = 1;
 defaultPlotNorm     = 0;
 defaultLineWidth    = 5;
-defaultSignal_Type  = 'Hetero';
+defaultSignal_Type  = 'Heterodyne';
 defaultLineShape    = 'L';
 defaultPlotCursor   = 0;
 defaultIntegralArea = 0;
@@ -79,26 +79,8 @@ Response1D  = OneD_Data.Response1D;
 Res_Freq    = OneD_Data.freq_OneD;
 
 %% Make figure
-% Get Frequency axis range 
-N_Grid = length(FreqRange);
-spec_array = (1:N_Grid) - ceil(N_Grid/2);
-
-switch LineShape 
-    case 'Gaussian'
-        LineShape = 1i*exp(-(spec_array.^2)./(LineWidth^2));
-    case 'Lorentzian' 
-        LineWidth = LineWidth/2;
-        LineShape = spec_array./((spec_array.^2)+(LineWidth^2)) + 1i*LineWidth./(spec_array.^2+LineWidth^2);
-
-    case 'KK' % K-K use K-K relation to generate Re part
-        LineWidth = LineWidth/2;
-        Im = (1/pi)*(LineWidth)./(spec_array.^2+(LineWidth)^2);
-        Re = kkimbook2(FreqRange,Im,1);
-        LineShape = Im+Re;    
-    case {'No Conv','Spy'}
-        LineShape = ones(1,N_Grid);
-end
-CVL_Total = conv(Response1D,LineShape,'same');
+[ConvL,~] = Conv_LineShape(1,LineShape,FreqRange,LineWidth);
+CVL_Total = conv(Response1D,ConvL,'same');
 
 switch Signal_Type
     case 'Heterodyne' % heterodyne
@@ -123,7 +105,7 @@ hold(hAx,'on')
     line(hAx,[FreqRange(1);FreqRange(end)],[0;0],'Color',[1,0,0]) % plot baseline
     plot(hAx,FreqRange,PlotY,'-','LineWidth',2)
     if eq(PlotStick,1)
-        line(hAx,[Res_Freq;Res_Freq],[zeros(1,N_Grid);Stick']);
+        line(hAx,[Res_Freq;Res_Freq],[zeros(1,length(FreqRange));Stick']);
     end
 hold(hAx,'off')
 

@@ -95,31 +95,35 @@ end
 
 
 %% Deal with Gaussian/Loentizan lineshape
+% NumFreqPoint = numel(FreqRange);
+% 
+% center  = ceil(NumFreqPoint/2);
+% [p1,p2] = meshgrid(1:NumFreqPoint,1:NumFreqPoint);
+% 
+% % Gaussian / Lorentizan line shape in frequency domain
+% switch LineShape
+%     case 'L'
+%         FF = 1; % Counting for probe beam line width
+%         lnshpf_R =((-1./(-(p2-center)+1i*LineWidth*FF)).*(1./((p1-center)+1i*LineWidth)));
+%         lnshpf_N =((-1./( (p2-center)+1i*LineWidth*FF)).*(1./((p1-center)+1i*LineWidth)));
+%     
+%     case 'G'
+%         lnshpf_R = ngaussval(sqrt((p1-center).^2+(p2-center).^2),LineWidth);
+%         lnshpf_N = ngaussval(sqrt((p1-center).^2+(p2-center).^2),LineWidth);
+%     case 'KK'
+%         disp('not support KK lineshape in 2D yet...')
+%     otherwise
+%         lnshpf_R = 1;
+%         lnshpf_N = 1;
+%         disp('Plotting stick spectrum')     
+% end
+[ConvL,~] = Conv_LineShape(2,LineShape,FreqRange,LineWidth);
+lnshpf_R  = ConvL.lnshpf_R;
+lnshpf_N  = ConvL.lnshpf_N;
 
-NumFreqPoint = numel(FreqRange);
-
-center  = ceil(NumFreqPoint/2);
-[p1,p2] = meshgrid(1:NumFreqPoint,1:NumFreqPoint);
-
-% Gaussian / Lorentizan line shape in frequency domain
-switch LineShape
-    case 'L'
-        FF = 1; % Counting for probe beam line width
-        lnshpf_R =((-1./(-(p2-center)+1i*LineWidth*FF)).*(1./((p1-center)+1i*LineWidth)));
-        lnshpf_N =((-1./( (p2-center)+1i*LineWidth*FF)).*(1./((p1-center)+1i*LineWidth)));
-    
-    case 'G'
-        lnshpf_R = ngaussval(sqrt((p1-center).^2+(p2-center).^2),LineWidth);
-        lnshpf_N = ngaussval(sqrt((p1-center).^2+(p2-center).^2),LineWidth);
-    case 'KK'
-        disp('not support KK lineshape in 2D yet...')
-    otherwise
-        lnshpf_R = 1;
-        lnshpf_N = 1;
-        disp('Plotting stick spectrum')     
-end
 % export type of lineshape to output
 CVL.Lineshape = LineShape;
+
 %%
 % Create Vis probe line shape
 % -------------------------------------------------------------------------

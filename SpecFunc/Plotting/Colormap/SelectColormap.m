@@ -11,10 +11,10 @@ CMap_List = {'Jet',...
 
 %ColormapName = CMap_List{map_Index};
 switch map_Index
-    case 0
+    case 'List'
         % doing nothing for list inquary
         CMAP = [];
-    case 1
+    case 'Jet'
         CMAP = colormap(CMap_List{map_Index});
     otherwise
         CMAP_tmp = load(CMap_List{map_Index});

@@ -56,13 +56,13 @@ O.PlotCursor   = app.CheckBox_Cursor.Value;
 O.F_Min        = app.EditField_FreqMin.Value;
 O.F_Max        = app.EditField_FreqMax.Value;
 O.FreqRange    = O.F_Min:O.F_Max;
-O.LineShape    = app.DropDown_LineShape.Value; % Need to debug
+O.LineShape    = app.DropDown_LineShape.Value;
 O.LineWidth    = app.EditField_Width.Value;
 O.Num_Contour  = app.EditField_Contour.Value;
-O.CMAP_Index   = app.DropDown_ColorMap.Value; % Need to debug
-O.SpecType     = app.DropDown_SignalType.Value; % Need to debug
-O.Signal_Type  = app.DropDown_SpectralType; % Need to debug
-O.Pathway      = app.DropDown_Pathway.Value; % Need to debug
+O.CMAP_Index   = app.DropDown_ColorMap.Value;
+O.Signal_Type  = app.DropDown_SignalType.Value; % Need isolate the list of options?
+O.SpecType     = app.DropDown_SpectralType.Value; % Need isolate the list of options?
+O.Pathway      = app.DropDown_Pathway.Value; % Need isolate the list of options?
 % -------------------------------------------------------------------------
 
 % For Analysis Tools ------------------------------------------------------

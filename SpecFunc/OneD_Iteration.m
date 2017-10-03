@@ -1,4 +1,4 @@
-function OneD_Iteration(h1DFunc,app)
+function OneD = OneD_Iteration(h1DFunc,app)
 I = Parse_COSMOSS(app);
 S = app.Structure;
             

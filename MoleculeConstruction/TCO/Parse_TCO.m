@@ -1,7 +1,7 @@
 function O = Parse_TCO(app)
 % Read data from Table
 Table = app.UITable.Data;
-assignin('base','Table',Table)
+% assignin('base','Table',Table)
 % ListInd = logical(Table(:,1));
 StructurePara = Table(:,2:end);
 

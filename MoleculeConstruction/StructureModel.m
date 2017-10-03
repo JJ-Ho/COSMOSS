@@ -1,4 +1,3 @@
-
 function [hModel, ModelList, hPlotFunc, hGUIParser] = StructureModel(StructModel)
 %% List 
 ModelList = {'1:Two coupled oscillators',...
@@ -8,14 +7,6 @@ ModelList = {'1:Two coupled oscillators',...
              '5:Combination of any two above',...
              };
 %% Run Models
-
-% check if input is an figure handle
-% if ishandle(Handle)
-%     Export_handle = Handle;
-% else
-%     Export_handle = 'StandAlone';
-% end
-
 switch StructModel
     case 0 % for exporting ModelList only
         hModel     = 'Non'; 
@@ -24,11 +15,11 @@ switch StructModel
     case 1
         hModel     = @Model_TCO;
         hPlotFunc  = @PlotXYZfiles_Acid;
-        hGUIParser = @ParseGUI_TCO;
+        hGUIParser = @Parse_TCO;
     case 2 
-        hModel     = @Model_PDB_AmideI;
+        hModel     = @Model_PDB_AmideOne;
         hPlotFunc  = @PlotXYZfiles_AmideI;
-        hGUIParser = @ParseGUI_AmideI;
+        hGUIParser = @Parse_PDB_AmideOne;
     case 3
         hModel     = @Model_TwoDGrid;
         hPlotFunc  = @PlotXYZ_Grid;

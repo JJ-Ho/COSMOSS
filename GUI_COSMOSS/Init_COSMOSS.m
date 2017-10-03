@@ -1,4 +1,32 @@
-function GUI_Setup(app)
+function Init_COSMOSS(app)
+%% Setup paths
+Current_path = pwd;
+addpath(Current_path);
+
+% Add path 
+MoleculeConstruction = genpath([Current_path '/MoleculeConstruction']);
+addpath(MoleculeConstruction);
+
+%             StructureFiles = genpath([Current_path '/StructureFiles']);
+%             addpath(StructureFiles);
+%             
+SpectalFunctions = genpath([Current_path '/SpecFunc']);
+addpath(SpectalFunctions);
+%             
+%             ServerVersion = genpath([Current_path '/ServerVersion']);
+%             addpath(ServerVersion);
+%             
+%             AnalysisTools = genpath([Current_path '/AnalysisTools']);
+%             addpath(AnalysisTools);
+%             
+%             ModeVisualization = genpath([Current_path '/ModeVisualization']);
+%             addpath(ModeVisualization);
+
+
+%% Place default values on GUI
+% Initialize refresh tags
+RefreshOn(app)
+
 % Setup the Model structure list
 [~,StructureModelList,~] = StructureModel(0);
 app.ListBox_Model.Items = StructureModelList;

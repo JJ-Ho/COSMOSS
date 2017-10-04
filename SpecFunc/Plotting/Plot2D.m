@@ -97,7 +97,7 @@ switch CVL.Lineshape
         % Set colorbar
         colorbar
         CMAP = SelectColormap(CMAP_Index);
-        colormap(CMAP)      
+        colormap(hAx,CMAP)      
         Amp = max(abs(Z(:)));
         caxis([-Amp,Amp])
         
@@ -105,7 +105,7 @@ switch CVL.Lineshape
 end
 
 % Plot diagonal line
-hold on; plot(hAx,X,Y,'Color',DiagColor,'LineStyle','--'); hold off
+hold(hAx,'on'); plot(hAx,X,Y,'Color',DiagColor,'LineStyle','--');hold(hAx,'off')
 
 %% figure setting 
 hF = hAx.Parent;

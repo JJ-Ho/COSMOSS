@@ -65,6 +65,8 @@ classdef StructureData < handle
       obj_R     = SD_Rot(obj,Phi,Psi,Theta)
       obj_comb2 = SD_Comb2(obj1,obj2)
       Dihedral  = SD_PeptideDihedral(obj)
+      obj_S     = SD_ScaleTransitions(obj,Scaling)
+      obj_New   = SD_Copy(obj)
    end
 
 end

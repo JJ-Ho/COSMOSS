@@ -1,4 +1,6 @@
-function obj = SD_Trans(obj,V)
+function obj_T = SD_Trans(obj,V)
+obj_T = SD_Copy(obj);
+
 XYZ       = obj.XYZ;
 LocCenter = obj.LocCenter;
 
@@ -17,18 +19,18 @@ else
     XYZ_T       = bsxfun(@plus,XYZ,V);
     LocCenter_T = bsxfun(@plus,LocCenter,V);
         
-    obj.XYZ       = XYZ_T;
-    obj.LocCenter = LocCenter_T;
+    obj_T.XYZ       = XYZ_T;
+    obj_T.LocCenter = LocCenter_T;
     
-    % propagate the action to Children
-    NChild = length(obj.Children);
-    if NChild
-        for i = 1:NChild
-            XYZ_Child       = obj.Children(i).XYZ;
-            LocCenter_Child = obj.Children(i).LocCenter;
-            
-            obj.Children(i).XYZ = bsxfun(@plus,XYZ_Child,V);
-            obj.Children(i).LocCenter = bsxfun(@plus,LocCenter_Child,V);
-        end
-    end
+%     % propagate the action to Children
+%     NChild = length(obj.Children);
+%     if NChild
+%         for i = 1:NChild
+%             XYZ_Child       = obj.Children(i).XYZ;
+%             LocCenter_Child = obj.Children(i).LocCenter;
+%             
+%             obj_T.Children(i).XYZ = bsxfun(@plus,XYZ_Child,V);
+%             obj_T.Children(i).LocCenter = bsxfun(@plus,LocCenter_Child,V);
+%         end
+%     end
 end   

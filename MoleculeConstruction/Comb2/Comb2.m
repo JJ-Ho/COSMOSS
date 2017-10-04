@@ -9,7 +9,7 @@ function SC = Comb2(S1,S2,GUI_Inputs)
 % GUI_Inputs = ParseGUI_Comb2(Data_Comb2.hGUIs);
 
 %% Prep parameters
-%Conc_Scaling = GUI_Inputs.Conc_Scaling;
+Conc_Scaling = GUI_Inputs.Conc_Scaling;
 Trans_X      = GUI_Inputs.Trans_X;
 Trans_Y      = GUI_Inputs.Trans_Y;
 Trans_Z      = GUI_Inputs.Trans_Z;
@@ -21,14 +21,17 @@ TransV = [Trans_X,Trans_Y,Trans_Z];
 
 %% Move the molecules before merge the two Structures
 % Move both CoM to [0,0,0]
-S1 = SD_Trans(S1,-S1.CoM);
-S2 = SD_Trans(S2,-S2.CoM);
+S1_0 = SD_Trans(S1,-S1.CoM);
+S2_0 = SD_Trans(S2,-S2.CoM);
 
-S2 = SD_Rot(S2,Rot_Phi,Rot_Psi,Rot_Theta);
-S2 = SD_Trans(S2,TransV);
+S2_0_R = SD_Rot(S2_0,Rot_Phi,Rot_Psi,Rot_Theta);
+S2_T_R = SD_Trans(S2_0_R,TransV);
+
+%% Scale the transitions of the second molecule
+S2_T_R_S = SD_ScaleTransitions(S2_T_R,Conc_Scaling);
 
 %% Merge the two and Output
-SC = SD_Comb2(S1,S2);
+SC = SD_Comb2(S1_0,S2_T_R_S);
 
 % % Export into Structure so it can be passsed around different GUIs
 % Structure.StrucData1  = StrucData1_0;

@@ -7,6 +7,8 @@ LocFreq_1   = obj1.LocFreq;
 LocAnharm_1 = obj1.LocAnharm;
 LocMu_1     = obj1.LocMu;
 LocAlpha_1  = obj1.LocAlpha;
+Scaled_LocMu_1     = obj1.Scaled_LocMu;
+Scaled_LocAlpha_1  = obj1.Scaled_LocAlpha;
 
 XYZ_2       = obj2.XYZ;
 AtomName_2  = obj2.AtomName;
@@ -15,6 +17,8 @@ LocFreq_2   = obj2.LocFreq;
 LocAnharm_2 = obj2.LocAnharm;
 LocMu_2     = obj2.LocMu;
 LocAlpha_2  = obj2.LocAlpha;
+Scaled_LocMu_2     = obj2.Scaled_LocMu;
+Scaled_LocAlpha_2  = obj2.Scaled_LocAlpha;
 
 XYZ        = [      XYZ_1;       XYZ_2];
 AtomName   = [ AtomName_1;  AtomName_2];
@@ -23,11 +27,12 @@ LocFreq    = [  LocFreq_1;   LocFreq_2];
 LocAnharm  = [LocAnharm_1; LocAnharm_2];
 LocMu      = [    LocMu_1;     LocMu_2];
 LocAlpha   = [ LocAlpha_1;  LocAlpha_2];
+Scaled_LocMu      = [    Scaled_LocMu_1;     Scaled_LocMu_2];
+Scaled_LocAlpha   = [ Scaled_LocAlpha_1;  Scaled_LocAlpha_2];
 
 FilesName_1 = obj1.FilesName;
 FilesName_2 = obj2.FilesName;
 FilesName   = ['Comb2: ',FilesName_1,' & ',FilesName_2];
-
 %% Model specific properties
 Extra_1 = obj1.Extra;
 Extra_2 = obj2.Extra;
@@ -88,6 +93,9 @@ obj_comb2.LocFreq     = LocFreq;
 obj_comb2.LocAnharm   = LocAnharm;
 obj_comb2.LocMu       = LocMu;
 obj_comb2.LocAlpha    = LocAlpha;
+
+obj_comb2.Scaled_LocMu    = Scaled_LocMu;
+obj_comb2.Scaled_LocAlpha = Scaled_LocAlpha;
 
 obj_comb2.FilesName   = FilesName;
 obj_comb2.Extra       = Extra;

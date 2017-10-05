@@ -20,6 +20,13 @@ classdef StructureData < handle
        hGUIs
    end
    
+   properties 
+       % These properties will be automatically update when the dependent
+       % peoperty is assigned. But is is free to be change later.
+       Scaled_LocMu    % for comb2 concentration scaling that only applys on the MuAlphaGen
+       Scaled_LocAlpha % for comb2 concentration scaling that only applys on the MuAlphaGen
+   end
+   
    properties
        LocAlphaM
        Nmodes
@@ -58,6 +65,17 @@ classdef StructureData < handle
               hF = '';
               disp('No @hPlotFunc defined, method "Draw" would not work...')
           end
+      end
+      
+      % Automatically copy the non-scaled value to the scaled properties
+      % when the value fisrt being assigned
+      function set.LocMu(obj,Value)
+          obj.LocMu = Value;
+          obj.Scaled_LocMu = Value;
+      end
+      function set.LocAlpha(obj,Value)
+          obj.LocAlpha = Value;
+          obj.Scaled_LocAlpha = Value;
       end
       
       AP        = SD_AtomicProperties(obj)

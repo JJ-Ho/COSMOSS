@@ -144,31 +144,24 @@ hGUIs  = GUI_data.hGUIs;
 GUI_Inputs = ParseGUI_Betasheet(hGUIs);
 
 %% Construct molecule
-BB        = ConstuctBetaSheet(GUI_Inputs);
-Structure = GetAmideI(...
-                      BB.XYZ,...
-                      BB.AtomName,...
-                      BB.FilesName,...
-                      GUI_Inputs);
+S_BSheet = ConstuctBetaSheet(GUI_Inputs);
+S_BSheet = SD_GetAmideI(S_BSheet);
                   
-% Export into Structure so it can be passsed around different GUIs
-Structure.StructModel = 4;
+%% Update the frequency information
+S_BSheet.LocAnharm = ones(S_BSheet.Nmodes,1).*GUI_Inputs.Anharm;
+S_BSheet.LocFreq   = ones(S_BSheet.Nmodes,1).*GUI_Inputs.NLFreq;
+S_BSheet.LocFreq(GUI_Inputs.L_Index) = GUI_Inputs.LFreq;
+
+%% Rotate the molecule
+Phi   = GUI_Inputs.Phi_D/180*pi;
+Psi   = GUI_Inputs.Psi_D/180*pi;
+Theta = GUI_Inputs.Theta_D/180*pi;
+R = R1_ZYZ_0(Phi,Psi,Theta);
+
+Structure = SD_Rot(S_BSheet,R);
+Structure.StructModel = 4; % Export into Structure so it can be passsed around different GUIs
 %% Export extra info into Structure
-Structure.Extra.N_Residue         = BB.N_Residue;
-Structure.Extra.N_Strand          = BB.N_Strand;
-Structure.Extra.N_Mode_per_Starnd = BB.N_Residue-1;
-
-% C terminus Index
-Structure.Extra.Ind_H = BB.Ind_H;
-Structure.Extra.Ind_O = BB.Ind_O;
-
-% Betasheet orientation info export
-Structure.Extra.TransV = BB.TransV;
-Structure.Extra.TwistV = BB.TwistV;
-Structure.Extra.RotV   = [GUI_Inputs.Phi_D,GUI_Inputs.Psi_D,GUI_Inputs.Theta_D];
-
-% Include the whole BB info for debug
-Structure.Extra.BB = BB;
+Structure.Extra.RotV = [GUI_Inputs.Phi_D,GUI_Inputs.Psi_D,GUI_Inputs.Theta_D];
 
 % export necessary handle and functions
 Structure.hPlotFunc = @Plot_Betasheet_AmideI;

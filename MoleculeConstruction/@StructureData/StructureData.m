@@ -21,8 +21,8 @@ classdef StructureData < handle
        Children    % this property is only used by Comb2, maybe redundent
        
        hPlotFunc 
-       hParseGUIFunc % this is used when calling the plot function, maybe redundent?
        hGUIs         % this is used when calling the plot function, maybe redundent?
+       hParseGUIFunc % this is used when calling the plot function, maybe redundent?
    end
    
    properties

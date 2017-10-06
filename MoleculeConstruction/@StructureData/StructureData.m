@@ -1,23 +1,23 @@
 classdef StructureData < handle
    properties
-       XYZ
-       AtomName
+       XYZ % size = [NAtoms,3]
+       AtomName % size = {NAtoms,1}
        
-       LocCenter
-       LocFreq
-       LocAnharm
-       LocMu
-       LocAlpha
-       
-       StructModel
+       LocCenter % size = [Nmodes,3]
+       LocFreq % size = [Nmodes,1]
+       LocAnharm % size = [Nmodes,1]
+       LocMu % size = [Nmodes,3]
+       LocAlpha % size = [Nmodes,9]
        FilesName
        
        Extra
        
-       Children
-       hPlotFunc
-       hParseGUIFunc
-       hGUIs
+       StructModel % this will be remove later
+       Children % this property is only used by Comb2, maybe redundent
+       
+       hPlotFunc 
+       hParseGUIFunc % this is used when calling the plot function, maybe redundent?
+       hGUIs % this is used when calling the plot function, maybe redundent?
    end
    
    properties 
@@ -28,6 +28,7 @@ classdef StructureData < handle
    end
    
    properties
+       % These properties will be calculated when quaried
        LocAlphaM
        Nmodes
        NAtoms
@@ -46,6 +47,14 @@ classdef StructureData < handle
            nStucture = size(obj.XYZ,3);
       end       
       function locAlphaM = get.LocAlphaM(obj)
+           % Vector version
+           % [Aixx Aixy Aixz Aiyx Aiyy Aiyz Aizx Aizy Aizz] , size =[Mode_Num X 9]
+           % 
+           % Matrix representation
+           % D3  --> D2
+           % ^ [ Aixx Aixy Aixz ] 
+           % | [ Aiyx Aiyy Aiyz ]
+           % | [ Aizx Aizy Aizz ]
            locAlphaM = reshape(obj.LocAlpha,[],3,3);
       end      
       function CoM = get.CoM(obj)
@@ -78,13 +87,16 @@ classdef StructureData < handle
           obj.Scaled_LocAlpha = Value;
       end
       
-      AP        = SD_AtomicProperties(obj)
-      obj_T     = SD_Trans(obj,V)
-      obj_R     = SD_Rot(obj,Phi,Psi,Theta)
-      obj_comb2 = SD_Comb2(obj1,obj2)
-      Dihedral  = SD_PeptideDihedral(obj)
-      obj_S     = SD_ScaleTransitions(obj,Scaling)
-      obj_New   = SD_Copy(obj)
+      % Othe methods defined as a separated function
+      AP         = SD_AtomicProperties(obj)
+      obj_T      = SD_Trans(obj,V)
+      obj_R      = SD_Rot(obj,R)
+      obj_comb2  = SD_Comb2(obj1,obj2)
+      Dihedral   = SD_PeptideDihedral(obj)
+      obj_S      = SD_ScaleTransitions(obj,Scaling)
+      obj_New    = SD_Copy(obj)
+      obj_TN     = SD_TransN(obj,V,N)
+      obj_Framed = SD_SetFrame(obj,Center_Ind,Z_Ind,XZ_Ind)
    end
 
 end

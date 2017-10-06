@@ -38,10 +38,10 @@ Nmodes   = SData.Nmodes;
 Atom_Num = SData.NAtoms;
 
 % Grid info
-N_Vec1 = SData.Extra.N_Vec1;
-N_Vec2 = SData.Extra.N_Vec2;
-Vec_1  = SData.Extra.Vec_1;
-Vec_2  = SData.Extra.Vec_2;
+N_Vec1 = GUI_Inputs.N_1;
+N_Vec2 = GUI_Inputs.N_2;
+Vec_1  = GUI_Inputs.Vec_1;
+Vec_2  = GUI_Inputs.Vec_2;
 
 %% Decide atoms types
 C_Ind = strcmp(AtomName,'C');

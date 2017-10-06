@@ -24,7 +24,8 @@ TransV = [Trans_X,Trans_Y,Trans_Z];
 S1_0 = SD_Trans(S1,-S1.CoM);
 S2_0 = SD_Trans(S2,-S2.CoM);
 
-S2_0_R = SD_Rot(S2_0,Rot_Phi,Rot_Psi,Rot_Theta);
+R = R1_ZYZ_0(Rot_Phi,Rot_Psi,Rot_Theta);
+S2_0_R = SD_Rot(S2_0,R);
 S2_T_R = SD_Trans(S2_0_R,TransV);
 
 %% Scale the transitions of the second molecule

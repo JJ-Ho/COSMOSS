@@ -21,8 +21,8 @@ classdef StructureData < handle
        Children    % this property is only used by Comb2, maybe redundent
        
        hPlotFunc 
-       hParseGUIFunc % this is used when calling the plot function, maybe redundent?
        hGUIs         % this is used when calling the plot function, maybe redundent?
+       hParseGUIFunc % this is used when calling the plot function, maybe redundent?
    end
    
    properties
@@ -34,22 +34,22 @@ classdef StructureData < handle
    
    properties
        % These properties will be calculated when quaried
-       LocAlphaM
        Nmodes
        NAtoms
        NStucture
+       LocAlphaM
        CoM
    end
    
    methods
-      function nmodes = get.Nmodes(obj)
-           nmodes = size(obj.LocFreq,1);
+      function Nmodes = get.Nmodes(obj)
+           Nmodes = size(obj.LocFreq,1);
       end
-      function nAtoms = get.NAtoms(obj)
-           nAtoms = size(obj.XYZ,1);
+      function NAtoms = get.NAtoms(obj)
+           NAtoms = size(obj.XYZ,1);
       end
-      function nStucture = get.NStucture(obj)
-           nStucture = size(obj.XYZ,3);
+      function NStucture = get.NStucture(obj)
+           NStucture = size(obj.XYZ,3);
       end       
       function locAlphaM = get.LocAlphaM(obj)
            % Vector version
@@ -108,6 +108,7 @@ classdef StructureData < handle
       obj_New    = SD_Copy(obj)
       obj_TN     = SD_TransN(obj,V,N)
       obj_Framed = SD_SetFrame(obj,Center_Ind,Z_Ind,XZ_Ind)
+      Obj_AmideI = SD_GetAmideI(obj)
    end
 
 end

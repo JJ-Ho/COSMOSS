@@ -143,3 +143,7 @@ hAx.XLabel.String = 'X';
 hAx.YLabel.String = 'Y';
 axis(hAx,'image');
 rotate3d(hAx,'on')
+view(hAx,[-20,20])
+hAx.XGrid = 'on';
+hAx.YGrid = 'on';
+hAx.ZGrid = 'on';

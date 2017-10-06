@@ -1,4 +1,4 @@
-function Output = ConstuctBetaSheet(GUI_Inputs)
+function S_BSheet = ConstuctBetaSheet(GUI_Inputs)
 %% ConstuctBetaSheet(SheetType,N_Residue,N_Strand,TransV,TwistV)
 % Given inputs, ConstuctBetaSheet build idea betasheet so that the strand
 % aligned with X axis and the C=O axis alignd with Z axis while its center
@@ -152,6 +152,7 @@ for i = 1:N_Residue
 end
 
 AtomName_1strand = reshape(AtomName_1strand',[],1);
+
 %% substitute the last N and CA to O and H on C terminus for the first strand
 % add x at the end of the atom name so it does not confuse the GetAmideI.m
 Ind_H_1strand = length(AtomName_1strand);
@@ -226,24 +227,8 @@ for j = 2:N_Strand
             XYZ_j_tmp1 = bsxfun(@times,XYZ_1strand_COF,Flip_V);
         end
         
-%         if mod(j-1,2)
-%             % Flip the sequence of index so the numbering of residue will all
-%             % start from left to right
-%             XYZ_j_tmp2 = reshape(XYZ_j_tmp1,4,[],3);
-%             XYZ_j_tmp3 = flip(XYZ_j_tmp2,2);
-%             XYZ_j_flip = reshape(XYZ_j_tmp3,[],3);
-% 
-%             % Flip the atom name accordingly 
-%             AtomName_1strand_tmp1 = reshape(AtomName_1strand,4,[]);
-%             AtomName_1strand_tmp2 = flip(AtomName_1strand_tmp1,2);
-%             AtomName_1strand_j    = reshape(AtomName_1strand_tmp2,[],1);
-%         else 
-%             XYZ_j_flip = XYZ_j_tmp1;
-%             AtomName_1strand_j = AtomName_1strand;
-%         end
         XYZ_j_flip = XYZ_j_tmp1;
         AtomName_1strand_j = AtomName_1strand;
-          
     else 
         % for PB doing notheing here
         XYZ_j_flip = XYZ_1strand_COF; 
@@ -259,8 +244,6 @@ for j = 2:N_Strand
     
     % Save Atome name for each strand
     AtomName(:,j)= AtomName_1strand_j;
-    
-
 end
 
 % reshape
@@ -273,14 +256,20 @@ Atoms_Array = 1:Num_Atoms;
 Ind_H = Atoms_Array(strcmp(AtomName,'H'));
 Ind_O = Ind_H -1;
 
+%% Collecting Extra info
+Extra.N_Residue         = N_Residue;
+Extra.N_Strand          = N_Strand;
+Extra.N_Mode_per_Starnd = N_Residue-1;
+
+Extra.Ind_H     = Ind_H;
+Extra.Ind_O     = Ind_O;
+
+Extra.TransV    = TransV;
+Extra.TwistV    = TwistV;
+
 %% Formating output coordinate
-Output.Num_Atoms = length(AtomName);
-Output.XYZ       = XYZ;
-Output.AtomName  = AtomName;
-Output.FilesName = [SheetTypeString,'-R',num2str(N_Residue),'S',num2str(N_Strand)];
-Output.Ind_H     = Ind_H;
-Output.Ind_O     = Ind_O;
-Output.N_Residue = N_Residue;
-Output.N_Strand  = N_Strand;
-Output.TransV    = TransV;
-Output.TwistV    = TwistV;
+S_BSheet = StructureData;
+S_BSheet.XYZ       = XYZ;
+S_BSheet.AtomName  = AtomName;
+S_BSheet.FilesName = [SheetTypeString,'-R',num2str(N_Residue),'S',num2str(N_Strand)];
+S_BSheet.Extra     = Extra;

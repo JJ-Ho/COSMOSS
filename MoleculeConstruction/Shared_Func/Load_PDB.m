@@ -1,4 +1,4 @@
-function PDB = Load_PDB(app,GUI_Inputs)
+function S_PDB = Load_PDB(app,GUI_Inputs)
 %% Get pdb file location 
 PWD = pwd;
 PDB_Path = [PWD, '/StructureFiles/PDB/'];
@@ -70,9 +70,8 @@ else
 end
 
 %% output
-PDB.Num_Atoms = Num_Atoms;
-PDB.XYZ       = XYZ;
-PDB.AtomName  = AtomName;
-PDB.FilesName = FilesName;
-PDB.N_File    = N_File;
-PDB.MoreInfo  = PDB_orig;
+S_PDB = StructureData;
+S_PDB.XYZ       = XYZ;
+S_PDB.AtomName  = AtomName;
+S_PDB.FilesName = FilesName;
+S_PDB.Extra     = PDB_orig;

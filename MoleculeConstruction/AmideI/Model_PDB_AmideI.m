@@ -114,8 +114,8 @@ disp('Updated GUI Data_PDB_AmideI exported!')
 function LoadStructure(hObject, eventdata, GUI_data)
 %% Read GUI variables
 hGUIs  = GUI_data.hGUIs;
-COSMOSS_GUI_Inputs = ParseGUI_AmideI(hGUIs);
-Preprocessed = COSMOSS_GUI_Inputs.Preprocessed;
+GUI_Inputs = ParseGUI_AmideI(hGUIs);
+Preprocessed = GUI_Inputs.Preprocessed;
 
 %% Get pdb file location 
 PWD = pwd;
@@ -189,12 +189,15 @@ end
 
 %% output to GUI
 S_PDB = StructureData;
-S_PDB.XYZ       = XYZ;
-S_PDB.AtomName  = AtomName;
-S_PDB.FilesName = FilesName;
+S_PDB.XYZ           = XYZ;
+S_PDB.AtomName      = AtomName;
+S_PDB.FilesName     = FilesName;
+S_PDB.hPlotFunc     = @PlotXYZfiles_AmideI;
+S_PDB.hParseGUIFunc = @ParseGUI_AmideI;
+S_PDB.hGUIs         = hGUIs;
+S_PDB_AmideI = SD_GetAmideI(S_PDB); % Assign Amide modes
 
-GUI_data.PDB = S_PDB;
-
+GUI_data.PDB = S_PDB_AmideI;
 guidata(hObject,GUI_data)
 
 %% Update PDB name and data to GUI
@@ -203,52 +206,46 @@ UpdateStructure(hObject, eventdata, GUI_data)
 
 function UpdateStructure(hObject, eventdata, GUI_data)
 %% Read GUI variables
-hGUIs  = GUI_data.hGUIs;
+hGUIs = GUI_data.hGUIs;
+S_PDB = GUI_data.PDB;
 GUI_Inputs = ParseGUI_AmideI(hGUIs);
-    
-%% Construct molecule
-XYZ       = GUI_data.PDB.XYZ;
-AtomName  = GUI_data.PDB.AtomName;
-FilesName = GUI_data.PDB.FilesName;
-NAtoms    = GUI_data.PDB.NAtoms;
-NStucture = GUI_data.PDB.NStucture;
 
-% test # modes and pre-allocate matix
-Tmp1 = GetAmideI(XYZ(:,:,1),AtomName,FilesName,GUI_Inputs);
-Nmodes = Tmp1.Nmodes;
-Tmp_LocMu     = zeros(Nmodes,3,NStucture);
-Tmp_LocAlpha  = zeros(Nmodes,9,NStucture);
-Tmp_LocCenter = zeros(Nmodes,3,NStucture);
-Tmp_XYZ       = zeros(NAtoms,3,NStucture);
+%% Update the frequency information
+S_PDB.LocAnharm = ones(S_PDB.Nmodes,1).*GUI_Inputs.Anharm;
+S_PDB.LocFreq   = ones(S_PDB.Nmodes,1).*GUI_Inputs.NLFreq;
+S_PDB.LocFreq(GUI_Inputs.L_Index) = GUI_Inputs.LFreq;
 
-for i = 1:NStucture
-    Tmp = GetAmideI(XYZ(:,:,i),AtomName,FilesName,GUI_Inputs);
-    Tmp_LocMu(:,:,i)     = Tmp.LocMu;
-    Tmp_LocAlpha(:,:,i)  = Tmp.LocAlpha;
-    Tmp_LocCenter(:,:,i) = Tmp.LocCenter;
-    Tmp_XYZ(:,:,i)       = Tmp.XYZ;
-end
+%% Rotate the molecule
+Phi   = GUI_Inputs.Phi_D/180*pi;
+Psi   = GUI_Inputs.Psi_D/180*pi;
+Theta = GUI_Inputs.Theta_D/180*pi;
+R = R1_ZYZ_0(Phi,Psi,Theta);
 
-Structure = StructureData;
-Structure.XYZ       = Tmp_XYZ;
-Structure.AtomName  = Tmp1.AtomName;
+Structure = SD_Rot(S_PDB,R);
+Structure.StructModel = 2; % Export into Structure so it can be passsed around different GUIs
 
-Structure.LocCenter = Tmp_LocCenter;
-Structure.LocFreq   = Tmp1.LocFreq;
-Structure.LocAnharm = Tmp1.LocAnharm;
-Structure.LocMu     = Tmp_LocMu;
-Structure.LocAlpha  = Tmp_LocAlpha;
-
-Structure.FilesName = Tmp1.FilesName;
-Structure.Extra.AmideIAtomSerNo = Tmp1.Extra.AmideIAtomSerNo;
-
-% Export into Structure so it can be passsed around different GUIs
-Structure.StructModel = 2;
-
-% export necessary handle and functions
-Structure.hPlotFunc = @PlotXYZfiles_AmideI;
-Structure.hParseGUIFunc = @ParseGUI_AmideI;
-Structure.hGUIs = hGUIs;
+%% Deal with MD snapshots that give XYZ the third dimension
+% XYZ       = GUI_data.PDB.XYZ;
+% AtomName  = GUI_data.PDB.AtomName;
+% FilesName = GUI_data.PDB.FilesName;
+% NAtoms    = GUI_data.PDB.NAtoms;
+% NStucture = GUI_data.PDB.NStucture;
+% 
+% % test # modes and pre-allocate matix
+% Tmp1 = GetAmideI(XYZ(:,:,1),AtomName,FilesName,GUI_Inputs);
+% Nmodes = Tmp1.Nmodes;
+% Tmp_LocMu     = zeros(Nmodes,3,NStucture);
+% Tmp_LocAlpha  = zeros(Nmodes,9,NStucture);
+% Tmp_LocCenter = zeros(Nmodes,3,NStucture);
+% Tmp_XYZ       = zeros(NAtoms,3,NStucture);
+% 
+% for i = 1:NStucture
+%     Tmp = GetAmideI(XYZ(:,:,i),AtomName,FilesName,GUI_Inputs);
+%     Tmp_LocMu(:,:,i)     = Tmp.LocMu;
+%     Tmp_LocAlpha(:,:,i)  = Tmp.LocAlpha;
+%     Tmp_LocCenter(:,:,i) = Tmp.LocCenter;
+%     Tmp_XYZ(:,:,i)       = Tmp.XYZ;
+% end
 
 %% Export result to Main guidata
 GUI_data.Structure = Structure;

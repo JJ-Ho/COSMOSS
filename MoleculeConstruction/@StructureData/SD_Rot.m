@@ -1,24 +1,32 @@
 function obj_RT = SD_Rot(obj,R1)
-% Translate the CoM to origin
+%% Check Input
+% check if R is [3x3]
+if ~isequal(size(R1),[3,3])
+    disp('The size of Rotational matrix "R" should be [3,3]...')
+    disp('StructureData is not modified...')
+    return
+end
+
+%% Translate the CoM to origin
 obj_T = SD_Trans(obj,-obj.CoM);
 
-% Apply rotation
-XYZ       = obj_T.XYZ;
-LocCenter = obj_T.LocCenter;
-LocMu     = obj_T.LocMu;
-LocAlpha  = obj_T.LocAlpha;
+%% Apply rotation to corresponding properties
+obj_R     = SD_Copy(obj_T);
+obj_R.XYZ = (R1*obj_T.XYZ')';
 
-R2 = kron(R1,R1);
-XYZ_R       = (R1*      XYZ')';
-LocCenter_R = (R1*LocCenter')';
-LocMu_R     = (R1*    LocMu')';
-LocAlpha_R  = (R2* LocAlpha')';
+% Make sure if the properties exist
+if ~isempty(obj_T.LocCenter)
+    obj_R.LocCenter = (R1 * obj_T.LocCenter')';
+end
 
-obj_R = SD_Copy(obj_T);
-obj_R.XYZ       = XYZ_R;
-obj_R.LocCenter = LocCenter_R;
-obj_R.LocMu     = LocMu_R;
-obj_R.LocAlpha  = LocAlpha_R;
+if ~isempty(obj_T.LocMu)
+    obj_R.LocMu = (R1 * obj_T.LocMu')';
+end
 
-% Translate the CoM back to where it was
+if ~isempty(obj_T.LocAlpha)
+    R2 = kron(R1,R1);
+    obj_R.LocAlpha = (R2 * obj_T.LocAlpha')';
+end
+
+%% Translate the CoM back to where it was
 obj_RT = SD_Trans(obj_R,obj.CoM);

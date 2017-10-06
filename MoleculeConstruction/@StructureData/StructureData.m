@@ -1,26 +1,31 @@
 classdef StructureData < handle
    properties
-       XYZ % size = [NAtoms,3]
-       AtomName % size = {NAtoms,1}
-       
+       % Bare minimum properties that is needed for all the SD method 
+       % start to work
+       XYZ      % size = [NAtoms,3]
+       AtomName % size = {NAtoms,1} 
+   end
+   
+   properties
        LocCenter % size = [Nmodes,3]
-       LocFreq % size = [Nmodes,1]
+       LocFreq   % size = [Nmodes,1]
        LocAnharm % size = [Nmodes,1]
-       LocMu % size = [Nmodes,3]
-       LocAlpha % size = [Nmodes,9]
+       LocMu     % size = [Nmodes,3]
+       LocAlpha  % size = [Nmodes,9]
+       
        FilesName
        
        Extra
        
        StructModel % this will be remove later
-       Children % this property is only used by Comb2, maybe redundent
+       Children    % this property is only used by Comb2, maybe redundent
        
        hPlotFunc 
        hParseGUIFunc % this is used when calling the plot function, maybe redundent?
-       hGUIs % this is used when calling the plot function, maybe redundent?
+       hGUIs         % this is used when calling the plot function, maybe redundent?
    end
    
-   properties 
+   properties
        % These properties will be automatically update when the dependent
        % peoperty is assigned. But is is free to be change later.
        Scaled_LocMu    % for comb2 concentration scaling that only applys on the MuAlphaGen
@@ -69,7 +74,13 @@ classdef StructureData < handle
               hAx = varargin{:};
           end
           if isa(obj.hPlotFunc,'function_handle')
-              hF = obj.hPlotFunc(hAx,obj,obj.hParseGUIFunc(obj.hGUIs));
+              % check if triggered by a GUI interface
+              if isempty(obj.hGUIs)
+                  GUI_Input.Debug = 'Debug';
+              else
+                  GUI_Input = obj.hParseGUIFunc(obj.hGUIs);
+              end
+              hF = obj.hPlotFunc(hAx,obj,GUI_Input);
           else
               hF = '';
               disp('No @hPlotFunc defined, method "Draw" would not work...')

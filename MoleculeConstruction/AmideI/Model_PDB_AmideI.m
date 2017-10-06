@@ -188,11 +188,12 @@ else
 end
 
 %% output to GUI
-GUI_data.PDB.Num_Atoms = Num_Atoms;
-GUI_data.PDB.XYZ       = XYZ;
-GUI_data.PDB.AtomName  = AtomName;
-GUI_data.PDB.FilesName = FilesName;
-GUI_data.PDB.N_File    = N_File;
+S_PDB = StructureData;
+S_PDB.XYZ       = XYZ;
+S_PDB.AtomName  = AtomName;
+S_PDB.FilesName = FilesName;
+
+GUI_data.PDB = S_PDB;
 
 guidata(hObject,GUI_data)
 
@@ -206,21 +207,21 @@ hGUIs  = GUI_data.hGUIs;
 GUI_Inputs = ParseGUI_AmideI(hGUIs);
     
 %% Construct molecule
-Num_Atoms = GUI_data.PDB.Num_Atoms;
 XYZ       = GUI_data.PDB.XYZ;
 AtomName  = GUI_data.PDB.AtomName;
 FilesName = GUI_data.PDB.FilesName;
-N_File    = GUI_data.PDB.N_File;
+NAtoms    = GUI_data.PDB.NAtoms;
+NStucture = GUI_data.PDB.NStucture;
 
 % test # modes and pre-allocate matix
 Tmp1 = GetAmideI(XYZ(:,:,1),AtomName,FilesName,GUI_Inputs);
 Nmodes = Tmp1.Nmodes;
-Tmp_LocMu     = zeros(Nmodes,3,N_File);
-Tmp_LocAlpha  = zeros(Nmodes,9,N_File);
-Tmp_LocCenter = zeros(Nmodes,3,N_File);
-Tmp_XYZ       = zeros(Num_Atoms,3,N_File);
+Tmp_LocMu     = zeros(Nmodes,3,NStucture);
+Tmp_LocAlpha  = zeros(Nmodes,9,NStucture);
+Tmp_LocCenter = zeros(Nmodes,3,NStucture);
+Tmp_XYZ       = zeros(NAtoms,3,NStucture);
 
-for i = 1:N_File
+for i = 1:NStucture
     Tmp = GetAmideI(XYZ(:,:,i),AtomName,FilesName,GUI_Inputs);
     Tmp_LocMu(:,:,i)     = Tmp.LocMu;
     Tmp_LocAlpha(:,:,i)  = Tmp.LocAlpha;

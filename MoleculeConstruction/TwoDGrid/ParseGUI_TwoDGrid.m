@@ -5,8 +5,8 @@ O.Frame_Type   =               get(hGUIs.Frame_Type  ,'Value');
 O.MF_Center    =       str2num(get(hGUIs.MF_Center   ,'String'));
 O.MF_Zi        =    str2double(get(hGUIs.MF_Zi       ,'String'));
 O.MF_Zf        =    str2double(get(hGUIs.MF_Zf       ,'String'));
-O.MF_XYi       =    str2double(get(hGUIs.MF_XYi      ,'String'));
-O.MF_XYf       =    str2double(get(hGUIs.MF_XYf      ,'String'));
+O.MF_XZi       =    str2double(get(hGUIs.MF_XZi      ,'String'));
+O.MF_XZf       =    str2double(get(hGUIs.MF_XZf      ,'String'));
 O.BondAvg      =               get(hGUIs.BondAvg     ,'Value');
 
 O.LF_Phi   =    str2double(get(hGUIs.LF_Phi         ,'String'));

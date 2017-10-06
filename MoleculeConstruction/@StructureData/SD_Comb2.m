@@ -28,13 +28,13 @@ FilesName_1 = obj1.FilesName;
 FilesName_2 = obj2.FilesName;
 FilesName   = ['Comb2: ',FilesName_1,' & ',FilesName_2];
 
-%% Model specific properties
+%% Deal with general extra properties
 Extra_1 = obj1.Extra;
 Extra_2 = obj2.Extra;
 Extra.Extra_1 = Extra_1;
 Extra.Extra_2 = Extra_2;
 
-% AmideIAtomSerNo for peptides
+%% Deal with extra properties:AmideIAtomSerNo for peptides
 N_Mode_1 = obj1.Nmodes;
 N_Mode_2 = obj2.Nmodes;
 N_Mode_total = N_Mode_1 + N_Mode_2;
@@ -88,7 +88,6 @@ obj_comb2.LocFreq     = LocFreq;
 obj_comb2.LocAnharm   = LocAnharm;
 obj_comb2.LocMu       = LocMu;
 obj_comb2.LocAlpha    = LocAlpha;
-
 obj_comb2.FilesName   = FilesName;
 obj_comb2.Extra       = Extra;
 obj_comb2.Children    = Children;

@@ -1,26 +1,39 @@
 classdef StructureData < handle
    properties
-       XYZ
-       AtomName
+       % Bare minimum properties that is needed for all the SD method 
+       % start to work
+       XYZ      % size = [NAtoms,3]
+       AtomName % size = {NAtoms,1} 
+   end
+   
+   properties
+       LocCenter % size = [Nmodes,3]
+       LocFreq   % size = [Nmodes,1]
+       LocAnharm % size = [Nmodes,1]
+       LocMu     % size = [Nmodes,3]
+       LocAlpha  % size = [Nmodes,9]
        
-       LocCenter
-       LocFreq
-       LocAnharm
-       LocMu
-       LocAlpha
-       
-       StructModel
        FilesName
        
        Extra
        
-       Children
-       hPlotFunc
-       hParseGUIFunc
-       hGUIs
+       StructModel % this will be remove later
+       Children    % this property is only used by Comb2, maybe redundent
+       
+       hPlotFunc 
+       hParseGUIFunc % this is used when calling the plot function, maybe redundent?
+       hGUIs         % this is used when calling the plot function, maybe redundent?
    end
    
    properties
+       % These properties will be automatically update when the dependent
+       % peoperty is assigned. But is is free to be change later.
+       Scaled_LocMu    % for comb2 concentration scaling that only applys on the MuAlphaGen
+       Scaled_LocAlpha % for comb2 concentration scaling that only applys on the MuAlphaGen
+   end
+   
+   properties
+       % These properties will be calculated when quaried
        LocAlphaM
        Nmodes
        NAtoms
@@ -39,6 +52,14 @@ classdef StructureData < handle
            nStucture = size(obj.XYZ,3);
       end       
       function locAlphaM = get.LocAlphaM(obj)
+           % Vector version
+           % [Aixx Aixy Aixz Aiyx Aiyy Aiyz Aizx Aizy Aizz] , size =[Mode_Num X 9]
+           % 
+           % Matrix representation
+           % D3  --> D2
+           % ^ [ Aixx Aixy Aixz ] 
+           % | [ Aiyx Aiyy Aiyz ]
+           % | [ Aizx Aizy Aizz ]
            locAlphaM = reshape(obj.LocAlpha,[],3,3);
       end      
       function CoM = get.CoM(obj)
@@ -53,18 +74,40 @@ classdef StructureData < handle
               hAx = varargin{:};
           end
           if isa(obj.hPlotFunc,'function_handle')
-              hF = obj.hPlotFunc(hAx,obj,obj.hParseGUIFunc(obj.hGUIs));
+              % check if triggered by a GUI interface
+              if isempty(obj.hGUIs)
+                  GUI_Input.Debug = 'Debug';
+              else
+                  GUI_Input = obj.hParseGUIFunc(obj.hGUIs);
+              end
+              hF = obj.hPlotFunc(hAx,obj,GUI_Input);
           else
               hF = '';
               disp('No @hPlotFunc defined, method "Draw" would not work...')
           end
       end
       
-      AP        = SD_AtomicProperties(obj)
-      obj_T     = SD_Trans(obj,V)
-      obj_R     = SD_Rot(obj,Phi,Psi,Theta)
-      obj_comb2 = SD_Comb2(obj1,obj2)
-      Dihedral  = SD_PeptideDihedral(obj)
+      % Automatically copy the non-scaled value to the scaled properties
+      % when the value fisrt being assigned
+      function set.LocMu(obj,Value)
+          obj.LocMu = Value;
+          obj.Scaled_LocMu = Value;
+      end
+      function set.LocAlpha(obj,Value)
+          obj.LocAlpha = Value;
+          obj.Scaled_LocAlpha = Value;
+      end
+      
+      % Othe methods defined as a separated function
+      AP         = SD_AtomicProperties(obj)
+      obj_T      = SD_Trans(obj,V)
+      obj_R      = SD_Rot(obj,R)
+      obj_comb2  = SD_Comb2(obj1,obj2)
+      Dihedral   = SD_PeptideDihedral(obj)
+      obj_S      = SD_ScaleTransitions(obj,Scaling)
+      obj_New    = SD_Copy(obj)
+      obj_TN     = SD_TransN(obj,V,N)
+      obj_Framed = SD_SetFrame(obj,Center_Ind,Z_Ind,XZ_Ind)
    end
 
 end

@@ -21,8 +21,7 @@ function Dihedral = SD_PeptideDihedral(Structure)
 %% Check if the structure contains amide groups
 if ~isfield(Structure.Extra,'AmideIAtomSerNo')
     disp('The structure does not have amide groups, abort...')
-    Phi = nan;
-    Psi = nan;
+    Dihedral = [];
     return
 end
 

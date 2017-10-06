@@ -6,7 +6,7 @@ ScanP = 0:10:350;
 
 %- Figure options ---------------------------------------------------------
 hF = figure;
-% hF.Position = [100,100,800,800];
+hF.Position = [100,100,800,800];
 hAx_Mode     = subplot(2,2,1);
 hAx_1D       = subplot(2,2,2);
 hAx_Molecule = subplot(2,2,3);
@@ -17,8 +17,9 @@ YLim_hAx_1D_FTIR = [-1,1];
 YLim_hAx_1D_SFG  = [-1,1];
 % Fig_Save = 0;
 saveGIF  = 0;
-% BaseFileName = 'APB_R6S5_';
+BaseFileName = 'APB_R5S3_';
 % PathName = pwd;
+SavePath = '~/Desktop';
 
 %% Get handles of all GUI elements
 hGUIs_COSMOSS = guihandles(hCOSMOSS);
@@ -39,7 +40,8 @@ for i = 1:length(ScanP)
     hObject.String = num2str(ScanP(i));
     eventdata.hAx = hAx_Molecule;
     Model_Betasheet_AmideI('UpdateStructure',hObject,eventdata,guidata(hObject))
-    Model_Betasheet_AmideI('PlotMolecule',hObject,eventdata,guidata(hObject))
+    Data = guidata(hObject);
+    Data.Structure.Draw(hAx_Molecule);
     
     % FTIR/SFG
     hObject = hGUIs_COSMOSS.hMain;
@@ -47,8 +49,6 @@ for i = 1:length(ScanP)
     yyaxis(hAx_1D,'left')
     hAx_1D.YLim = YLim_hAx_1D_FTIR;
     COSMOSS('FTIR_Callback',hObject,eventdata,guidata(hObject))
-    
-    %eventdata.hAx = hAx_Mode;
     yyaxis(hAx_1D,'right')
     hAx_1D.YLim = YLim_hAx_1D_SFG;
     COSMOSS('SFG_Callback',hObject,eventdata,guidata(hObject))
@@ -65,8 +65,14 @@ close all
 
 %% Play movie and save GIF
 hF = figure;
+hF.Position = [100,100,800,800];
+hAx_Mode     = subplot(2,2,1);
+hAx_1D       = subplot(2,2,2);
+hAx_Molecule = subplot(2,2,3);
+hAx_2D       = subplot(2,2,4);
 movie(hF,Frame_all,10)
 
+%% 
 if saveGIF
     %% Save Frame
     SaveName = [SavePath,'/',BaseFileName];
@@ -78,7 +84,7 @@ if saveGIF
     filename = [SaveName,'0-360.gif'];
     DT = 0.5;
 
-    for j = 1:length(Scan_Theta)
+    for j = 1:length(ScanP)
 
         frame = Frame_all(j);
         im = frame2im(frame);

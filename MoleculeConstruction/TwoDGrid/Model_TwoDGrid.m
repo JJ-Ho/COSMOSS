@@ -126,11 +126,16 @@ G09_Path = [PathName FilesName];
 disp([FilesName,' loaded...'])
 
 %% Load selected G09 file
-G09 = ReadG09Input(G09_Path);
+S_G09_MF = ReadG09Input(G09_Path);
 % G09_Output.G09_Path = G09_Path;
 
+% Add function handles for plotting
+S_G09_MF.hPlotFunc = @PlotXYZ_Grid;
+S_G09_MF.hParseGUIFunc = @ParseGUI_TwoDGrid;
+S_G09_MF.hGUIs = hGUIs;
+
 %% Export to Model handles
-GUI_data.G09 = G09;
+GUI_data.G09 = S_G09_MF;
 guidata(hObject,GUI_data)
 
 %% update structure and the file name on GUI
@@ -140,12 +145,14 @@ if isfield(GUI_data,'Comb2_Order')
 end
 GUI_data.hModel_TwoDGrid.Name = [TitleStr, FilesName];
 
-% update mol frame Atom index
-hGUIs.MF_Center.String = num2str(G09.Extra.Mol_Frame.Center_Ind);
-hGUIs.MF_Zi.String     = num2str(G09.Extra.Mol_Frame.Z_i_Ind);
-hGUIs.MF_Zf.String     = num2str(G09.Extra.Mol_Frame.Z_f_Ind);
-hGUIs.MF_XYi.String    = num2str(G09.Extra.Mol_Frame.XY_i_Ind);
-hGUIs.MF_XYf.String    = num2str(G09.Extra.Mol_Frame.XY_f_Ind);
+% update G09 info onto GUI
+hGUIs.MF_Center.String = num2str(S_G09_MF.Extra.Mol_Frame.Center_Ind);
+hGUIs.MF_Zi.String     = num2str(S_G09_MF.Extra.Mol_Frame.Z_i_Ind);
+hGUIs.MF_Zf.String     = num2str(S_G09_MF.Extra.Mol_Frame.Z_f_Ind);
+hGUIs.MF_XZi.String    = num2str(S_G09_MF.Extra.Mol_Frame.XZ_i_Ind);
+hGUIs.MF_XZf.String    = num2str(S_G09_MF.Extra.Mol_Frame.XZ_f_Ind);
+hGUIs.NLFreq.String    = num2str(S_G09_MF.LocFreq);
+hGUIs.Anharm.String    = num2str(S_G09_MF.LocAnharm);
 
 UpdateStructure(hObject, eventdata, GUI_data)
 
@@ -153,49 +160,34 @@ function UpdateStructure(hObject, eventdata, GUI_data)
 %% retreive GUI inputs
 hGUIs  = GUI_data.hGUIs;
 GUI_Inputs = ParseGUI_TwoDGrid(hGUIs);
-
 G09 = GUI_data.G09;
-
-% update the mol frame info into G09_Output
-MF_Info.Center_Ind = GUI_Inputs.MF_Center;
-MF_Info.Z_i_Ind    = GUI_Inputs.MF_Zi;
-MF_Info.Z_f_Ind    = GUI_Inputs.MF_Zf;
-MF_Info.XY_i_Ind   = GUI_Inputs.MF_XYi;
-MF_Info.XY_f_Ind   = GUI_Inputs.MF_XYf;
-MF_Info.Frame_Type = GUI_Inputs.Frame_Type;
-MF_Info.BondAvg    = GUI_Inputs.BondAvg;
-
-LF_Info.LF_Phi   = GUI_Inputs.LF_Phi./180*pi;
-LF_Info.LF_Psi   = GUI_Inputs.LF_Psi./180*pi;
-LF_Info.LF_Theta = GUI_Inputs.LF_Theta./180*pi;
 
 %% Rot/Trans the raw ouput of G09 to molecule frame ane deal with rotatable bond average 
 % Rotate the structre from G09 simulation frame to defined molecule frame 
 % then do bond rotational average if selected. Finally rotate molecule into 
 % lab frame so the monomer is ready to form 2D grid.
-Monomer = R_GF2LF(G09,MF_Info,LF_Info);
+S_Monomer_LF = R_MF2LF(G09,GUI_Inputs);
 
 %% Construct 2D grid
-Structure = ConstructGrid(Monomer,GUI_Inputs);
+Structure_Grid = ConstructGrid(S_Monomer_LF,GUI_Inputs);
 
 % Export into Structure so it can be passsed around different GUIs
-Structure.StructModel = 3;
+Structure_Grid.StructModel = 3;
 
 % export necessary handle and functions
-Structure.hPlotFunc = @PlotXYZ_Grid;
-Structure.hParseGUIFunc = @ParseGUI_TwoDGrid;
-Structure.hGUIs = hGUIs;
+Structure_Grid.hPlotFunc = @PlotXYZ_Grid;
+Structure_Grid.hParseGUIFunc = @ParseGUI_TwoDGrid;
+Structure_Grid.hGUIs = hGUIs;
 
 %% Export result to Main guidata
-
 % include FieldName of GUI Inputs
-[~,~,~,fhGUIParser] = StructureModel(Structure.StructModel);
+[~,~,~,fhGUIParser] = StructureModel(Structure_Grid.StructModel);
 [~,GUI_FieldName] = fhGUIParser(hGUIs);
 GUI_data.GUI_FieldName = GUI_FieldName;
 
 % update handles
-GUI_data.Monomer    = Monomer;
-GUI_data.Structure  = Structure;
+GUI_data.Monomer    = S_Monomer_LF;
+GUI_data.Structure  = Structure_Grid;
 GUI_data.GUI_Inputs = GUI_Inputs;
 guidata(hObject,GUI_data)
 

@@ -10,7 +10,7 @@ PHI    = 0;
 PSI    = 0;
 THETA  = 0;
 TransV = [0,0,15];
-TransitionScaling = 5;
+TransitionScaling = 1;
 
 % Name the outputs
 Rot_Vec_Str   = sprintf('%03.0f_%03.0f_%03.0f',PHI,PSI,THETA);

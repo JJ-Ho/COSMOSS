@@ -53,5 +53,4 @@ if eq(I.Sampling,1)
         
 else
     OneD = h1DFunc(S,I);
-    Plot1D(hAx,OneD,I);
 end

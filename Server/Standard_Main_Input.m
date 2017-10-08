@@ -26,7 +26,7 @@ O.P_Sig2D =  0; %NUMBER, polarization angle 0=> P; 90=> S%
 % -------------------------------------------------------------------------
 
 % For Diagonal Disorder ---------------------------------------------------
-O.Sampling      =   0; %VALUE, toggles%
+O.Sampling      = 0; %VALUE, toggles%
 O.Sample_Num    = 100; %NUMBER%
 O.DD_FWHM       = 10;
 O.ODD_FWHM      = 5;
@@ -36,7 +36,7 @@ O.UpdateStatus  = 0;
 % -------------------------------------------------------------------------
 
 % For Coupling/Signal -----------------------------------------------------
-O.LocFreqType   = 1;
+O.LocFreqType   = 2;
 
 % Coupling model
 CouplingModelIndex = 3;

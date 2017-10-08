@@ -19,12 +19,17 @@ SaveName = ['APB_R5S3_MBA_4x4','_R_',Rot_Vec_Str,'_V_',Trans_Vec_Str];
 
 % COSMOSS Inputs
 COSMOSS_Input = Standard_Main_Input;
-COSMOSS_Input.LocFreqType  = 2;% Use Jensen Loclmode freuqency type
+COSMOSS_Input.LocFreqType  = 2;% Use Jensen Locl mode freuqency type
 COSMOSS_Input.CouplingType = 'Jansen_TDC';
-
-COSMOSS_Input.Sampling = 1;
-COSMOSS_Input.Sample_Num = 1;
-COSMOSS_Input.MEM_CutOff = 1; % GB
+COSMOSS_Input.Sampling     = 1;
+COSMOSS_Input.Sample_Num   = 500;
+COSMOSS_Input.DD_FWHM      = 10; % cm-1
+COSMOSS_Input.ODD_FWHM     = 5;  % cm-1
+COSMOSS_Input.P_FlucCorr   = 100; % percentage
+COSMOSS_Input.MEM_CutOff   = 1; % memmore cutoffGB
+COSMOSS_Input.PCutOff      = 1E-5; % Pathway min intensity cutoff
+COSMOSS_Input.F_Min        = 1500; % cm-1
+COSMOSS_Input.F_Max        = 1900; % cm-1
 
 % Mimicing GUI input for ensemble average part
 hGUIs.DynamicUpdate.Value = 0;

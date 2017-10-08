@@ -3,12 +3,14 @@
 %% Input parameters
 % setup path
 Initialization
+Debug = 1;
 
 % APB Relative orientation
 PHI    = 0;
 PSI    = 0;
 THETA  = 0;
 TransV = [0,0,15];
+TransitionScaling = 5;
 
 % Name the outputs
 Rot_Vec_Str   = sprintf('%03.0f_%03.0f_%03.0f',PHI,PSI,THETA);
@@ -17,8 +19,11 @@ SaveName = ['APB_R5S3_MBA_4x4','_R_',Rot_Vec_Str,'_V_',Trans_Vec_Str];
 
 % COSMOSS Inputs
 COSMOSS_Input = Standard_Main_Input;
+COSMOSS_Input.LocFreqType  = 2;% Use Jensen Loclmode freuqency type
+COSMOSS_Input.CouplingType = 'Jansen_TDC';
+
 COSMOSS_Input.Sampling = 1;
-COSMOSS_Input.Sample_Num = 500;
+COSMOSS_Input.Sample_Num = 1;
 COSMOSS_Input.MEM_CutOff = 1; % GB
 
 % Mimicing GUI input for ensemble average part
@@ -98,50 +103,59 @@ S_Grid_All_0.hPlotFunc = @PlotXYZ_Grid;
 
 % Betasheet
 R_Matrix = R1_ZYZ_0(PHI,PSI,THETA);
-S_BSheet_0  = SD_Trans(S_BSheet,-S_BSheet.CoM);
-S_BSheet_R  = SD_Rot(S_BSheet_0,R_Matrix);
-S_BSheet_RT = SD_Trans(S_BSheet_R,TransV);
-S_BSheet_RT.hPlotFunc = @Plot_Betasheet_AmideI;% Add function handles for plotting
-S_BSheet_RT.Extra.RotV = [PHI,PSI,THETA];
+S_BSheet_0    = SD_Trans(S_BSheet,-S_BSheet.CoM);
+S_BSheet_R    = SD_Rot(S_BSheet_0,R_Matrix);
+S_BSheet_RT   = SD_Trans(S_BSheet_R,TransV);
+S_BSheet_RT_S = SD_ScaleTransitions(S_BSheet_RT,TransitionScaling);
+S_BSheet_RT_S.hPlotFunc  = @Plot_Betasheet_AmideI;% Add function handles for plotting
+S_BSheet_RT_S.Extra.RotV = [PHI,PSI,THETA];
 
 % Combine
-S_APB_MBA = SD_Comb2(S_Grid_All_0,S_BSheet_RT);
+S_APB_MBA = SD_Comb2(S_Grid_All_0,S_BSheet_RT_S);
 S_APB_MBA.hPlotFunc = @PlotComb2;% Add function handles for plotting
 Structure = S_APB_MBA;
 
 %% FTIR
 FTIR = OneD_Iteration(@FTIR_Main,Structure,COSMOSS_Input,hGUIs);
-% hF  = figure;
-% hAx = axes('Parent',hF);
-% Plot1D(hAx,FTIR,COSMOSS_Input);
+if Debug
+    hF  = figure;
+    hAx = axes('Parent',hF);
+    Plot1D(hAx,FTIR,COSMOSS_Input);
+end
 
 %% SFG
 OneDSFG = OneD_Iteration(@OneDSFG_Main,Structure,COSMOSS_Input,hGUIs);
-% hF  = figure;
-% hAx = axes('Parent',hF);
-% Plot1D(hAx,SFG,COSMOSS_Input);
+if Debug
+        hF  = figure;
+        hAx = axes('Parent',hF);
+        Plot1D(hAx,OneDSFG,COSMOSS_Input);
+end
 
 %% 2DIR
 [SpectraGrid,Response] = TwoD_Iteration(@TwoDIR_Main_Sparse,Structure,COSMOSS_Input,hGUIs);
 TwoDIR                 = Response;
 TwoDIR.SpectraGrid     = SpectraGrid;
 
-% hF  = figure;
-% hAx = axes('Parent',hF);
-% CVL = Conv2D(SpectraGrid,COSMOSS_Input);
-% CVL.FilesName = Structure.FilesName; % pass filesname for figure title
-% Plot2D(hAx,CVL,COSMOSS_Input,Response.SpecType);
+if Debug
+    hF  = figure;
+    hAx = axes('Parent',hF);
+    CVL = Conv2D(SpectraGrid,COSMOSS_Input);
+    CVL.FilesName = Structure.FilesName; % pass filesname for figure title
+    Plot2D(hAx,CVL,COSMOSS_Input,Response.SpecType);
+end
 
 %% 2D SFG
 [SpectraGrid,Response] = TwoD_Iteration(@TwoDSFG_Main_Sparse,Structure,COSMOSS_Input,hGUIs);
 TwoDSFG                = Response;
 TwoDSFG.SpectraGrid    = SpectraGrid;
 
-% hF  = figure;
-% hAx = axes('Parent',hF);
-% CVL = Conv2D(SpectraGrid,COSMOSS_Input);
-% CVL.FilesName = Structure.FilesName; % pass filesname for figure title
-% Plot2D(hAx,CVL,COSMOSS_Input,Response.SpecType);
+if Debug
+    hF  = figure;
+    hAx = axes('Parent',hF);
+    CVL = Conv2D(SpectraGrid,COSMOSS_Input);
+    CVL.FilesName = Structure.FilesName; % pass filesname for figure title
+    Plot2D(hAx,CVL,COSMOSS_Input,Response.SpecType);
+end
 
 %% Outputs
 Output.Structure = Structure;
@@ -149,4 +163,6 @@ Output.FTIR      = FTIR;
 Output.OneDSFG   = OneDSFG;
 Output.TwoDIR    = TwoDIR;
 Output.TwoDSFG   = TwoDSFG;
-save(SaveName,'Output')
+if ~Debug
+    save(SaveName,'Output')
+end

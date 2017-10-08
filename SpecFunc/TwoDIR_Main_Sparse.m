@@ -45,6 +45,7 @@ defaultP_Pump2      = 0;
 defaultP_Probe      = 0;
 defaultP_Sig2D      = 0;
 defaultPCutOff      = 0;
+defaultMEM_CutOff   = 0.3; % GB
 
 addOptional(INPUT,'FreqRange'   ,defaultFreqRange);
 addOptional(INPUT,'A_Pump1'     ,defaultA_Pump1);
@@ -56,6 +57,7 @@ addOptional(INPUT,'P_Pump2'     ,defaultP_Pump2);
 addOptional(INPUT,'P_Probe'     ,defaultP_Probe);
 addOptional(INPUT,'P_Sig2D'     ,defaultP_Sig2D);
 addOptional(INPUT,'PCutOff'     ,defaultPCutOff);
+addOptional(INPUT,'MEM_CutOff'  ,defaultMEM_CutOff);
          
 parse(INPUT,GUI_Inputs_C{:});
 
@@ -70,6 +72,7 @@ P_Pump2      = INPUT.Results.P_Pump2;
 P_Probe      = INPUT.Results.P_Probe;
 P_Sig2D      = INPUT.Results.P_Sig2D;
 PCutOff      = INPUT.Results.PCutOff;
+MEM_CutOff   = INPUT.Results.MEM_CutOff;
 
 %% Call TwoExcitonH to calculate H,mu and alpha under exciton basis
 H = ExcitonH(Structure,GUI_Inputs,'TwoEx');
@@ -107,6 +110,7 @@ E = EPolar4(P_Sig2D,P_Probe,P_Pump2,P_Pump1);
 EJR = E*J*R_Avg;
 
 [Grid,Freq,Int,Index,CutOff] = Feynman_2DIR_Vec_Sparse(PCutOff,...
+                                                       MEM_CutOff,...
                                                        FreqRange,...
                                                        EJR,...
                                                        Ex_F1,...

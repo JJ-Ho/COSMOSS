@@ -1,27 +1,31 @@
 % Template of Server_2DSFG running script
 % This template scan the structural pameters on 2D_Grid of MBA 
 %% Input parameters
-Initialization % setup path
-
-SaveName = 'APB_R5S3_MBA_4x4';
+% setup path
+Initialization
 
 % APB Relative orientation
-Phi   = 0;
-Psi   = 0;
-Theta = 0;
-R = R1_ZYZ_0(Phi,Psi,Theta);
-V = [0,0,15];
+PHI    = 0;
+PSI    = 0;
+THETA  = 0;
+TransV = [0,0,15];
+
+% Name the outputs
+Rot_Vec_Str   = sprintf('%03.0f_%03.0f_%03.0f',PHI,PSI,THETA);
+Trans_Vec_Str = sprintf('%01.0f_%01.0f_%02.0f',TransV(1),TransV(2),TransV(3));
+SaveName = ['APB_R5S3_MBA_4x4','_R_',Rot_Vec_Str,'_V_',Trans_Vec_Str];
 
 % COSMOSS Inputs
 COSMOSS_Input = Standard_Main_Input;
 COSMOSS_Input.Sampling = 1;
-COSMOSS_Input.Sample_Num = 10;
+COSMOSS_Input.Sample_Num = 500;
+COSMOSS_Input.MEM_CutOff = 1; % GB
 
 % Mimicing GUI input for ensemble average part
 hGUIs.DynamicUpdate.Value = 0;
 hGUIs.UpdateStatus.Value  = 1;
 
-%% Construct 2D Grid
+%% Construct the MBA 2D Grid
 % Monomer
 G09_Path = which('131029_MBA_Reverse_TDV.txt');
 S_G09_Monomer = ReadG09Input(G09_Path);
@@ -71,7 +75,7 @@ S_Grid2_T = SD_Trans(S_Grid2_0, Grid2TransV );
 S_Grid_All = SD_Comb2(S_Grid1_0,S_Grid2_T);
 S_Grid_All.hPlotFunc = @PlotXYZ_Grid;
 
-%% Construct ideal betasheet
+%% Construct a ideal betasheet
 BSheet.SheetTypeV = 2; % APB
 BSheet.N_Residue  = 5;
 BSheet.N_Strand   = 3;
@@ -87,16 +91,18 @@ S_BSheet = SD_GetAmideI(S_BSheet);
 S_BSheet.LocAnharm = ones(S_BSheet.Nmodes,1).* 20;
 S_BSheet.LocFreq   = ones(S_BSheet.Nmodes,1).* 1665;
 
-%% Combine the APB with 2D Grid
+%% Combine the Betasheet with the 2D Grid
 % MBA Grid
 S_Grid_All_0 = SD_Trans(S_Grid_All,-S_Grid_All.CoM);
 S_Grid_All_0.hPlotFunc = @PlotXYZ_Grid;
 
+% Betasheet
+R_Matrix = R1_ZYZ_0(PHI,PSI,THETA);
 S_BSheet_0  = SD_Trans(S_BSheet,-S_BSheet.CoM);
-S_BSheet_R  = SD_Rot(S_BSheet_0,R);
-S_BSheet_RT = SD_Trans(S_BSheet_R,V);
+S_BSheet_R  = SD_Rot(S_BSheet_0,R_Matrix);
+S_BSheet_RT = SD_Trans(S_BSheet_R,TransV);
 S_BSheet_RT.hPlotFunc = @Plot_Betasheet_AmideI;% Add function handles for plotting
-S_BSheet_RT.Extra.RotV = [Phi,Psi,Theta];
+S_BSheet_RT.Extra.RotV = [PHI,PSI,THETA];
 
 % Combine
 S_APB_MBA = SD_Comb2(S_Grid_All_0,S_BSheet_RT);
@@ -138,7 +144,7 @@ TwoDSFG.SpectraGrid    = SpectraGrid;
 % Plot2D(hAx,CVL,COSMOSS_Input,Response.SpecType);
 
 %% Outputs
-Output.Structure = S_APB_MBA;
+Output.Structure = Structure;
 Output.FTIR      = FTIR;
 Output.OneDSFG   = OneDSFG;
 Output.TwoDIR    = TwoDIR;

@@ -1,4 +1,4 @@
-function [Grid,Freq,Int,Index,CutOff] = Feynman_2DSFG_Vec_Sparse(PCutOff,FreqRange,EJR,F1,F2,A01,A12,M01,M12)
+function [Grid,Freq,Int,Index,CutOff] = Feynman_2DSFG_Vec_Sparse(PCutOff,MEM_CutOff,FreqRange,EJR,F1,F2,A01,A12,M01,M12)
 % 
 % This function generate Feynman pathway of 2DSFG with given polarization.
 % 
@@ -156,7 +156,7 @@ Freq_NR2 = [ Ea_5, Ea_5-Eb_5, Ea_5]; % [pump,diff,probe]
 
 %% Prep for R3/NR3
 % estimate of largest array size and break it down to several for loop
-MEM_CutOff = 3e-1; %[GB]
+% MEM_CutOff = 3e-1; %[GB]
 Ele_Max = round(MEM_CutOff/(243 * 8 / 1e9)) + 1; % number of elements to reach MEM_CufOff
 
 %% R3

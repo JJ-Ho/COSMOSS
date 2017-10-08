@@ -11,7 +11,7 @@ INPUT.KeepUnmatched = 1;
 defaultPlot_Atoms      = 1;
 defaultPlot_Bonds      = 1;
 defaultPlot_Axis       = 1;
-defaultPlot_Lattice    = 1;
+defaultPlot_Lattice    = 0;
 defaultPlot_Atom_Index = 0;
 
 % Add optional inputs to inputparser object
@@ -37,11 +37,7 @@ CoM      = SData.CoM;
 Nmodes   = SData.Nmodes;
 Atom_Num = SData.NAtoms;
 
-% Grid info
-N_Vec1 = GUI_Inputs.N_1;
-N_Vec2 = GUI_Inputs.N_2;
-Vec_1  = GUI_Inputs.Vec_1;
-Vec_2  = GUI_Inputs.Vec_2;
+
 
 %% Decide atoms types
 C_Ind = strcmp(AtomName,'C');
@@ -109,6 +105,12 @@ hold(hAx,'on')
     
     %% Draw lattice, for MBA now
     if Plot_Lattice
+        % Grid info
+        N_Vec1 = GUI_Inputs.N_1;
+        N_Vec2 = GUI_Inputs.N_2;
+        Vec_1  = GUI_Inputs.Vec_1;
+        Vec_2  = GUI_Inputs.Vec_2;
+        
         L_Vec1 = norm(Vec_1);
         L_Vec2 = norm(Vec_2);
         

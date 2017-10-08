@@ -15,7 +15,7 @@ addpath(StructureFiles);
 SpectalFunctions = genpath([Current_path '/SpecFunc']);
 addpath(SpectalFunctions);
 
-ServerVersion = genpath([Current_path '/ServerVersion']);
+ServerVersion = genpath([Current_path '/Server']);
 addpath(ServerVersion);
 
 AnalysisTools = genpath([Current_path '/AnalysisTools']);

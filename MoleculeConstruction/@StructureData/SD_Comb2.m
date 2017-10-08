@@ -62,21 +62,22 @@ if ~isempty(AmideIAtomSerNo)
 end
 
 %% Inherent all Children
-N_Child1 = length(obj1.Children);
-N_Child2 = length(obj2.Children);
-
-if N_Child1
-    Children = obj1.Children;
-else
-    Children = obj1;
-end
-
-if N_Child2
-    Children = [Children,obj2.Children];
-else
-    Children = [Children,obj2];
-end
+% N_Child1 = length(obj1.Children);
+% N_Child2 = length(obj2.Children);
+% 
+% if N_Child1
+%     Children = obj1.Children;
+% else
+%     Children = obj1;
+% end
+% 
+% if N_Child2
+%     Children = [Children,obj2.Children];
+% else
+%     Children = [Children,obj2];
+% end
     
+Children = [obj1,obj2];
 
 %% Reassign StructureData
 obj_comb2 = StructureData;

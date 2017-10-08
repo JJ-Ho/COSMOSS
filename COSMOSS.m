@@ -196,70 +196,14 @@ function FTIR_Callback(hObject, eventdata, GUI_data)
 % update the laser seeting tab
 hGUIs = GUI_data.hGUIs;
 hGUIs.LaserSetting.SelectedTab = hGUIs.Tab_1D;
+GUI_Inputs = ParseGUI_Main(hGUIs);
 
 %% Main
-GUI_Inputs = ParseGUI_Main(GUI_data.hGUIs);
-Structure  = GUI_data.Structure;
+FTIR = OneD_Iteration(@FTIR_Main,GUI_data);
 
-if strcmp(eventdata.Source,'External')
-    hF  = eventdata.hF;
-    hAx = eventdata.hAx;
-else
-    hF  = figure;
-    hAx = axes('Parent',hF);
-end
-
-if eq(GUI_Inputs.Sampling,1) % GUI: Diag. Disorder
-    % Pre-allocate  
-    GridSize   = length(GUI_Inputs.FreqRange);
-    Response1D = zeros(GridSize,1);
-    
-    TSTART = zeros(GUI_Inputs.Sample_Num,1,'uint64');
-    TIME   = zeros(GUI_Inputs.Sample_Num,1);
-    
-    for i = 1:GUI_Inputs.Sample_Num
-        TSTART(i) = tic;
-        
-        % Read GUI input directly from obj handle
-        DynamicUpdate = GUI_data.hGUIs.DynamicUpdate.Value;
-        UpdateStatus  = GUI_data.hGUIs.UpdateStatus.Value;
-        if and(~eq(i,1), and(eq(DynamicUpdate,1),~eq(UpdateStatus,1)))
-            break
-        end
-        
-        % deal with MD snapshots(Need to modify the reading mechanism later)
-        S = Structure;
-        if isfield(S,'NStucture') && gt(S.NStucture,1)
-            S.LocMu = squeeze(S.LocMu(:,:,i));
-            S.LocCenter = S.LocCenter(:,:,i);
-        end
-
-        % Calculate FTIR
-        FTIR = FTIR_Main(S,GUI_Inputs);
-        
-        % recursive accumulation of signal
-        Response1D = Response1D + FTIR.Response1D; % note freq is binned and sorted, so direct addition work
-        FTIR.Response1D = Response1D;
-        
-        TIME(i) = toc(TSTART(i));
-        disp(['Run ' num2str(i) ' finished within '  num2str(TIME(i)) '...'])
-        
-        while ~eq(DynamicUpdate,0)
-            FTIR.FilesName = [Structure.FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title
-            Plot1D(hAx,FTIR,GUI_Inputs);
-            drawnow
-            DynamicUpdate = 0;
-        end
-    end
-    
-    Plot1D(hAx,FTIR,GUI_Inputs);
-    Total_TIME = sum(TIME);
-    disp(['Total time: ' num2str(Total_TIME)])
-        
-else
-    FTIR = FTIR_Main(Structure,GUI_Inputs);
-    Plot1D(hAx,FTIR,GUI_Inputs);
-end
+hF = figure;
+hAx = axes('Parent',hF);
+Plot1D(hAx,FTIR,GUI_Inputs);
 
 %% Update FTIR data into guidata 
 GUI_data.FTIR = FTIR;
@@ -270,63 +214,14 @@ function SFG_Callback(hObject, eventdata, GUI_data)
 % update the laser seeting tab
 hGUIs = GUI_data.hGUIs;
 hGUIs.LaserSetting.SelectedTab = hGUIs.Tab_1D;
+GUI_Inputs = ParseGUI_Main(hGUIs);
 
 %% Main
-GUI_Inputs = ParseGUI_Main(GUI_data.hGUIs);
-Structure  = GUI_data.Structure;
+OneDSFG = OneD_Iteration(@OneDSFG_Main,GUI_data);
 
-if strcmp(eventdata.Source,'External')
-    hF  = eventdata.hF;
-    hAx = eventdata.hAx;
-else
-    hF  = figure;
-    hAx = axes('Parent',hF);
-end
-
-if eq(GUI_Inputs.Sampling,1)
-    % Pre-allocate
-    GridSize   = length(GUI_Inputs.FreqRange);
-    Response1D = zeros(GridSize,1);
-    
-    TSTART = zeros(GUI_Inputs.Sample_Num,1,'uint64');
-    TIME   = zeros(GUI_Inputs.Sample_Num,1);
-    
-    for i = 1:GUI_Inputs.Sample_Num
-        TSTART(i) = tic;
-        
-        % Read GUI input directly from obj handle
-        DynamicUpdate = GUI_data.hGUIs.DynamicUpdate.Value;
-        UpdateStatus  = GUI_data.hGUIs.UpdateStatus.Value;
-        if and(~eq(i,1), and(eq(DynamicUpdate,1),~eq(UpdateStatus,1)))
-            break
-        end
-        
-        % Calculate SFG
-        OneDSFG = OneDSFG_Main(Structure,GUI_Inputs);
-        
-        % recursive accumulation of signal
-        Response1D = Response1D + OneDSFG.Response1D; % note freq is binned and sported, so direct addition work
-        OneDSFG.Response1D = Response1D;
-        
-        TIME(i) = toc(TSTART(i));
-        disp(['Run ' num2str(i) ' finished within '  num2str(TIME(i)) '...'])
-        
-        while ~eq(DynamicUpdate,0)
-            OneDSFG.FilesName = [Structure.FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title
-            Plot1D(hAx,OneDSFG,GUI_Inputs);
-            drawnow
-            DynamicUpdate = 0;
-        end
-    end
-    
-        Plot1D(hAx,OneDSFG,GUI_Inputs);
-        Total_TIME = sum(TIME);
-        disp(['Total time: ' num2str(Total_TIME)])
-        
-else
-    OneDSFG = OneDSFG_Main(Structure,GUI_Inputs);
-    Plot1D(hAx,OneDSFG,GUI_Inputs);
-end
+hF = figure;
+hAx = axes('Parent',hF);
+Plot1D(hAx,OneDSFG,GUI_Inputs);
 
 %% Update share data
 GUI_data.OneDSFG = OneDSFG;

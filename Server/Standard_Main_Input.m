@@ -30,7 +30,6 @@ O.Sampling      =   0; %VALUE, toggles%
 O.Sample_Num    = 100; %NUMBER%
 O.DD_FWHM       = 10;
 O.ODD_FWHM      = 5;
-O.FWHM          =  10; %ARRAY, cm^-1%
 O.P_FlucCorr    = 100; %NUMBER, percentage %
 O.DynamicUpdate = 0;
 O.UpdateStatus  = 0;

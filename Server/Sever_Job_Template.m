@@ -1,5 +1,20 @@
 % Template of Server_2DSFG running script
 % This template scan the structural pameters on 2D_Grid of MBA 
+%% Input parameters
+SaveName = 'APB_R5S3_MBA_4x4';
+
+% APB Relative orientation
+Phi   = 0;
+Psi   = 0;
+Theta = 0;
+R = R1_ZYZ_0(Phi,Psi,Theta);
+V = [0,0,15];
+
+% COSMOSS Inputs
+Structure = S_APB_MBA;
+COSMOSS_Input = Standard_Main_Input;
+COSMOSS_Input.Sampling = 1;
+COSMOSS_Input.Sample_Num = 10;
 
 %% Construct 2D Grid
 % Monomer
@@ -49,23 +64,85 @@ S_Grid2_0 = SD_Trans(S_Grid2, -S_Grid2.XYZ(13,:));
 S_Grid2_T = SD_Trans(S_Grid2_0, Grid2TransV );
 
 S_Grid_All = SD_Comb2(S_Grid1_0,S_Grid2_T);
-S_Grid_All.hPlotFunc = @PlotComb2;% Add function handles for plotting
+S_Grid_All.hPlotFunc = @PlotXYZ_Grid;
 
 %% Construct ideal betasheet
+BSheet.SheetTypeV = 2; % APB
+BSheet.N_Residue  = 5;
+BSheet.N_Strand   = 3;
+BSheet.Trans_X    = 0;
+BSheet.Trans_Y    = 0;
+BSheet.Trans_Z    = 4.75;
+BSheet.Twist_X    = 0;
+BSheet.Twist_Y    = 0;
+BSheet.Twist_Z    = 0;
 
+S_BSheet = ConstuctBetaSheet(BSheet);
+S_BSheet = SD_GetAmideI(S_BSheet);
+S_BSheet.LocAnharm = ones(S_BSheet.Nmodes,1).* 20;
+S_BSheet.LocFreq   = ones(S_BSheet.Nmodes,1).* 1665;
 
-%% COSMOSS Inputs
-COSMOSS_Input = Standard_Main_Input;
+%% Combine the APB with 2D Grid
+% MBA Grid
+S_Grid_All_0 = SD_Trans(S_Grid_All,-S_Grid_All.CoM);
+S_Grid_All_0.hPlotFunc = @PlotXYZ_Grid;
 
-%% Call Server_2DSFG
-hF  = figure;
-hAx = axes('Parent',hF);
+S_BSheet_0  = SD_Trans(S_BSheet,-S_BSheet.CoM);
+S_BSheet_R  = SD_Rot(S_BSheet_0,R);
+S_BSheet_RT = SD_Trans(S_BSheet_R,V);
+S_BSheet_RT.hPlotFunc = @Plot_Betasheet_AmideI;% Add function handles for plotting
+S_BSheet_RT.Extra.RotV = [Phi,Psi,Theta];
 
-FTIR = FTIR_Main(S_Grid_All,COSMOSS_Input);
-Plot1D(hAx,FTIR,COSMOSS_Input);
+% Combine
+S_APB_MBA = SD_Comb2(S_Grid_All_0,S_BSheet_RT);
+S_APB_MBA.hPlotFunc = @PlotComb2;% Add function handles for plotting
 
-% [SpectraGrid,Response] = Server_2DSFG(Structure,COSMOSS_Input);
+%% FTIR
+FTIR = FTIR_Main(Structure,COSMOSS_Input);
+% hF  = figure;
+% hAx = axes('Parent',hF);
+% Plot1D(hAx,FTIR,COSMOSS_Input);
 
+%% SFG
+SFG = OneDSFG_Main(Structure,COSMOSS_Input);
+% hF  = figure;
+% hAx = axes('Parent',hF);
+% Plot1D(hAx,SFG,COSMOSS_Input);
 
-%% Ouputs
+%% 2DIR
+hGUIs.DynamicUpdate.Value = 0;
+hGUIs.UpdateStatus.Value  = 1;
+
+h2DFunc = @TwoDIR_Main_Sparse;
+[SpectraGrid,Response] = TwoD_Iteration(h2DFunc,Structure,COSMOSS_Input,hGUIs);
+TwoDIR                 = Response;
+TwoDIR.SpectraGrid     = SpectraGrid;
+
+% hF  = figure;
+% hAx = axes('Parent',hF);
+% CVL = Conv2D(SpectraGrid,COSMOSS_Input);
+% CVL.FilesName = Structure.FilesName; % pass filesname for figure title
+% Plot2D(hAx,CVL,COSMOSS_Input,Response.SpecType);
+
+%% 2D SFG
+hGUIs.DynamicUpdate.Value = 0;
+hGUIs.UpdateStatus.Value  = 1;
+
+h2DFunc = @TwoDSFG_Main_Sparse;
+[SpectraGrid,Response] = TwoD_Iteration(h2DFunc,Structure,COSMOSS_Input,hGUIs);
+TwoDSFG                = Response;
+TwoDSFG.SpectraGrid    = SpectraGrid;
+
+% hF  = figure;
+% hAx = axes('Parent',hF);
+% CVL = Conv2D(SpectraGrid,COSMOSS_Input);
+% CVL.FilesName = Structure.FilesName; % pass filesname for figure title
+% Plot2D(hAx,CVL,COSMOSS_Input,Response.SpecType);
+
+%% Outputs
+Output.Structure = S_APB_MBA;
+Output.FTIR      = FTIR;
+Output.SFG       = SFG;
+Output.TwoDIR    = TwoDIR;
+Output.TwoDSFG   = TwoDSFG;
 save(SaveName,'Output')

@@ -1,10 +1,9 @@
-function [SpectraGrid,Response] = TwoD_Iteration(h2DFunc,GUI_data,GUI_Inputs,hGUIs)
+function [SpectraGrid,Response] = TwoD_Iteration(h2DFunc,Structure,GUI_Inputs,hGUIs)
 %% Read GUI
 Sampling      = GUI_Inputs.Sampling;
 DynamicUpdate = GUI_Inputs.DynamicUpdate;
 Sample_Num    = GUI_Inputs.Sample_Num;
 FreqRange     = GUI_Inputs.FreqRange;
-Structure     = GUI_data.Structure;
 
 %% Pre-calculation settings
 % Create figure object for dynamics figure update

@@ -160,6 +160,7 @@ R = R1_ZYZ_0(Phi,Psi,Theta);
 
 Structure = SD_Rot(S_BSheet,R);
 Structure.StructModel = 4; % Export into Structure so it can be passsed around different GUIs
+
 %% Export extra info into Structure
 Structure.Extra.RotV = [GUI_Inputs.Phi_D,GUI_Inputs.Psi_D,GUI_Inputs.Theta_D];
 

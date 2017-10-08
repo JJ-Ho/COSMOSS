@@ -63,7 +63,7 @@ O.F_Max     = str2double(get(hGUIs.F_Max,'String'));
 O.FreqRange = O.F_Min:O.F_Max;
 
 
-O.LineWidth = str2double(get(hGUIs.LineWidth    ,'String'));
+O.LineWidth = str2double(get(hGUIs.LineWidth,'String'));
 LineShape   =            get(hGUIs.LineShape,'Value');
 switch LineShape
     case 1

@@ -1,20 +1,23 @@
-function OneD = OneD_Iteration(h1DFunc,GUI_data)
-hGUIs = GUI_data.hGUIs;
-I = ParseGUI_Main(hGUIs);
-S = GUI_data.Structure;
-            
-hF  = figure;
-hAx = axes('Parent',hF);
+function OneD = OneD_Iteration(h1DFunc,Structure,GUI_Inputs,hGUIs)
+%% Create figure object for dynamics figure update
+DynamicUpdate = GUI_Inputs.DynamicUpdate;
+Sampling      = GUI_Inputs.Sampling;
 
-if eq(I.Sampling,1)
+if DynamicUpdate && Sampling
+    hF = figure;
+    hAx = axes('Parent',hF);
+end
+
+%% Calculation of 1D response 
+if eq(GUI_Inputs.Sampling,1)
     % Pre-allocate
-    GridSize   = length(I.FreqRange);
+    GridSize   = length(GUI_Inputs.FreqRange);
     Response1D = zeros(GridSize,1);
     
-    TSTART = zeros(I.Sample_Num,1,'uint64');
-    TIME   = zeros(I.Sample_Num,1);
+    TSTART = zeros(GUI_Inputs.Sample_Num,1,'uint64');
+    TIME   = zeros(GUI_Inputs.Sample_Num,1);
     
-    for i = 1:I.Sample_Num
+    for i = 1:GUI_Inputs.Sample_Num
         TSTART(i) = tic;
         
         % Read GUI input directly from obj handle
@@ -31,7 +34,7 @@ if eq(I.Sampling,1)
 %         end
         
         % Calculate 1D respsonse
-        OneD = h1DFunc(S,I);
+        OneD = h1DFunc(Structure,GUI_Inputs);
         
         % recursive accumulation of signal
         Response1D = Response1D + OneD.Response1D; % note freq is binned and sported, so direct addition work
@@ -41,17 +44,16 @@ if eq(I.Sampling,1)
         disp(['Run ' num2str(i) ' finished within '  num2str(TIME(i)) '...'])
         
         while ~eq(DynamicUpdate,0)
-            OneD.FilesName = [S.FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title
-            Plot1D(hAx,OneD,I);
+            OneD.FilesName = [Structure.FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title
+            Plot1D(hAx,OneD,GUI_Inputs);
             drawnow
             DynamicUpdate = 0;
         end
     end
     
-        Plot1D(hAx,OneD,I);
         Total_TIME = sum(TIME);
         disp(['Total time: ' num2str(Total_TIME)])
         
 else
-    OneD = h1DFunc(S,I);
+    OneD = h1DFunc(Structure,GUI_Inputs);
 end

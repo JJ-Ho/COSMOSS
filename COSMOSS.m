@@ -196,10 +196,11 @@ function FTIR_Callback(hObject, eventdata, GUI_data)
 % update the laser seeting tab
 hGUIs = GUI_data.hGUIs;
 hGUIs.LaserSetting.SelectedTab = hGUIs.Tab_1D;
+Structure  = GUI_data.Structure;
 GUI_Inputs = ParseGUI_Main(hGUIs);
 
 %% Main
-FTIR = OneD_Iteration(@FTIR_Main,GUI_data);
+FTIR = OneD_Iteration(@FTIR_Main,Structure,GUI_Inputs,hGUIs);
 
 hF = figure;
 hAx = axes('Parent',hF);
@@ -214,10 +215,11 @@ function SFG_Callback(hObject, eventdata, GUI_data)
 % update the laser seeting tab
 hGUIs = GUI_data.hGUIs;
 hGUIs.LaserSetting.SelectedTab = hGUIs.Tab_1D;
+Structure  = GUI_data.Structure;
 GUI_Inputs = ParseGUI_Main(hGUIs);
 
 %% Main
-OneDSFG = OneD_Iteration(@OneDSFG_Main,GUI_data);
+OneDSFG = OneD_Iteration(@OneDSFG_Main,Structure,GUI_Inputs,hGUIs);
 
 hF = figure;
 hAx = axes('Parent',hF);
@@ -250,7 +252,7 @@ if RefreshTag
     GUI_data.Refresh.TwoDIR = 0; % reset the refreshtag
     
     h2DFunc = @TwoDIR_Main_Sparse;
-    [SpectraGrid,Response] = TwoD_Iteration(h2DFunc,GUI_data,GUI_Inputs,hGUIs);
+    [SpectraGrid,Response] = TwoD_Iteration(h2DFunc,Structure,GUI_Inputs,hGUIs);
 else
     % Reuse TwoD data
     disp('Reuse previous 2DIR sticks to update figure...')
@@ -303,7 +305,7 @@ if RefreshTag
     GUI_data.Refresh.TwoDSFG = 0; % reset the refreshtag
 
     h2DFunc = @TwoDSFG_Main_Sparse;
-    [SpectraGrid,Response] = TwoD_Iteration(h2DFunc,GUI_data,GUI_Inputs,hGUIs);
+    [SpectraGrid,Response] = TwoD_Iteration(h2DFunc,Structure,GUI_Inputs,hGUIs);
 else
     % Reuse TwoD data
     disp('Reuse previous 2DSFG sticks to update figure...')

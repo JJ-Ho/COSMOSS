@@ -1,6 +1,8 @@
 % Template of Server_2DSFG running script
 % This template scan the structural pameters on 2D_Grid of MBA 
 %% Input parameters
+Initialization % setup path
+
 SaveName = 'APB_R5S3_MBA_4x4';
 
 % APB Relative orientation
@@ -11,10 +13,13 @@ R = R1_ZYZ_0(Phi,Psi,Theta);
 V = [0,0,15];
 
 % COSMOSS Inputs
-Structure = S_APB_MBA;
 COSMOSS_Input = Standard_Main_Input;
 COSMOSS_Input.Sampling = 1;
 COSMOSS_Input.Sample_Num = 10;
+
+% Mimicing GUI input for ensemble average part
+hGUIs.DynamicUpdate.Value = 0;
+hGUIs.UpdateStatus.Value  = 1;
 
 %% Construct 2D Grid
 % Monomer
@@ -96,25 +101,22 @@ S_BSheet_RT.Extra.RotV = [Phi,Psi,Theta];
 % Combine
 S_APB_MBA = SD_Comb2(S_Grid_All_0,S_BSheet_RT);
 S_APB_MBA.hPlotFunc = @PlotComb2;% Add function handles for plotting
+Structure = S_APB_MBA;
 
 %% FTIR
-FTIR = FTIR_Main(Structure,COSMOSS_Input);
+FTIR = OneD_Iteration(@FTIR_Main,Structure,COSMOSS_Input,hGUIs);
 % hF  = figure;
 % hAx = axes('Parent',hF);
 % Plot1D(hAx,FTIR,COSMOSS_Input);
 
 %% SFG
-SFG = OneDSFG_Main(Structure,COSMOSS_Input);
+OneDSFG = OneD_Iteration(@OneDSFG_Main,Structure,COSMOSS_Input,hGUIs);
 % hF  = figure;
 % hAx = axes('Parent',hF);
 % Plot1D(hAx,SFG,COSMOSS_Input);
 
 %% 2DIR
-hGUIs.DynamicUpdate.Value = 0;
-hGUIs.UpdateStatus.Value  = 1;
-
-h2DFunc = @TwoDIR_Main_Sparse;
-[SpectraGrid,Response] = TwoD_Iteration(h2DFunc,Structure,COSMOSS_Input,hGUIs);
+[SpectraGrid,Response] = TwoD_Iteration(@TwoDIR_Main_Sparse,Structure,COSMOSS_Input,hGUIs);
 TwoDIR                 = Response;
 TwoDIR.SpectraGrid     = SpectraGrid;
 
@@ -125,11 +127,7 @@ TwoDIR.SpectraGrid     = SpectraGrid;
 % Plot2D(hAx,CVL,COSMOSS_Input,Response.SpecType);
 
 %% 2D SFG
-hGUIs.DynamicUpdate.Value = 0;
-hGUIs.UpdateStatus.Value  = 1;
-
-h2DFunc = @TwoDSFG_Main_Sparse;
-[SpectraGrid,Response] = TwoD_Iteration(h2DFunc,Structure,COSMOSS_Input,hGUIs);
+[SpectraGrid,Response] = TwoD_Iteration(@TwoDSFG_Main_Sparse,Structure,COSMOSS_Input,hGUIs);
 TwoDSFG                = Response;
 TwoDSFG.SpectraGrid    = SpectraGrid;
 
@@ -142,7 +140,7 @@ TwoDSFG.SpectraGrid    = SpectraGrid;
 %% Outputs
 Output.Structure = S_APB_MBA;
 Output.FTIR      = FTIR;
-Output.SFG       = SFG;
+Output.OneDSFG   = OneDSFG;
 Output.TwoDIR    = TwoDIR;
 Output.TwoDSFG   = TwoDSFG;
 save(SaveName,'Output')

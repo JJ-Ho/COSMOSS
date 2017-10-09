@@ -1,16 +1,29 @@
 % Template of Server_2DSFG running script
 % This template scan the structural pameters on 2D_Grid of MBA 
-%% Input parameters
-% setup path
+%% setup path
+% % Initialization Script
+% COSMOSS_path = '/home/jho/Projects/2DSFG_FGAIL_SAM/COSMOSS';
+% addpath(COSMOSS_path);
+
 Initialization
-Debug = 1;
+Save_Output = 1;
+Debug_FTIR  = 0;
+Debug_SFG   = 0;
+Debug_2DIR  = 0;
+Debug_2DSFG = 0;
+
+%% Input parameters
+% % APB Relative orientation
+% PHI    = #PHI#;
+% PSI    = #PSI#;
+% THETA  = #THETA#;
+% TransV = [0,0,#Z#];
 
 % APB Relative orientation
-PHI    = 0;
-PSI    = 0;
-THETA  = 0;
+PHI    = 45;
+PSI    = 30;
+THETA  = -30;
 TransV = [0,0,15];
-TransitionScaling = 1;
 
 % Name the outputs
 Rot_Vec_Str   = sprintf('%03.0f_%03.0f_%03.0f',PHI,PSI,THETA);
@@ -21,7 +34,7 @@ SaveName = ['APB_R5S3_MBA_4x4','_R_',Rot_Vec_Str,'_V_',Trans_Vec_Str];
 COSMOSS_Input = Standard_Main_Input;
 COSMOSS_Input.LocFreqType  = 2;% Use Jensen Locl mode freuqency type
 COSMOSS_Input.CouplingType = 'Jansen_TDC';
-COSMOSS_Input.Sampling     = 1;
+COSMOSS_Input.Sampling     = 0;
 COSMOSS_Input.Sample_Num   = 500;
 COSMOSS_Input.DD_FWHM      = 10; % cm-1
 COSMOSS_Input.ODD_FWHM     = 5;  % cm-1
@@ -111,7 +124,36 @@ R_Matrix = R1_ZYZ_0(PHI,PSI,THETA);
 S_BSheet_0    = SD_Trans(S_BSheet,-S_BSheet.CoM);
 S_BSheet_R    = SD_Rot(S_BSheet_0,R_Matrix);
 S_BSheet_RT   = SD_Trans(S_BSheet_R,TransV);
-S_BSheet_RT_S = SD_ScaleTransitions(S_BSheet_RT,TransitionScaling);
+
+% Combine
+S_APB_MBA = SD_Comb2(S_Grid_All_0,S_BSheet_RT);
+S_APB_MBA.hPlotFunc = @PlotComb2;% Add function handles for plotting
+
+%% Test run a 2D SFG to determine the scaling factor so that the MBA peak is about the same height of Betasheet peak
+COSMOSS_Input_Test = COSMOSS_Input;
+COSMOSS_Input_Test.Sampling = 0;
+[SpectraGrid,Response] = TwoD_Iteration(@TwoDSFG_Main_Sparse,S_APB_MBA,COSMOSS_Input,hGUIs);
+TwoDSFG                = Response;
+TwoDSFG.SpectraGrid    = SpectraGrid;
+
+COSMOSS_Input_Test.FreqRange = 1600:1800;
+COSMOSS_Input_Test.LineShape = 'Non';
+COSMOSS_Input_Test.LineWidth = '';
+COSMOSS_Input_Test.Pathway   = 'All';
+COSMOSS_Input_Test.SpecType  = 'Abs';
+CVL = Conv2D(SpectraGrid,COSMOSS_Input_Test);
+
+% Define Region og interest
+Range_BSheet = (1600:1680) - COSMOSS_Input_Test.FreqRange(1) + 1;
+Range_MBA    = (1700:1750) - COSMOSS_Input_Test.FreqRange(1) + 1;
+
+Diag = diag(CVL.selected_No_Conv);
+Max_BSheet = max(Diag(Range_BSheet));
+Max_MBA    = max(Diag(Range_MBA));
+
+ScalingF = Max_MBA/Max_BSheet;
+% Apply the scaling factor
+S_BSheet_RT_S = SD_ScaleTransitions(S_BSheet_RT,ScalingF);
 S_BSheet_RT_S.hPlotFunc  = @Plot_Betasheet_AmideI;% Add function handles for plotting
 S_BSheet_RT_S.Extra.RotV = [PHI,PSI,THETA];
 
@@ -122,7 +164,7 @@ Structure = S_APB_MBA;
 
 %% FTIR
 FTIR = OneD_Iteration(@FTIR_Main,Structure,COSMOSS_Input,hGUIs);
-if Debug
+if Debug_FTIR
     hF  = figure;
     hAx = axes('Parent',hF);
     Plot1D(hAx,FTIR,COSMOSS_Input);
@@ -130,10 +172,10 @@ end
 
 %% SFG
 OneDSFG = OneD_Iteration(@OneDSFG_Main,Structure,COSMOSS_Input,hGUIs);
-if Debug
-        hF  = figure;
-        hAx = axes('Parent',hF);
-        Plot1D(hAx,OneDSFG,COSMOSS_Input);
+if Debug_SFG
+    hF  = figure;
+    hAx = axes('Parent',hF);
+    Plot1D(hAx,OneDSFG,COSMOSS_Input);
 end
 
 %% 2DIR
@@ -141,7 +183,7 @@ end
 TwoDIR                 = Response;
 TwoDIR.SpectraGrid     = SpectraGrid;
 
-if Debug
+if Debug_2DIR
     hF  = figure;
     hAx = axes('Parent',hF);
     CVL = Conv2D(SpectraGrid,COSMOSS_Input);
@@ -154,7 +196,7 @@ end
 TwoDSFG                = Response;
 TwoDSFG.SpectraGrid    = SpectraGrid;
 
-if Debug
+if Debug_2DSFG
     hF  = figure;
     hAx = axes('Parent',hF);
     CVL = Conv2D(SpectraGrid,COSMOSS_Input);
@@ -168,6 +210,7 @@ Output.FTIR      = FTIR;
 Output.OneDSFG   = OneDSFG;
 Output.TwoDIR    = TwoDIR;
 Output.TwoDSFG   = TwoDSFG;
-if ~Debug
+Output.ScalingF  = ScalingF;
+if Save_Output
     save(SaveName,'Output')
 end

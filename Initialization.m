@@ -1,5 +1,5 @@
 % Initialization Script
-Current_path = pwd;
+Current_path = '/home/jho/Projects/2DSFG_FGAIL_SAM/COSMOSS';
 addpath(Current_path);
 
 % Add path to SubFunctions

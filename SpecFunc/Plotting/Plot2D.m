@@ -123,8 +123,10 @@ FilesName_Reg   = regexprep(FilesName,'\_','\\_');
 Coupling        = GUI_Inputs.CouplingType;
 Coupling_Reg    = regexprep(Coupling,'\_','\\_');
 
-Title_String = [SpecType,' ',FilesName_Reg,', Coupling:',Coupling_Reg];
-title(Title_String,'FontSize',16);
+%Title_String = {[SpecType,' ',FilesName_Reg]; ['Coupling:',Coupling_Reg]};
+Title_String = FilesName_Reg;
+
+title(Title_String,'FontSize',12);
 
 if PlotCursor
     S.hF = hF;

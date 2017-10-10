@@ -163,7 +163,7 @@ M_MBA    = M_All(   Range_MBA,   Range_MBA);
 Max_BSheet = max(M_BSheet(:));
 Max_MBA    = max(M_MBA(:));
 
-ScalingF = Max_MBA/Max_BSheet;
+ScalingF = (Max_MBA/Max_BSheet)^(1/4);
 % Apply the scaling factor
 S_BSheet_RT_S = SD_ScaleTransitions(S_BSheet_RT,ScalingF);
 S_BSheet_RT_S.hPlotFunc  = @Plot_Betasheet_AmideI;% Add function handles for plotting

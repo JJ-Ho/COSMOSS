@@ -51,7 +51,7 @@ CMAP_Index  = INPUT.Results.CMAP_Index;
 PlotNorm    = INPUT.Results.PlotNorm;
 
 %% Main
-cla(hAx)
+%cla(hAx)
 X = FreqRange;
 Y = FreqRange;
 
@@ -126,7 +126,7 @@ Coupling        = GUI_Inputs.CouplingType;
 Coupling_Reg    = regexprep(Coupling,'\_','\\_');
 
 %Title_String = {[SpecType,' ',FilesName_Reg]; ['Coupling:',Coupling_Reg]};
-Title_String = {['2DSFG, Z_{max}:',sprintf('%3.2e',Amp)]};
+Title_String = ['2DSFG, ZMax:',sprintf('%3.2e',Amp)];
 hAx.Title.String = Title_String;
 hAx.Title.FontSize = 12;
 

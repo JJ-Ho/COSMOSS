@@ -95,7 +95,7 @@ switch CVL.Lineshape
         contour(hAx,X,Y,Z,Num_Contour,'LineWidth',2)
 
         % Set colorbar
-        colorbar
+        %colorbar
         CMAP = SelectColormap(CMAP_Index);
         colormap(hAx,CMAP)      
         Amp = max(abs(Z(:)));
@@ -117,6 +117,8 @@ hAx.XLabel.String = 'Probe (cm^{-1})';
 hAx.YLabel.String = 'Pump (cm^{-1})';
 hAx.XLim = [FreqRange(1),FreqRange(end)];
 hAx.YLim = [FreqRange(1),FreqRange(end)];
+hAx.XGrid = 'on';
+hAx.YGrid = 'on';
 
 FilesName       = CVL.FilesName;
 FilesName_Reg   = regexprep(FilesName,'\_','\\_');
@@ -124,9 +126,9 @@ Coupling        = GUI_Inputs.CouplingType;
 Coupling_Reg    = regexprep(Coupling,'\_','\\_');
 
 %Title_String = {[SpecType,' ',FilesName_Reg]; ['Coupling:',Coupling_Reg]};
-Title_String = FilesName_Reg;
-
-title(Title_String,'FontSize',12);
+Title_String = {['2DSFG, Z_{max}:',sprintf('%3.2e',Amp)]};
+hAx.Title.String = Title_String;
+hAx.Title.FontSize = 12;
 
 if PlotCursor
     S.hF = hF;

@@ -117,14 +117,15 @@ end
 hold(hAx,'on')
     %% draw atoms  
     if Plot_Atoms
-        plot3(hAx,Center(:,1),Center(:,2),Center(:,3),'LineStyle','none','Marker','d','MarkerFaceColor','w')
+        MK_Size = 8;
+        %plot3(hAx,Center(:,1),Center(:,2),Center(:,3),'LineStyle','none','Marker','d','MarkerFaceColor','w')
 
-        plot3(hAx,XYZ_C(:,1),XYZ_C(:,2),XYZ_C(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,0],'MarkerSize',10)
-        plot3(hAx,XYZ_O(:,1),XYZ_O(:,2),XYZ_O(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',10)
-        plot3(hAx,XYZ_N(:,1),XYZ_N(:,2),XYZ_N(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,1],'MarkerSize',10)        
+        plot3(hAx,XYZ_C(:,1),XYZ_C(:,2),XYZ_C(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,0],'MarkerSize',MK_Size)
+        plot3(hAx,XYZ_O(:,1),XYZ_O(:,2),XYZ_O(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',MK_Size)
+        plot3(hAx,XYZ_N(:,1),XYZ_N(:,2),XYZ_N(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,1],'MarkerSize',MK_Size)        
 
-        plot3(hAx,C_H_Pos(:,1),C_H_Pos(:,2),C_H_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','w','MarkerSize',10)
-        plot3(hAx,C_O_Pos(:,1),C_O_Pos(:,2),C_O_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','r','MarkerSize',10)
+        plot3(hAx,C_H_Pos(:,1),C_H_Pos(:,2),C_H_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','w','MarkerSize',MK_Size)
+        plot3(hAx,C_O_Pos(:,1),C_O_Pos(:,2),C_O_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','r','MarkerSize',MK_Size)
     end
     %% draws bonds
     if Plot_Bonds

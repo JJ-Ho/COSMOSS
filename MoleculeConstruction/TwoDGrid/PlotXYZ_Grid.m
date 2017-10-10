@@ -10,7 +10,7 @@ INPUT.KeepUnmatched = 1;
 % Default values
 defaultPlot_Atoms      = 1;
 defaultPlot_Bonds      = 1;
-defaultPlot_Axis       = 1;
+defaultPlot_Axis       = 0;
 defaultPlot_Lattice    = 0;
 defaultPlot_Atom_Index = 0;
 
@@ -75,7 +75,7 @@ hold(hAx,'on')
     end
     
     %% Draw mode index
-    Plot_Mode_Index = 1;
+    Plot_Mode_Index = 0;
     if Plot_Mode_Index
         Mode_Ind_Str = strsplit(num2str(1:Nmodes));
         XYZ_Mode_Ind = Center + 0.1;
@@ -84,13 +84,14 @@ hold(hAx,'on')
     
     %% Draw atoms
     if Plot_Atoms
-        plot3(hAx,Center(:,1)  ,Center(:,2)  ,Center(:,3)  ,'LineStyle','none','Marker','d','MarkerFaceColor','w')
+        MK_Size = 5;
+        %plot3(hAx,Center(:,1)  ,Center(:,2)  ,Center(:,3)  ,'LineStyle','none','Marker','d','MarkerFaceColor','w')
 
-        plot3(hAx,XYZ(C_Ind,1),XYZ(C_Ind,2),XYZ(C_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,0],'MarkerSize',10)
-        plot3(hAx,XYZ(O_Ind,1),XYZ(O_Ind,2),XYZ(O_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',10)
-        plot3(hAx,XYZ(N_Ind,1),XYZ(N_Ind,2),XYZ(N_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,1],'MarkerSize',10)        
-        plot3(hAx,XYZ(S_Ind,1),XYZ(S_Ind,2),XYZ(S_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,1,0],'MarkerSize',10)        
-        plot3(hAx,XYZ(H_Ind,1),XYZ(H_Ind,2),XYZ(H_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,1,1],'MarkerSize',5)        
+        %plot3(hAx,XYZ(C_Ind,1),XYZ(C_Ind,2),XYZ(C_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,0],'MarkerSize',MK_Size)
+        plot3(hAx,XYZ(O_Ind,1),XYZ(O_Ind,2),XYZ(O_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',MK_Size)
+        plot3(hAx,XYZ(N_Ind,1),XYZ(N_Ind,2),XYZ(N_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,1],'MarkerSize',MK_Size)        
+        plot3(hAx,XYZ(S_Ind,1),XYZ(S_Ind,2),XYZ(S_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,1,0],'MarkerSize',MK_Size)        
+        %plot3(hAx,XYZ(H_Ind,1),XYZ(H_Ind,2),XYZ(H_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,1,1],'MarkerSize',MK_Size)        
 
     end
     

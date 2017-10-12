@@ -1,9 +1,9 @@
-function plot_Raman(hAx,Raman,Center,RT_scale,N_mesh,F_Color,Raman_Type)
+function plot_Raman(hAx,Raman,Center,N_mesh,F_Color,Raman_Type)
 %% debug
 % clear all
 % hF =figure;
 % hAx = axes;
-% % Raman = [1,0,0;0,-5,0;0,0,10];
+% Raman = [1,0,0;0,-5,0;0,0,10];
 % Raman = [5.5,0,-4.5;0,-5,0;-4.5,0,5.5];
 % Center = [0,0,0];
 % RT_scale = 1;
@@ -14,9 +14,9 @@ function plot_Raman(hAx,Raman,Center,RT_scale,N_mesh,F_Color,Raman_Type)
 %% draw Raman tensor    
 % Extract ellipsoid info from Raman tensor
 [V,D] = eig(Raman);
-SemiAxisL = RT_scale.*diag(D);
+% SemiAxisL = RT_scale.*diag(D);
+SemiAxisL = diag(D);
 RM = V; % Rotational matrix
-
 
 switch Raman_Type
     case 1 %'Arrow'
@@ -42,8 +42,8 @@ switch Raman_Type
         Arror_H = 2*Arror_W;
         
         Arrow_End = [Principle_Axes,-Principle_Axes]'; % double side arrow
+        Arrow_End = bsxfun(@plus,Arrow_End,Center); % move the ned point with Center translation
         Arror_Orig = bsxfun(@times,Center,ones(6,1));
-        
         
         set(hAx,'ColorOrder',ColorOrder)
         arrow3(Arror_Orig,Arrow_End,'o2',Arror_W,Arror_H)
@@ -149,10 +149,8 @@ switch Raman_Type
      
     case 4 %'HyperE'
         %% Plot hyper ellipsoid so that the radius = E'*Alpha*E
-        N_Grid = 100;
-
-        phi   = linspace(0,2*pi,N_Grid);
-        theta = linspace(-pi/2,pi/2,N_Grid);
+        phi   = linspace(0,2*pi,N_mesh);
+        theta = linspace(-pi/2,pi/2,N_mesh);
         [Phi,Theta] = meshgrid(phi,theta);
 
         T = Theta(:);
@@ -161,7 +159,6 @@ switch Raman_Type
         V2 = V1;
         %V2 = [-sin(T).*cos(P),-sin(T).*sin(P),cos(T)]; % for cross polarization
         
-        Raman = RT_scale .* Raman;
         Rho = sum((V1*Raman).*V2,2);
         Rho = reshape(Rho,size(Theta));
 

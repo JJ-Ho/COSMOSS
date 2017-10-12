@@ -181,8 +181,7 @@ SpecData   = GUI_data.SpecData;
 hModel     = GUI_data.hModel;
 
 %% Draw molecule by calling the PlotMolecule function in each model
-[hFunc_Model,~,~] = StructureModel(Structure.StructModel);
-hF = hFunc_Model('PlotMolecule',hModel,eventdata,guidata(hModel));
+hF = Structure.Draw;
 
 %% Call Update Figure function
 Fig_Output = Update_Modes_Figure(hF, GUI_Inputs, Structure, SpecData);

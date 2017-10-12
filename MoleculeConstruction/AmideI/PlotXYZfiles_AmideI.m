@@ -40,7 +40,7 @@ defaultPlot_Atoms     = 1;
 defaultPlot_Bonds     = 1;
 defaultPlot_Axis      = 1;
 defaultPlot_SideChain = 0;
-defaultPlot_Label     = 1;
+defaultPlot_Label     = 0;
 defaultL_Index        = [];
 
 % Add optional inputs to inputparser object
@@ -81,12 +81,12 @@ XYZ_C = XYZ(C_Ind,:);
 XYZ_O = XYZ(O_Ind,:);
 XYZ_N = XYZ(N_Ind,:);
 
-
 % Prep hAx 
 if ~ishandle(hAx)
     hF = figure; 
     hAx = axes('Parent',hF);
-    disp('Draw in new figure')
+else
+    hF = hAx.Parent;
 end
 
 hold(hAx,'on')
@@ -109,7 +109,8 @@ hold(hAx,'on')
     end
     %% Draw atoms
     if Plot_Atoms
-        plot3(hAx,Center(:,1)  ,Center(:,2)  ,Center(:,3)  ,'LineStyle','none','Marker','d','MarkerFaceColor','w')
+        % Plot the mode center label
+        %plot3(hAx,Center(:,1)  ,Center(:,2)  ,Center(:,3)  ,'LineStyle','none','Marker','d','MarkerFaceColor','w')
         
         plot3(hAx,XYZ_C(:,1),XYZ_C(:,2),XYZ_C(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,0],'MarkerSize',10)
         plot3(hAx,XYZ_O(:,1),XYZ_O(:,2),XYZ_O(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',10)
@@ -127,21 +128,13 @@ hold(hAx,'on')
     
     %% Draw labeled atoms
     if Plot_Label
-        %L_Index = GUI_Inputs.L_Index;
-        %L_Center = Center(L_Index,:);
         L_C = XYZ_C(L_Index,:);
         L_O = XYZ_O(L_Index,:);
         L_N = XYZ_N(L_Index,:);
 
-        %plot3(L_Center(:,1),L_Center(:,2),L_Center(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','g','MarkerSize',11)
         plot3(hAx,L_C(:,1),L_C(:,2),L_C(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,1,0],'MarkerSize',10)
         plot3(hAx,L_O(:,1),L_O(:,2),L_O(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,1,0],'MarkerSize',10)
         plot3(hAx,L_N(:,1),L_N(:,2),L_N(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,1,0],'MarkerSize',10)    
-%         MarkerSize = 150;
-%         s_C = scatter3(L_C(:,1),L_C(:,2),L_C(:,3),MarkerSize,'MarkerFaceColor',[0,1,0],'MarkerEdgeColor','none');
-%         s_O = scatter3(L_O(:,1),L_O(:,2),L_O(:,3),MarkerSize,'MarkerFaceColor',[0,1,0],'MarkerEdgeColor','none');
-%         s_N = scatter3(L_N(:,1),L_N(:,2),L_N(:,3),MarkerSize,'MarkerFaceColor',[0,1,0],'MarkerEdgeColor','none');
-%         alpha([s_C,s_O,s_N],0.5)
     end
 hold(hAx,'off')
 
@@ -150,3 +143,7 @@ hAx.XLabel.String = 'X';
 hAx.YLabel.String = 'Y';
 axis(hAx,'image');
 rotate3d(hAx,'on')
+view(hAx,[-20,20])
+hAx.XGrid = 'on';
+hAx.YGrid = 'on';
+hAx.ZGrid = 'on';

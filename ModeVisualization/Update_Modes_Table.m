@@ -119,7 +119,7 @@ if or(strcmp(SpecType,'TwoDIR'),strcmp(SpecType,'TwoDSFG'))
     PathType_Total = fieldnames(SD.Index);
     N_Path_Total = 0;
     for P = 1:length(PathType_Total)
-        N_Path_Total = N_Path_Total + size(SD.Index.(PathType_Total{P}),1);
+        N_Path_Total = N_Path_Total + size(SD.Int.(PathType_Total{P}),1);
     end
     Index = (1:N_Path_Total)';
     

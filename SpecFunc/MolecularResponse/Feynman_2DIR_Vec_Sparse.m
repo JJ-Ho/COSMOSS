@@ -1,6 +1,7 @@
 function [Grid,Freq,Int,Index,CutOff] = Feynman_2DIR_Vec_Sparse(PCutOff,FreqRange,EJR,F1,F2,M01,M12)
 % 
-% This function generate Feynman pathway of 2DSFG with given polarization.
+% This function generate Feynman pathway of 2DIR and bin them into 1cm-1
+% bucket
 % 
 % Since "kron" function use reshape alot, the overall speed of kron product
 % version is slower than for loop version
@@ -16,8 +17,8 @@ function [Grid,Freq,Int,Index,CutOff] = Feynman_2DIR_Vec_Sparse(PCutOff,FreqRang
 
 %% debug
 % GI = ParseGUI_Main(Data_COSMOSS.hGUIs);
+% PCutOff = GI.PCutOff;
 % FreqRange = GI.FreqRange;
-% 
 % 
 % R_Avg = LabFrameAvg('Isotropic',4); 
 % J = JonesTrans4(pi/2,pi/2,pi/2,pi/2);
@@ -29,11 +30,10 @@ function [Grid,Freq,Int,Index,CutOff] = Feynman_2DIR_Vec_Sparse(PCutOff,FreqRang
 % F2 = TwoDIR.H.Sort_Ex_F2;
 % M01 = TwoDIR.Mu.M_Ex_01;
 % M12 = TwoDIR.Mu.M_Ex_12;
-% 
-% % M_Ex_01(abs(M_Ex_01)<1e-10) = 0;
-% % M_Ex_12(abs(M_Ex_12)<1e-10) = 0;
 
 %% Rund up frequency for sparse accumulation
+% Round off so the sparse matrix accumulation will bin the response into
+% 1cm-1 bucket. For finer bin modify this part
 F1 = round(F1);
 F2 = round(F2);
 
@@ -110,7 +110,7 @@ PI_NR1 = I_NR1 >= (PCutOff * NR1_Max);
 PI_NR2 = I_NR2 >= (PCutOff * NR2_Max);
 PI_NR3 = I_NR3 >= (PCutOff * NR3_Max);
 
-%% Get 2DIR response from index version kronec product(GB SE)
+%% Get 2DIR response from index version kronecker product(GB SE)
 % R1
 Ib_R1   = Ib(PI_R1);
 Ia_R1   = Ia(PI_R1);
@@ -146,7 +146,7 @@ S_NR2    = ( M01(Ia_NR2,Ja).*M01(Ib_NR2,Jb).*M01(Ib_NR2,Jc).*M01(Ia_NR2,Jd) )*EJ
 Ea_5     = F1(Ia_NR2);
 Eb_5     = F1(Ib_NR2);
 Freq_NR2 = [ Ea_5, Ea_5-Eb_5, Ea_5]; % [pump,diff,probe]
-% This is a interesting term! only contribute to diagonal!
+% This is an interesting term! only contribute to diagonal!
 
 %% Prep for R3/NR3
 % estimate of largest array size and break it down to several for loop
@@ -228,11 +228,11 @@ Ibx_NR3 = Ibx(PI_NR3);
 Ib_NR3  =  Kb(PI_NR3);
 Ia_NR3  =  Ka(PI_NR3);
 
-NR3 = numel(Ia_NR3);
+N_NR3 = numel(Ia_NR3);
 
-if NR3 > Ele_Max
+if N_NR3 > Ele_Max
     % Add NaNs so I can reshape indexes
-    Padding_L = Ele_Max - mod(NR3,Ele_Max);
+    Padding_L = Ele_Max - mod(N_NR3,Ele_Max);
     Padding_NaN = nan(Padding_L,1);
     
     Ia_NR3_L  = reshape([ Ia_NR3; Padding_NaN],Ele_Max,[]);
@@ -263,7 +263,7 @@ if NR3 > Ele_Max
     S_NR3_L = S_NR3_L(:);
 
     % deall with the last loop
-    Last_Ind    = (1:mod(NR3,Ele_Max))';
+    Last_Ind    = (1:mod(N_NR3,Ele_Max))';
     Ia_NR3_End  =  Ia_NR3_L(Last_Ind,Loop_N);
     Ib_NR3_End  =  Ib_NR3_L(Last_Ind,Loop_N);
     Iax_NR3_End = Iax_NR3_L(Last_Ind,Loop_N);
@@ -292,16 +292,8 @@ Eb_6 = F1(Ib_NR3);
 Ex_6 = F2(Kx(PI_NR3));
 Freq_NR3 = [ Ea_6 , Ea_6 - Eb_6 , Ex_6 - Eb_6 ];
 
-%% Prep for export mode index
-Ind_R1  = [Ib,Ib,Ia,Ia]; % GB
-Ind_R2  = [Ib,Ia,Ib,Ia]; % SE
-Ind_R3  = [Ka,Kx,Kb,Ka]; % EA
-
-Ind_NR1 = [Ib,Ib,Ia,Ia]; % GB
-Ind_NR2 = [Ia,Ib,Ib,Ia]; % SE
-Ind_NR3 = [Kb,Kx,Kb,Ka]; % EA
-
 %% Construct sparse matrix version of Responses
+% This part also deal with binning
 SparseMax = max([max(F1), max(F2(Kx(:)) - F1(Ka(:))), max(FreqRange)]); 
 
 R1  = sparse( Freq_R1(:,1), Freq_R1(:,3),S_R1 ,SparseMax,SparseMax);
@@ -311,17 +303,7 @@ NR1 = sparse(Freq_NR1(:,1),Freq_NR1(:,3),S_NR1,SparseMax,SparseMax);
 NR2 = sparse(Freq_NR2(:,1),Freq_NR2(:,3),S_NR2,SparseMax,SparseMax);
 NR3 = sparse(Freq_NR3(:,1),Freq_NR3(:,3),S_NR3,SparseMax,SparseMax);
 
-%% Output
-% MinF = min(FreqRange);
-% MaxF = max(FreqRange);
-% 
-% Grid.R1  = full( R1(MinF:MaxF,MinF:MaxF)); % [Pumpx Probe]
-% Grid.R2  = full( R2(MinF:MaxF,MinF:MaxF)); % [Pumpx Probe]
-% Grid.R3  = full( R3(MinF:MaxF,MinF:MaxF)); % [Pumpx Probe]
-% Grid.NR1 = full(NR1(MinF:MaxF,MinF:MaxF)); % [Pumpx Probe]
-% Grid.NR2 = full(NR2(MinF:MaxF,MinF:MaxF)); % [Pumpx Probe]
-% Grid.NR3 = full(NR3(MinF:MaxF,MinF:MaxF)); % [Pumpx Probe]
-
+% Accumulated spectral grid output
 Grid.R1  = R1;  % [Pumpx Probe]
 Grid.R2  = R2;  % [Pumpx Probe]
 Grid.R3  = R3;  % [Pumpx Probe]
@@ -329,19 +311,22 @@ Grid.NR1 = NR1; % [Pumpx Probe]
 Grid.NR2 = NR2; % [Pumpx Probe]
 Grid.NR3 = NR3; % [Pumpx Probe]
 
-Int.R1  = S_R1;
-Int.R2  = S_R2;
-Int.R3  = S_R3;
-Int.NR1 = S_NR1;
-Int.NR2 = S_NR2;
-Int.NR3 = S_NR3;
-
+% Response frequency output
 Freq.R1  = Freq_R1;
 Freq.R2  = Freq_R2;
 Freq.R3  = Freq_R3;
 Freq.NR1 = Freq_NR1;
 Freq.NR2 = Freq_NR2;
 Freq.NR3 = Freq_NR3;
+
+%% Response composition index output
+Ind_R1  = [Ib_R1,Ib_R1,Ia_R1,Ia_R1]; % GB
+Ind_R2  = [Ib_R2,Ia_R2,Ib_R2,Ia_R2]; % SE
+Ind_R3  = [Iax_R3,Ibx_R3,Ib_R3,Ia_R3]; % EA
+
+Ind_NR1 = [Ib_NR1,Ib_NR1,Ia_NR1,Ia_NR1]; % GB
+Ind_NR2 = [Ia_NR2,Ib_NR2,Ib_NR2,Ia_NR2]; % SE
+Ind_NR3 = [Iax_NR3,Ibx_NR3,Ib_NR3,Ia_NR3]; % EA
 
 Index.R1  = Ind_R1;
 Index.R2  = Ind_R2;
@@ -350,6 +335,14 @@ Index.NR1 = Ind_NR1;
 Index.NR2 = Ind_NR2;
 Index.NR3 = Ind_NR3;
 
+%% Response intensity & Survived index output
+Int.R1  = I_R1(PI_R1);
+Int.R2  = I_R2(PI_R2);
+Int.R3  = I_R3(PI_R3);
+Int.NR1 = I_NR1(PI_NR1);
+Int.NR2 = I_NR2(PI_NR2);
+Int.NR3 = I_NR3(PI_NR3);
+
 CutOff.PI_R1   = PI_R1;
 CutOff.PI_R2   = PI_R2;
 CutOff.PI_R3   = PI_R3;
@@ -357,3 +350,12 @@ CutOff.PI_NR1  = PI_NR1;
 CutOff.PI_NR2  = PI_NR2;
 CutOff.PI_NR3  = PI_NR3;
 CutOff.PCutOff = PCutOff;
+
+% Sparse matrix of Respinse intensity (defined by the 2-Norm of 3^5 elements response tensor)
+Int_SPM.R1  = sparse( Freq_R1(:,1), Freq_R1(:,3),Int.R1 ,SparseMax,SparseMax);
+Int_SPM.R2  = sparse( Freq_R2(:,1), Freq_R2(:,3),Int.R2 ,SparseMax,SparseMax);
+Int_SPM.R3  = sparse( Freq_R3(:,1), Freq_R3(:,3),Int.R3 ,SparseMax,SparseMax);
+Int_SPM.NR1 = sparse(Freq_NR1(:,1),Freq_NR1(:,3),Int.NR1,SparseMax,SparseMax);
+Int_SPM.NR2 = sparse(Freq_NR2(:,1),Freq_NR2(:,3),Int.NR2,SparseMax,SparseMax);
+Int_SPM.NR3 = sparse(Freq_NR3(:,1),Freq_NR3(:,3),Int.NR3,SparseMax,SparseMax);
+Int.Int_SPM = Int_SPM;

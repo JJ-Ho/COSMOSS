@@ -63,7 +63,7 @@ O.F_Max     = str2double(get(hGUIs.F_Max,'String'));
 O.FreqRange = O.F_Min:O.F_Max;
 
 
-O.LineWidth = str2double(get(hGUIs.LineWidth    ,'String'));
+O.LineWidth = str2double(get(hGUIs.LineWidth,'String'));
 LineShape   =            get(hGUIs.LineShape,'Value');
 switch LineShape
     case 1
@@ -74,6 +74,8 @@ switch LineShape
         O.LineShape = 'KK';
     case 4
         O.LineShape = 'None'; 
+    case 5
+        O.LineShape = 'Spy'; 
 end
 
 SpecType = get(hGUIs.SpecType, 'Value');
@@ -109,8 +111,9 @@ end
 
 % For Analysis Tools ------------------------------------------------------
 O.IntegralArea =            get(hGUIs.IntegralArea,'Value');
-O.HCut_2DIR    = str2double(get(hGUIs.HCut_2DIR  ,'String'));
-O.HCut_2DSFG   = str2double(get(hGUIs.HCut_2DSFG ,'String'));
+O.HCut_2DIR    = str2double(get(hGUIs.HCut_2DIR   ,'String'));
+O.HCut_2DSFG   = str2double(get(hGUIs.HCut_2DSFG  ,'String'));
+O.TS_Type      =            get(hGUIs.TS_Type     ,'Value');
 % -------------------------------------------------------------------------
 
 

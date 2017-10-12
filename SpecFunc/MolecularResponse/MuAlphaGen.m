@@ -54,10 +54,10 @@ Mode = INPUT.Results.Mode;
 
 switch Mode   
     case 'Mu'
-       Trans_Moment = SData.LocMu; % size [N x 3]
+       Trans_Moment = SData.Scaled_LocMu; % size [N x 3]
        
     case 'Alpha'  
-       Trans_Moment = SData.LocAlpha; % note: RamanV = [N x 9], index: [xx xy xz yx yy yz zx zy zz]
+       Trans_Moment = SData.Scaled_LocAlpha; % note: RamanV = [N x 9], index: [xx xy xz yx yy yz zx zy zz]
 end
 
 M = size(Trans_Moment,2);

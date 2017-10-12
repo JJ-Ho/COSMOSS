@@ -6,21 +6,23 @@ function Output = Holstein_H(P)
 % Ref: Kistler, K. A.; Pochas, C. M.; Yamagata, H. JPCB, 2011, 116, 77?86.
 
 %% Debug
-% % molecule parameters
-% NV = 3; % NUmber of maximun vibrational quata
-% w0 =1400;
-% Lambda = sqrt(0.57);
-% J12 = 0.5*w0;
-% D = -100;
-% w0_0 = 15500;
-% theta1 = -0; % angle of local mode electronic transition dipole in degee 
-% theta2 =  0;
+% molecule parameters
+% P.NV = 3; % NUmber of maximun vibrational quata
+% P.w0_1 =1400;
+% P.w0_2 =1400;
+% P.Lambda = sqrt(0.57);
+% P.J12 = 0.5*P.w0_1;
+% P.D = -100;
+% P.w0_0_1 = 15500;
+% P.w0_0_2 = 15500;
+% P.theta1 = -0; % angle of local mode electronic transition dipole in degee 
+% P.theta2 =  0;
 % 
 % % figure options
-% LS = 'L';
-% LineWidth = 40;
-% F_Min = 400;
-% F_Max = 800;
+% P.LS = 'L';
+% P.LineWidth = 40;
+% P.F_Min = 400;
+% P.F_Max = 800;
 
 %% Read Inputs
 NV        = P.NV;

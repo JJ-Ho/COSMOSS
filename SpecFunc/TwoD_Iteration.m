@@ -21,14 +21,12 @@ if Sampling
     I.FreqRange = FreqRange; % pass the extended Frequency Range to the TwoD main function
     GridSize  = FreqRange(end); 
     
-    Rephasing    = sparse(GridSize,GridSize);
-    NonRephasing = sparse(GridSize,GridSize);
-    SpecAccuR1   = sparse(GridSize,GridSize);
-    SpecAccuR2   = sparse(GridSize,GridSize);
-    SpecAccuR3   = sparse(GridSize,GridSize);
-    SpecAccuNR1  = sparse(GridSize,GridSize);
-    SpecAccuNR2  = sparse(GridSize,GridSize);
-    SpecAccuNR3  = sparse(GridSize,GridSize);
+    R1   = sparse(GridSize,GridSize);
+    R2   = sparse(GridSize,GridSize);
+    R3   = sparse(GridSize,GridSize);
+    NR1  = sparse(GridSize,GridSize);
+    NR2  = sparse(GridSize,GridSize);
+    NR3  = sparse(GridSize,GridSize);
 
     TSTART = zeros(Sample_Num,1,'uint64');
     TIME   = zeros(Sample_Num,1);
@@ -48,27 +46,23 @@ if Sampling
         
         % Accumulate result
         try
-            Rephasing    = Rephasing    + Tmp_SG.Rephasing   ;
-            NonRephasing = NonRephasing + Tmp_SG.NonRephasing;
-            SpecAccuR1   = SpecAccuR1   + Tmp_SG.SpecAccuR1  ;
-            SpecAccuR2   = SpecAccuR2   + Tmp_SG.SpecAccuR2  ;
-            SpecAccuR3   = SpecAccuR3   + Tmp_SG.SpecAccuR3  ;
-            SpecAccuNR1  = SpecAccuNR1  + Tmp_SG.SpecAccuNR1 ;
-            SpecAccuNR2  = SpecAccuNR2  + Tmp_SG.SpecAccuNR2 ;
-            SpecAccuNR3  = SpecAccuNR3  + Tmp_SG.SpecAccuNR3 ;   
+            R1   = R1   + Tmp_SG.R1  ;
+            R2   = R2   + Tmp_SG.R2  ;
+            R3   = R3   + Tmp_SG.R3  ;
+            NR1  = NR1  + Tmp_SG.NR1 ;
+            NR2  = NR2  + Tmp_SG.NR2 ;
+            NR3  = NR3  + Tmp_SG.NR3 ;   
         catch
             disp(['Frequency fluctuation out of range: ', num2str(GridSize),', dop this run...'])
             continue
         end
 
-        SpectraGrid.Rephasing    = Rephasing    ;
-        SpectraGrid.NonRephasing = NonRephasing ;
-        SpectraGrid.SpecAccuR1   = SpecAccuR1   ;
-        SpectraGrid.SpecAccuR2   = SpecAccuR2   ;
-        SpectraGrid.SpecAccuR3   = SpecAccuR3   ;
-        SpectraGrid.SpecAccuNR1  = SpecAccuNR1  ;
-        SpectraGrid.SpecAccuNR2  = SpecAccuNR2  ;
-        SpectraGrid.SpecAccuNR3  = SpecAccuNR3  ;
+        SpectraGrid.R1   = R1   ;
+        SpectraGrid.R2   = R2   ;
+        SpectraGrid.R3   = R3   ;
+        SpectraGrid.NR1  = NR1  ;
+        SpectraGrid.NR2  = NR2  ;
+        SpectraGrid.NR3  = NR3  ;
         Response = Tmp_Res;
 
         % Dynamic update of figure % update every 10 run

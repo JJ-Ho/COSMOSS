@@ -13,6 +13,13 @@ load('Jansen_Map.mat')
 %                   Phi(i)    Psi(i)
 
 Dihedral = SD_PeptideDihedral(Structure);
+if isempty(Dihedral)
+    disp('The structure does not have amide groups, using TDC coupling instead...')
+    Beta = 0;
+    dF = 0;
+    return
+end
+
 Psi = Dihedral.Psi;
 Phi = Dihedral.Phi;
 

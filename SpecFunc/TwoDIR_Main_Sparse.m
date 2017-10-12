@@ -106,7 +106,7 @@ E = EPolar4(P_Sig2D,P_Probe,P_Pump2,P_Pump1);
 %% Generate Feynman pathway for 2DSFG
 EJR = E*J*R_Avg;
 
-[Grid,Freq,Int,Index,CutOff] = Feynman_2DIR_Vec_Sparse(PCutOff,...
+[SpectraGrid,Freq,Int,Index,CutOff] = Feynman_2DIR_Vec_Sparse(PCutOff,...
                                                        FreqRange,...
                                                        EJR,...
                                                        Ex_F1,...
@@ -114,7 +114,7 @@ EJR = E*J*R_Avg;
                                                        M_Ex_01,...
                                                        M_Ex_12);
 
-%% Group up outputs
+%% Group up other outputs
 Response.H = H;
 Response.Mu = Mu;
 
@@ -125,15 +125,4 @@ Response.CutOff = CutOff;
 
 Response.EJR = EJR;
 Response.SpecType = '2DIR';
-
-%% Binning of spectra
-SpectraGrid.SpecAccuR1  = Grid.R1;
-SpectraGrid.SpecAccuR2  = Grid.R2;
-SpectraGrid.SpecAccuR3  = Grid.R3;
-SpectraGrid.SpecAccuNR1 = Grid.NR1;
-SpectraGrid.SpecAccuNR2 = Grid.NR2;
-SpectraGrid.SpecAccuNR3 = Grid.NR3;
-
-SpectraGrid.Rephasing    = Grid.R1  + Grid.R2  - Grid.R3;
-SpectraGrid.NonRephasing = Grid.NR1 + Grid.NR2 - Grid.NR3;
 

@@ -1,11 +1,11 @@
 function OneD = OneD_Iteration(h1DFunc,app)
 I = Parse_COSMOSS(app);
 S = app.Structure;
-            
-hF  = figure;
-hAx = axes('Parent',hF);
 
 if eq(I.Sampling,1)
+    hF  = figure;
+    hAx = axes('Parent',hF);
+    
     % Pre-allocate
     GridSize   = length(I.FreqRange);
     Response1D = zeros(GridSize,1);
@@ -19,6 +19,7 @@ if eq(I.Sampling,1)
         % Read GUI input directly from obj handle
         DynamicUpdate = app.CheckBox_DynamicFigUpdate.Value;
         UpdateStatus  = app.CheckBox_Continue.Value;
+        
         if and(~eq(i,1), and(eq(DynamicUpdate,1),~eq(UpdateStatus,1)))
             break
         end

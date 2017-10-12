@@ -134,7 +134,7 @@ if PlotCursor
     S.ax = hAx;
     Pointer_N(S) % use normalized scale
 end
-title(Title_String,'FontSize',16);
+title(hAx,Title_String,'FontSize',16);
 
 if IntegralArea
     % integrate the curve area

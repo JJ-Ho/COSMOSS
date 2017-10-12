@@ -2,7 +2,7 @@ function hGUIs = GUI_COSMOSS(hCOSMOSS)
 % This function will build all GUI elements on pre-build GUI base figure
 
 %% Pre-setting
-Version = '1.7.7';
+Version = '1.8.0';
 
 %% Add base layout
 MainLayout = uix.VBoxFlex(...

@@ -62,30 +62,33 @@ SpecType    = INPUT.Results.SpecType;
 MinF = FreqRange(1);
 MaxF = FreqRange(end);
 
-SG.SpecAccuR1  = full(SSG.SpecAccuR1(MinF:MaxF,MinF:MaxF));
-SG.SpecAccuR2  = full(SSG.SpecAccuR2(MinF:MaxF,MinF:MaxF));
-SG.SpecAccuR3  = full(SSG.SpecAccuR3(MinF:MaxF,MinF:MaxF));
-SG.SpecAccuNR1 = full(SSG.SpecAccuNR1(MinF:MaxF,MinF:MaxF));
-SG.SpecAccuNR2 = full(SSG.SpecAccuNR2(MinF:MaxF,MinF:MaxF));
-SG.SpecAccuNR3 = full(SSG.SpecAccuNR3(MinF:MaxF,MinF:MaxF));
+SG.R1  = full(SSG.R1(MinF:MaxF,MinF:MaxF));
+SG.R2  = full(SSG.R2(MinF:MaxF,MinF:MaxF));
+SG.R3  = full(SSG.R3(MinF:MaxF,MinF:MaxF));
+SG.NR1 = full(SSG.NR1(MinF:MaxF,MinF:MaxF));
+SG.NR2 = full(SSG.NR2(MinF:MaxF,MinF:MaxF));
+SG.NR3 = full(SSG.NR3(MinF:MaxF,MinF:MaxF));
 
-SG.Rephasing    = full(SSG.Rephasing(MinF:MaxF,MinF:MaxF));
-SG.NonRephasing = full(SSG.NonRephasing(MinF:MaxF,MinF:MaxF));
+% SG.Rephasing    = full(SSG.Rephasing(MinF:MaxF,MinF:MaxF));
+% SG.NonRephasing = full(SSG.NonRephasing(MinF:MaxF,MinF:MaxF));
+
+SG.Rephasing    =  SG.R1 +  SG.R2 -  SG.R3;
+SG.NonRephasing = SG.NR1 + SG.NR2 - SG.NR3;
 
 %% FFT on selected pathway
 
 switch Pathway
     case 'GB' % Ground state Bleach, R1
-        Re_phasing_Res = SG.SpecAccuR1 ;
-        NR_phasing_Res = SG.SpecAccuNR1;
+        Re_phasing_Res = SG.R1 ;
+        NR_phasing_Res = SG.NR1;
         
     case 'SE' % Stimulated Emission, R2
-        Re_phasing_Res = SG.SpecAccuR2 ;
-        NR_phasing_Res = SG.SpecAccuNR2;
+        Re_phasing_Res = SG.R2 ;
+        NR_phasing_Res = SG.NR2;
         
     case 'EA' % Excited state Absorption, R3
-        Re_phasing_Res = -SG.SpecAccuR3 ;
-        NR_phasing_Res = -SG.SpecAccuNR3;
+        Re_phasing_Res = -SG.R3 ;
+        NR_phasing_Res = -SG.NR3;
         
     case 'All'
         Re_phasing_Res = SG.Rephasing   ;

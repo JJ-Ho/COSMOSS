@@ -2,7 +2,7 @@ function AssignParent(app,ParentInfo)
 switch ParentInfo{1}
     case 'COSMOSS'
         app.Parent = ParentInfo{2};
-        disp('Running Model_TCO from COSMOSS...')
+        disp('Running sub-GUI from COSMOSS...')
     case 'Comb2'
 %         hModel_Comb2 = varargin{2};
 %         Comb2_Order  = varargin{3};

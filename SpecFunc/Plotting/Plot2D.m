@@ -72,8 +72,8 @@ switch CVL.Lineshape
         set(hAx,'Ydir','normal')
         
         StickC_Map = load('Sign');
-        colormap(StickC_Map.MAP)
-        caxis([-1,1])
+        colormap(hAx,StickC_Map.MAP)
+        caxis(hAx,[-1,1])
         
         DiagColor = 'k';
 
@@ -83,11 +83,11 @@ switch CVL.Lineshape
         set(hAx,'Ydir','normal')
         hAx.Color = [0,0,0];
         
-        colorbar
+        colorbar(hAx)
         StickC_Map = load('CoolWhite');
-        colormap(StickC_Map.MAP) 
+        colormap(hAx,StickC_Map.MAP) 
         Amp = max(abs(Z_NC(:)));
-        caxis([-Amp,Amp])
+        caxis(hAx,[-Amp,Amp])
         
         DiagColor = 'g';
         
@@ -109,7 +109,6 @@ hold(hAx,'on'); plot(hAx,X,Y,'Color',DiagColor,'LineStyle','--');hold(hAx,'off')
 
 %% figure setting 
 hF = hAx.Parent;
-hF.Units = 'normalized'; % use normalized scale
 
 hAx.DataAspectRatio = [1,1,1];
 hAx.FontSize = 14;
@@ -127,6 +126,7 @@ Title_String = [SpecType,' ',FilesName_Reg,', Coupling:',Coupling_Reg];
 title(Title_String,'FontSize',16);
 
 if PlotCursor
+    hF.Units = 'normalized'; % use normalized scale
     S.hF = hF;
     S.hAx = hAx;
     Pointer_T(S);

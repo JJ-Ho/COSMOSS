@@ -40,8 +40,8 @@ EigVec_Ind  = GUI_Inputs.Mu_Alpha_Ind; % get a full mode list from Mu_Alpha_Ind
 % function of the molecular orientation relative to the fixed experiment
 % frame. Instead of viewing the response as function of molecule rotatein
 % the exp. frame, we can fix the molecule and rotate the whole laser setup
-% instead. These two picture are mathematically equivenlent but cause less
-% computation if we apply the rotation on ExJ on each laer beam follow by 
+% instead. These two picture are mathematically equivenlent but cost less
+% computation if we apply the rotation on ExJ on each laser beam follow by 
 % tensor product each of ExJ. This is effectly a [1x2]*[2x3]*[3x3]
 % operation and follow by tensor product of however many [1x3] vectors. It
 % is way faster than generating [3^Nx3^N] rotational matrix to rotate the

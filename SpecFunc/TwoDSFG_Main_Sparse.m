@@ -1,4 +1,4 @@
-function  [SpectraGrid,Response] = TwoDSFG_Main_Sparse(Structure,GUI_Inputs)
+function  [SpectraGrid,Data_2D] = TwoDSFG_Main_Sparse(Structure,GUI_Inputs)
 %% TwoDSFG_AmideI
 %  
 %   Given a initial stucture (pdb), this script will simulate its 2DSFG
@@ -91,17 +91,9 @@ H = ExcitonH(Structure,GUI_Inputs,'TwoEx');
 Mu    = MuAlphaGen(Structure,H,'Mode','Mu');
 Alpha = MuAlphaGen(Structure,H,'Mode','Alpha');
 
-Ex_F1   = H.Sort_Ex_F1;
-Ex_F2   = H.Sort_Ex_F2;
-M_Ex_01 = Mu.M_Ex_01;
-M_Ex_12 = Mu.M_Ex_12;
-A_Ex_01 = Alpha.M_Ex_01;
-A_Ex_12 = Alpha.M_Ex_12;
-
 %% Decide what kinds of rod rotation average is
 % note:sparse version dose not have mirror plane impemented, yet...
 [R_Avg,Mirror_Mask,~,~] = LabFrameAvg(Avg_Rot,Avg_Mirror,5);
-
 
 %% Jones Matrix convert XYZ to PS frame
 % Laser incident angles between laser beam and surface normal.
@@ -124,27 +116,26 @@ P_Sig2D = P_Sig2D/180*pi;
 E = EPolar5(P_Sig2D,P_Vis2D,P_Probe,P_Pump2,P_Pump1); % Take [radius]
 
 %% Generate Feynman pathway for 2DSFG
-EJR = E*J*R_Avg;
+SpecType = '2DSFG';
 
-[SpectraGrid,Freq,Int,Index,CutOff] = Feynman_2DSFG_Vec_Sparse(PCutOff,...
-                                                        FreqRange,...
-                                                        EJR,...
-                                                        Ex_F1,...
-                                                        Ex_F2,...
-                                                        A_Ex_01,...
-                                                        A_Ex_12,...
-                                                        M_Ex_01,...
-                                                        M_Ex_12);
+Data_2D.H       = H;
+Data_2D.Mu      = Mu;
+Data_2D.Alpha   = Alpha;
+Data_2D.PCutOff = PCutOff;
+Data_2D.EJLR    = E*J*R_Avg;
+
+SparseMax  = 1761;
+MEM_CutOff = 3e-1; %[GB]
+
+% Calculate pathways
+[SpectraGrid.R1 ,Beta.R1 ] = Feynmann_Path_Gen(SpecType, 'R1',Data_2D,SparseMax,MEM_CutOff);
+[SpectraGrid.R2 ,Beta.R2 ] = Feynmann_Path_Gen(SpecType, 'R2',Data_2D,SparseMax,MEM_CutOff);
+[SpectraGrid.R3 ,Beta.R3 ] = Feynmann_Path_Gen(SpecType, 'R3',Data_2D,SparseMax,MEM_CutOff);
+[SpectraGrid.NR1,Beta.NR1] = Feynmann_Path_Gen(SpecType,'NR1',Data_2D,SparseMax,MEM_CutOff);
+[SpectraGrid.NR2,Beta.NR2] = Feynmann_Path_Gen(SpecType,'NR2',Data_2D,SparseMax,MEM_CutOff);
+[SpectraGrid.NR3,Beta.NR3] = Feynmann_Path_Gen(SpecType,'NR3',Data_2D,SparseMax,MEM_CutOff);
 
 %% Group up other outputs
-Response.H = H;
-Response.Mu = Mu;
-Response.Alpha = Alpha;
+Data_2D.SpecType = SpecType;
+Data_2D.Beta     = Beta;
 
-Response.Freq   = Freq;
-Response.Int    = Int;
-Response.Index  = Index;
-Response.CutOff = CutOff;
-
-Response.EJR = EJR;
-Response.SpecType = '2DSFG';

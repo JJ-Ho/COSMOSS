@@ -17,21 +17,17 @@ function [Grid,Freq,Int,Index,CutOff] = Feynman_2DSFG_Vec_Sparse(PCutOff,FreqRan
 % Copyright Jia-Jung Ho, 2014-2016
 
 %% debug
-% GI = ParseGUI_Main(Data_COSMOSS.hGUIs);
-% FreqRange = GI.FreqRange;
+% FreqRange = 1600:1700;
 % 
-% R_Avg = LabFrameAvg('C1',5); 
-% J = JonesRef5(pi/2,pi/2,pi/2,pi/2,pi/2);
-% E = EPolar5(0,0,0,0,0);
-% EJR = E*J*R_Avg;
-% 
-% TwoDSFG = Data_COSMOSS.TwoDSFG;
-% F1 = TwoDSFG.H.Sort_Ex_F1;
-% F2 = TwoDSFG.H.Sort_Ex_F2;
-% M01 = TwoDSFG.Mu.M_Ex_01;
-% M12 = TwoDSFG.Mu.M_Ex_12;
-% A01 = TwoDSFG.Alpha.M_Ex_01;
-% A12 = TwoDSFG.Alpha.M_Ex_12;
+% D = Data_COSMOSS.Data_2DSFG.Response;
+% F1 = D.H.Sort_Ex_F1;
+% F2 = D.H.Sort_Ex_F2;
+% M01 = D.Mu.M_Ex_01;
+% M12 = D.Mu.M_Ex_12;
+% A01 = D.Alpha.M_Ex_01;
+% A12 = D.Alpha.M_Ex_12;
+% PCutOff = D.PCutOff;
+% EJR = D.EJLR;
 
 %% Rund up frequency for sparse accumulation
 F1 = round(F1);

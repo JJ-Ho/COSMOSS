@@ -25,7 +25,7 @@ INPUT = inputParser;
 INPUT.KeepUnmatched = 1;
 
 % Default values
-defaultFreqRange   = 1650:1750;
+defaultFreqRange   = 1600:1750;
 defaultPathway     = 'All';
 defaultLineShape   = 'Lorentzian';
 defauleLineWidth   = 5;
@@ -76,33 +76,13 @@ switch Pathway
         NR_phasing_Res = SG.NonRephasing;    
 end
 
-%% Generate lineshapes
-NumFreqPoint = numel(FreqRange);
-
-center  = ceil(NumFreqPoint/2);
-[p1,p2] = meshgrid(1:NumFreqPoint,1:NumFreqPoint);
-
-% line shape in frequency domain
-switch LineShape
-    case 'Lorentzian'
-        FF = 1; % Counting for probe beam line width
-        lnshpf_R =((-1./(-(p2-center)+1i*LineWidth*FF)).*(1./((p1-center)+1i*LineWidth)));
-        lnshpf_N =((-1./( (p2-center)+1i*LineWidth*FF)).*(1./((p1-center)+1i*LineWidth)));
-    case 'Gaussian'
-        lnshpf_R = ngaussval(sqrt((p1-center).^2+(p2-center).^2),LineWidth);
-        lnshpf_N = ngaussval(sqrt((p1-center).^2+(p2-center).^2),LineWidth);
-    case 'KK'
-        disp('not support KK lineshape in 2D yet...')
-    otherwise
-        lnshpf_R = 1;
-        lnshpf_N = 1;
-        disp('Plotting stick spectrum')     
-end
-
 %% Convolution
+% Generate lineshapes
+[ConvL,~] = Conv_LineShape(2,LineShape,FreqRange,LineWidth);
+
 % frequency domain 2D convolution
-CVL.R   = conv2(Re_phasing_Res,lnshpf_R,'same');
-CVL.NR  = conv2(NR_phasing_Res,lnshpf_N,'same');
+CVL.R   = conv2(Re_phasing_Res,ConvL.lnshpf_R,'same');
+CVL.NR  = conv2(NR_phasing_Res,ConvL.lnshpf_N,'same');
 CVL.sum = CVL.R + CVL.NR;
 
 % Export Non-convoluted sticks

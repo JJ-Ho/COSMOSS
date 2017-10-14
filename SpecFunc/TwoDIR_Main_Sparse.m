@@ -1,4 +1,4 @@
-function  [SpectraGrid,Response] = TwoDIR_Main_Sparse(Structure,GUI_Inputs)
+function  [SpectraGrid,Data_2D] = TwoDIR_Main_Sparse(Structure,GUI_Inputs)
 %% TwoDIR_Main(PDB_Data,GUI_Inputs)
 %  
 %   Given a initial stucture (pdb), this script will simulate its 2DIR
@@ -76,11 +76,6 @@ H = ExcitonH(Structure,GUI_Inputs,'TwoEx');
 
 Mu = MuAlphaGen(Structure,H,'Mode','Mu');
 
-Ex_F1   = H.Sort_Ex_F1;
-Ex_F2   = H.Sort_Ex_F2;
-M_Ex_01 = Mu.M_Ex_01;
-M_Ex_12 = Mu.M_Ex_12;
-
 %% Decide what kinds of rod rotation average is and applied rotational 
 % average on Response in molecular frame
 [R_Avg,~,~,~] = LabFrameAvg('Isotropic','No',4);
@@ -104,25 +99,24 @@ P_Sig2D  = P_Sig2D/180*pi;
 E = EPolar4(P_Sig2D,P_Probe,P_Pump2,P_Pump1);
 
 %% Generate Feynman pathway for 2DSFG
-EJR = E*J*R_Avg;
+SpecType = '2DIR';
 
-[SpectraGrid,Freq,Int,Index,CutOff] = Feynman_2DIR_Vec_Sparse(PCutOff,...
-                                                       FreqRange,...
-                                                       EJR,...
-                                                       Ex_F1,...
-                                                       Ex_F2,...
-                                                       M_Ex_01,...
-                                                       M_Ex_12);
+Data_2D.H       = H;
+Data_2D.Mu      = Mu;
+Data_2D.PCutOff = PCutOff;
+Data_2D.EJLR    = E*J*R_Avg;
+
+SparseMax  = FreqRange(end);
+MEM_CutOff = 3e-1; %[GB]
+
+% Calculate pathways
+[SpectraGrid.R1 ,Beta.R1 ] = Feynmann_Path_Gen(SpecType, 'R1',Data_2D,SparseMax,MEM_CutOff);
+[SpectraGrid.R2 ,Beta.R2 ] = Feynmann_Path_Gen(SpecType, 'R2',Data_2D,SparseMax,MEM_CutOff);
+[SpectraGrid.R3 ,Beta.R3 ] = Feynmann_Path_Gen(SpecType, 'R3',Data_2D,SparseMax,MEM_CutOff);
+[SpectraGrid.NR1,Beta.NR1] = Feynmann_Path_Gen(SpecType,'NR1',Data_2D,SparseMax,MEM_CutOff);
+[SpectraGrid.NR2,Beta.NR2] = Feynmann_Path_Gen(SpecType,'NR2',Data_2D,SparseMax,MEM_CutOff);
+[SpectraGrid.NR3,Beta.NR3] = Feynmann_Path_Gen(SpecType,'NR3',Data_2D,SparseMax,MEM_CutOff);
 
 %% Group up other outputs
-Response.H = H;
-Response.Mu = Mu;
-
-Response.Freq  = Freq;
-Response.Int   = Int;
-Response.Index = Index;
-Response.CutOff = CutOff;
-
-Response.EJR = EJR;
-Response.SpecType = '2DIR';
-
+Data_2D.SpecType = SpecType;
+Data_2D.Beta     = Beta;

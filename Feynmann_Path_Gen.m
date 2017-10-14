@@ -92,7 +92,7 @@ switch SpecType
         [Jd,Jc,Jb,Ja] = ndgrid(1:3,1:3,1:3,1:3);
         
         L01 = M01;
-        L12 = M12; % linearlized  1ex -> 2ex transition dipole matrix 
+        L12 = reshape(Mu.M_Ex_12,[],3); % linearlized  1ex -> 2ex transition dipole matrix 
         
     otherwise
         disp(['Spectral type: ',SpecType,' is not correct...'])

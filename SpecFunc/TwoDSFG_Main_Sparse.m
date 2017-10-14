@@ -124,7 +124,7 @@ Data_2D.Alpha   = Alpha;
 Data_2D.PCutOff = PCutOff;
 Data_2D.EJLR    = E*J*R_Avg;
 
-SparseMax  = 1761;
+SparseMax  = FreqRange(end);
 MEM_CutOff = 3e-1; %[GB]
 
 % Calculate pathways
@@ -138,4 +138,3 @@ MEM_CutOff = 3e-1; %[GB]
 %% Group up other outputs
 Data_2D.SpecType = SpecType;
 Data_2D.Beta     = Beta;
-

@@ -1,4 +1,4 @@
-function [SpectraGrid,Beta] = Feynmann_Path_Gen(SpecType,Pathways,Data_2D,SparseMax,MEM_CutOff)
+function [SpectraGrid,Beta,IntensityGrid] = Feynmann_Path_Gen(SpecType,Pathways,Data_2D,SparseMax,MEM_CutOff)
 %% debug
 % SpecType = '2DSFG';
 % Pathways = 'NR3';
@@ -139,18 +139,18 @@ I4 = I4(Reduced_Ind);
 %% Generate Pump/Probe Frequencies Coordinates
 switch Pathways
     case {'R1','R2','NR1','NR2'}
-        F2D = [ F1(I1), F1(I4)]; 
+        F_sub = [ F1(I1), F1(I4)]; 
     case 'R3'
         Kx = Kx(Reduced_Ind); % note: non-linearlized "1ex -> 2ex" index for F2
-        F2D = [ F1(I1), F2(Kx) - F1(I1)];
+        F_sub = [ F1(I1), F2(Kx) - F1(I1)];
     case 'NR3'
         Kx = Kx(Reduced_Ind); % note: non-linearlized "1ex -> 2ex" index for F2
-        F2D = [ F1(I1), F2(Kx) - F1(I2)];
+        F_sub = [ F1(I1), F2(Kx) - F1(I2)];
 end
 
 % Linearlize Frequency from 2D to 1D Grid
 % This way, I can generate sparsed Beta matrix
-F1D = F2D(:,1).*F2D(:,2);
+F_ind = sub2ind([SparseMax,SparseMax],F_sub(:,1),F_sub(:,2));
 
 %% Memory cutoff, estimate the largest array (Beta)'s size and break it down to several for-loop
 Ele_Max = round(MEM_CutOff/(L_Response * 8 / 1e9)) + 1; % max number of elements to reach MEM_CufOff
@@ -164,7 +164,7 @@ if N_Path > Ele_Max
     Padding_L = Ele_Max - mod(N_Path,Ele_Max);
     Padding_NaN  = nan(Padding_L,1);
     
-    F1D_Loop = reshape([F1D; Padding_NaN],Ele_Max,[]);
+    F1D_Loop = reshape([F_ind; Padding_NaN],Ele_Max,[]);
     I1 = reshape([I1; Padding_NaN],Ele_Max,[]);
     I2 = reshape([I2; Padding_NaN],Ele_Max,[]);
     I3 = reshape([I3; Padding_NaN],Ele_Max,[]);
@@ -202,8 +202,10 @@ if N_Path > Ele_Max
     Response = [ Response; Response_End];    
 else
     Beta_Raw = T4(I4,Ja).*T3(I3,Jb).*T2(I2,Jc).*T1(I1,Jd);
-    Beta(F1D,:) = Beta_Raw;
-    Response    = Beta_Raw*EJLR';
+    Beta(F_ind,:) = Beta_Raw;
+    Response      = Beta_Raw*EJLR';
 end
 
-SpectraGrid = sparse(F2D(:,1),F2D(:,2),Response,SparseMax,SparseMax);
+%% Deal with Other outputs
+IntensityGrid = reshape(sum((Beta).^2,2),SparseMax,SparseMax);
+SpectraGrid   = sparse(F_sub(:,1),F_sub(:,2),Response,SparseMax,SparseMax);

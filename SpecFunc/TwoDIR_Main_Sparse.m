@@ -1,4 +1,4 @@
-function  [SpectraGrid,Data_2D] = TwoDIR_Main_Sparse(Structure,GUI_Inputs)
+function  [SGrid,Data_2D] = TwoDIR_Main_Sparse(Structure,GUI_Inputs)
 %% TwoDIR_Main(PDB_Data,GUI_Inputs)
 %  
 %   Given a initial stucture (pdb), this script will simulate its 2DIR
@@ -110,13 +110,14 @@ SparseMax  = FreqRange(end);
 MEM_CutOff = 3e-1; %[GB]
 
 % Calculate pathways
-[SpectraGrid.R1 ,Beta.R1 ] = Feynmann_Path_Gen(SpecType, 'R1',Data_2D,SparseMax,MEM_CutOff);
-[SpectraGrid.R2 ,Beta.R2 ] = Feynmann_Path_Gen(SpecType, 'R2',Data_2D,SparseMax,MEM_CutOff);
-[SpectraGrid.R3 ,Beta.R3 ] = Feynmann_Path_Gen(SpecType, 'R3',Data_2D,SparseMax,MEM_CutOff);
-[SpectraGrid.NR1,Beta.NR1] = Feynmann_Path_Gen(SpecType,'NR1',Data_2D,SparseMax,MEM_CutOff);
-[SpectraGrid.NR2,Beta.NR2] = Feynmann_Path_Gen(SpecType,'NR2',Data_2D,SparseMax,MEM_CutOff);
-[SpectraGrid.NR3,Beta.NR3] = Feynmann_Path_Gen(SpecType,'NR3',Data_2D,SparseMax,MEM_CutOff);
+[SGrid.R1 ,Beta.R1 ,IGrid.R1 ] = Feynmann_Path_Gen(SpecType, 'R1',Data_2D,SparseMax,MEM_CutOff);
+[SGrid.R2 ,Beta.R2 ,IGrid.R2 ] = Feynmann_Path_Gen(SpecType, 'R2',Data_2D,SparseMax,MEM_CutOff);
+[SGrid.R3 ,Beta.R3 ,IGrid.R3 ] = Feynmann_Path_Gen(SpecType, 'R3',Data_2D,SparseMax,MEM_CutOff);
+[SGrid.NR1,Beta.NR1,IGrid.NR1] = Feynmann_Path_Gen(SpecType,'NR1',Data_2D,SparseMax,MEM_CutOff);
+[SGrid.NR2,Beta.NR2,IGrid.NR2] = Feynmann_Path_Gen(SpecType,'NR2',Data_2D,SparseMax,MEM_CutOff);
+[SGrid.NR3,Beta.NR3,IGrid.NR3] = Feynmann_Path_Gen(SpecType,'NR3',Data_2D,SparseMax,MEM_CutOff);
 
 %% Group up other outputs
 Data_2D.SpecType = SpecType;
 Data_2D.Beta     = Beta;
+Data_2D.IntGrid  = IGrid;

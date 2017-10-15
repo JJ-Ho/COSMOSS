@@ -118,6 +118,7 @@ MEM_CutOff = 3e-1; %[GB]
 [SGrid.NR3,Beta.NR3,IGrid.NR3] = Feynmann_Path_Gen(SpecType,'NR3',Data_2D,SparseMax,MEM_CutOff);
 
 %% Group up other outputs
-Data_2D.SpecType = SpecType;
-Data_2D.Beta     = Beta;
-Data_2D.IntGrid  = IGrid;
+Data_2D.SpecType  = SpecType;
+Data_2D.Beta      = Beta;
+Data_2D.IntGrid   = IGrid;
+Data_2D.SparseMax = SparseMax;

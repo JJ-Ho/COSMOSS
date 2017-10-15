@@ -136,7 +136,7 @@ I2 = I2(Reduced_Ind);
 I3 = I3(Reduced_Ind);
 I4 = I4(Reduced_Ind);
 
-%% Generate Pump/Probe Frequencies Coordinates
+%% Generate [Pump,Probe] Frequencies Coordinates
 switch Pathways
     case {'R1','R2','NR1','NR2'}
         F_sub = [ F1(I1), F1(I4)]; 
@@ -150,7 +150,7 @@ end
 
 % Linearlize Frequency from 2D to 1D Grid
 % This way, I can generate sparsed Beta matrix
-F_ind = sub2ind([SparseMax,SparseMax],F_sub(:,1),F_sub(:,2));
+F_ind = sub2ind([SparseMax,SparseMax],F_sub(:,1),F_sub(:,2)); 
 
 %% Memory cutoff, estimate the largest array (Beta)'s size and break it down to several for-loop
 Ele_Max = round(MEM_CutOff/(L_Response * 8 / 1e9)) + 1; % max number of elements to reach MEM_CufOff

@@ -69,41 +69,31 @@ end
 switch CVL.Lineshape
     case 'Spy' % plot stick spectrum
         spyXY(hAx,X,Y,Z_NC)  
-        set(hAx,'Ydir','normal')
         
-        StickC_Map = load('Sign');
-        colormap(hAx,StickC_Map.MAP)
-        caxis(hAx,[-1,1])
-        
+        C_MAP = SelectColormap('Sign');
+        C_Amp = 1;
         DiagColor = 'k';
+        hAx.YDir  = 'normal';
 
     case 'No Conv' % plot stick spectrum  w/ colormap
         spyXYZ(hAx,X,Y,Z_NC)    
-        
-        set(hAx,'Ydir','normal')
-        hAx.Color = [0,0,0];
-        %hAx.Color = [1,1,1];
-        
-        colorbar(hAx)
-        StickC_Map = load('CoolWhite');
-        colormap(hAx,StickC_Map.MAP) 
-        Amp = max(abs(Z_NC(:)));
-        caxis(hAx,[-Amp,Amp])
-        
+
+        C_MAP = SelectColormap('CoolWhite');hAx.Color = [0,0,0];
+        %C_MAP = SelectColormap('JetBlackWide') ;hAx.Color = [1,1,1];
+        C_Amp = max(abs(Z_NC(:)));
         DiagColor = 'g';
-        
+        hAx.YDir  = 'normal';
+
     otherwise % plot convoluted spectrum
         contour(hAx,X,Y,Z,Num_Contour,'LineWidth',2)
 
-        % Set colorbar
-        colorbar(hAx)
-        CMAP = SelectColormap(CMAP_Index);
-        colormap(hAx,CMAP)      
-        Amp = max(abs(Z(:)));
-        caxis(hAx,[-Amp,Amp])
-        
+        C_MAP = SelectColormap(CMAP_Index);      
+        C_Amp = max(abs(Z(:)));
         DiagColor = 'k';
 end
+colorbar(hAx)
+colormap(hAx,C_MAP)
+caxis(hAx,[-C_Amp,C_Amp])
 
 % Plot diagonal line
 hold(hAx,'on'); plot(hAx,X,Y,'Color',DiagColor,'LineStyle','--');hold(hAx,'off')

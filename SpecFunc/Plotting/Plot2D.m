@@ -82,6 +82,7 @@ switch CVL.Lineshape
         
         set(hAx,'Ydir','normal')
         hAx.Color = [0,0,0];
+        %hAx.Color = [1,1,1];
         
         colorbar(hAx)
         StickC_Map = load('CoolWhite');
@@ -95,11 +96,11 @@ switch CVL.Lineshape
         contour(hAx,X,Y,Z,Num_Contour,'LineWidth',2)
 
         % Set colorbar
-        colorbar
+        colorbar(hAx)
         CMAP = SelectColormap(CMAP_Index);
         colormap(hAx,CMAP)      
         Amp = max(abs(Z(:)));
-        caxis([-Amp,Amp])
+        caxis(hAx,[-Amp,Amp])
         
         DiagColor = 'k';
 end
@@ -108,8 +109,6 @@ end
 hold(hAx,'on'); plot(hAx,X,Y,'Color',DiagColor,'LineStyle','--');hold(hAx,'off')
 
 %% figure setting 
-hF = hAx.Parent;
-
 hAx.DataAspectRatio = [1,1,1];
 hAx.FontSize = 14;
 hAx.XLabel.String = 'Probe (cm^{-1})';
@@ -123,9 +122,10 @@ Coupling        = GUI_Inputs.CouplingType;
 Coupling_Reg    = regexprep(Coupling,'\_','\\_');
 
 Title_String = [SpecType,' ',FilesName_Reg,', Coupling:',Coupling_Reg];
-title(Title_String,'FontSize',16);
+title(hAx,Title_String,'FontSize',16);
 
 if PlotCursor
+    hF = hAx.Parent;
     hF.Units = 'normalized'; % use normalized scale
     S.hF = hF;
     S.hAx = hAx;

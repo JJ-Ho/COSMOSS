@@ -124,7 +124,12 @@ Data_2D.Alpha   = Alpha;
 Data_2D.PCutOff = PCutOff;
 Data_2D.EJLR    = E*J*R_Avg;
 
-SparseMax  = FreqRange(end);
+% decide the max frequency
+F1  = H.Sort_Ex_F1;
+F2  = H.Sort_Ex_F2;
+F_Max = max(F2) - min(F1);
+SparseMax = ceil(max(FreqRange(end),F_Max));
+
 MEM_CutOff = 3e-1; %[GB]
 
 % Calculate pathways

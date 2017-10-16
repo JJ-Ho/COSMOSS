@@ -13,7 +13,7 @@ if markersize == 0
 end
 
 [I,J,V] = find(Z);
-MS = abs(V)./max(abs(V)).*markersize*5;
+MS = abs(V)./max(abs(V)).*markersize*10;
 
 X_j = X(J);
 Y_i = Y(I);

@@ -7,11 +7,15 @@ addpath(Current_path);
 MoleculeConstruction = genpath([Current_path '/MoleculeConstruction']);
 addpath(MoleculeConstruction);
 
+SpectralFunctions = genpath([Current_path '/SpecFunc']);
+addpath(SpectralFunctions);
+
+Orientation = genpath([Current_path '/Orientation']);
+addpath(Orientation);
+
 %             StructureFiles = genpath([Current_path '/StructureFiles']);
 %             addpath(StructureFiles);
 %             
-SpectalFunctions = genpath([Current_path '/SpecFunc']);
-addpath(SpectalFunctions);
 %             
 %             ServerVersion = genpath([Current_path '/ServerVersion']);
 %             addpath(ServerVersion);

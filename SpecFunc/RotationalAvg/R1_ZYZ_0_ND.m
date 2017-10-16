@@ -11,4 +11,6 @@ t4 = cos(Phi);
 t5 = cos(Theta);
 t6 = sin(Psi);
 t7 = sin(Theta);
-R1_ZYZ = reshape([-t3.*t6+t2.*t4.*t5,t4.*t6+t2.*t3.*t5,-t2.*t7,-t2.*t3-t4.*t5.*t6,t2.*t4-t3.*t5.*t6,t6.*t7,t4.*t7,t3.*t7,t5],[],3,3);
+R1_ZYZ = reshape([-t3.*t6+t2.*t4.*t5,t4.*t6+t2.*t3.*t5,-t2.*t7,-t2.*t3-t4.*t5.*t6,t2.*t4-t3.*t5.*t6,t6.*t7,t4.*t7,t3.*t7,t5],3,[]);
+% R1_ZYZ = [-t3.*t6+t2.*t4.*t5,t4.*t6+t2.*t3.*t5,-t2.*t7,-t2.*t3-t4.*t5.*t6,t2.*t4-t3.*t5.*t6,t6.*t7,t4.*t7,t3.*t7,t5];
+% R1_ZYZ = sparse(reshape(R1_ZYZ,3,[]));

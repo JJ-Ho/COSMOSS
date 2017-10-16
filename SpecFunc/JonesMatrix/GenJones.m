@@ -72,6 +72,7 @@ Si_T(2,3) = 0;
 
 
 %% Direct product and permutation of index
+Rps0 =                     Si_T; % For general
 Rps1 =                     Si_R;
 Rps2 =                kron(Si_R,Vi);
 Rps3 =           kron(kron(Si_R,Vi),Pu1);% SFG
@@ -80,6 +81,7 @@ Rps5 = kron(kron(kron(kron(Si_R,Vi),Pr ),Pu2),Pu1);% 2DSFG
 
 %% 
 if strcmp(SaveAsFunc,'y')   
+    matlabFunction(Rps0,'file','JonesTrans1');
     matlabFunction(Rps1,'file','JonesRef1');
     matlabFunction(Rps2,'file','JonesRef2');
     matlabFunction(Rps3,'file','JonesRef3');

@@ -14,4 +14,4 @@ app.UITable.ColumnName     = ColumnName;
 app.UITable.ColumnFormat   = ColumnFormat;
 app.UITable.ColumnEditable = ColumnEditable;
 app.UITable.ColumnWidth    = ColumnWidth;
-app.UITable.RowName        = 'numbered';
+% app.UITable.RowName        = 'numbered';

@@ -8,26 +8,26 @@ INPUT = inputParser;
 INPUT.KeepUnmatched = 1;
 
 % Default values
-defaultPlot_Atoms      = 1;
-defaultPlot_Bonds      = 1;
-defaultPlot_Axis       = 1;
-defaultPlot_Lattice    = 0;
-defaultPlot_Atom_Index = 0;
+defaultPlot_Atoms     = 1;
+defaultPlot_Bonds     = 1;
+defaultPlot_Axis      = 1;
+defaultPlot_Lattice   = 0;
+defaultPlot_AtomIndex = 0;
 
 % Add optional inputs to inputparser object
 addOptional(INPUT,'Plot_Atoms'     ,defaultPlot_Atoms);
 addOptional(INPUT,'Plot_Bonds'     ,defaultPlot_Bonds);
 addOptional(INPUT,'Plot_Axis'      ,defaultPlot_Axis);
 addOptional(INPUT,'Plot_Lattice'   ,defaultPlot_Lattice);
-addOptional(INPUT,'Plot_Atom_Index',defaultPlot_Atom_Index);
+addOptional(INPUT,'Plot_AtomIndex',defaultPlot_AtomIndex);
 
 parse(INPUT,GUI_Inputs_C{:});
 
-Plot_Atoms      = INPUT.Results.Plot_Atoms;
-Plot_Bonds      = INPUT.Results.Plot_Bonds;
-Plot_Axis       = INPUT.Results.Plot_Axis;
-Plot_Lattice    = INPUT.Results.Plot_Lattice;
-Plot_Atom_Index = INPUT.Results.Plot_Atom_Index;
+Plot_Atoms     = INPUT.Results.Plot_Atoms;
+Plot_Bonds     = INPUT.Results.Plot_Bonds;
+Plot_Axis      = INPUT.Results.Plot_Axis;
+Plot_Lattice   = INPUT.Results.Plot_Lattice;
+Plot_AtomIndex = INPUT.Results.Plot_AtomIndex;
 
 %% Rotate the molecule to Lab frame
 XYZ      = SData.XYZ;
@@ -37,15 +37,12 @@ CoM      = SData.CoM;
 Nmodes   = SData.Nmodes;
 Atom_Num = SData.NAtoms;
 
-
-
 %% Decide atoms types
 C_Ind = strcmp(AtomName,'C');
 O_Ind = strcmp(AtomName,'O');
 N_Ind = strcmp(AtomName,'N');
 S_Ind = strcmp(AtomName,'S');
 H_Ind = strcmp(AtomName,'H');
-
 
 %% Make figure
 % Prep hAx 
@@ -64,7 +61,10 @@ hold(hAx,'on')
     end
     
     %% Add atom indexes
-    if Plot_Atom_Index
+    if Plot_AtomIndex
+        N_Vec1 = GUI_Inputs.N_1;
+        N_Vec2 = GUI_Inputs.N_2;
+        
         if eq(N_Vec1*N_Vec2,1)
             Atom_Ind_Str = strsplit(num2str(1:Atom_Num));
             XYZ_Atom_Ind = XYZ + 0.1;

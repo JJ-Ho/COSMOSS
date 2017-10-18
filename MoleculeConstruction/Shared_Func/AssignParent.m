@@ -4,6 +4,9 @@ switch ParentInfo{1}
         app.Parent = ParentInfo{2};
         disp('Running sub-GUI from COSMOSS...')
     case 'Comb2'
+        app.Parent    = ParentInfo{2};
+        app.CombOrder = ParentInfo{3};
+        disp('Running sub-GUI from Comb2...')
 %         hModel_Comb2 = varargin{2};
 %         Comb2_Order  = varargin{3};
 % 

@@ -1,11 +1,12 @@
 function [SpectraGrid,Response] = TwoD_Iteration(h2DFunc,app)
 %% Read GUI
-I = Parse_COSMOSS(app);
+I = app.Parse_GUI;
+S = app.Structure;
+
 Sampling      = I.Sampling;
 DynamicUpdate = I.DynamicUpdate;
 Sample_Num    = I.Sample_Num;
 FreqRange     = I.FreqRange;
-Structure     = app.Structure;
 
 %% Pre-calculation settings
 % Create figure object for dynamics figure update
@@ -42,7 +43,7 @@ if Sampling
         end
 
         % run main function
-        [Tmp_SG,Tmp_Res] = h2DFunc(Structure,I);
+        [Tmp_SG,Tmp_Res] = h2DFunc(S,I);
         
         % Accumulate result
         try
@@ -68,7 +69,7 @@ if Sampling
         % Dynamic update of figure % update every 10 run
         while and(~eq(DynamicUpdate,0),eq(mod(i,10),0))
             CVL = Conv2D(SpectraGrid,I);
-            CVL.FilesName = [Structure.FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title
+            CVL.FilesName = [S.FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title
             SpecType = Response.SpecType;
             Plot2D(hAx,CVL,I,SpecType);
             drawnow
@@ -82,5 +83,5 @@ if Sampling
     disp(['Total time: ' num2str(Total_TIME)])
 
 else
-    [SpectraGrid,Response] = h2DFunc(Structure,I);
+    [SpectraGrid,Response] = h2DFunc(S,I);
 end

@@ -1,5 +1,5 @@
 function OneD = OneD_Iteration(h1DFunc,app)
-I = Parse_COSMOSS(app);
+I = app.Parse_GUI;
 S = app.Structure;
 
 if eq(I.Sampling,1)

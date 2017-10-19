@@ -43,7 +43,7 @@ INPUT = inputParser;
 INPUT.KeepUnmatched = 1;
 
 % Default values
-defaultSheetTypeV = 1;
+defaultSheetType = 'Anti-Parallel';
 defaultN_Residue  = 3;
 defaultN_Strand   = 2;
 defaultTrans_X    = 0;
@@ -54,45 +54,35 @@ defaultTwist_Y    = 0;
 defaultTwist_Z    = 0; 
 
 % add Optional inputs / Parameters
-addOptional(INPUT,'SheetTypeV', defaultSheetTypeV);
-addOptional(INPUT,'N_Residue' , defaultN_Residue );
-addOptional(INPUT,'N_Strand'  , defaultN_Strand  );
-addOptional(INPUT,'Trans_X'   , defaultTrans_X   );
-addOptional(INPUT,'Trans_Y'   , defaultTrans_Y   );
-addOptional(INPUT,'Trans_Z'   , defaultTrans_Z   );
-addOptional(INPUT,'Twist_X'   , defaultTwist_X   );
-addOptional(INPUT,'Twist_Y'   , defaultTwist_Y   );
-addOptional(INPUT,'Twist_Z'   , defaultTwist_Z   );
+addOptional(INPUT,'SheetType', defaultSheetType );
+addOptional(INPUT,'N_Residue', defaultN_Residue );
+addOptional(INPUT,'N_Strand' , defaultN_Strand  );
+addOptional(INPUT,'Trans_X'  , defaultTrans_X   );
+addOptional(INPUT,'Trans_Y'  , defaultTrans_Y   );
+addOptional(INPUT,'Trans_Z'  , defaultTrans_Z   );
+addOptional(INPUT,'Twist_X'  , defaultTwist_X   );
+addOptional(INPUT,'Twist_Y'  , defaultTwist_Y   );
+addOptional(INPUT,'Twist_Z'  , defaultTwist_Z   );
 
 
 parse(INPUT,GUI_Inputs_C{:});
 
 % Re-assign variable names
-SheetTypeV = INPUT.Results.SheetTypeV;
-N_Residue  = INPUT.Results.N_Residue;
-N_Strand   = INPUT.Results.N_Strand;
-Trans_X    = INPUT.Results.Trans_X;
-Trans_Y    = INPUT.Results.Trans_Y;
-Trans_Z    = INPUT.Results.Trans_Z;
-Twist_X    = INPUT.Results.Twist_X;
-Twist_Y    = INPUT.Results.Twist_Y;
-Twist_Z    = INPUT.Results.Twist_Z;
+SheetType = INPUT.Results.SheetType;
+N_Residue = INPUT.Results.N_Residue;
+N_Strand  = INPUT.Results.N_Strand;
+Trans_X   = INPUT.Results.Trans_X;
+Trans_Y   = INPUT.Results.Trans_Y;
+Trans_Z   = INPUT.Results.Trans_Z;
+Twist_X   = INPUT.Results.Twist_X;
+Twist_Y   = INPUT.Results.Twist_Y;
+Twist_Z   = INPUT.Results.Twist_Z;
 
 %% Post process of inputs
-switch SheetTypeV
-    case 1
-        SheetType = 'Para';
-    case 2
-        SheetType = 'Anti';
-end
-
 TransV = [Trans_X,Trans_Y,Trans_Z];
 TwistV = [Twist_X,Twist_Y,Twist_Z];
 
 %% Pull coordinates from short ideal parallel beta-sheet
-
-% hpar = [TransV,TwistV.*pi./180];
-
 fid = fopen('BETA-3.ENT');
 Template = textscan(fid,'%s%d%s%s%d%f%f%f');
 fclose(fid);
@@ -206,7 +196,7 @@ XYZ(:,1,:) = XYZ_1strand_COF;
 AtomName = cell(N_Atom_1strand,N_Strand);
 AtomName(:,1)= AtomName_1strand;
 
-if strcmp(SheetType,'Anti')
+if strcmp(SheetType,'Anti-Parallel')
     APB_Flag = 1;
     SheetTypeString = 'APB';
 else
@@ -236,7 +226,8 @@ for j = 2:N_Strand
     end
     
     % twist strand
-    TwistM = (Rx(TwistV(1))*Ry(TwistV(2))*Rz(TwistV(3)) )^(j-1);
+    %TwistM = (Rx(TwistV(1))*Ry(TwistV(2))*Rz(TwistV(3)) )^(j-1);
+    TwistM = ( R1_ZYZ_0(TwistV(1),TwistV(2),TwistV(3)) )^(j-1);
     XYZ_j_flip_tw = (TwistM * XYZ_j_flip')';
     
     % move strand

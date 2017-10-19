@@ -1,4 +1,4 @@
-function Export2GUIs(app)
+function Export2Parent(app)
 % This function push Structure data to COSMOSS after the Model strueture data updated
 %% check if the upper layer is COSMOSS, if yes push Structure to COSMOSS
 switch app.Parent.GUI_Tag
@@ -7,6 +7,8 @@ switch app.Parent.GUI_Tag
         app.Parent.UIFigure.Name = ['COSMOSS: ', app.UIFigure.Name]; % change Name of Main GUI to identify which Structural Model is using
         app.Parent.RefreshOn % reset the all refresh tag to 1
     case 'Comb2'
-        
+        if ~isempty(app.CombOrder)
+            app.UIFigure.Name = ['#',int2str(app.CombOrder),', ',app.UIFigure.Name];
+        end
 end
 

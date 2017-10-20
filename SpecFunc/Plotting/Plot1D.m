@@ -110,13 +110,11 @@ hold(hAx,'on')
 hold(hAx,'off')
 
 %% figure setting 
-hAx.Units = 'normalized'; % use normalized scale
-hF = hAx.Parent;
-hF.Units = 'normalized'; % use normalized scale
-
 hAx.FontSize = 14;
+hAx.YLim = [-max(abs(PlotY(:))),max(abs(PlotY(:)))]*1.1;
 hAx.XLim = [FreqRange(1),FreqRange(end)];
 hAx.XLabel.String = 'cm^{-1}';
+hAx.YLabel.String = 'Intensity';
 hAx.XGrid = 'on';
 hAx.YGrid = 'on';
 hAx.XMinorGrid = 'on';
@@ -128,6 +126,9 @@ Coupling_Reg    = regexprep(Coupling,'\_','\\_');
 Title_String{1} = [Signal_Type_Title,'-',OneD_Data.SpecType,' ',FilesName_Reg,', Coupling:',Coupling_Reg]; 
 
 if PlotCursor
+    hAx.Units = 'normalized'; % use normalized scale
+    hF = hAx.Parent;
+    hF.Units = 'normalized'; % use normalized scale
     Title_String{2} = '';
     % Call pointer
     S.fh = hF;

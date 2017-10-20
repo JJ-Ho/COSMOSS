@@ -87,13 +87,14 @@ A_Ex_01 = Alpha.M_Ex_01'; %=> [9*N]
 %% Generate Molecular frame SFG Responses
 % vectorized version
 [M_Ind,A_Ind] = ndgrid(1:3,1:9);
-ResLF = A_Ex_01(A_Ind(:),:).* M_Ex_01(M_Ind(:),:); %=> [27*N]
+ResLF = A_Ex_01(A_Ind(:),:).* M_Ex_01(M_Ind(:),:); %=> [27,N]
+ResLF_Int = sqrt(sum(ResLF.^2,1)); %=> [1,N]
 
 %% Decide what kinds of ensemble average
 N_Interactions = 3; % for SFG
 [R_Avg,Mirror_Mask,~,~] = LabFrameAvg(Avg_Rot,Avg_Mirror,N_Interactions);
 
-ResLF_Avg = bsxfun(@times,R_Avg*ResLF,Mirror_Mask); %=> [27*N]
+ResLF_Avg = bsxfun(@times,R_Avg*ResLF,Mirror_Mask); %=> [27,N]
 
 %% Jones Matrix convert XYZ to PS frame
 % 
@@ -119,12 +120,14 @@ E = EPolar3(P_Sig1D,P_Vis1D,P_IR); % => [8,1]
 E_J_ResLF_Avg = E * J_ResLF_Avg; % => [1,N]
 
 %% Bin signal
-AccuGrid = Bin1D(Ex_F1,E_J_ResLF_Avg,FreqRange);
+AccuGrid    = Bin1D(Ex_F1,E_J_ResLF_Avg,FreqRange);
+AccuGridInt = Bin1D(Ex_F1,    ResLF_Int,FreqRange);
 
 %% Output
 OneDSFG.FilesName    = Structure.FilesName;
 OneDSFG.SpecType     = 'SFG';
 OneDSFG.Response1D   = AccuGrid;
+OneDSFG.Res_Int      = AccuGridInt;
 OneDSFG.freq_OneD    = FreqRange;
 OneDSFG.H            = H;
 OneDSFG.Mu           = Mu;

@@ -1,8 +1,8 @@
 function EJLR_T = EJLR_Tensor(COSMOSS_Input,Orientation_Input)
 %% Debug
-% clear all
-% Orientation_Input.SpecType = '2DSFG';
-% Orientation_Input.N_Grid   = 18;
+% % clear all
+% Orientation_Input.SpecType = 'SFG';
+% Orientation_Input.N_Grid   = 10;
 % 
 % Exp1D = zeros(2,3);
 % Exp2D = zeros(2,5);
@@ -27,7 +27,7 @@ switch SpecType
         
         EJLR1 = EJLR_Grid(Polar(1),Angle(1),N_Grid,'Transimisive');
         EJLR2 = EJLR_Grid(Polar(2),Angle(2),N_Grid,'Transimisive');
-        EJLR3 = EJLR_Grid(Polar(3),Angle(3),N_Grid,'Transimisive');
+        EJLR3 = EJLR_Grid(Polar(3),Angle(3),N_Grid,'Reflective');
         
         EJLR_T = EJLR3(:,Ja).*EJLR2(:,Jb).*EJLR1(:,Jc);
         

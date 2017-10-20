@@ -43,9 +43,9 @@ defaultNLFreq       = 1716;
 defaultAnharm       = 20;
 defaultLFreq        = 1604;
 defaultL_Index      = 'None';
-defaultRot_X        = 0;
-defaultRot_Y        = 0;
-defaultRot_Z        = 0;
+% defaultRot_X        = 0;
+% defaultRot_Y        = 0;
+% defaultRot_Z        = 0;
 
 % add Optional inputs / Parameters
 addOptional(INPUT,'Phi_D1'      ,defaultPhi_D1       );
@@ -59,9 +59,9 @@ addOptional(INPUT,'NLFreq'      ,defaultNLFreq       );
 addOptional(INPUT,'Anharm'      ,defaultAnharm       );
 addOptional(INPUT,'LFreq'       ,defaultLFreq       );
 addOptional(INPUT,'L_Index'     ,defaultL_Index     );
-addOptional(INPUT,'Rot_X'       ,defaultRot_X        );
-addOptional(INPUT,'Rot_Y'       ,defaultRot_Y        );
-addOptional(INPUT,'Rot_Z'       ,defaultRot_Z        );
+% addOptional(INPUT,'Rot_X'       ,defaultRot_X        );
+% addOptional(INPUT,'Rot_Y'       ,defaultRot_Y        );
+% addOptional(INPUT,'Rot_Z'       ,defaultRot_Z        );
 
 parse(INPUT,GUI_Inputs_C{:});
 
@@ -77,9 +77,9 @@ NLFreq        = INPUT.Results.NLFreq;
 Anharm        = INPUT.Results.Anharm;
 LFreq         = INPUT.Results.LFreq;
 L_Index       = INPUT.Results.L_Index;
-Rot_X         = INPUT.Results.Rot_X;
-Rot_Y         = INPUT.Results.Rot_Y;
-Rot_Z         = INPUT.Results.Rot_Z;
+% Rot_X         = INPUT.Results.Rot_X;
+% Rot_Y         = INPUT.Results.Rot_Y;
+% Rot_Z         = INPUT.Results.Rot_Z;
 
 %% Settings
 
@@ -193,19 +193,19 @@ end
 AmideIAnharm = ones(Num_Modes,1)*Anharm;
 
 %% Rotate the whole system 
-RX = Rx(Rot_X/180*pi);
-RY = Ry(Rot_Y/180*pi);
-RZ = Rz(Rot_Z/180*pi);
-R_Whole = RX*RY*RZ;
-
-AcidCenter = (R_Whole * AcidCenter')';
-mu_Sim     = (R_Whole * mu_Sim')';
-XYZ        = (R_Whole * XYZ')';
-
-for ii=1:Num_Modes
-    alpha_Sim_Tmp = squeeze(alpha_Sim(ii,:,:));
-    alpha_Sim(ii,:,:) = R_Whole * alpha_Sim_Tmp' * R_Whole';
-end    
+% RX = Rx(Rot_X/180*pi);
+% RY = Ry(Rot_Y/180*pi);
+% RZ = Rz(Rot_Z/180*pi);
+% R_Whole = RX*RY*RZ;
+% 
+% AcidCenter = (R_Whole * AcidCenter')';
+% mu_Sim     = (R_Whole * mu_Sim')';
+% XYZ        = (R_Whole * XYZ')';
+% 
+% for ii=1:Num_Modes
+%     alpha_Sim_Tmp = squeeze(alpha_Sim(ii,:,:));
+%     alpha_Sim(ii,:,:) = R_Whole * alpha_Sim_Tmp' * R_Whole';
+% end    
 
 % take vectorize Alpha
 % alpha_Sim = [N x 3 x3 ]

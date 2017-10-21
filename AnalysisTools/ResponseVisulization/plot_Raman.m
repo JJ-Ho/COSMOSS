@@ -19,7 +19,7 @@ SemiAxisL = diag(D);
 RM = V; % Rotational matrix
 
 switch Raman_Type
-    case 1 %'Arrow'
+    case 'Arrow'
         %% Plot three 3D arrows with color representing sign
         Axes_Scale = abs(SemiAxisL)';
         Principle_Axes = bsxfun(@times,V,Axes_Scale);
@@ -48,7 +48,7 @@ switch Raman_Type
         set(hAx,'ColorOrder',ColorOrder)
         arrow3(Arror_Orig,Arrow_End,'o2',Arror_W,Arror_H)
         
-    case 2 %'Disk'
+    case 'Disk'
         %% Plot three ellipse disk
         Disk_Thickness = 0.05;
         Disk_Thickness_Array = ones(2,1);
@@ -124,7 +124,7 @@ switch Raman_Type
           'FaceAlpha',PatchFaceAlpha)
     hold off
     
-    case 3 %'Ellipsoid'
+    case 'Ellipsoid'
         %% Plot single ellipsoid
         % generate ellipsoid coordinate in Original Frame 
         [Ex0, Ey0, Ez0] = ellipsoid(0,0,0,SemiAxisL(1),SemiAxisL(2),SemiAxisL(3),N_mesh);
@@ -147,7 +147,7 @@ switch Raman_Type
             'FaceColor',F_Color,...
             'FaceAlpha',0.2);
      
-    case 4 %'HyperE'
+    case 'Hyper Ellipsoid'
         %% Plot hyper ellipsoid so that the radius = E'*Alpha*E
         phi   = linspace(0,2*pi,N_mesh);
         theta = linspace(-pi/2,pi/2,N_mesh);

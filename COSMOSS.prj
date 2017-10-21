@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="374239417" file="/Users/jjho/Documents/MATLAB_Local/COSMOSS/COSMOSS.prj" location="/Users/jjho/Documents/MATLAB_Local/COSMOSS" name="COSMOSS" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="782665036" file="/Users/jjho/Documents/MATLAB_Local/COSMOSS/COSMOSS.prj" location="/Users/jjho/Documents/MATLAB_Local/COSMOSS" name="COSMOSS" target="target.mlapps" target-name="Package App">
     <param.appname>COSMOSS</param.appname>
     <param.authnamewatermark>Jia-Jung Ho</param.authnamewatermark>
     <param.email>jhoatgit@gmail.com</param.email>

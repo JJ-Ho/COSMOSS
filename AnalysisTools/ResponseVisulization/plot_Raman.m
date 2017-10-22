@@ -46,7 +46,7 @@ switch Raman_Type
         Arror_Orig = bsxfun(@times,Center,ones(6,1));
         
         set(hAx,'ColorOrder',ColorOrder)
-        arrow3(Arror_Orig,Arrow_End,'o2',Arror_W,Arror_H)
+        arrow3(Arror_Orig,Arrow_End,'o2',Arror_W,Arror_H);
         
     case 'Disk'
         %% Plot three ellipse disk

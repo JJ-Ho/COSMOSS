@@ -126,7 +126,8 @@ end
 if SaveFig
     timeStamp    = datetime('now','TimeZone','local');
     timeSamepStr = datestr(timeStamp,'yymmdd_HH-MM-SS');
-    FigName      = [SpecType,'_',FilesName_Reg,'_',timeSamepStr];
+    FigName      = [SpecType,'_',timeSamepStr];
     
+    hF = hAx.Parent;
     SaveFigures(hF,SavePath,FigName)
 end

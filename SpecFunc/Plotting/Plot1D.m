@@ -153,10 +153,10 @@ end
 
 %% Auto Save
 if SaveFig
-    SaveName_Reg = regexprep(FilesName,'\.','\_');
     timeStamp    = datetime('now','TimeZone','local');
     timeSamepStr = datestr(timeStamp,'yymmdd_HH-MM-SS');
-    FigName      = [OneD_Data.SpecType,'_',SaveName_Reg,'_',timeSamepStr];
+    FigName      = [OneD_Data.SpecType,'_',timeSamepStr];
     
+    hF = hAx.Parent;
     SaveFigures(hF,SavePath,FigName)
 end

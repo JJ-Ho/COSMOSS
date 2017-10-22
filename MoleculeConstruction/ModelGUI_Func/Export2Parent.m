@@ -7,8 +7,8 @@ switch app.Parent.GUI_Tag
         app.Parent.UIFigure.Name = ['COSMOSS: ', app.UIFigure.Name]; % change Name of Main GUI to identify which Structural Model is using
         app.Parent.RefreshOn % reset the all refresh tag to 1
     case 'Comb2'
-        if ~isempty(app.CombOrder)
-            app.UIFigure.Name = ['#',int2str(app.CombOrder),', ',app.UIFigure.Name];
-        end
+%         if ~isempty(app.CombOrder)
+%             app.UIFigure.Name = ['#',int2str(app.CombOrder),', ',app.UIFigure.Name];
+%         end
 end
 

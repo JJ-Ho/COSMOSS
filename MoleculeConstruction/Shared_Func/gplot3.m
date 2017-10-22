@@ -29,8 +29,8 @@ X = X(:);
 Y = Y(:);
 Z = Z(:);
 
-if nargout==0,
-    if nargin<3,
+if nargout==0
+    if nargin<3
         plot3(X, Y, Z)
     else
         plot3(X, Y, Z, varargin{:});

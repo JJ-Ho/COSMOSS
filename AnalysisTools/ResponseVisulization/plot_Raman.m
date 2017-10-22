@@ -45,8 +45,8 @@ switch Raman_Type
         Arrow_End = bsxfun(@plus,Arrow_End,Center); % move the ned point with Center translation
         Arror_Orig = bsxfun(@times,Center,ones(6,1));
         
-        set(hAx,'ColorOrder',ColorOrder)
-        arrow3(Arror_Orig,Arrow_End,'o2',Arror_W,Arror_H);
+        hAx.ColorOrder = ColorOrder;
+        arrow3(hAx,Arror_Orig,Arrow_End,'o-2',Arror_W,Arror_H,[],[],0.5)
         
     case 'Disk'
         %% Plot three ellipse disk

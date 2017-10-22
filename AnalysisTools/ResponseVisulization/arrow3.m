@@ -1,4 +1,4 @@
-function hn=arrow3(p1,p2,s,w,h,ip,alpha,beta)
+function hn=arrow3(ax,p1,p2,s,w,h,ip,alpha,beta)
 % ARROW3 (R13)
 %   ARROW3(P1,P2) draws lines from P1 to P2 with directional arrowheads.
 %   P1 and P2 are either nx2 or nx3 matrices.  Each row of P1 is an
@@ -345,7 +345,8 @@ if strcmpi(p1,'colors')                            % plot color table
   if nargin>1, beta=abs(p2(1)); end
   LocalColorTable(1,beta); return
 end
-fig=gcf; ax=gca;
+% fig=gcf; ax=gca;
+fig = ax.Parent;
 if strcmpi(p1,'update'), ad=getappdata(ax,'Arrow3');    % update
   LocalLogCheck(ax);
   if size(ad,2)<13, error('Invalid AppData'), end

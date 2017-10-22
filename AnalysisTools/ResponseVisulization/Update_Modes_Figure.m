@@ -200,15 +200,8 @@ hAx.DataAspectRatio = [1,1,1];
 Output.Mu_Alpha_Ind = Mode_Ind;
 
 function Plot_Mu(hAx,Center,Mu_S,Mode_colors)
-N_Plot_Mode = size(Center,1);
-for j = 1: N_Plot_Mode
-    quiver3(hAx,...
-            Center(j,1),Center(j,2),Center(j,3),...
-            Mu_S(j,1),Mu_S(j,2),Mu_S(j,3),0,...
-            'LineWidth',2,...
-            'MaxHeadSize',0.6,...
-            'Color',Mode_colors(j,:));
-end
+hAx.ColorOrder = Mode_colors;
+arrow3(hAx,Center,Center+Mu_S,'o-2',2,3,[],[],0.5)
 
 function Plot_Alpha(hAx,Center,Alpha,Mode_colors,Raman_Type)
 N_Plot_Mode = size(Center,1);

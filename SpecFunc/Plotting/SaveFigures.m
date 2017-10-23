@@ -19,9 +19,9 @@ for i = 1:NAx
     hAx(i).YMinorGrid      = 'off';
 end
 
-saveas (hF,SaveName,'epsc')
-disp([FileName,' saved to:'])
-disp(PathName)
+% saveas (hF,SaveName,'epsc')
+% disp([FileName,' saved to:'])
+% disp(PathName)
 
 for i = 1:NAx
     hAx(i).XGrid           = 'on';

@@ -1,8 +1,8 @@
-function EJLR_T = EJLR_Tensor(COSMOSS_Input,Orientation_Input)
+function EJLR_T = EJLR_Tensor(COSMOSS_Input,SpecType,N_Grid)
 %% Debug
 % % clear all
-% Orientation_Input.SpecType = 'SFG';
-% Orientation_Input.N_Grid   = 10;
+% SpecType = 'SFG';
+% N_Grid   = 10;
 % 
 % Exp1D = zeros(2,3);
 % Exp2D = zeros(2,5);
@@ -12,8 +12,6 @@ function EJLR_T = EJLR_Tensor(COSMOSS_Input,Orientation_Input)
 % COSMOSS_Input.Exp2D = Exp2D;
 
 %% Decide Inputs
-SpecType = Orientation_Input.SpecType;
-N_Grid   = Orientation_Input.N_Grid;
 
 switch SpecType
     case 'SFG'

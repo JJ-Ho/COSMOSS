@@ -207,5 +207,5 @@ else
 end
 
 %% Deal with Other outputs
-IntensityGrid = reshape(sum((Beta).^2,2),SparseMax,SparseMax);
+IntensityGrid = reshape((sum((Beta).^2,2).^(1/2)),SparseMax,SparseMax);
 SpectraGrid   = sparse(F_sub(:,1),F_sub(:,2),Response,SparseMax,SparseMax);

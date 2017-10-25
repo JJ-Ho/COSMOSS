@@ -2,7 +2,18 @@ function [SpectraGrid,Beta,IntensityGrid] = Feynmann_Path_Gen(SpecType,Pathways,
 %% debug
 % SpecType = '2DSFG';
 % Pathways = 'NR3';
-% Data_2D = Data_COSMOSS.Data_2DSFG.Response;
+% 
+% S = Data_COSMOSS.Structure;
+% I = Data_COSMOSS.hCOSMOSS.Parse_GUI;
+% H = ExcitonH(S,I,'TwoEx');    
+% 
+% Mu    = MuAlphaGen(S,H,'Mode','Mu');
+% Alpha = MuAlphaGen(S,H,'Mode','Alpha');
+% 
+% Data_2D.H = H;
+% Data_2D.Mu = Mu;
+% Data_2D.Alpha = Alpha;
+% Data_2D.PCutOff = 1e-5;
 % SparseMax = 2000;
 % MEM_CutOff = 3e-1; %[GB]
 
@@ -12,9 +23,10 @@ Mu      = Data_2D.Mu;
 PCutOff = Data_2D.PCutOff;
 EJLR    = Data_2D.EJLR;
 
-F1  = H.Sort_Ex_F1;
-F2  = H.Sort_Ex_F2;
-M01 = Mu.M_Ex_01;
+F1    = H.Sort_Ex_F1;
+F2    = H.Sort_Ex_F2;
+M01   = Mu.M_Ex_01;
+M01_N = Mu.M_Ex_01_N;
 
 %% Decide Frequency bin size
 F1 = round(F1); % 1cm-1
@@ -44,6 +56,7 @@ switch Pathways
         
         % Define the linearlized  1ex -> 2ex transition dipole matrix 
         M12 = reshape(Mu.M_Ex_12,[],3);
+        M12_N = Mu.M_Ex_12_N;
         
     otherwise
         disp(['Pathway type: ',Pathways,' is not correct...'])
@@ -85,14 +98,18 @@ switch SpecType
     case '2DSFG'
         [Jd,Jc,Jb,Ja] = ndgrid(1:3,1:3,1:3,1:9);
 
-        L01 = Data_2D.Alpha.M_Ex_01;
-        L12 = reshape(Data_2D.Alpha.M_Ex_12,[],9); % linearlized  1ex -> 2ex polarizability matrix 
+        L01   = Data_2D.Alpha.M_Ex_01;
+        L01_N = Data_2D.Alpha.M_Ex_01_N;
+        L12   = reshape(Data_2D.Alpha.M_Ex_12,[],9); % linearlized  1ex -> 2ex polarizability matrix
+        L12_N = Data_2D.Alpha.M_Ex_12_N;
         
     case '2DIR'
         [Jd,Jc,Jb,Ja] = ndgrid(1:3,1:3,1:3,1:3);
         
-        L01 = M01;
-        L12 = reshape(Mu.M_Ex_12,[],3); % linearlized  1ex -> 2ex transition dipole matrix 
+        L01   = M01;
+        L01_N = M01_N;
+        L12   = reshape(Mu.M_Ex_12,[],3); % linearlized  1ex -> 2ex transition dipole matrix 
+        L12_N = Mu.M_Ex_12_N;
         
     otherwise
         disp(['Spectral type: ',SpecType,' is not correct...'])
@@ -108,25 +125,26 @@ L_Response = length(Ja);
 % Decide Transition vectors for the corresponding pathway type
 switch Pathways
     case {'R1','R2','NR1','NR2'}
-        T1 = M01;
-        T2 = M01;
-        T3 = M01;
-        T4 = L01;
+        T1 = M01; T1N = M01_N;
+        T2 = M01; T2N = M01_N;
+        T3 = M01; T3N = M01_N;
+        T4 = L01; T4N = L01_N;
         
     case {'R3','NR3'}       
-        T1 = M01;
-        T2 = M01;
-        T3 = M12;
-        T4 = L12;
+        T1 = M01; T1N = M01_N;
+        T2 = M01; T2N = M01_N;
+        T3 = M12; T3N = M12_N;
+        T4 = L12; T4N = L12_N;
 end
 
 %% Reduce mode numbers base on the Response intensity
-Norm_T1 = sqrt(sum(T1.^2,2));
-Norm_T2 = sqrt(sum(T2.^2,2));
-Norm_T3 = sqrt(sum(T3.^2,2));
-Norm_T4 = sqrt(sum(T4.^2,2));
+% Norm_T1 = sqrt(sum(T1.^2,2));
+% Norm_T2 = sqrt(sum(T2.^2,2));
+% Norm_T3 = sqrt(sum(T3.^2,2));
+% Norm_T4 = sqrt(sum(T4.^2,2));
+% Intentisy = Norm_T4(I4).*Norm_T3(I3).*Norm_T2(I2).*Norm_T1(I1);
 
-Intentisy = Norm_T4(I4).*Norm_T3(I3).*Norm_T2(I2).*Norm_T1(I1);
+Intentisy = T4N(I4).*T3N(I3).*T2N(I2).*T1N(I1);
 Int_Max = max(Intentisy);
 
 % Apply CutOff
@@ -207,5 +225,11 @@ else
 end
 
 %% Deal with Other outputs
-IntensityGrid = reshape((sum((Beta).^2,2).^(1/2)),SparseMax,SparseMax);
 SpectraGrid   = sparse(F_sub(:,1),F_sub(:,2),Response,SparseMax,SparseMax);
+
+% IntensityGrid = reshape((sum((Beta).^2,2).^(1/2)),SparseMax,SparseMax);
+
+% regenerate intensity after cutoff
+IntCutOff = T4N(I4).*T3N(I3).*T2N(I2).*T1N(I1);
+IntensityGrid = sparse(F_sub(:,1),F_sub(:,2),IntCutOff,SparseMax,SparseMax);
+

@@ -4,11 +4,9 @@ function Transition_Strength(SpecData)
 % is the larger the transition strength is. 
 
 %% Debug
-% % H = Data_COSMOSS.Data_2DIR.Response.H;
-% % TV = Data_COSMOSS.Data_2DIR.Response.Mu;
-% H = Data_COSMOSS.Data_2DSFG.Response.H;
-% % TV = Data_COSMOSS.Data_2DSFG.Response.Mu;
-% TV = Data_COSMOSS.Data_2DSFG.Response.Alpha;
+% SpecData.SpecType = 'SFG';
+% SpecData.H = Data_COSMOSS.Data_SFG.H;
+% SpecData.Alpha = Data_COSMOSS.Data_SFG.Alpha;
 
 %% Determine spectral Type
 switch SpecData.SpecType
@@ -49,8 +47,7 @@ switch size(M1,2)
         TV_Type = 'Raman';
 end
 
-% M1L = sqrt(sum(M1.^2,2)); % N
-M1L = sum(M1.^2,2); % N^2
+M1L = TV.M_Ex_01_N;
 M1L_N = M1L./max(M1L);
 
 X1_V = (1:N1)';
@@ -71,9 +68,6 @@ Y1_M_P = [Y1_B,Y1_T,Y1_T,Y1_B];
 
 % Patch Color
 C1 = bsxfun(@times,ones(N1,1),Color1);
-
-
-
 
 %% Two Exciton
 switch ExType
@@ -99,9 +93,8 @@ switch ExType
     case '2ex'
         N2 = H.StatesNum - H.Nmodes -1;
         F2 = H.Sort_Ex_F2;
-        M2 = TV.M_Ex_12;
-        % M2L = sqrt(sum(M2.^2,3)); % N
-        M2L = sum(M2.^2,3); % N^2
+        
+        M2L = TV.M_Ex_12_N;
         M2L = M2L(:);
         M2L_N = M2L./max(M2L);
 

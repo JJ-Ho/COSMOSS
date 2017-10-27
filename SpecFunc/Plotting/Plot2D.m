@@ -108,10 +108,12 @@ hAx.YLim = [FreqRange(1),FreqRange(end)];
 
 FilesName     = CVL.FilesName;
 FilesName_Reg = regexprep(FilesName,'\_','\\_');
-Coupling      = GUI_Inputs.CouplingType;
-Coupling_Reg  = regexprep(Coupling,'\_','\\_');
+% Coupling      = GUI_Inputs.CouplingType;
+% Coupling_Reg  = regexprep(Coupling,'\_','\\_');
+%Title_String = [SpecType,' ',FilesName_Reg,', Coupling:',Coupling_Reg];
 
-Title_String = [SpecType,' ',FilesName_Reg,', Coupling:',Coupling_Reg];
+Pathway       = GUI_Inputs.Pathway;
+Title_String = [SpecType,' ',FilesName_Reg,', Pathway: ',Pathway];
 hAx.Title.String   = Title_String;
 hAx.Title.FontSize = 16;
 

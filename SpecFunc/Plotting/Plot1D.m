@@ -100,7 +100,6 @@ else
     PlotY = PlotY.*(max(abs(Stick(:)))/max(abs(PlotY(:))));
 end
 
-cla(hAx)
 hold(hAx,'on')
     line(hAx,[FreqRange(1);FreqRange(end)],[0;0],'Color',[1,0,0]) % plot baseline
     plot(hAx,FreqRange,PlotY,'-','LineWidth',2)

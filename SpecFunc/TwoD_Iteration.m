@@ -71,6 +71,7 @@ if Sampling
             CVL = Conv2D(SpectraGrid,I);
             CVL.FilesName = [S.FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title
             SpecType = Response.SpecType;
+            cla(hAx)
             Plot2D(hAx,CVL,I,SpecType);
             drawnow
             DynamicUpdate = 0;

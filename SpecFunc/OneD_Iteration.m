@@ -42,6 +42,7 @@ if eq(I.Sampling,1)
         
         while ~eq(DynamicUpdate,0)
             OneD.FilesName = [S.FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title
+            cla(hAx)
             Plot1D(hAx,OneD,I);
             drawnow
             DynamicUpdate = 0;

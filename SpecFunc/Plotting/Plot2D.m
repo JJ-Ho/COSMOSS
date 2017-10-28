@@ -51,7 +51,7 @@ CMAP_Index  = INPUT.Results.CMAP_Index;
 PlotNorm    = INPUT.Results.PlotNorm;
 
 %% Main
-cla(hAx)
+hold(hAx,'on')
 X = FreqRange;
 Y = FreqRange;
 
@@ -96,7 +96,8 @@ colormap(hAx,C_MAP)
 caxis(hAx,[-C_Amp,C_Amp])
 
 % Plot diagonal line
-hold(hAx,'on'); plot(hAx,X,Y,'Color',DiagColor,'LineStyle','--');hold(hAx,'off')
+plot(hAx,X,Y,'Color',DiagColor,'LineStyle','--')
+hold(hAx,'off')
 
 %% figure setting 
 hAx.DataAspectRatio = [1,1,1];

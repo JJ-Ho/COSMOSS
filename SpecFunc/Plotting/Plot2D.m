@@ -24,7 +24,7 @@ INPUT.KeepUnmatched = 1;
 % Default values
 defaultSaveFig     = 0;
 defaultSavePath    = '~/Desktop/';
-defaultFreqRange   = 1600:1800;
+% defaultFreqRange   = 1600:1800;
 defaultNum_Contour = 20;
 defaultPlotCursor  = 0;
 defaultCMAP_Index  = 1;
@@ -33,7 +33,7 @@ defaultPlotNorm    = 0;
 % add Optional inputs / Parameters
 addOptional(INPUT,'SaveFig'    ,defaultSaveFig);
 addOptional(INPUT,'SavePath'   ,defaultSavePath);
-addOptional(INPUT,'FreqRange'  ,defaultFreqRange);
+% addOptional(INPUT,'FreqRange'  ,defaultFreqRange);
 addOptional(INPUT,'Num_Contour',defaultNum_Contour);
 addOptional(INPUT,'PlotCursor' ,defaultPlotCursor);
 addOptional(INPUT,'CMAP_Index' ,defaultCMAP_Index);
@@ -44,13 +44,15 @@ parse(INPUT,GUI_Inputs_C{:});
 % Re-assign variable names
 SaveFig     = INPUT.Results.SaveFig;
 SavePath    = INPUT.Results.SavePath;
-FreqRange   = INPUT.Results.FreqRange;
+% FreqRange   = INPUT.Results.FreqRange;
 Num_Contour = INPUT.Results.Num_Contour;
 PlotCursor  = INPUT.Results.PlotCursor;
 CMAP_Index  = INPUT.Results.CMAP_Index;
 PlotNorm    = INPUT.Results.PlotNorm;
 
 %% Main
+FreqRange = CVL.FreqRange;
+
 hold(hAx,'on')
 X = FreqRange;
 Y = FreqRange;

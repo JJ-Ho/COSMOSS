@@ -105,9 +105,11 @@ Beta_NN      = INPUT.Results.Beta_NN;
 
 %% para variables
 % Reassign variable names from StrucInfo
-Nmodes    = Structure.Nmodes;
-LocFreq   = Structure.LocFreq;
-LocAnharm = Structure.LocAnharm;
+Nmodes          = Structure.Nmodes;
+LocFreq         = Structure.LocFreq;
+LocAnharm       = Structure.LocAnharm;
+DiagDisorder    = Structure.DiagDisorder;
+OffDiagDisorder = Structure.OffDiagDisorder;
 
 if strcmp(ExMode,'TwoEx')
     StatesNum = (Nmodes+2)*(Nmodes+1)/2; 
@@ -116,7 +118,7 @@ else
 end
 
 if ~Sampling
-    DD_FWHM  = 0;
+%     DD_FWHM  = 0;
     ODD_FWHM = 0;
 end
 
@@ -126,16 +128,16 @@ if eq(LocFreqType,2)
     LocFreq = LocFreq + dF_Jansen;
 end
 
-DD_std     = DD_FWHM/(2*sqrt(2*log(2)));
+DD_std     = DiagDisorder./(2*sqrt(2*log(2)));
 P_FlucCorr = P_FlucCorr/100; % turn percentage to number within 0~1
 
 Correlation_Dice = rand;
 if Correlation_Dice < P_FlucCorr
-    dF = DD_std*(randn(1,1).*ones(Nmodes,1));
+    dF_DD = DD_std.*(randn(1,1).*ones(Nmodes,1));
 else 
-    dF = DD_std*randn(Nmodes,1); 
+    dF_DD = DD_std.*randn(Nmodes,1); 
 end
-LocFreq = LocFreq + dF;
+LocFreq = LocFreq + dF_DD;
 
 %% Off diagonal disorder
 ODD_std = ODD_FWHM/(2*sqrt(2*log(2)));

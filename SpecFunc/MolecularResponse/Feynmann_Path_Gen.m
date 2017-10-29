@@ -183,12 +183,12 @@ if N_Path > Ele_Max
     Padding_NaN  = nan(Padding_L,1);
     
     F1D_Loop = reshape([F_ind; Padding_NaN],Ele_Max,[]);
-    I1 = reshape([I1; Padding_NaN],Ele_Max,[]);
-    I2 = reshape([I2; Padding_NaN],Ele_Max,[]);
-    I3 = reshape([I3; Padding_NaN],Ele_Max,[]);
-    I4 = reshape([I4; Padding_NaN],Ele_Max,[]);
+    I1_Loop = reshape([I1; Padding_NaN],Ele_Max,[]);
+    I2_Loop = reshape([I2; Padding_NaN],Ele_Max,[]);
+    I3_Loop = reshape([I3; Padding_NaN],Ele_Max,[]);
+    I4_Loop = reshape([I4; Padding_NaN],Ele_Max,[]);
 
-    Loop_N = size(I1,2);
+    Loop_N = size(I1_Loop,2);
     % display how many loop is going to be done
     MEM = N_Path * L_Response * 8 / 1e9; % roughly unit in GB
     disp('--------------------------------------')
@@ -199,7 +199,7 @@ if N_Path > Ele_Max
     
     Response = zeros(Ele_Max,Loop_N-1);
     for LN = 1:Loop_N -1         
-        Beta_Raw = T4(I4(:,LN),Ja).*T3(I3(:,LN),Jb).*T2(I2(:,LN),Jc).*T1(I1(:,LN),Jd);
+        Beta_Raw = T4(I4_Loop(:,LN),Ja).*T3(I3_Loop(:,LN),Jb).*T2(I2_Loop(:,LN),Jc).*T1(I1_Loop(:,LN),Jd);
         Beta(F1D_Loop(:,LN),:) = Beta_Raw;
         Response(:,LN)         = Beta_Raw*EJLR';
     end    
@@ -208,10 +208,10 @@ if N_Path > Ele_Max
     % deall with the last loop
     Last_Ind = (1:mod(N_Path,Ele_Max))';
     F1D_End  = F1D_Loop(Last_Ind,Loop_N);
-    I1_End   = I1(Last_Ind,Loop_N);
-    I2_End   = I2(Last_Ind,Loop_N);
-    I3_End   = I3(Last_Ind,Loop_N);
-    I4_End   = I4(Last_Ind,Loop_N);
+    I1_End   = I1_Loop(Last_Ind,Loop_N);
+    I2_End   = I2_Loop(Last_Ind,Loop_N);
+    I3_End   = I3_Loop(Last_Ind,Loop_N);
+    I4_End   = I4_Loop(Last_Ind,Loop_N);
     
     Beta_Raw_End = T4(I4_End,Ja).*T3(I3_End,Jb).*T2(I2_End,Jc).*T1(I1_End,Jd);
     Beta(F1D_End,:) = Beta_Raw_End;
@@ -226,8 +226,6 @@ end
 
 %% Deal with Other outputs
 SpectraGrid   = sparse(F_sub(:,1),F_sub(:,2),Response,SparseMax,SparseMax);
-
-% IntensityGrid = reshape((sum((Beta).^2,2).^(1/2)),SparseMax,SparseMax);
 
 % regenerate intensity after cutoff
 IntCutOff = T4N(I4).*T3N(I3).*T2N(I2).*T1N(I1);

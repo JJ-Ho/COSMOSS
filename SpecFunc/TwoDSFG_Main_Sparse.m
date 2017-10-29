@@ -130,7 +130,7 @@ F2  = H.Sort_Ex_F2;
 F_Max = max(F2) - min(F1);
 SparseMax = ceil(max(FreqRange(end),F_Max));
 
-MEM_CutOff = 3e-1; %[GB]
+MEM_CutOff = 1; %[GB]
 
 % Calculate pathways
 [SGrid.R1 ,Beta.R1 ,IGrid.R1 ] = Feynmann_Path_Gen(SpecType, 'R1',Data_2D,SparseMax,MEM_CutOff);

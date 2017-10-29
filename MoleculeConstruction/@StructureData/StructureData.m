@@ -7,11 +7,13 @@ classdef StructureData < handle
    end
    
    properties
-       LocCenter % size = [Nmodes,3]
-       LocFreq   % size = [Nmodes,1]
-       LocAnharm % size = [Nmodes,1]
-       LocMu     % size = [Nmodes,3]
-       LocAlpha  % size = [Nmodes,9]
+       LocCenter       % size = [Nmodes,3]
+       LocFreq         % size = [Nmodes,1]
+       LocAnharm       % size = [Nmodes,1]
+       LocMu           % size = [Nmodes,3]
+       LocAlpha        % size = [Nmodes,9]
+       DiagDisorder    % size = [Nmodes,1]
+       OffDiagDisorder % size = [Nmodes,1]
        
        FilesName
        

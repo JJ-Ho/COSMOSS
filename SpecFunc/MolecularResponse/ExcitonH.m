@@ -80,7 +80,7 @@ defaultLocFreqType  = 1;
 defaultCouplingType = 'TDC';
 defaultSampling     = 0;
 defaultP_FlucCorr   = 100;
-defaultDD_FWHM      = 0;
+% defaultDD_FWHM      = 0;
 defaultODD_FWHM     = 0;
 defaultBeta_NN      = 0.8; % 0.8 cm-1 according to Lauren's PNAS paper (doi/10.1073/pnas.1117704109); that originate from Min Cho's paper (doi:10.1063/1.1997151)
 
@@ -88,7 +88,7 @@ addOptional(INPUT,'LocFreqType' ,defaultLocFreqType);
 addOptional(INPUT,'CouplingType',defaultCouplingType);
 addOptional(INPUT,'Sampling'    ,defaultSampling);
 addOptional(INPUT,'P_FlucCorr'  ,defaultP_FlucCorr);
-addOptional(INPUT,'DD_FWHM'     ,defaultDD_FWHM);
+% addOptional(INPUT,'DD_FWHM'     ,defaultDD_FWHM);
 addOptional(INPUT,'ODD_FWHM'    ,defaultODD_FWHM);
 addOptional(INPUT,'Beta_NN'     ,defaultBeta_NN);
 
@@ -99,7 +99,7 @@ LocFreqType  = INPUT.Results.LocFreqType;
 CouplingType = INPUT.Results.CouplingType;
 Sampling     = INPUT.Results.Sampling;
 P_FlucCorr   = INPUT.Results.P_FlucCorr;
-DD_FWHM      = INPUT.Results.DD_FWHM;
+% DD_FWHM      = INPUT.Results.DD_FWHM;
 ODD_FWHM     = INPUT.Results.ODD_FWHM;
 Beta_NN      = INPUT.Results.Beta_NN;
 
@@ -109,7 +109,7 @@ Nmodes          = Structure.Nmodes;
 LocFreq         = Structure.LocFreq;
 LocAnharm       = Structure.LocAnharm;
 DiagDisorder    = Structure.DiagDisorder;
-OffDiagDisorder = Structure.OffDiagDisorder;
+% OffDiagDisorder = Structure.OffDiagDisorder; have not implement yet
 
 if strcmp(ExMode,'TwoEx')
     StatesNum = (Nmodes+2)*(Nmodes+1)/2; 
@@ -117,9 +117,13 @@ else
     StatesNum = (Nmodes+1); 
 end
 
-if ~Sampling
-%     DD_FWHM  = 0;
-    ODD_FWHM = 0;
+% check if apply random sampling
+if Sampling
+    DD_std  = DiagDisorder./(2*sqrt(2*log(2)));
+    ODD_std = ODD_FWHM/(2*sqrt(2*log(2)));
+else
+    DD_std  = 0;
+    ODD_std = 0;
 end
 
 %% Diagonal disorder if any
@@ -128,7 +132,6 @@ if eq(LocFreqType,2)
     LocFreq = LocFreq + dF_Jansen;
 end
 
-DD_std     = DiagDisorder./(2*sqrt(2*log(2)));
 P_FlucCorr = P_FlucCorr/100; % turn percentage to number within 0~1
 
 Correlation_Dice = rand;
@@ -140,7 +143,6 @@ end
 LocFreq = LocFreq + dF_DD;
 
 %% Off diagonal disorder
-ODD_std = ODD_FWHM/(2*sqrt(2*log(2)));
 dBeta   = ODD_std*randn(Nmodes);
 dBeta   = (dBeta + dBeta')./2; % symetrize
 Beta    = Coupling(Structure,CouplingType,Beta_NN); % Coupling

@@ -133,7 +133,8 @@ switch Mode
         % note: RamanV = [N x 9], index: [xx xy xz yx yy yz zx zy zz]
         X_01 = reshape(M_Ex_01,[],3,3);
         [VX_01,DX_01] = eig3(X_01); 
-        M_Ex_01_N = max(abs(DX_01),[],2); % size = [N,1]
+        %M_Ex_01_N = max(abs(DX_01),[],2); % size = [N,1]
+        M_Ex_01_N = sum(abs(DX_01),2); % size = [N,1], take trace
         
         Output.M_Ex_01_D = DX_01; % size = [N,3]
         Output.M_Ex_01_V = VX_01; % size = [N,3,3]    
@@ -150,7 +151,8 @@ if strcmp(ExMode,'TwoEx')
         case 'Alpha'
             X_12 = reshape(M_Ex_12,[],3,3);
             [VX_12,DX_12] = eig3(X_12);
-            M_Ex_12_N = max(abs(DX_12),[],2); % size = [N,1]
+            %M_Ex_12_N = max(abs(DX_12),[],2); % size = [N,1]
+            M_Ex_12_N = sum(abs(DX_12),2); % size = [N,1], take trace
             
             Output.M_Ex_12_D = DX_12; % size = [N,3]
             Output.M_Ex_12_V = VX_12; % size = [N,3,3]

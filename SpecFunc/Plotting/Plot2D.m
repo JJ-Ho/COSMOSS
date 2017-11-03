@@ -87,11 +87,28 @@ switch CVL.Lineshape
         hAx.YDir  = 'normal';
 
     otherwise % plot convoluted spectrum
-        contour(hAx,X,Y,Z,Num_Contour,'LineWidth',2)
-
+        [~,hC] = contourf(hAx,X,Y,Z,Num_Contour,'LineWidth',2);
+        
+        hC.LineStyle = 'none';
         C_MAP = SelectColormap(CMAP_Index);      
         C_Amp = max(abs(Z(:)));
         DiagColor = 'k';
+        
+        Fig_ContourLine = 1;
+        if Fig_ContourLine
+            % copy the contour and make it into line only
+            hCL = copyobj(hC,hAx);
+            hCL.Fill = 'off';
+            hCL.LineStyle = '-';
+            hCL.LineWidth = 0.5;
+            hCL.LineColor = [0,0,0]; 
+            NC_half = floor(Num_Contour/2);
+            CLevelList = linspace(-1,1,NC_half)*C_Amp;
+            %Fig_CL_D_Ind = [floor(NC_half/2):floor(NC_half/2)+1];
+            Fig_CL_D_Ind = floor(NC_half/2)+1;
+            CLevelList(Fig_CL_D_Ind)=[]; % Deal with deleting zero contour line
+            hCL.LevelList = CLevelList;
+        end
 end
 colorbar(hAx)
 colormap(hAx,C_MAP)

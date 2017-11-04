@@ -14,14 +14,9 @@ end
 
 %% Assign properties that is not affected by either translation and duplication 
 obj_TN = StructureData;
-obj_TN.FilesName     = obj.FilesName;
-obj_TN.hPlotFunc     = obj.hPlotFunc;
-obj_TN.hParseGUIFunc = obj.hParseGUIFunc;
-obj_TN.hGUIs         = obj.hGUIs; 
-
-% obj_TN.Children = obj; 
-% obj_TN.StructModel = 3; 
-% obj_TN.Extra = '';
+obj_TN.FilesName  = obj.FilesName;
+obj_TN.hPlotFunc  = obj.hPlotFunc;
+obj_TN.GUI_Inputs = obj.GUI_Inputs;
 
 %% Duplicate propeties that are not affected by translational movement
 obj_TN.AtomName  = repmat(obj.AtomName ,N,1);

@@ -1,5 +1,6 @@
-function S_V1N_V2M = ConstructGrid(S_Monomer,GUI_Inputs)
+function S_V1N_V2M = ConstructGrid(S_Monomer)
 %% Inputs parser
+GUI_Inputs = S_Monomer.GUI_Inputs;
 GUI_Inputs_C      = fieldnames(GUI_Inputs);
 GUI_Inputs_C(:,2) = struct2cell(GUI_Inputs);
 GUI_Inputs_C      = GUI_Inputs_C';

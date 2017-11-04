@@ -19,12 +19,11 @@ classdef StructureData < handle
        
        Extra
        
-       StructModel % this will be remove later
-       Children    % this property is only used by Comb2, maybe redundent
+       StructModel % Still need if to run "StructureModel(StructModel)"
+       Children    % this property is only used by Comb2 to draw subsystem
        
        hPlotFunc 
-       hGUIs         % this is used when calling the plot function, maybe redundent?
-       hParseGUIFunc % this is used when calling the plot function, maybe redundent?
+       GUI_Inputs % GUI_Inputs that include the figure options. This is necessary for excuting the hPlotFunc
    end
    
    properties
@@ -75,14 +74,14 @@ classdef StructureData < handle
           if nargin > 1 
               hAx = varargin{:};
           end
+          
           if isa(obj.hPlotFunc,'function_handle')
               % check if triggered by a GUI interface
-              if isempty(obj.hGUIs)
-                  GUI_Input.Debug = 'Debug';
-              else
-                  GUI_Input = obj.hParseGUIFunc(obj.hGUIs);
+              if isempty(obj.GUI_Inputs)
+                  obj.GUI_Inputs.Debug = 'Debug';
+                  disp('There is no GUI_Inpus in the StructureData, so use default values for drawing...')
               end
-              hF = obj.hPlotFunc(hAx,obj,GUI_Input);
+              hF = obj.hPlotFunc(hAx,obj);
           else
               hF = '';
               disp('No @hPlotFunc defined, method "Draw" would not work...')

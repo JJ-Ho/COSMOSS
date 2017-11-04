@@ -1,5 +1,6 @@
-function hF = PlotXYZ_Grid(hAx,SData,GUI_Inputs)
+function hF = PlotXYZ_Grid(hAx,SData)
 %% Input parser
+GUI_Inputs = SData.GUI_Inputs;
 GUI_Inputs_C      = fieldnames(GUI_Inputs);
 GUI_Inputs_C(:,2) = struct2cell(GUI_Inputs);
 GUI_Inputs_C      = GUI_Inputs_C';

@@ -208,5 +208,5 @@ TCO.OffDiagDisorder = OffDiagDisorder;
 TCO.LocMu           = mu_Sim;
 TCO.LocAlpha        = alpha; % raman tensor vector form [N x 9]
 TCO.FilesName       = 'Acid Dimer';
-
+TCO.GUI_Inputs      = GUI_Inputs;
 

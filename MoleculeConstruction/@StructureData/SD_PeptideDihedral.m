@@ -1,4 +1,4 @@
-function Dihedral = SD_PeptideDihedral(Structure)
+function Dihedral = SD_PeptideDihedral(obj_SD)
 % Index Definition 
 %     O(1)                     O(2)                      O(n)                     O
 %     ||                       ||                        ||                       ||
@@ -19,15 +19,15 @@ function Dihedral = SD_PeptideDihedral(Structure)
 % Structure = Data_COSMOSS.Structure;
 
 %% Check if the structure contains amide groups
-if ~isfield(Structure.Extra,'AmideIAtomSerNo')
+if ~isfield(obj_SD.Extra,'AmideIAtomSerNo')
     disp('The structure does not have amide groups, abort...')
     Dihedral = [];
     return
 end
 
 %% Prep parameters
-Ind_CONCa = Structure.Extra.AmideIAtomSerNo; %[C,O,N,CA]
-XYZ       = Structure.XYZ;
+Ind_CONCa = obj_SD.Extra.AmideIAtomSerNo; %[C,O,N,CA]
+XYZ       = obj_SD.XYZ;
 
 %% prep bond vectors
 %        O(i)                     O(i+1)

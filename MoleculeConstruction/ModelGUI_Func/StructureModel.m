@@ -1,4 +1,7 @@
-function [hModel, ModelList, hPlotFunc, hGUIParser] = StructureModel(StructModel)
+function [hModel, ModelList] = StructureModel(StructModel)
+% This function is the indexing reference of all the structure construction
+% model. Only COSMOSS and Comb2 use it to call model generation GUIs
+
 %% List 
 ModelList = {'1:Two coupled oscillators',...
              '2:Extract Amide-I from PDB files',...
@@ -6,37 +9,24 @@ ModelList = {'1:Two coupled oscillators',...
              '4:Ideal betasheet',...
              '5:Combination of any two above',...
              };
+         
 %% Run Models
 switch StructModel
-    case 0 % for exporting ModelList only
-        hModel     = 'Non'; 
-        hPlotFunc  = 'Non';
-        hGUIParser = 'Non';
     case 1
         hModel     = @Model_TCO;
-        hPlotFunc  = @PlotXYZfiles_Acid;
-        hGUIParser = @Parse_TCO;
     case 2 
         hModel     = @Model_PDB_AmideOne;
-        hPlotFunc  = @PlotXYZfiles_AmideI;
-        hGUIParser = @Parse_PDB_AmideOne;
     case 3
         hModel     = @Model_TwoDGrid;
-        hPlotFunc  = @PlotXYZ_Grid;
-        hGUIParser = @ParseGUI_TwoDGrid;
     case 4
         hModel     = @Model_Betasheet_AmideI;
-        hPlotFunc  = @Plot_Betasheet_AmideI;
-        hGUIParser = @ParseGUI_Betasheet;
     case 5
         hModel     = @Model_Comb2;
-        hPlotFunc  = 'Non';
-        hGUIParser = @ParseGUI_Comb2;
+    case 'List'
+        % silently output Model list
+        hModel     = 'Non';
     otherwise
         hModel     = 'Non';
-        hPlotFunc  = 'Non';
-        hGUIParser = 'Non';
-        
         disp('Model List')
         disp('--------------------------')
         disp(ModelList')

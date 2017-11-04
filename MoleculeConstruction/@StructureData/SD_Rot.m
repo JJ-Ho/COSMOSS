@@ -1,4 +1,4 @@
-function obj_RT = SD_Rot(obj,R1)
+function obj_RT = SD_Rot(obj_SD,R1)
 %% Check Input
 % check if R is [3x3]
 if ~isequal(size(R1),[3,3])
@@ -8,7 +8,7 @@ if ~isequal(size(R1),[3,3])
 end
 
 %% Translate the CoM to origin
-obj_T = SD_Trans(obj,-obj.CoM);
+obj_T = SD_Trans(obj_SD,-obj_SD.CoM);
 
 %% Apply rotation to corresponding properties
 obj_R     = SD_Copy(obj_T);
@@ -29,4 +29,4 @@ if ~isempty(obj_T.LocAlpha)
 end
 
 %% Translate the CoM back to where it was
-obj_RT = SD_Trans(obj_R,obj.CoM);
+obj_RT = SD_Trans(obj_R,obj_SD.CoM);

@@ -34,6 +34,9 @@ S2_T_R_S = SD_ScaleTransitions(S2_T_R,Conc_Scaling);
 %% Merge the two and Output
 SC = SD_Comb2(S1_0,S2_T_R_S);
 
+SC.hPlotFunc  = @PlotComb2;
+SC.GUI_Inputs = GUI_Inputs;
+
 % % Export into Structure so it can be passsed around different GUIs
 % Structure.StrucData1  = StrucData1_0;
 % Structure.StrucData2  = StrucData2_RT;

@@ -1,4 +1,4 @@
-function obj_T = SD_Trans(obj,V)
+function obj_T = SD_Trans(obj_SD,V)
 %% Check Input
 % Make sure V is a row
 if iscolumn(V)
@@ -13,14 +13,14 @@ if ~isequal(size(V),[1,3])
 end
 
 %% Copy the original obj to a new obj
-obj_T = SD_Copy(obj);
+obj_T = SD_Copy(obj_SD);
 
 %% Apply translation to relevent properties
-XYZ_T     = bsxfun(@plus,obj.XYZ,V);
+XYZ_T     = bsxfun(@plus,obj_SD.XYZ,V);
 obj_T.XYZ = XYZ_T;
 
 % check if the center location of modes is assigned
-if ~isempty(obj.LocCenter)
-    LocCenter_T = bsxfun(@plus,obj.LocCenter,V);
+if ~isempty(obj_SD.LocCenter)
+    LocCenter_T = bsxfun(@plus,obj_SD.LocCenter,V);
     obj_T.LocCenter = LocCenter_T;
 end

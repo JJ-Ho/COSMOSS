@@ -1,4 +1,4 @@
-function AP = SD_AtomicProperties(obj)
+function AP = SD_AtomicProperties(obj_SD)
 %% Load Atom Properties
 % The 'AtomicProperties.mat' was extracted from Mathematica with cmd:
 % ´MatrixForm[Table[{ElementData[z, "AtomicNumber"], ElementData[z, "Abbreviation"], ElementData[z, "AtomicRadius"], ElementData[z, "AtomicWeight"]}, {z, 118}]]
@@ -10,7 +10,7 @@ function AP = SD_AtomicProperties(obj)
 load('AtomicProperties.mat')
 
 %% Match Atom Name with its properties
-NAtoms = obj.NAtoms;
+NAtoms = obj_SD.NAtoms;
 Name   =  cell(NAtoms,1);
 Mass   = zeros(NAtoms,1);
 Number = zeros(NAtoms,1);
@@ -19,7 +19,7 @@ Radii  = zeros(NAtoms,1);
 for i = 1:NAtoms
     % this extra step taking care of PDB atom names, which have 
     % multiple charaters, eg: CA => C atom
-    AtomName_Str = obj.AtomName{i};
+    AtomName_Str = obj_SD.AtomName{i};
     if ~any(strcmp(AtomName_Str,AtomName))
         AtomName_Str = AtomName_Str(1);
     end

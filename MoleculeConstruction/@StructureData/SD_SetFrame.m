@@ -1,10 +1,10 @@
-function obj_Framed = SD_SetFrame(obj,Center_Ind,Z_Ind,XZ_Ind)
+function obj_Framed = SD_SetFrame(obj_SD,Center_Ind,Z_Ind,XZ_Ind)
 %% Rotated the molecule with [Orientation] info
 % Get Ratational Matrix to rotate the molecule to defined frame 
-Vec_Z  = obj.XYZ( Z_Ind(2),:) - obj.XYZ( Z_Ind(1),:);
+Vec_Z  = obj_SD.XYZ( Z_Ind(2),:) - obj_SD.XYZ( Z_Ind(1),:);
 Z      = Vec_Z/norm(Vec_Z);
 
-Vec_XZ = obj.XYZ(XZ_Ind(2),:) - obj.XYZ(XZ_Ind(1),:);
+Vec_XZ = obj_SD.XYZ(XZ_Ind(2),:) - obj_SD.XYZ(XZ_Ind(1),:);
 XZ     = Vec_XZ/norm(Vec_XZ);
 
 Y      = cross(Z,XZ);
@@ -22,7 +22,7 @@ Old_Frame(:,3) = Z;
 New_Frame      = eye(3);
 Rot2NF         = Euler_Rot(New_Frame,Old_Frame);
 
-obj_RF = SD_Rot(obj,Rot2NF);
+obj_RF = SD_Rot(obj_SD,Rot2NF);
 
 %% Set the center Atom to zero 
 % Move Center to [0,0,0]

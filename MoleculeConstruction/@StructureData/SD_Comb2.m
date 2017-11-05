@@ -78,7 +78,6 @@ Children = [obj_SD1,obj_SD2];
 
 %% Reassign StructureData
 obj_comb2 = StructureData;
-obj_comb2.StructModel     = 5;
 obj_comb2.XYZ             = XYZ;
 obj_comb2.AtomName        = AtomName;
 obj_comb2.LocCenter       = LocCenter;

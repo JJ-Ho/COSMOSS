@@ -15,15 +15,12 @@ classdef StructureData < handle
        DiagDisorder    % size = [Nmodes,1]
        OffDiagDisorder % size = [Nmodes,1]
        
-       FilesName
+       hPlotFunc       % function handle of the model specific drawing function 
+       GUI_Inputs      % GUI_Inputs that include the figure options. This is necessary for excuting the hPlotFunc
        
-       Extra
-       
-       StructModel % Still need if to run "StructureModel(StructModel)"
-       Children    % this property is only used by Comb2 to draw subsystem
-       
-       hPlotFunc 
-       GUI_Inputs % GUI_Inputs that include the figure options. This is necessary for excuting the hPlotFunc
+       FilesName       % name for figure drawing and identification
+       Children        % this property is only used by Comb2 to draw subsystem
+       Extra           % all the model dependent properties can be saved in here
    end
    
    properties
@@ -35,11 +32,11 @@ classdef StructureData < handle
    
    properties
        % These properties will be calculated when quaried
-       Nmodes
-       NAtoms
-       NStucture
-       LocAlphaM
-       CoM
+       Nmodes       % # of local modes
+       NAtoms       % # of atoms
+       NStucture    % # of structures, this is only require when load PDB file with multiple snapshots
+       LocAlphaM    % Raman tensors in Matrix form, use for visual inspection only
+       CoM          % Center of Mass, as a reference point of common origin in a coordinate system
    end
    
    methods

@@ -17,11 +17,12 @@ end
 
 %% Calculate TwoD response
 if Sampling
-    % Pre-allocate
-    FreqRange = FreqRange(1):FreqRange(end)+100; % add 100 cm-1 range to prevent fluctuation out of range
-    I.FreqRange = FreqRange; % pass the extended Frequency Range to the TwoD main function
-    GridSize  = FreqRange(end); 
+    % run the 2D simulation once
+    [SG1,~] = h2DFunc(S,I);
     
+    % Pre-allocate
+    GridSize  = size(SG1.R1,1) + 100; 
+    I.F_Max = GridSize; % force all the iterations to take this value as it's grid size
     R1   = sparse(GridSize,GridSize);
     R2   = sparse(GridSize,GridSize);
     R3   = sparse(GridSize,GridSize);
@@ -54,7 +55,7 @@ if Sampling
             NR2  = NR2  + Tmp_SG.NR2 ;
             NR3  = NR3  + Tmp_SG.NR3 ;   
         catch
-            disp(['Frequency fluctuation out of range: ', num2str(GridSize),', dop this run...'])
+            disp([num2str(Tmp_Res.SparseMax),' is larger than the set grid size: ',num2str(GridSize),' dop this run...'])
             continue
         end
 

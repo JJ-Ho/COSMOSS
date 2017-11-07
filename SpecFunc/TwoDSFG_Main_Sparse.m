@@ -37,7 +37,6 @@ INPUT = inputParser;
 INPUT.KeepUnmatched = true;
 
 % Default values
-defaultFreqRange    = 1650:1750;
 defaultAvg_Rot      = 1;
 defaultAvg_Mirror   = 1;
 defaultA_Pump1      = 90;
@@ -52,7 +51,6 @@ defaultP_Vis2D      = 0;
 defaultP_Sig2D      = 0;
 defaultPCutOff      = 0;
 
-addOptional(INPUT,'FreqRange'   ,defaultFreqRange);
 addOptional(INPUT,'Avg_Rot'     ,defaultAvg_Rot);
 addOptional(INPUT,'Avg_Mirror'  ,defaultAvg_Mirror);
 addOptional(INPUT,'A_Pump1'     ,defaultA_Pump1);
@@ -70,7 +68,6 @@ addOptional(INPUT,'PCutOff'     ,defaultPCutOff);
 parse(INPUT,GUI_Inputs_C{:});
 
 % Reassign Variable names
-FreqRange    = INPUT.Results.FreqRange;
 Avg_Rot      = INPUT.Results.Avg_Rot;
 Avg_Mirror   = INPUT.Results.Avg_Mirror; 
 A_Pump1      = INPUT.Results.A_Pump1;
@@ -128,7 +125,7 @@ Data_2D.EJLR    = E*J*R_Avg;
 F1  = H.Sort_Ex_F1;
 F2  = H.Sort_Ex_F2;
 F_Max = max(F2) - min(F1);
-SparseMax = ceil(max(FreqRange(end),F_Max));
+SparseMax = ceil(max(GUI_Inputs.F_Max,F_Max));
 
 MEM_CutOff = 1; %[GB]
 

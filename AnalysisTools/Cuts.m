@@ -109,7 +109,12 @@ hAx_Cut.YLim   = [-ZMax,ZMax].*1.1;
 hAx_Cut.XLabel.String = hAx_Contour.XLabel.String;
 hAx_Cut.YLabel.String = 'Z intensity';
 hAx_Cut.FontSize = 16;
-hAx_Cut.Title.String = ['X-Z cut of ',hAx_Contour.Title.String{1}];
+
+OriginalTitle = hAx_Contour.Title.String;
+if iscell(OriginalTitle)
+    OriginalTitle = OriginalTitle{1};
+end
+hAx_Cut.Title.String = ['X-Z cut of ',OriginalTitle];
 setColor(hIntL,hCutLine.Color)
 
 addNewPositionCallback( hIntL,@(pos) CutCallback(pos,hContour,hCutLine) );

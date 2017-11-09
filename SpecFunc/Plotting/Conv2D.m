@@ -78,11 +78,20 @@ end
 
 %% Convolution
 % Generate lineshapes
-[ConvL,~] = Conv_LineShape(2,LineShape,FreqRange,LineWidth);
+[ConvL2,~] = Conv_LineShape(2,LineShape,FreqRange,LineWidth);
 
 % frequency domain 2D convolution
-CVL.R   = conv2(Re_phasing_Res,ConvL.lnshpf_R,'same');
-CVL.NR  = conv2(NR_phasing_Res,ConvL.lnshpf_N,'same');
+CVL.R   = conv2(Re_phasing_Res,ConvL2.lnshpf_R,'same');
+CVL.NR  = conv2(NR_phasing_Res,ConvL2.lnshpf_N,'same');
+
+% [ConvL1,~] = Conv_LineShape(1,'Lorentzian',FreqRange,20);
+% ConvL1 = imag(ConvL1);
+% N_Pump = size(Re_phasing_Res,1);
+% for i = 1:N_Pump
+%     CVL.R(i,:)  = conv(ConvL1,CVL.R(i,:),'same');
+%     CVL.NR(i,:) = conv(ConvL1,CVL.NR(i,:),'same');
+% end
+
 CVL.sum = CVL.R + CVL.NR;
 
 % Export Non-convoluted sticks

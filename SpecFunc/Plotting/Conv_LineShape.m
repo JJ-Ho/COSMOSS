@@ -11,7 +11,7 @@ switch Dimension
     case 1
         switch LineShape 
             case 'Lorentzian' 
-                LineWidth = LineWidth/2;
+                %LineWidth = LineWidth/2;
                 ConvL = spec_array./((spec_array.^2)+(LineWidth^2)) + 1i*LineWidth./(spec_array.^2+LineWidth^2);
             case 'Gaussian'
                 ConvL = 1i*exp(-(spec_array.^2)./(LineWidth^2));
@@ -31,9 +31,8 @@ switch Dimension
         
         switch LineShape
             case 'Lorentzian' 
-                FF = 1; % Counting for probe beam line width
-                lnshpf_R =((-1./(-(p2-center)+1i*LineWidth*FF)).*(1./((p1-center)+1i*LineWidth)));
-                lnshpf_N =((-1./( (p2-center)+1i*LineWidth*FF)).*(1./((p1-center)+1i*LineWidth)));
+                lnshpf_R =((-1./(-(p2-center)+1i*LineWidth)).*(1./((p1-center)+1i*LineWidth)));
+                lnshpf_N =((-1./( (p2-center)+1i*LineWidth)).*(1./((p1-center)+1i*LineWidth)));
 
             case 'Gaussian'
                 lnshpf_R = ngaussval(sqrt((p1-center).^2+(p2-center).^2),LineWidth);

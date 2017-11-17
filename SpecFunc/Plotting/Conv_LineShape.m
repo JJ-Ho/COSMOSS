@@ -11,7 +11,7 @@ switch Dimension
     case 1
         switch LineShape 
             case 'Lorentzian' 
-                %LineWidth = LineWidth/2;
+                LineWidth = LineWidth/2;
                 ConvL = spec_array./((spec_array.^2)+(LineWidth^2)) + 1i*LineWidth./(spec_array.^2+LineWidth^2);
             case 'Gaussian'
                 ConvL = 1i*exp(-(spec_array.^2)./(LineWidth^2));

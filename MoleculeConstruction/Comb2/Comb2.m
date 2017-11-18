@@ -28,6 +28,17 @@ R = R1_ZYZ_0(Rot_Phi,Rot_Psi,Rot_Theta);
 S2_0_R = SD_Rot(S2_0,R);
 S2_T_R = SD_Trans(S2_0_R,TransV);
 
+%% Pass all the movement to the second structure's children for drawing purpose
+N_S = length(S2_0.Children);
+for i = 1:N_S
+    C       = S2.Children(i);
+    C_0     = SD_Trans(C,-C.CoM);
+    C_0_R   = SD_Rot(C_0,R);
+    C_T_R   = SD_Trans(C_0_R,TransV);
+    C_T_R_0 = SD_Trans(C_T_R,C.CoM);
+    S2_T_R.Children(i) = C_T_R_0;
+end
+
 %% Scale the transitions of the second molecule
 S2_T_R_S = SD_ScaleTransitions(S2_T_R,Conc_Scaling);
 

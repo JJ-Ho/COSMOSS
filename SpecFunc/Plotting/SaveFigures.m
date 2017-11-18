@@ -20,8 +20,11 @@ for i = 1:NAx
 end
 
 % saveas (hF,SaveName,'epsc')
-% disp([FileName,' saved to:'])
-% disp(PathName)
+print(hF,'-painters','-depsc', [SaveName,'.eps'])
+% print(hF,'-painters','-dsvg', [SaveName,'.eps'])
+
+disp([FileName,' saved to:'])
+disp(PathName)
 
 for i = 1:NAx
     hAx(i).XGrid           = 'on';

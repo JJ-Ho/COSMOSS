@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="782665036" file="/Users/jjho/Documents/MATLAB_Local/COSMOSS/COSMOSS.prj" location="/Users/jjho/Documents/MATLAB_Local/COSMOSS" name="COSMOSS" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="696223619" file="/Users/jjho/Documents/MATLAB/COSMOSS/COSMOSS.prj" location="/Users/jjho/Documents/MATLAB/COSMOSS" name="COSMOSS" target="target.mlapps" target-name="Package App">
     <param.appname>COSMOSS</param.appname>
     <param.authnamewatermark>Jia-Jung Ho</param.authnamewatermark>
     <param.email>jhoatgit@gmail.com</param.email>
@@ -23,12 +23,12 @@
 
 COSMOSS v2.0 start to use the Appdesigner. For more information check &lt;a href="https://github.com/JJ-Ho/COSMOSS/wiki"&gt;Wiki page&lt;/a&gt;:</param.description>
     <param.screenshot />
-    <param.version>2.1.1</param.version>
+    <param.version>2.2.3</param.version>
     <param.products.name />
     <param.products.id />
     <param.products.version />
     <param.platforms />
-    <param.output>/Users/jjho/Documents/MATLAB_Local/COSMOSS</param.output>
+    <param.output>/Users/jjho/Documents/MATLAB/COSMOSS</param.output>
     <param.guid>62bfa010-75ae-4fc1-bbeb-616c50def761</param.guid>
     <unset>
       <param.authnamewatermark />
@@ -53,7 +53,7 @@ COSMOSS v2.0 start to use the Appdesigner. For more information check &lt;a href
     </fileset.resources>
     <fileset.package />
     <build-deliverables>
-      <file location="/Users/jjho/Documents/MATLAB_Local" name="COSMOSS" optional="false">/Users/jjho/Documents/MATLAB_Local/COSMOSS</file>
+      <file location="/Users/jjho/Documents/MATLAB" name="COSMOSS" optional="false">/Users/jjho/Documents/MATLAB/COSMOSS</file>
     </build-deliverables>
     <workflow />
     <matlab>
@@ -94,7 +94,7 @@ COSMOSS v2.0 start to use the Appdesigner. For more information check &lt;a href
       <vista>false</vista>
       <linux>false</linux>
       <solaris>false</solaris>
-      <osver>10.13</osver>
+      <osver>10.13.1</osver>
       <os32>false</os32>
       <os64>true</os64>
       <arch>maci64</arch>

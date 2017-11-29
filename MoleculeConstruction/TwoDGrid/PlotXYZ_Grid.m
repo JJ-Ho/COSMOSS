@@ -90,11 +90,11 @@ hold(hAx,'on')
     if Plot_Atoms
         %plot3(hAx,Center(:,1)  ,Center(:,2)  ,Center(:,3)  ,'LineStyle','none','Marker','d','MarkerFaceColor','w')
 
-        plot3(hAx,XYZ(C_Ind,1),XYZ(C_Ind,2),XYZ(C_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,0],'MarkerSize',10)
-        plot3(hAx,XYZ(O_Ind,1),XYZ(O_Ind,2),XYZ(O_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',10)
-        plot3(hAx,XYZ(N_Ind,1),XYZ(N_Ind,2),XYZ(N_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,1],'MarkerSize',10)        
-        plot3(hAx,XYZ(S_Ind,1),XYZ(S_Ind,2),XYZ(S_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,1,0],'MarkerSize',10)        
-        plot3(hAx,XYZ(H_Ind,1),XYZ(H_Ind,2),XYZ(H_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,1,1],'MarkerSize',5)        
+        plot3(hAx,XYZ(C_Ind,1),XYZ(C_Ind,2),XYZ(C_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,0],'MarkerSize',5,'MarkerEdgeColor','none')
+        plot3(hAx,XYZ(O_Ind,1),XYZ(O_Ind,2),XYZ(O_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',10,'MarkerEdgeColor','none')
+        plot3(hAx,XYZ(N_Ind,1),XYZ(N_Ind,2),XYZ(N_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,1],'MarkerSize',10,'MarkerEdgeColor','none')        
+        plot3(hAx,XYZ(S_Ind,1),XYZ(S_Ind,2),XYZ(S_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,1,0],'MarkerSize',10,'MarkerEdgeColor','none')        
+        plot3(hAx,XYZ(H_Ind,1),XYZ(H_Ind,2),XYZ(H_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,1,1],'MarkerSize',5,'MarkerEdgeColor','none')        
 
     end
     

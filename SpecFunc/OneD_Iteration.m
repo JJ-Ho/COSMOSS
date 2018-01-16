@@ -1,12 +1,11 @@
-function OneD = OneD_Iteration(h1DFunc,GUI_data)
-hGUIs = GUI_data.hGUIs;
-I = ParseGUI_Main(hGUIs);
-S = GUI_data.Structure;
-            
-hF  = figure;
-hAx = axes('Parent',hF);
+function OneD = OneD_Iteration(h1DFunc,app)
+I = app.Parse_GUI;
+S = app.Structure;
 
 if eq(I.Sampling,1)
+    hF  = figure;
+    hAx = axes('Parent',hF);
+    
     % Pre-allocate
     GridSize   = length(I.FreqRange);
     Response1D = zeros(GridSize,1);
@@ -18,8 +17,9 @@ if eq(I.Sampling,1)
         TSTART(i) = tic;
         
         % Read GUI input directly from obj handle
-        DynamicUpdate = hGUIs.DynamicUpdate.Value;
-        UpdateStatus  = hGUIs.UpdateStatus.Value;
+        DynamicUpdate = app.CheckBox_DynamicFigUpdate.Value;
+        UpdateStatus  = app.CheckBox_Continue.Value;
+        
         if and(~eq(i,1), and(eq(DynamicUpdate,1),~eq(UpdateStatus,1)))
             break
         end
@@ -42,6 +42,7 @@ if eq(I.Sampling,1)
         
         while ~eq(DynamicUpdate,0)
             OneD.FilesName = [S.FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title
+            cla(hAx)
             Plot1D(hAx,OneD,I);
             drawnow
             DynamicUpdate = 0;

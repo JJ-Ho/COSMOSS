@@ -1,22 +1,24 @@
-function [CMAP,CMap_List] = SelectColormap(map_Index)
+function [CMAP,CMap_List] = SelectColormap(map)
     
 CMap_List = {'Jet',...
              'JetWhite',...
+             'JetBlackWide',...
              'JetBlack',...
              'JetWhiteWide',...
              'Jet_Pale',...
              'CoolBlack',...
              'CoolWhite',...
-             'Jet_Reverse'};
+             'Jet_Reverse',...
+             'Sign'};
 
 %ColormapName = CMap_List{map_Index};
-switch map_Index
-    case 0
+switch map
+    case 'List'
         % doing nothing for list inquary
         CMAP = [];
-    case 1
-        CMAP = colormap(CMap_List{map_Index});
+    case 'Jet'
+        CMAP = colormap('Jet');
     otherwise
-        CMAP_tmp = load(CMap_List{map_Index});
+        CMAP_tmp = load(map);
         CMAP = CMAP_tmp.MAP;
 end

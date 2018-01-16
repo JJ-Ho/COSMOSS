@@ -1,4 +1,5 @@
 function CVL = Conv2D(SSG,GUI_Inputs)
+
 % This function convolute the input stick spectrum with spelected line
 % shape.
 % 
@@ -24,16 +25,16 @@ INPUT = inputParser;
 INPUT.KeepUnmatched = 1;
 
 % Default values
-defaultFreqRange   = 1650:1750;
+defaultFreqRange   = 1600:1750;
 defaultPathway     = 'All';
-defaultLineShape   = 'L';
-defaultLineWidth   = 5;
-defaultSpecType    = 'Abs';
+defaultLineShape   = 'Lorentzian';
+defauleLineWidth   = 5;
+defaultSpecType    = 'Absorptive';
 
 addOptional(INPUT,'FreqRange',defaultFreqRange);
 addOptional(INPUT,'Pathway'  ,defaultPathway  );
 addOptional(INPUT,'LineShape',defaultLineShape);
-addOptional(INPUT,'LineWidth',defaultLineWidth);
+addOptional(INPUT,'LineWidth',defauleLineWidth);
 addOptional(INPUT,'SpecType' ,defaultSpecType );
             
 parse(INPUT,GUI_Inputs_C{:});
@@ -75,33 +76,22 @@ switch Pathway
         NR_phasing_Res = SG.NonRephasing;    
 end
 
-%% Generate lineshapes
-NumFreqPoint = numel(FreqRange);
-
-center  = ceil(NumFreqPoint/2);
-[p1,p2] = meshgrid(1:NumFreqPoint,1:NumFreqPoint);
-
-% line shape in frequency domain
-switch LineShape
-    case 'L'
-        FF = 1; % Counting for probe beam line width
-        lnshpf_R =((-1./(-(p2-center)+1i*LineWidth*FF)).*(1./((p1-center)+1i*LineWidth)));
-        lnshpf_N =((-1./( (p2-center)+1i*LineWidth*FF)).*(1./((p1-center)+1i*LineWidth)));
-    case 'G'
-        lnshpf_R = ngaussval(sqrt((p1-center).^2+(p2-center).^2),LineWidth);
-        lnshpf_N = ngaussval(sqrt((p1-center).^2+(p2-center).^2),LineWidth);
-    case 'KK'
-        disp('not support KK lineshape in 2D yet...')
-    otherwise
-        lnshpf_R = 1;
-        lnshpf_N = 1;
-        disp('Plotting stick spectrum')     
-end
-
 %% Convolution
+% Generate lineshapes
+[ConvL2,~] = Conv_LineShape(2,LineShape,FreqRange,LineWidth);
+
 % frequency domain 2D convolution
-CVL.R   = conv2(Re_phasing_Res,lnshpf_R,'same');
-CVL.NR  = conv2(NR_phasing_Res,lnshpf_N,'same');
+CVL.R   = conv2(Re_phasing_Res,ConvL2.lnshpf_R,'same');
+CVL.NR  = conv2(NR_phasing_Res,ConvL2.lnshpf_N,'same');
+
+% [ConvL1,~] = Conv_LineShape(1,'Lorentzian',FreqRange,20);
+% ConvL1 = imag(ConvL1);
+% N_Pump = size(Re_phasing_Res,1);
+% for i = 1:N_Pump
+%     CVL.R(i,:)  = conv(ConvL1,CVL.R(i,:),'same');
+%     CVL.NR(i,:) = conv(ConvL1,CVL.NR(i,:),'same');
+% end
+
 CVL.sum = CVL.R + CVL.NR;
 
 % Export Non-convoluted sticks
@@ -111,13 +101,13 @@ CVL.sum_No_Conv = Re_phasing_Res + NR_phasing_Res;
 
 % Output selected SpecType
 switch SpecType
-    case 'Abs'
+    case 'Absorptive'
         CVL.selected = CVL.sum;
         CVL.selected_No_Conv = CVL.sum_No_Conv;
-    case 'R'
+    case 'Rephasing'
         CVL.selected = CVL.R;
         CVL.selected_No_Conv = CVL.R_No_Conv;
-    case 'NR'
+    case 'Non-rephasing'
         CVL.selected = CVL.NR;
         CVL.selected_No_Conv = CVL.NR_No_Conv;
 end

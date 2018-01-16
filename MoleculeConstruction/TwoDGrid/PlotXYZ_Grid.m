@@ -1,5 +1,6 @@
-function hF = PlotXYZ_Grid(hAx,SData,GUI_Inputs)
+function hF = PlotXYZ_Grid(hAx,SData)
 %% Input parser
+GUI_Inputs = SData.GUI_Inputs;
 GUI_Inputs_C      = fieldnames(GUI_Inputs);
 GUI_Inputs_C(:,2) = struct2cell(GUI_Inputs);
 GUI_Inputs_C      = GUI_Inputs_C';
@@ -8,26 +9,29 @@ INPUT = inputParser;
 INPUT.KeepUnmatched = 1;
 
 % Default values
-defaultPlot_Atoms      = 1;
-defaultPlot_Bonds      = 1;
-defaultPlot_Axis       = 1;
-defaultPlot_Lattice    = 0;
-defaultPlot_Atom_Index = 0;
+defaultPlot_Atoms     = 1;
+defaultPlot_Bonds     = 1;
+defaultPlot_Axis      = 1;
+defaultPlot_Lattice   = 0;
+defaultPlot_AtomIndex = 0;
+defaultMF_Center      = 1;
 
 % Add optional inputs to inputparser object
 addOptional(INPUT,'Plot_Atoms'     ,defaultPlot_Atoms);
 addOptional(INPUT,'Plot_Bonds'     ,defaultPlot_Bonds);
 addOptional(INPUT,'Plot_Axis'      ,defaultPlot_Axis);
 addOptional(INPUT,'Plot_Lattice'   ,defaultPlot_Lattice);
-addOptional(INPUT,'Plot_Atom_Index',defaultPlot_Atom_Index);
+addOptional(INPUT,'Plot_AtomIndex',defaultPlot_AtomIndex);
+addOptional(INPUT,'MF_Center'      ,defaultMF_Center);
 
 parse(INPUT,GUI_Inputs_C{:});
 
-Plot_Atoms      = INPUT.Results.Plot_Atoms;
-Plot_Bonds      = INPUT.Results.Plot_Bonds;
-Plot_Axis       = INPUT.Results.Plot_Axis;
-Plot_Lattice    = INPUT.Results.Plot_Lattice;
-Plot_Atom_Index = INPUT.Results.Plot_Atom_Index;
+Plot_Atoms     = INPUT.Results.Plot_Atoms;
+Plot_Bonds     = INPUT.Results.Plot_Bonds;
+Plot_Axis      = INPUT.Results.Plot_Axis;
+Plot_Lattice   = INPUT.Results.Plot_Lattice;
+Plot_AtomIndex = INPUT.Results.Plot_AtomIndex;
+MF_Center      = INPUT.Results.MF_Center;
 
 %% Rotate the molecule to Lab frame
 XYZ      = SData.XYZ;
@@ -37,15 +41,12 @@ CoM      = SData.CoM;
 Nmodes   = SData.Nmodes;
 Atom_Num = SData.NAtoms;
 
-
-
 %% Decide atoms types
 C_Ind = strcmp(AtomName,'C');
 O_Ind = strcmp(AtomName,'O');
 N_Ind = strcmp(AtomName,'N');
 S_Ind = strcmp(AtomName,'S');
 H_Ind = strcmp(AtomName,'H');
-
 
 %% Make figure
 % Prep hAx 
@@ -60,11 +61,14 @@ hold(hAx,'on')
     %% draw bonds
     if Plot_Bonds
         Conn = Connectivity(AtomName,XYZ);
-        gplot3(Conn,XYZ,'Parent',hAx);
+        gplot3(Conn,XYZ,'Parent',hAx,'Color','b');
     end
     
     %% Add atom indexes
-    if Plot_Atom_Index
+    if Plot_AtomIndex
+        N_Vec1 = GUI_Inputs.N_1;
+        N_Vec2 = GUI_Inputs.N_2;
+        
         if eq(N_Vec1*N_Vec2,1)
             Atom_Ind_Str = strsplit(num2str(1:Atom_Num));
             XYZ_Atom_Ind = XYZ + 0.1;
@@ -75,7 +79,7 @@ hold(hAx,'on')
     end
     
     %% Draw mode index
-    Plot_Mode_Index = 1;
+    Plot_Mode_Index = 0;
     if Plot_Mode_Index
         Mode_Ind_Str = strsplit(num2str(1:Nmodes));
         XYZ_Mode_Ind = Center + 0.1;
@@ -84,13 +88,13 @@ hold(hAx,'on')
     
     %% Draw atoms
     if Plot_Atoms
-        plot3(hAx,Center(:,1)  ,Center(:,2)  ,Center(:,3)  ,'LineStyle','none','Marker','d','MarkerFaceColor','w')
+        %plot3(hAx,Center(:,1)  ,Center(:,2)  ,Center(:,3)  ,'LineStyle','none','Marker','d','MarkerFaceColor','w')
 
-        plot3(hAx,XYZ(C_Ind,1),XYZ(C_Ind,2),XYZ(C_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,0],'MarkerSize',10)
-        plot3(hAx,XYZ(O_Ind,1),XYZ(O_Ind,2),XYZ(O_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',10)
-        plot3(hAx,XYZ(N_Ind,1),XYZ(N_Ind,2),XYZ(N_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,1],'MarkerSize',10)        
-        plot3(hAx,XYZ(S_Ind,1),XYZ(S_Ind,2),XYZ(S_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,1,0],'MarkerSize',10)        
-        plot3(hAx,XYZ(H_Ind,1),XYZ(H_Ind,2),XYZ(H_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,1,1],'MarkerSize',5)        
+        plot3(hAx,XYZ(C_Ind,1),XYZ(C_Ind,2),XYZ(C_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,0],'MarkerSize',5,'MarkerEdgeColor','none')
+        plot3(hAx,XYZ(O_Ind,1),XYZ(O_Ind,2),XYZ(O_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',10,'MarkerEdgeColor','none')
+        plot3(hAx,XYZ(N_Ind,1),XYZ(N_Ind,2),XYZ(N_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,1],'MarkerSize',10,'MarkerEdgeColor','none')        
+        plot3(hAx,XYZ(S_Ind,1),XYZ(S_Ind,2),XYZ(S_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,1,0],'MarkerSize',10,'MarkerEdgeColor','none')        
+        plot3(hAx,XYZ(H_Ind,1),XYZ(H_Ind,2),XYZ(H_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,1,1],'MarkerSize',5,'MarkerEdgeColor','none')        
 
     end
     
@@ -105,6 +109,10 @@ hold(hAx,'on')
     
     %% Draw lattice, for MBA now
     if Plot_Lattice
+        % find the anchor points
+        XYZ_N = reshape(SData.XYZ,[],SData.Nmodes,3);
+        AtomCenter = reshape(XYZ_N(MF_Center,:,:),[],3);
+        
         % Grid info
         N_Vec1 = GUI_Inputs.N_1;
         N_Vec2 = GUI_Inputs.N_2;
@@ -117,9 +125,14 @@ hold(hAx,'on')
         if eq(N_Vec1*N_Vec2,1)
             disp('No grid lines for single molecule...')
         else
-            Conn_V1 = Connectivity('None',Center,'BondLength',L_Vec1);
-            Conn_V2 = Connectivity('None',Center,'BondLength',L_Vec2);
-            gplot3(or(Conn_V1,Conn_V2),Center,'Color',[0,1,0],'LineWidth',2,'Parent',hAx)
+            Conn_V1_Upper = Connectivity('None',AtomCenter,'BondLength',L_Vec1);
+            Conn_V1_Lower = Connectivity('None',AtomCenter,'BondLength',L_Vec1*0.9);
+            Conn_V1 = and(Conn_V1_Upper,~Conn_V1_Lower);
+               
+            Conn_V2_Upper = Connectivity('None',AtomCenter,'BondLength',L_Vec2);
+            Conn_V2_Lower = Connectivity('None',AtomCenter,'BondLength',L_Vec2*0.9);
+            Conn_V2 = and(Conn_V2_Upper,~Conn_V2_Lower);         
+            gplot3(or(Conn_V1,Conn_V2),AtomCenter,'Color',[0,1,0],'LineWidth',2,'Parent',hAx)
         end
 
 

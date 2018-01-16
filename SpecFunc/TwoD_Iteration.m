@@ -1,10 +1,12 @@
-function [SpectraGrid,Response] = TwoD_Iteration(h2DFunc,GUI_data,GUI_Inputs,hGUIs)
+function [SpectraGrid,Response] = TwoD_Iteration(h2DFunc,app)
 %% Read GUI
-Sampling      = GUI_Inputs.Sampling;
-DynamicUpdate = GUI_Inputs.DynamicUpdate;
-Sample_Num    = GUI_Inputs.Sample_Num;
-FreqRange     = GUI_Inputs.FreqRange;
-Structure     = GUI_data.Structure;
+I = app.Parse_GUI;
+S = app.Structure;
+
+Sampling      = I.Sampling;
+DynamicUpdate = I.DynamicUpdate;
+Sample_Num    = I.Sample_Num;
+FreqRange     = I.FreqRange;
 
 %% Pre-calculation settings
 % Create figure object for dynamics figure update
@@ -15,11 +17,12 @@ end
 
 %% Calculate TwoD response
 if Sampling
-    % Pre-allocate
-    FreqRange = FreqRange(1):FreqRange(end)+100; % add 100 cm-1 range to prevent fluctuation out of range
-    GUI_Inputs.FreqRange = FreqRange; % pass the extended Frequency Range to the TwoD main function
-    GridSize  = FreqRange(end); 
+    % run the 2D simulation once
+    [SG1,~] = h2DFunc(S,I);
     
+    % Pre-allocate
+    GridSize  = size(SG1.R1,1) + 100; 
+    I.F_Max = GridSize; % force all the iterations to take this value as it's grid size
     R1   = sparse(GridSize,GridSize);
     R2   = sparse(GridSize,GridSize);
     R3   = sparse(GridSize,GridSize);
@@ -33,14 +36,15 @@ if Sampling
     for i = 1:Sample_Num
         TSTART(i) = tic;
         
-        DynamicUpdate = hGUIs.DynamicUpdate.Value; % directly access the GUI elment so can get the most recnt values
-        UpdateStatus  = hGUIs.UpdateStatus.Value;
+        % Read GUI input directly from obj handle
+        DynamicUpdate = app.CheckBox_DynamicFigUpdate.Value;
+        UpdateStatus  = app.CheckBox_Continue.Value;
         if and(~eq(i,1), and(eq(DynamicUpdate,1),~eq(UpdateStatus,1)))
             break
         end
 
         % run main function
-        [Tmp_SG,Tmp_Res] = h2DFunc(Structure,GUI_Inputs);
+        [Tmp_SG,Tmp_Res] = h2DFunc(S,I);
         
         % Accumulate result
         try
@@ -51,7 +55,7 @@ if Sampling
             NR2  = NR2  + Tmp_SG.NR2 ;
             NR3  = NR3  + Tmp_SG.NR3 ;   
         catch
-            disp(['Frequency fluctuation out of range: ', num2str(GridSize),', dop this run...'])
+            disp([num2str(Tmp_Res.SparseMax),' is larger than the set grid size: ',num2str(GridSize),' dop this run...'])
             continue
         end
 
@@ -65,10 +69,11 @@ if Sampling
 
         % Dynamic update of figure % update every 10 run
         while and(~eq(DynamicUpdate,0),eq(mod(i,10),0))
-            CVL = Conv2D(SpectraGrid,GUI_Inputs);
-            CVL.FilesName = [Structure.FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title
+            CVL = Conv2D(SpectraGrid,I);
+            CVL.FilesName = [S.FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title
             SpecType = Response.SpecType;
-            Plot2D(hAx,CVL,GUI_Inputs,SpecType);
+            cla(hAx)
+            Plot2D(hAx,CVL,I,SpecType);
             drawnow
             DynamicUpdate = 0;
         end
@@ -80,5 +85,5 @@ if Sampling
     disp(['Total time: ' num2str(Total_TIME)])
 
 else
-    [SpectraGrid,Response] = h2DFunc(Structure,GUI_Inputs);
+    [SpectraGrid,Response] = h2DFunc(S,I);
 end

@@ -28,11 +28,25 @@ R = R1_ZYZ_0(Rot_Phi,Rot_Psi,Rot_Theta);
 S2_0_R = SD_Rot(S2_0,R);
 S2_T_R = SD_Trans(S2_0_R,TransV);
 
+%% Pass all the movement to the second structure's children for drawing purpose
+N_S = length(S2_0.Children);
+for i = 1:N_S
+    C       = S2.Children(i);
+    C_0     = SD_Trans(C,-C.CoM);
+    C_0_R   = SD_Rot(C_0,R);
+    C_T_R   = SD_Trans(C_0_R,TransV);
+    C_T_R_0 = SD_Trans(C_T_R,C.CoM);
+    S2_T_R.Children(i) = C_T_R_0;
+end
+
 %% Scale the transitions of the second molecule
 S2_T_R_S = SD_ScaleTransitions(S2_T_R,Conc_Scaling);
 
 %% Merge the two and Output
 SC = SD_Comb2(S1_0,S2_T_R_S);
+
+SC.hPlotFunc  = @PlotComb2;
+SC.GUI_Inputs = GUI_Inputs;
 
 % % Export into Structure so it can be passsed around different GUIs
 % Structure.StrucData1  = StrucData1_0;

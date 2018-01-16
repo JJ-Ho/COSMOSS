@@ -1,4 +1,4 @@
-function  [SpectraGrid,Response] = TwoDIR_Main_Sparse(Structure,GUI_Inputs)
+function  [SGrid,Data_2D] = TwoDIR_Main_Sparse(Structure,GUI_Inputs)
 %% TwoDIR_Main(PDB_Data,GUI_Inputs)
 %  
 %   Given a initial stucture (pdb), this script will simulate its 2DIR
@@ -35,7 +35,6 @@ INPUT = inputParser;
 INPUT.KeepUnmatched = true;
 
 % Default values
-defaultFreqRange    = 1650:1750;
 defaultA_Pump1      = 90;
 defaultA_Pump2      = 90;
 defaultA_Probe      = 90;
@@ -46,7 +45,6 @@ defaultP_Probe      = 0;
 defaultP_Sig2D      = 0;
 defaultPCutOff      = 0;
 
-addOptional(INPUT,'FreqRange'   ,defaultFreqRange);
 addOptional(INPUT,'A_Pump1'     ,defaultA_Pump1);
 addOptional(INPUT,'A_Pump2'     ,defaultA_Pump2);
 addOptional(INPUT,'A_Probe'     ,defaultA_Probe);
@@ -60,7 +58,6 @@ addOptional(INPUT,'PCutOff'     ,defaultPCutOff);
 parse(INPUT,GUI_Inputs_C{:});
 
 % Reassign Variable names
-FreqRange    = INPUT.Results.FreqRange;
 A_Pump1      = INPUT.Results.A_Pump1;
 A_Pump2      = INPUT.Results.A_Pump2;
 A_Probe      = INPUT.Results.A_Probe;
@@ -76,14 +73,9 @@ H = ExcitonH(Structure,GUI_Inputs,'TwoEx');
 
 Mu = MuAlphaGen(Structure,H,'Mode','Mu');
 
-Ex_F1   = H.Sort_Ex_F1;
-Ex_F2   = H.Sort_Ex_F2;
-M_Ex_01 = Mu.M_Ex_01;
-M_Ex_12 = Mu.M_Ex_12;
-
 %% Decide what kinds of rod rotation average is and applied rotational 
 % average on Response in molecular frame
-R_Avg = LabFrameAvg('Isotropic',4); 
+[R_Avg,~,~,~] = LabFrameAvg('Isotropic','No',4);
 
 %% Jones Matrix convert XYZ to PS frame
 % Turn degrees into radius (not work for BoxCard geometry yet)
@@ -104,25 +96,31 @@ P_Sig2D  = P_Sig2D/180*pi;
 E = EPolar4(P_Sig2D,P_Probe,P_Pump2,P_Pump1);
 
 %% Generate Feynman pathway for 2DSFG
-EJR = E*J*R_Avg;
+SpecType = '2DIR';
 
-[SpectraGrid,Freq,Int,Index,CutOff] = Feynman_2DIR_Vec_Sparse(PCutOff,...
-                                                       FreqRange,...
-                                                       EJR,...
-                                                       Ex_F1,...
-                                                       Ex_F2,...
-                                                       M_Ex_01,...
-                                                       M_Ex_12);
+Data_2D.H       = H;
+Data_2D.Mu      = Mu;
+Data_2D.PCutOff = PCutOff;
+Data_2D.EJLR    = E*J*R_Avg;
+
+% decide the max frequency
+F1  = H.Sort_Ex_F1;
+F2  = H.Sort_Ex_F2;
+F_Max = max(F2) - min(F1);
+SparseMax = ceil(max(GUI_Inputs.F_Max,F_Max));
+
+MEM_CutOff = 1; %[GB]
+
+% Calculate pathways
+[SGrid.R1 ,Beta.R1 ,IGrid.R1 ] = Feynmann_Path_Gen(SpecType, 'R1',Data_2D,SparseMax,MEM_CutOff);
+[SGrid.R2 ,Beta.R2 ,IGrid.R2 ] = Feynmann_Path_Gen(SpecType, 'R2',Data_2D,SparseMax,MEM_CutOff);
+[SGrid.R3 ,Beta.R3 ,IGrid.R3 ] = Feynmann_Path_Gen(SpecType, 'R3',Data_2D,SparseMax,MEM_CutOff);
+[SGrid.NR1,Beta.NR1,IGrid.NR1] = Feynmann_Path_Gen(SpecType,'NR1',Data_2D,SparseMax,MEM_CutOff);
+[SGrid.NR2,Beta.NR2,IGrid.NR2] = Feynmann_Path_Gen(SpecType,'NR2',Data_2D,SparseMax,MEM_CutOff);
+[SGrid.NR3,Beta.NR3,IGrid.NR3] = Feynmann_Path_Gen(SpecType,'NR3',Data_2D,SparseMax,MEM_CutOff);
 
 %% Group up other outputs
-Response.H = H;
-Response.Mu = Mu;
-
-Response.Freq  = Freq;
-Response.Int   = Int;
-Response.Index = Index;
-Response.CutOff = CutOff;
-
-Response.EJR = EJR;
-Response.SpecType = '2DIR';
-
+Data_2D.SpecType  = SpecType;
+Data_2D.Beta      = Beta;
+Data_2D.IntGrid   = IGrid;
+Data_2D.SparseMax = SparseMax;

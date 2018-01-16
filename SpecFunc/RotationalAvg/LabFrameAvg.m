@@ -1,20 +1,27 @@
-function R = LabFrameAvg(Symmetry,Dimension)
+function [R,M,R_List,M_List] = LabFrameAvg(Avg_Rot,Avg_Mirror,N_Interactions)
+%% List of options
+R_List = {'No symmetry','C2_z','C4_z (<Phi>)','Isotropic'};
+M_List = {'No','Sigma v'};
 
-SaveName = ['R',num2str(Dimension),'_precalculated'];
-
-switch Symmetry
-    case 'C1'
+R = 'Not Assigned';
+M = 'Not Assigned';
+%% Load precalculated Rotational average and rename 
+switch Avg_Rot
+    case 'List'
+        V_Name = 'None';
+        
+    case 'No symmetry'
         % Initially generate using following equation
         % R = hf_R(0,0,0);
         V_Name = 'C1';
         
-    case 'C2'
+    case 'C2_z'
         % Initially generate using following equation
         %R = (hf_R(0 ,0,0)+...
         %     hf_R(pi,0,0))./2;
         V_Name = 'C2_z';
 
-    case 'C4'
+    case 'C4_z (<Phi>)'
         % Initially generate using following equation
         % R = (hf_R(0     ,0,0)+...
         %      hf_R(pi/2  ,0,0)+...
@@ -29,20 +36,52 @@ switch Symmetry
         V_Name = 'C_iso';
         
     otherwise
-        disp(['Does not support ',Symmetry,' Symmetry yet...'])
+        disp(['Does not support ',Avg_Rot,' Symmetry yet...'])
 end
 
-%% Load and rename 
-load(SaveName,'-mat',V_Name);
-S = whos(V_Name,'-file',SaveName);
+SaveName = ['R',num2str(N_Interactions),'_precalculated'];
+if ~strcmp(V_Name,'None')
+    load(SaveName,'-mat',V_Name);
+    S = whos(V_Name,'-file',SaveName);
 
-if isempty(S)
-    disp(['No precalculated <R> ' V_Name ' is avalible in ' SaveName ', abort!'])
-    R = sparse(zeros(3^(Dimension)));
-    return
-else
-    R = eval(V_Name);
+    if isempty(S)
+        disp(['No precalculated <R> ' V_Name ' is avalible in ' SaveName ', abort!'])
+        R = sparse(zeros(3^(N_Interactions)));
+        return
+    else
+        R = eval(V_Name);
+    end
 end
 
-% %% clean up numerical errors
-% R(abs(R)<1e-10) = 0;
+%% Decide Mirror planes
+switch Avg_Mirror
+    case 'No' % no mirror plane
+        V = [1;1;1];
+        switch N_Interactions
+            case 3
+                M = kron(kron(V,V),V);
+            case 5
+                M = kron(kron(kron(kron(V,V),V),V),V);
+            otherwise
+                M = ones(3^(N_Interactions));
+        end
+
+    case 'Sigma v' % sigma v, X=-X, Y=-Y
+        V1 = [-1; 1;1];
+        V2 = [ 1;-1;1];
+        switch N_Interactions
+            case 3
+                Sigma_X = kron(kron(V1,V1),V1);
+                Sigma_Y = kron(kron(V2,V2),V2);
+            case 5
+                Sigma_X = kron(kron(kron(kron(V1,V1),V1),V1),V1);
+                Sigma_Y = kron(kron(kron(kron(V2,V2),V2),V2),V2);
+            otherwise
+                Sigma_X = ones(3^(N_Interactions));
+                Sigma_Y = ones(3^(N_Interactions));
+        end
+        Sigma_X(eq(Sigma_X,-1)) = 0;
+        Sigma_Y(eq(Sigma_Y,-1)) = 0;
+        
+        M = and(Sigma_X,Sigma_Y);
+end

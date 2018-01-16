@@ -13,10 +13,10 @@ if markersize == 0
 end
 
 [I,J,V] = find(Z);
-MS = abs(V)./max(abs(V)).*markersize*5;
+markersize = log(markersize)*10; % make smaller dot more visible
+MS = abs(V)./max(abs(V)).*markersize*10;
 
 X_j = X(J);
 Y_i = Y(I);
-
 scatter(hAx,X_j,Y_i,MS,V,'filled')
 

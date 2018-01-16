@@ -1,17 +1,17 @@
-function S_G09_LF = R_MF2LF(S_G09_MF,GUI_Inputs)
+function S_G09_LF = R_MF2LF(S_G09_MF)
 % This function update the new molecular frame and lab frame definition
 % from GUI_Inputs
 
 %% Process Inputs
-Center_Ind = GUI_Inputs.MF_Center;
-Z_i_Ind    = GUI_Inputs.MF_Zi;
-Z_f_Ind    = GUI_Inputs.MF_Zf;
-XZ_i_Ind   = GUI_Inputs.MF_XZi;
-XZ_f_Ind   = GUI_Inputs.MF_XZf;
-Frame_Type = GUI_Inputs.Frame_Type;
-LF_Phi     = GUI_Inputs.LF_Phi./180*pi;
-LF_Psi     = GUI_Inputs.LF_Psi./180*pi;
-LF_Theta   = GUI_Inputs.LF_Theta./180*pi;
+Center_Ind = S_G09_MF.GUI_Inputs.MF_Center;
+Z_i_Ind    = S_G09_MF.GUI_Inputs.MF_Zi;
+Z_f_Ind    = S_G09_MF.GUI_Inputs.MF_Zf;
+XZ_i_Ind   = S_G09_MF.GUI_Inputs.MF_XZi;
+XZ_f_Ind   = S_G09_MF.GUI_Inputs.MF_XZf;
+Frame_Type = S_G09_MF.GUI_Inputs.Frame_Type;
+LF_Phi     = S_G09_MF.GUI_Inputs.LF_Phi./180*pi;
+LF_Psi     = S_G09_MF.GUI_Inputs.LF_Psi./180*pi;
+LF_Theta   = S_G09_MF.GUI_Inputs.LF_Theta./180*pi;
 
 %% If the default molecular frame definition is different from what it read
 % from G09 output, Set the assigned center to zero and rotated the molecule

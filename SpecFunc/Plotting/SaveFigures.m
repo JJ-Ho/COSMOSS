@@ -19,7 +19,10 @@ for i = 1:NAx
     hAx(i).YMinorGrid      = 'off';
 end
 
-saveas (hF,SaveName,'epsc')
+% saveas (hF,SaveName,'epsc')
+print(hF,'-painters','-depsc', [SaveName,'.eps'])
+% print(hF,'-painters','-dsvg', [SaveName,'.eps'])
+
 disp([FileName,' saved to:'])
 disp(PathName)
 

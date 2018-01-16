@@ -1,4 +1,4 @@
-function S_PDB_AmideI = SD_GetAmideI(S_PDB)
+function S_PDB_AmideI = SD_GetAmideI(obj_SD)
 %% GetAmideI
 
 % Output = GetAmideI(Num_Atoms,XYZ,AtomName,FilesName,GUI_Inputs)
@@ -61,12 +61,12 @@ function S_PDB_AmideI = SD_GetAmideI(S_PDB)
 % Copyright Jia-Jung Ho, 2013
 
 %% Redefine the variable names
-XYZ       = S_PDB.XYZ;
-AtomName  = S_PDB.AtomName;
+XYZ       = obj_SD.XYZ;
+AtomName  = obj_SD.AtomName;
 
 %% Determine atom index of Amide I modes and "AmideIAtomSerNo"
 % [C,O,N,CA]
-Ind = (1:S_PDB.NAtoms)';
+Ind = (1:obj_SD.NAtoms)';
 Atom = [strcmp(AtomName,'C'),...
         strcmp(AtomName,'O'),...
         strcmp(AtomName,'N'),...
@@ -202,7 +202,7 @@ AmideIFreq   = ones(Nmodes,1).* NLFreq;
 AmideIAnharm = ones(Nmodes,1).* Anharm;
 
 %% Output Structure
-S_PDB_AmideI = SD_Copy(S_PDB);
+S_PDB_AmideI = SD_Copy(obj_SD);
 
 S_PDB_AmideI.LocCenter = AmideICenter;
 S_PDB_AmideI.LocFreq   = AmideIFreq;

@@ -7,22 +7,20 @@ classdef StructureData < handle
    end
    
    properties
-       LocCenter % size = [Nmodes,3]
-       LocFreq   % size = [Nmodes,1]
-       LocAnharm % size = [Nmodes,1]
-       LocMu     % size = [Nmodes,3]
-       LocAlpha  % size = [Nmodes,9]
+       LocCenter       % size = [Nmodes,3]
+       LocFreq         % size = [Nmodes,1]
+       LocAnharm       % size = [Nmodes,1]
+       LocMu           % size = [Nmodes,3]
+       LocAlpha        % size = [Nmodes,9]
+       DiagDisorder    % size = [Nmodes,1]
+       OffDiagDisorder % size = [Nmodes,1]
        
-       FilesName
+       hPlotFunc       % function handle of the model specific drawing function 
+       GUI_Inputs      % GUI_Inputs that include the figure options. This is necessary for excuting the hPlotFunc
        
-       Extra
-       
-       StructModel % this will be remove later
-       Children    % this property is only used by Comb2, maybe redundent
-       
-       hPlotFunc 
-       hGUIs         % this is used when calling the plot function, maybe redundent?
-       hParseGUIFunc % this is used when calling the plot function, maybe redundent?
+       FilesName       % name for figure drawing and identification
+       Children        % this property is only used by Comb2 to draw subsystem
+       Extra           % all the model dependent properties can be saved in here
    end
    
    properties
@@ -34,11 +32,11 @@ classdef StructureData < handle
    
    properties
        % These properties will be calculated when quaried
-       Nmodes
-       NAtoms
-       NStucture
-       LocAlphaM
-       CoM
+       Nmodes       % # of local modes
+       NAtoms       % # of atoms
+       NStucture    % # of structures, this is only require when load PDB file with multiple snapshots
+       LocAlphaM    % Raman tensors in Matrix form, use for visual inspection only
+       CoM          % Center of Mass, as a reference point of common origin in a coordinate system
    end
    
    methods
@@ -73,14 +71,14 @@ classdef StructureData < handle
           if nargin > 1 
               hAx = varargin{:};
           end
+          
           if isa(obj.hPlotFunc,'function_handle')
               % check if triggered by a GUI interface
-              if isempty(obj.hGUIs)
-                  GUI_Input.Debug = 'Debug';
-              else
-                  GUI_Input = obj.hParseGUIFunc(obj.hGUIs);
+              if isempty(obj.GUI_Inputs)
+                  obj.GUI_Inputs.Debug = 'Debug';
+                  disp('There is no GUI_Inpus in the StructureData, so use default values for drawing...')
               end
-              hF = obj.hPlotFunc(hAx,obj,GUI_Input);
+              hF = obj.hPlotFunc(hAx,obj);
           else
               hF = '';
               disp('No @hPlotFunc defined, method "Draw" would not work...')

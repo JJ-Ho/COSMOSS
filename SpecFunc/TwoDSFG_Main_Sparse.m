@@ -1,4 +1,4 @@
-function  [SpectraGrid,Response] = TwoDSFG_Main_Sparse(Structure,GUI_Inputs)
+function  [SGrid,Data_2D] = TwoDSFG_Main_Sparse(Structure,GUI_Inputs)
 %% TwoDSFG_AmideI
 %  
 %   Given a initial stucture (pdb), this script will simulate its 2DSFG
@@ -37,7 +37,6 @@ INPUT = inputParser;
 INPUT.KeepUnmatched = true;
 
 % Default values
-defaultFreqRange    = 1650:1750;
 defaultAvg_Rot      = 1;
 defaultAvg_Mirror   = 1;
 defaultA_Pump1      = 90;
@@ -52,7 +51,6 @@ defaultP_Vis2D      = 0;
 defaultP_Sig2D      = 0;
 defaultPCutOff      = 0;
 
-addOptional(INPUT,'FreqRange'   ,defaultFreqRange);
 addOptional(INPUT,'Avg_Rot'     ,defaultAvg_Rot);
 addOptional(INPUT,'Avg_Mirror'  ,defaultAvg_Mirror);
 addOptional(INPUT,'A_Pump1'     ,defaultA_Pump1);
@@ -70,7 +68,6 @@ addOptional(INPUT,'PCutOff'     ,defaultPCutOff);
 parse(INPUT,GUI_Inputs_C{:});
 
 % Reassign Variable names
-FreqRange    = INPUT.Results.FreqRange;
 Avg_Rot      = INPUT.Results.Avg_Rot;
 Avg_Mirror   = INPUT.Results.Avg_Mirror; 
 A_Pump1      = INPUT.Results.A_Pump1;
@@ -91,55 +88,9 @@ H = ExcitonH(Structure,GUI_Inputs,'TwoEx');
 Mu    = MuAlphaGen(Structure,H,'Mode','Mu');
 Alpha = MuAlphaGen(Structure,H,'Mode','Alpha');
 
-Ex_F1   = H.Sort_Ex_F1;
-Ex_F2   = H.Sort_Ex_F2;
-M_Ex_01 = Mu.M_Ex_01;
-M_Ex_12 = Mu.M_Ex_12;
-A_Ex_01 = Alpha.M_Ex_01;
-A_Ex_12 = Alpha.M_Ex_12;
-
 %% Decide what kinds of rod rotation average is
-
-Dimension = 5; % for 2DSFG
-
-switch Avg_Rot
-        
-    case 1 %'Phi' C_Inf
-        R_Avg = LabFrameAvg('C4',Dimension);
-        
-    case 4 %'Isotropic'
-        R_Avg = LabFrameAvg('Isotropic',Dimension);
-                
-    case 5 %'No Average'
-        R_Avg = LabFrameAvg('C1',Dimension);
-        
-    otherwise
-        disp('Avg_Angle is not support, dont know how to apply Rotational average...')
-        return
-end
-
-
-% Decide Mirror planes
-switch Avg_Mirror
-    
-    case 1 % no mirror plane
-        V = [1;1;1];
-        
-        Mirror_Mask = kron(kron(kron(kron(V,V),V),V),V);
-        
-    case 2 % sigma v, X=-X, Y=-Y
-        V1 = [-1; 1;1];
-        V2 = [ 1;-1;1];
-        
-        Sigma_X = kron(kron(kron(kron(V1,V1),V1),V1),V1);
-        Sigma_Y = kron(kron(kron(kron(V2,V2),V2),V2),V2);
-        Sigma_X(eq(Sigma_X,-1)) = 0;
-        Sigma_Y(eq(Sigma_Y,-1)) = 0;
-        
-        Mirror_Mask = and(Sigma_X,Sigma_Y);
-end
-
 % note:sparse version dose not have mirror plane impemented, yet...
+[R_Avg,Mirror_Mask,~,~] = LabFrameAvg(Avg_Rot,Avg_Mirror,5);
 
 %% Jones Matrix convert XYZ to PS frame
 % Laser incident angles between laser beam and surface normal.
@@ -162,27 +113,32 @@ P_Sig2D = P_Sig2D/180*pi;
 E = EPolar5(P_Sig2D,P_Vis2D,P_Probe,P_Pump2,P_Pump1); % Take [radius]
 
 %% Generate Feynman pathway for 2DSFG
-EJR = E*J*R_Avg;
+SpecType = '2DSFG';
 
-[SpectraGrid,Freq,Int,Index,CutOff] = Feynman_2DSFG_Vec_Sparse(PCutOff,...
-                                                        FreqRange,...
-                                                        EJR,...
-                                                        Ex_F1,...
-                                                        Ex_F2,...
-                                                        A_Ex_01,...
-                                                        A_Ex_12,...
-                                                        M_Ex_01,...
-                                                        M_Ex_12);
+Data_2D.H       = H;
+Data_2D.Mu      = Mu;
+Data_2D.Alpha   = Alpha;
+Data_2D.PCutOff = PCutOff;
+Data_2D.EJLR    = E*J*R_Avg;
+
+% decide the max frequency
+F1  = H.Sort_Ex_F1;
+F2  = H.Sort_Ex_F2;
+F_Max = max(F2) - min(F1);
+SparseMax = ceil(max(GUI_Inputs.F_Max,F_Max));
+
+MEM_CutOff = 1; %[GB]
+
+% Calculate pathways
+[SGrid.R1 ,Beta.R1 ,IGrid.R1 ] = Feynmann_Path_Gen(SpecType, 'R1',Data_2D,SparseMax,MEM_CutOff);
+[SGrid.R2 ,Beta.R2 ,IGrid.R2 ] = Feynmann_Path_Gen(SpecType, 'R2',Data_2D,SparseMax,MEM_CutOff);
+[SGrid.R3 ,Beta.R3 ,IGrid.R3 ] = Feynmann_Path_Gen(SpecType, 'R3',Data_2D,SparseMax,MEM_CutOff);
+[SGrid.NR1,Beta.NR1,IGrid.NR1] = Feynmann_Path_Gen(SpecType,'NR1',Data_2D,SparseMax,MEM_CutOff);
+[SGrid.NR2,Beta.NR2,IGrid.NR2] = Feynmann_Path_Gen(SpecType,'NR2',Data_2D,SparseMax,MEM_CutOff);
+[SGrid.NR3,Beta.NR3,IGrid.NR3] = Feynmann_Path_Gen(SpecType,'NR3',Data_2D,SparseMax,MEM_CutOff);
 
 %% Group up other outputs
-Response.H = H;
-Response.Mu = Mu;
-Response.Alpha = Alpha;
-
-Response.Freq   = Freq;
-Response.Int    = Int;
-Response.Index  = Index;
-Response.CutOff = CutOff;
-
-Response.EJR = EJR;
-Response.SpecType = '2DSFG';
+Data_2D.SpecType  = SpecType;
+Data_2D.Beta      = Beta;
+Data_2D.IntGrid   = IGrid;
+Data_2D.SparseMax = SparseMax;

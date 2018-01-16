@@ -24,7 +24,7 @@ INPUT.KeepUnmatched = 1;
 % Default values
 defaultSaveFig     = 0;
 defaultSavePath    = '~/Desktop/';
-defaultFreqRange   = 1600:1800;
+% defaultFreqRange   = 1600:1800;
 defaultNum_Contour = 20;
 defaultPlotCursor  = 0;
 defaultCMAP_Index  = 1;
@@ -33,7 +33,7 @@ defaultPlotNorm    = 0;
 % add Optional inputs / Parameters
 addOptional(INPUT,'SaveFig'    ,defaultSaveFig);
 addOptional(INPUT,'SavePath'   ,defaultSavePath);
-addOptional(INPUT,'FreqRange'  ,defaultFreqRange);
+% addOptional(INPUT,'FreqRange'  ,defaultFreqRange);
 addOptional(INPUT,'Num_Contour',defaultNum_Contour);
 addOptional(INPUT,'PlotCursor' ,defaultPlotCursor);
 addOptional(INPUT,'CMAP_Index' ,defaultCMAP_Index);
@@ -44,14 +44,16 @@ parse(INPUT,GUI_Inputs_C{:});
 % Re-assign variable names
 SaveFig     = INPUT.Results.SaveFig;
 SavePath    = INPUT.Results.SavePath;
-FreqRange   = INPUT.Results.FreqRange;
+% FreqRange   = INPUT.Results.FreqRange;
 Num_Contour = INPUT.Results.Num_Contour;
 PlotCursor  = INPUT.Results.PlotCursor;
 CMAP_Index  = INPUT.Results.CMAP_Index;
 PlotNorm    = INPUT.Results.PlotNorm;
 
 %% Main
-cla(hAx)
+FreqRange = CVL.FreqRange;
+
+hold(hAx,'on')
 X = FreqRange;
 Y = FreqRange;
 
@@ -69,48 +71,54 @@ end
 switch CVL.Lineshape
     case 'Spy' % plot stick spectrum
         spyXY(hAx,X,Y,Z_NC)  
-        set(hAx,'Ydir','normal')
         
-        StickC_Map = load('Sign');
-        colormap(StickC_Map.MAP)
-        caxis([-1,1])
-        
+        C_MAP = SelectColormap('Sign');
+        C_Amp = 1;
         DiagColor = 'k';
+        hAx.YDir  = 'normal';
 
-    case 'None' % plot stick spectrum  w/ colormap
+    case 'No Conv' % plot stick spectrum  w/ colormap
         spyXYZ(hAx,X,Y,Z_NC)    
-        
-        set(hAx,'Ydir','normal')
-        hAx.Color = [0,0,0];
-        
-        colorbar
-        StickC_Map = load('CoolWhite');
-        colormap(StickC_Map.MAP) 
-        Amp = max(abs(Z_NC(:)));
-        caxis([-Amp,Amp])
-        
-        DiagColor = 'g';
-        
-    otherwise % plot convoluted spectrum
-        contour(hAx,X,Y,Z,Num_Contour,'LineWidth',2)
 
-        % Set colorbar
-        colorbar
-        CMAP = SelectColormap(CMAP_Index);
-        colormap(hAx,CMAP)      
-        Amp = max(abs(Z(:)));
-        caxis([-Amp,Amp])
+        C_MAP = SelectColormap('CoolWhite');hAx.Color = [0,0,0];
+        %C_MAP = SelectColormap('JetBlackWide') ;hAx.Color = [1,1,1];
+        C_Amp = max(abs(Z_NC(:)));
+        DiagColor = 'g';
+        hAx.YDir  = 'normal';
+
+    otherwise % plot convoluted spectrum
+        [~,hC] = contourf(hAx,X,Y,Z,Num_Contour,'LineWidth',2);
         
+        hC.LineStyle = 'none';
+        C_MAP = SelectColormap(CMAP_Index);      
+        C_Amp = max(abs(Z(:)));
         DiagColor = 'k';
+        
+        Fig_ContourLine = 1;
+        if Fig_ContourLine
+            % copy the contour and make it into line only
+            hCL = copyobj(hC,hAx);
+            hCL.Fill = 'off';
+            hCL.LineStyle = '-';
+            hCL.LineWidth = 0.5;
+            hCL.LineColor = [0,0,0]; 
+            NC_half = floor(Num_Contour/2);
+            CLevelList = linspace(-1,1,NC_half)*C_Amp;
+            %Fig_CL_D_Ind = [floor(NC_half/2):floor(NC_half/2)+1];
+            Fig_CL_D_Ind = floor(NC_half/2)+1;
+            CLevelList(Fig_CL_D_Ind)=[]; % Deal with deleting zero contour line
+            hCL.LevelList = CLevelList;
+        end
 end
+colorbar(hAx)
+colormap(hAx,C_MAP)
+caxis(hAx,[-C_Amp,C_Amp])
 
 % Plot diagonal line
-hold(hAx,'on'); plot(hAx,X,Y,'Color',DiagColor,'LineStyle','--');hold(hAx,'off')
+plot(hAx,X,Y,'Color',DiagColor,'LineStyle','--')
+hold(hAx,'off')
 
 %% figure setting 
-hF = hAx.Parent;
-hF.Units = 'normalized'; % use normalized scale
-
 hAx.DataAspectRatio = [1,1,1];
 hAx.FontSize = 14;
 hAx.XLabel.String = 'Probe (cm^{-1})';
@@ -118,15 +126,20 @@ hAx.YLabel.String = 'Pump (cm^{-1})';
 hAx.XLim = [FreqRange(1),FreqRange(end)];
 hAx.YLim = [FreqRange(1),FreqRange(end)];
 
-FilesName       = CVL.FilesName;
-FilesName_Reg   = regexprep(FilesName,'\_','\\_');
-Coupling        = GUI_Inputs.CouplingType;
-Coupling_Reg    = regexprep(Coupling,'\_','\\_');
+FilesName     = CVL.FilesName;
+FilesName_Reg = regexprep(FilesName,'\_','\\_');
+% Coupling      = GUI_Inputs.CouplingType;
+% Coupling_Reg  = regexprep(Coupling,'\_','\\_');
+%Title_String = [SpecType,' ',FilesName_Reg,', Coupling:',Coupling_Reg];
 
-Title_String = [SpecType,' ',FilesName_Reg,', Coupling:',Coupling_Reg];
-title(Title_String,'FontSize',16);
+Pathway       = GUI_Inputs.Pathway;
+Title_String = [SpecType,' ',FilesName_Reg,', Pathway: ',Pathway];
+hAx.Title.String   = Title_String;
+hAx.Title.FontSize = 16;
 
 if PlotCursor
+    hF = hAx.Parent;
+    hF.Units = 'normalized'; % use normalized scale
     S.hF = hF;
     S.hAx = hAx;
     Pointer_T(S);
@@ -136,7 +149,9 @@ end
 if SaveFig
     timeStamp    = datetime('now','TimeZone','local');
     timeSamepStr = datestr(timeStamp,'yymmdd_HH-MM-SS');
-    FigName      = [SpecType,'_',FilesName_Reg,'_',timeSamepStr];
+    FigName      = [SpecType,'_',timeSamepStr];
     
+    hF = hAx.Parent;
     SaveFigures(hF,SavePath,FigName)
 end
+

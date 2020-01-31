@@ -49,9 +49,9 @@ parse(INPUT,GUI_Inputs_C{:});
 FreqRange    = INPUT.Results.FreqRange;
 
 %% Main
-H = ExcitonH(Structure,GUI_Inputs,'OneEx');
+H = ExcitonH(Structure,GUI_Inputs);
 
-Mu = MuAlphaGen(Structure,H,'Mode','Mu');
+Mu = MuAlphaGen(Structure,H,'OneEx','Mode','Mu');
 
 Ex_F1   = Mu.Sort_Ex_F1;
 M_Ex_01 = Mu.M_Ex_01;

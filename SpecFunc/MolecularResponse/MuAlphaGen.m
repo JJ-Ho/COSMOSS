@@ -1,4 +1,4 @@
-function Output = MuAlphaGen(SData,FullH,varargin)
+function Output = MuAlphaGen(SData,H,ExMode,varargin)
 %% MuAlphaGen 
 % 
 % This Script generate mu and alpha matrix in local mode basis. According
@@ -45,9 +45,8 @@ M = size(Trans_Moment,2);
 N         = SData.Nmodes;
 LocFreq   = SData.LocFreq;
 LocAnharm = SData.LocAnharm;
-ExMode    = FullH.ExMode;
-Beta      = FullH.Beta;
-OneExH    = FullH.H;
+Beta      = H.Beta;
+OneExH    = H.H;
 
 
 %% Generate Two Exciton block diag part of full Hamiltonianif needed (TwoExOvertoneH & TwoExCombinationH)

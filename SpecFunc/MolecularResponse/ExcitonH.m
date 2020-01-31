@@ -107,15 +107,15 @@ Beta_NN      = INPUT.Results.Beta_NN;
 % Reassign variable names from StrucInfo
 Nmodes          = Structure.Nmodes;
 LocFreq         = Structure.LocFreq;
-LocAnharm       = Structure.LocAnharm;
+%LocAnharm       = Structure.LocAnharm;
 DiagDisorder    = Structure.DiagDisorder;
 % OffDiagDisorder = Structure.OffDiagDisorder; have not implement yet
 
-if strcmp(ExMode,'TwoEx')
-    StatesNum = (Nmodes+2)*(Nmodes+1)/2; 
-else
-    StatesNum = (Nmodes+1); 
-end
+% if strcmp(ExMode,'TwoEx')
+%     StatesNum = (Nmodes+2)*(Nmodes+1)/2; 
+% else
+%     StatesNum = (Nmodes+1); 
+% end
 
 % check if apply random sampling
 if Sampling
@@ -156,133 +156,101 @@ ZeroExPart = 0;
 OneExPart = bsxfun(@times,eye(Nmodes),LocFreq) + Beta;
 
 %% Two Exciton block diag part of full Hamiltonian (TwoExOvertoneH & TwoExCombinationH)
-if strcmp(ExMode,'TwoEx')
-
-    %- Pre-allocate the total matrix size
-    TwoExPart = zeros(StatesNum-1-Nmodes,StatesNum-1-Nmodes);
-
-    %- Two Exciton Overtone Hamiltonian, TwoExOvertoneH
-    TwoExPart(1:Nmodes,1:Nmodes) = diag(2*LocFreq-LocAnharm);
-
-    %- Two Exciton Combination Hamiltonian, TwoExCombinationH
-    NumOfElementInBolcks = Nmodes-1:-1:1;
-    TEDIndexEnd = zeros(Nmodes-1,1);
-    TEDIndexBegin = zeros(Nmodes-1,1);
-
-    for L=1:Nmodes-1
-        TEDIndexEnd(L) = sum(NumOfElementInBolcks(1:L)); % TED =TwoExCombination
-        TEDIndexBegin(L) = TEDIndexEnd(L) - NumOfElementInBolcks(L) + 1;
-    end
-
-    % Shift index for accomdation of TwoExOvertoneH
-    TEDIndexBegin = TEDIndexBegin+Nmodes;
-    TEDIndexEnd = TEDIndexEnd+Nmodes;
-
-    % Off-block-Diagonal, Lower triangular part, of TwoExCombinationH
-    for k2=1:Nmodes-1
-        for k1=k2+1:Nmodes-1
-
-            TempOffDiagMatrix = zeros(Nmodes-k1,Nmodes-k2);
-            TempOffDiagMatrix(:,k1-k2) = Beta(k1+1:end,k2);
-            TempOffDiagMatrix(:,k1-k2+1:end) = eye(Nmodes-k1)*Beta(k1,k2);
-
-            TwoExPart(TEDIndexBegin(k1):TEDIndexEnd(k1),TEDIndexBegin(k2):TEDIndexEnd(k2))...
-                = TempOffDiagMatrix;
-        end
-    end
-
-    % Off-block-Diagonal, Upper triangular part of TwoExCombinationH
-    for k2=2:Nmodes-1
-        for k1=1:k2-1
-
-            TempOffDiagMatrix = zeros(Nmodes-k1,Nmodes-k2);
-            TempOffDiagMatrix(k2-k1,:) = Beta(k2+1:end,k1);
-            TempOffDiagMatrix(k2-k1+1:end,:) = eye(Nmodes-k2)*Beta(k2,k1);
-
-            TwoExPart(TEDIndexBegin(k1):TEDIndexEnd(k1),TEDIndexBegin(k2):TEDIndexEnd(k2))...
-                = TempOffDiagMatrix;
-        end
-    end
-
-    % --- Note ----------------------------------------------------------------
-    % To run this:
-    % TwoExCombinationH = TwoExCombinationH + TwoExCombinationH';  
-    % is slower than running another "for"
-    % --- Note ----------------------------------------------------------------
-
-    % Bolck-Diagnonal Part of of TwoExCombinationH
-    for m=1:Nmodes-1
-        TwoExPart(TEDIndexBegin(m):TEDIndexEnd(m),TEDIndexBegin(m):TEDIndexEnd(m))...
-            = bsxfun(@times,eye(Nmodes-m),LocFreq(m+1:end)+LocFreq(m)) + Beta(m+1:end,m+1:end);
-    end
-
-    %% Two Exciton Hamiltonian Cross part between TwoExOvertoneH and TwoExCombinationH
-    for n1=1:Nmodes-1
-        TempOffDiagMatrix = zeros(Nmodes,Nmodes-n1);
-        TempOffDiagMatrix(n1,:) = Beta(n1,n1+1:Nmodes).*sqrt(2);
-        TempOffDiagMatrix(n1+1:Nmodes,:) = bsxfun(@times,eye(Nmodes-n1),Beta(n1,n1+1:Nmodes).*sqrt(2));
-
-        TwoExPart(1:Nmodes,TEDIndexBegin(n1):TEDIndexEnd(n1))...
-            = TempOffDiagMatrix;
-    end
-
-    for n2=1:Nmodes-1
-        TempOffDiagMatrix = zeros(Nmodes-n2,Nmodes);
-        TempOffDiagMatrix(:,n2) = Beta(n2+1:Nmodes,n2).*sqrt(2);
-        TempOffDiagMatrix(:,n2+1:Nmodes) = bsxfun(@times,eye(Nmodes-n2),Beta(n2,n2+1:Nmodes).*sqrt(2));
-
-        TwoExPart(TEDIndexBegin(n2):TEDIndexEnd(n2),1:Nmodes)...
-            = TempOffDiagMatrix;
-    end
-
-end
+% if strcmp(ExMode,'TwoEx')
+% 
+%     %- Pre-allocate the total matrix size
+%     TwoExPart = zeros(StatesNum-1-Nmodes,StatesNum-1-Nmodes);
+% 
+%     %- Two Exciton Overtone Hamiltonian, TwoExOvertoneH
+%     TwoExPart(1:Nmodes,1:Nmodes) = diag(2*LocFreq-LocAnharm);
+% 
+%     %- Two Exciton Combination Hamiltonian, TwoExCombinationH
+%     NumOfElementInBolcks = Nmodes-1:-1:1;
+%     TEDIndexEnd = zeros(Nmodes-1,1);
+%     TEDIndexBegin = zeros(Nmodes-1,1);
+% 
+%     for L=1:Nmodes-1
+%         TEDIndexEnd(L) = sum(NumOfElementInBolcks(1:L)); % TED =TwoExCombination
+%         TEDIndexBegin(L) = TEDIndexEnd(L) - NumOfElementInBolcks(L) + 1;
+%     end
+% 
+%     % Shift index for accomdation of TwoExOvertoneH
+%     TEDIndexBegin = TEDIndexBegin+Nmodes;
+%     TEDIndexEnd = TEDIndexEnd+Nmodes;
+% 
+%     % Off-block-Diagonal, Lower triangular part, of TwoExCombinationH
+%     for k2=1:Nmodes-1
+%         for k1=k2+1:Nmodes-1
+% 
+%             TempOffDiagMatrix = zeros(Nmodes-k1,Nmodes-k2);
+%             TempOffDiagMatrix(:,k1-k2) = Beta(k1+1:end,k2);
+%             TempOffDiagMatrix(:,k1-k2+1:end) = eye(Nmodes-k1)*Beta(k1,k2);
+% 
+%             TwoExPart(TEDIndexBegin(k1):TEDIndexEnd(k1),TEDIndexBegin(k2):TEDIndexEnd(k2))...
+%                 = TempOffDiagMatrix;
+%         end
+%     end
+% 
+%     % Off-block-Diagonal, Upper triangular part of TwoExCombinationH
+%     for k2=2:Nmodes-1
+%         for k1=1:k2-1
+% 
+%             TempOffDiagMatrix = zeros(Nmodes-k1,Nmodes-k2);
+%             TempOffDiagMatrix(k2-k1,:) = Beta(k2+1:end,k1);
+%             TempOffDiagMatrix(k2-k1+1:end,:) = eye(Nmodes-k2)*Beta(k2,k1);
+% 
+%             TwoExPart(TEDIndexBegin(k1):TEDIndexEnd(k1),TEDIndexBegin(k2):TEDIndexEnd(k2))...
+%                 = TempOffDiagMatrix;
+%         end
+%     end
+% 
+%     % --- Note ----------------------------------------------------------------
+%     % To run this:
+%     % TwoExCombinationH = TwoExCombinationH + TwoExCombinationH';  
+%     % is slower than running another "for"
+%     % --- Note ----------------------------------------------------------------
+% 
+%     % Bolck-Diagnonal Part of of TwoExCombinationH
+%     for m=1:Nmodes-1
+%         TwoExPart(TEDIndexBegin(m):TEDIndexEnd(m),TEDIndexBegin(m):TEDIndexEnd(m))...
+%             = bsxfun(@times,eye(Nmodes-m),LocFreq(m+1:end)+LocFreq(m)) + Beta(m+1:end,m+1:end);
+%     end
+% 
+%     %% Two Exciton Hamiltonian Cross part between TwoExOvertoneH and TwoExCombinationH
+%     for n1=1:Nmodes-1
+%         TempOffDiagMatrix = zeros(Nmodes,Nmodes-n1);
+%         TempOffDiagMatrix(n1,:) = Beta(n1,n1+1:Nmodes).*sqrt(2);
+%         TempOffDiagMatrix(n1+1:Nmodes,:) = bsxfun(@times,eye(Nmodes-n1),Beta(n1,n1+1:Nmodes).*sqrt(2));
+% 
+%         TwoExPart(1:Nmodes,TEDIndexBegin(n1):TEDIndexEnd(n1))...
+%             = TempOffDiagMatrix;
+%     end
+% 
+%     for n2=1:Nmodes-1
+%         TempOffDiagMatrix = zeros(Nmodes-n2,Nmodes);
+%         TempOffDiagMatrix(:,n2) = Beta(n2+1:Nmodes,n2).*sqrt(2);
+%         TempOffDiagMatrix(:,n2+1:Nmodes) = bsxfun(@times,eye(Nmodes-n2),Beta(n2,n2+1:Nmodes).*sqrt(2));
+% 
+%         TwoExPart(TEDIndexBegin(n2):TEDIndexEnd(n2),1:Nmodes)...
+%             = TempOffDiagMatrix;
+%     end
+% 
+% end
 
 %% Construct Full H
 
-if strcmp(ExMode,'TwoEx')
-    H = blkdiag(ZeroExPart,OneExPart,TwoExPart);
-else 
-    H = blkdiag(ZeroExPart,OneExPart);
-end 
-
-%% Diagonalize The full hamiltonian
-% % note: the eiganvector V_Full(:,i) has been already normalized.
-% [V_Full,D_Full] = eig(H);
-% Ex_Freq = diag(D_Full);
-% 
-% % sort eiganvalue form small to big and reorder the eiganvectors
-% [Sort_Ex_Freq,Indx] = sort(Ex_Freq);
-%  Sort_Ex_V          = V_Full(:,Indx);
-% 
-% % Extract block diagonals
-% %Sort_Ex_V0 = Sort_Ex_V(1,1);
-% %Output.Sort_Ex_V0 = Sort_Ex_V0;
-% 
-% Sort_Ex_F1 = Sort_Ex_Freq(2:Nmodes+1);
-% Sort_Ex_V1 = Sort_Ex_V(2:Nmodes+1,2:Nmodes+1);
-% Output.Sort_Ex_F1 = Sort_Ex_F1;
-% Output.Sort_Ex_V1 = Sort_Ex_V1;
-% 
 % if strcmp(ExMode,'TwoEx')
-%     Sort_Ex_F2 = Sort_Ex_Freq(Nmodes+2:end);
-%     Sort_Ex_V2 = Sort_Ex_V(Nmodes+2:end,Nmodes+2:end);
-%     Output.Sort_Ex_F2 = Sort_Ex_F2;
-%     Output.Sort_Ex_V2 = Sort_Ex_V2;
+%     H = blkdiag(ZeroExPart,OneExPart,TwoExPart);
+% else 
+%     H = blkdiag(ZeroExPart,OneExPart);
 % end 
-% 
-% 
-% % Sparse_TwoExH = sparse(blkdiag(ZeroExPart,OneExPart,TwoExPart));
-% % [V_S_Full,D_S_Full] = eigs(Sparse_TwoExH);
-% 
-% % [V_OneEx,D_OneEx] = eig(OneExPart);
-% % [V_TwoEx,D_TwoEx] = eig(TwoExPart);
-% % [V_TwoExOvertone,D_TwoExOvertone] = eig(TwoExOvertoneH);
-% % [V_TwoExCombination,D_TwoExCombination] = eig(TwoExCombinationH);
+H = blkdiag(ZeroExPart,OneExPart);
+
 
 %% Output Variables
 Output.ExMode        = ExMode;
 Output.Nmodes        = Nmodes;
-Output.StatesNum     = StatesNum;
+%Output.StatesNum     = StatesNum;
 % Output.Sort_Ex_Freq  = Sort_Ex_Freq;
 % Output.Sort_Ex_V     = Sort_Ex_V;
 Output.Beta          = Beta;
@@ -290,8 +258,8 @@ Output.H             = H;
 Output.OneExPart     = OneExPart;
 
 
-if strcmp(ExMode,'TwoEx')
-    Output.TwoExPart     = TwoExPart;
-    Output.TEDIndexBegin = TEDIndexBegin;
-    Output.TEDIndexEnd   = TEDIndexEnd;
-end
+% if strcmp(ExMode,'TwoEx')
+%     Output.TwoExPart     = TwoExPart;
+%     Output.TEDIndexBegin = TEDIndexBegin;
+%     Output.TEDIndexEnd   = TEDIndexEnd;
+% end

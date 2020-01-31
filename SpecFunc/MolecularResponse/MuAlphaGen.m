@@ -1,4 +1,4 @@
-function Output = MuAlphaGen(SData,H,varargin)
+function Output = MuAlphaGen(SData,FullH,varargin)
 %% MuAlphaGen 
 % 
 % This Script generate mu and alpha matrix in local mode basis. According
@@ -11,28 +11,7 @@ function Output = MuAlphaGen(SData,H,varargin)
 % 
 % Todo: 1. fix [Improve] part
 % 
-% ------- Version log -----------------------------------------------------
-%
-% Ver. 3.0  141126  Instead of calculating the full matix of Transition
-%                   moments, I only export 0->1 and 1->2 part
-% 
-% Ver. 2.0  140608  Code clean up and fix sqrt(2) error
-% 
-% Ver. 1.1  130723  in order to reduce unique elements of Raman tensor from 
-%                   9 to 6. I generaliz this script so it can take whatever
-%                   length of vectors. 
-%                   Thus, "Trans_Moment" can take:
-% 
-%                       [mu_x, mu_y, mu_z]
-%                   or  [a_xx, a_yx, a_zx, a_xy, a_yy, a_zy, a_xz, a_yz, a_zz]
-%                   or  [a_xx, a_yy, a_zz, a_xy, a_yz, a_xz]
-% 
-%                   And remove unnecessary input "Size_Trans".
-% 
-% Ver. 1.0  130705  Isolated from TwoExcitonH
-% 
-% ------------------------------------------------------------------------
-% Copyright Jia-Jung Ho, 2013-2016
+% Copyright Jia-Jung Ho, 2013-2020
 
 %% Inputs parser
 INPUT = inputParser;
@@ -63,53 +42,107 @@ end
 M = size(Trans_Moment,2);
 
 %% reassign variable names
-N      = SData.Nmodes;
-ExMode = H.ExMode;
+N         = SData.Nmodes;
+LocFreq   = SData.LocFreq;
+LocAnharm = SData.LocAnharm;
+ExMode    = FullH.ExMode;
+Beta      = FullH.Beta;
+OneExH    = FullH.H;
 
 
-% Zero to One exciton transition 
-M_Lo_01 = Trans_Moment; % size [N x 3 or 9]
-
-%% Two Exciton part in local mode basis
-M_Lo_12 = [];
-
+%% Generate Two Exciton block diag part of full Hamiltonianif needed (TwoExOvertoneH & TwoExCombinationH)
 if strcmp(ExMode,'TwoEx')
+    StatesNum = (N+2)*(N+1)/2; 
 
-    % One exciton to Overtone transition 
-    Trans12_Onsite = zeros(N,N,M);
+    %- Pre-allocate the total matrix size
+    TwoExPart = zeros(StatesNum-1-N,StatesNum-1-N);
 
-    for ii=1:N
-        Trans12_Onsite(ii,ii,:) = Trans_Moment(ii,:)*sqrt(2);
+    %- Two Exciton Overtone Hamiltonian, TwoExOvertoneH
+    TwoExPart(1:N,1:N) = diag(2*LocFreq-LocAnharm);
+
+    %- Two Exciton Combination Hamiltonian, TwoExCombinationH
+    NumOfElementInBolcks = N-1:-1:1;
+    TEDIndexEnd   = zeros(N-1,1);
+    TEDIndexBegin = zeros(N-1,1);
+
+    for L=1:N-1
+        TEDIndexEnd(L)   = sum(NumOfElementInBolcks(1:L)); % TED =TwoExCombination
+        TEDIndexBegin(L) = TEDIndexEnd(L) - NumOfElementInBolcks(L) + 1;
     end
 
-    % Build up the block begin/end list from Two Exciton index
-    TEDIndexBegin = H.TEDIndexBegin-N;
-    TEDIndexEnd   = H.TEDIndexEnd-N;
+    % Shift index for accomdation of TwoExOvertoneH
+    TEDIndexBegin = TEDIndexBegin+N;
+    TEDIndexEnd   = TEDIndexEnd+N;
 
-    % One exciton to Combination transition
-    Trans12_Combination = zeros(N,N*(N-1)/2,M);
-    for jj1=1:N-1
-        Temp_Trans12_Combination          = zeros(N,N-jj1,M);
-        Temp_Trans12_Combination(jj1,:,:) = Trans_Moment(jj1+1:end,:);
+    % Off-block-Diagonal, Lower triangular part, of TwoExCombinationH
+    for k2=1:N-1
+        for k1=k2+1:N-1
 
-        % [Improve] Can remove this for loop by work out the exact indexing of 
-        % the diagnoal terms.
-        for kk=1:N-jj1
-            Temp_Trans12_Combination(kk+jj1,kk,:) = Trans_Moment(jj1,:);
+            TempOffDiagMatrix = zeros(N-k1,N-k2);
+            TempOffDiagMatrix(:,k1-k2) = Beta(k1+1:end,k2);
+            TempOffDiagMatrix(:,k1-k2+1:end) = eye(N-k1)*Beta(k1,k2);
+
+            TwoExPart(TEDIndexBegin(k1):TEDIndexEnd(k1),TEDIndexBegin(k2):TEDIndexEnd(k2))...
+                = TempOffDiagMatrix;
         end
-
-        Trans12_Combination(:,TEDIndexBegin(jj1):TEDIndexEnd(jj1),:) = Temp_Trans12_Combination;
     end
 
-    M_Lo_12 = [Trans12_Onsite,Trans12_Combination];
+    % Off-block-Diagonal, Upper triangular part of TwoExCombinationH
+    for k2=2:N-1
+        for k1=1:k2-1
+
+            TempOffDiagMatrix = zeros(N-k1,N-k2);
+            TempOffDiagMatrix(k2-k1,:) = Beta(k2+1:end,k1);
+            TempOffDiagMatrix(k2-k1+1:end,:) = eye(N-k2)*Beta(k2,k1);
+
+            TwoExPart(TEDIndexBegin(k1):TEDIndexEnd(k1),TEDIndexBegin(k2):TEDIndexEnd(k2))...
+                = TempOffDiagMatrix;
+        end
+    end
+
+    % --- Note ----------------------------------------------------------------
+    % To run this:
+    % TwoExCombinationH = TwoExCombinationH + TwoExCombinationH';  
+    % is slower than running another "for"
+    % --- Note ----------------------------------------------------------------
+
+    % Bolck-Diagnonal Part of of TwoExCombinationH
+    for m=1:N-1
+        TwoExPart(TEDIndexBegin(m):TEDIndexEnd(m),TEDIndexBegin(m):TEDIndexEnd(m))...
+            = bsxfun(@times,eye(N-m),LocFreq(m+1:end)+LocFreq(m)) + Beta(m+1:end,m+1:end);
+    end
+
+    %% Two Exciton Hamiltonian Cross part between TwoExOvertoneH and TwoExCombinationH
+    for n1=1:N-1
+        TempOffDiagMatrix = zeros(N,N-n1);
+        TempOffDiagMatrix(n1,:) = Beta(n1,n1+1:N).*sqrt(2);
+        TempOffDiagMatrix(n1+1:N,:) = bsxfun(@times,eye(N-n1),Beta(n1,n1+1:N).*sqrt(2));
+
+        TwoExPart(1:N,TEDIndexBegin(n1):TEDIndexEnd(n1))...
+            = TempOffDiagMatrix;
+    end
+
+    for n2=1:N-1
+        TempOffDiagMatrix = zeros(N-n2,N);
+        TempOffDiagMatrix(:,n2) = Beta(n2+1:N,n2).*sqrt(2);
+        TempOffDiagMatrix(:,n2+1:N) = bsxfun(@times,eye(N-n2),Beta(n2,n2+1:N).*sqrt(2));
+
+        TwoExPart(TEDIndexBegin(n2):TEDIndexEnd(n2),1:N)...
+            = TempOffDiagMatrix;
+    end
+
 end
 
 %% Diagonalize the full hamiltonian
 
-H = H.H; % tmp solution will fix 
+if strcmp(ExMode,'TwoEx')
+    FullH = blkdiag(OneExH,TwoExPart);
+else
+    FullH = OneExH;
+end 
 
 % note: the eiganvector V_Full(:,i) has been already normalized.
-[V_Full,D_Full] = eig(H);
+[V_Full,D_Full] = eig(FullH);
 Ex_Freq = diag(D_Full);
 
 % sort eiganvalue form small to big and reorder the eiganvectors
@@ -131,6 +164,43 @@ Output.Sort_Ex_F1 = Sort_Ex_F1;
 Output.Sort_Ex_V1 = Sort_Ex_V1;
 Output.Sort_Ex_F2 = Sort_Ex_F2;
 Output.Sort_Ex_V2 = Sort_Ex_V2;
+
+% Zero to One exciton transition 
+M_Lo_01 = Trans_Moment; % size [N x 3 or 9]
+
+%% Two Exciton part in local mode basis
+M_Lo_12 = [];
+
+if strcmp(ExMode,'TwoEx')
+
+    % One exciton to Overtone transition 
+    Trans12_Onsite = zeros(N,N,M);
+
+    for ii=1:N
+        Trans12_Onsite(ii,ii,:) = Trans_Moment(ii,:)*sqrt(2);
+    end
+
+    % Build up the block begin/end list from Two Exciton index
+    TEDIndexBegin = TEDIndexBegin-N;
+    TEDIndexEnd   = TEDIndexEnd-N;
+
+    % One exciton to Combination transition
+    Trans12_Combination = zeros(N,N*(N-1)/2,M);
+    for jj1=1:N-1
+        Temp_Trans12_Combination          = zeros(N,N-jj1,M);
+        Temp_Trans12_Combination(jj1,:,:) = Trans_Moment(jj1+1:end,:);
+
+        % [Improve] Can remove this for loop by work out the exact indexing of 
+        % the diagnoal terms.
+        for kk=1:N-jj1
+            Temp_Trans12_Combination(kk+jj1,kk,:) = Trans_Moment(jj1,:);
+        end
+
+        Trans12_Combination(:,TEDIndexBegin(jj1):TEDIndexEnd(jj1),:) = Temp_Trans12_Combination;
+    end
+
+    M_Lo_12 = [Trans12_Onsite,Trans12_Combination];
+end
 
 %% Change of basis and output
 % 0->1, size = [N x 3 or 9] 

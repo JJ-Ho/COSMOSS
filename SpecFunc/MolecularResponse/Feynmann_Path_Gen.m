@@ -18,13 +18,13 @@ function [SpectraGrid,Beta,IntensityGrid] = Feynmann_Path_Gen(SpecType,Pathways,
 % MEM_CutOff = 3e-1; %[GB]
 
 %% Define common variables
-H       = Data_2D.H;
+% H       = Data_2D.H;
 Mu      = Data_2D.Mu;
 PCutOff = Data_2D.PCutOff;
 EJLR    = Data_2D.EJLR;
 
-F1    = H.Sort_Ex_F1;
-F2    = H.Sort_Ex_F2;
+F1    = Mu.Sort_Ex_F1;
+F2    = Mu.Sort_Ex_F2;
 M01   = Mu.M_Ex_01;
 M01_N = Mu.M_Ex_01_N;
 

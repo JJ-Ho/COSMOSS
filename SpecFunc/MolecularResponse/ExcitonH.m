@@ -246,45 +246,45 @@ else
 end 
 
 %% Diagonalize The full hamiltonian
-% note: the eiganvector V_Full(:,i) has been already normalized.
-[V_Full,D_Full] = eig(H);
-Ex_Freq = diag(D_Full);
-
-% sort eiganvalue form small to big and reorder the eiganvectors
-[Sort_Ex_Freq,Indx] = sort(Ex_Freq);
- Sort_Ex_V          = V_Full(:,Indx);
-
-% Extract block diagonals
-%Sort_Ex_V0 = Sort_Ex_V(1,1);
-%Output.Sort_Ex_V0 = Sort_Ex_V0;
-
-Sort_Ex_F1 = Sort_Ex_Freq(2:Nmodes+1);
-Sort_Ex_V1 = Sort_Ex_V(2:Nmodes+1,2:Nmodes+1);
-Output.Sort_Ex_F1 = Sort_Ex_F1;
-Output.Sort_Ex_V1 = Sort_Ex_V1;
-
-if strcmp(ExMode,'TwoEx')
-    Sort_Ex_F2 = Sort_Ex_Freq(Nmodes+2:end);
-    Sort_Ex_V2 = Sort_Ex_V(Nmodes+2:end,Nmodes+2:end);
-    Output.Sort_Ex_F2 = Sort_Ex_F2;
-    Output.Sort_Ex_V2 = Sort_Ex_V2;
-end 
-
-
-% Sparse_TwoExH = sparse(blkdiag(ZeroExPart,OneExPart,TwoExPart));
-% [V_S_Full,D_S_Full] = eigs(Sparse_TwoExH);
-
-% [V_OneEx,D_OneEx] = eig(OneExPart);
-% [V_TwoEx,D_TwoEx] = eig(TwoExPart);
-% [V_TwoExOvertone,D_TwoExOvertone] = eig(TwoExOvertoneH);
-% [V_TwoExCombination,D_TwoExCombination] = eig(TwoExCombinationH);
+% % note: the eiganvector V_Full(:,i) has been already normalized.
+% [V_Full,D_Full] = eig(H);
+% Ex_Freq = diag(D_Full);
+% 
+% % sort eiganvalue form small to big and reorder the eiganvectors
+% [Sort_Ex_Freq,Indx] = sort(Ex_Freq);
+%  Sort_Ex_V          = V_Full(:,Indx);
+% 
+% % Extract block diagonals
+% %Sort_Ex_V0 = Sort_Ex_V(1,1);
+% %Output.Sort_Ex_V0 = Sort_Ex_V0;
+% 
+% Sort_Ex_F1 = Sort_Ex_Freq(2:Nmodes+1);
+% Sort_Ex_V1 = Sort_Ex_V(2:Nmodes+1,2:Nmodes+1);
+% Output.Sort_Ex_F1 = Sort_Ex_F1;
+% Output.Sort_Ex_V1 = Sort_Ex_V1;
+% 
+% if strcmp(ExMode,'TwoEx')
+%     Sort_Ex_F2 = Sort_Ex_Freq(Nmodes+2:end);
+%     Sort_Ex_V2 = Sort_Ex_V(Nmodes+2:end,Nmodes+2:end);
+%     Output.Sort_Ex_F2 = Sort_Ex_F2;
+%     Output.Sort_Ex_V2 = Sort_Ex_V2;
+% end 
+% 
+% 
+% % Sparse_TwoExH = sparse(blkdiag(ZeroExPart,OneExPart,TwoExPart));
+% % [V_S_Full,D_S_Full] = eigs(Sparse_TwoExH);
+% 
+% % [V_OneEx,D_OneEx] = eig(OneExPart);
+% % [V_TwoEx,D_TwoEx] = eig(TwoExPart);
+% % [V_TwoExOvertone,D_TwoExOvertone] = eig(TwoExOvertoneH);
+% % [V_TwoExCombination,D_TwoExCombination] = eig(TwoExCombinationH);
 
 %% Output Variables
 Output.ExMode        = ExMode;
 Output.Nmodes        = Nmodes;
 Output.StatesNum     = StatesNum;
-Output.Sort_Ex_Freq  = Sort_Ex_Freq;
-Output.Sort_Ex_V     = Sort_Ex_V;
+% Output.Sort_Ex_Freq  = Sort_Ex_Freq;
+% Output.Sort_Ex_V     = Sort_Ex_V;
 Output.Beta          = Beta;
 Output.H             = H;
 Output.OneExPart     = OneExPart;

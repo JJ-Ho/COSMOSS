@@ -122,8 +122,8 @@ Data_2D.PCutOff = PCutOff;
 Data_2D.EJLR    = E*J*R_Avg;
 
 % decide the max frequency
-F1  = H.Sort_Ex_F1;
-F2  = H.Sort_Ex_F2;
+F1  = Mu.Sort_Ex_F1;
+F2  = Mu.Sort_Ex_F2;
 F_Max = max(F2) - min(F1);
 SparseMax = ceil(max(GUI_Inputs.F_Max,F_Max));
 

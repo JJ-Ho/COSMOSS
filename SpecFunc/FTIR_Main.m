@@ -53,7 +53,7 @@ H = ExcitonH(Structure,GUI_Inputs,'OneEx');
 
 Mu = MuAlphaGen(Structure,H,'Mode','Mu');
 
-Ex_F1   = H.Sort_Ex_F1;
+Ex_F1   = Mu.Sort_Ex_F1;
 M_Ex_01 = Mu.M_Ex_01;
 
 Response = sum(M_Ex_01.^2,2); % E-field of FTIR signal is mu^2 base on feynmann diagram! 

@@ -80,7 +80,7 @@ H = ExcitonH(Structure,GUI_Inputs,'OneEx');
 Mu    = MuAlphaGen(Structure,H,'Mode','Mu');
 Alpha = MuAlphaGen(Structure,H,'Mode','Alpha');
 
-Ex_F1   = H.Sort_Ex_F1;
+Ex_F1   = Mu.Sort_Ex_F1;
 M_Ex_01 = Mu.M_Ex_01';    %=> [3*N]
 A_Ex_01 = Alpha.M_Ex_01'; %=> [9*N]
 

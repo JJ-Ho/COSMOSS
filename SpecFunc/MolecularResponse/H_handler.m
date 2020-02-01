@@ -16,21 +16,23 @@ INPUT = inputParser;
 INPUT.KeepUnmatched = true;
 
 defaultSampling     = 0;
+defaultDD_FWHM      = 0;
 defaultODD_FWHM     = 0;
 defaultP_FlucCorr   = 100;
 
 addOptional(INPUT,'Sampling'    ,defaultSampling);
+addOptional(INPUT,'DD_FWHM'     ,defaultODD_FWHM);
 addOptional(INPUT,'ODD_FWHM'    ,defaultODD_FWHM);
 addOptional(INPUT,'P_FlucCorr'  ,defaultP_FlucCorr);
 
 parse(INPUT,GUI_Inputs_C{:});
 
 Sampling     = INPUT.Results.Sampling;
+DD_FWHM      = INPUT.Results.DD_FWHM;
 ODD_FWHM     = INPUT.Results.ODD_FWHM;
 P_FlucCorr   = INPUT.Results.P_FlucCorr;
 
 %% reassign variable names
-DiagDisorder = SData.DiagDisorder;
 OneExH       = SData.OneExH;
 Beta         = SData.Beta;
 N            = SData.Nmodes;
@@ -39,30 +41,31 @@ LocAnharm    = SData.LocAnharm;
 
 %% check if apply random sampling
 if Sampling
-    DD_std  = DiagDisorder./(2*sqrt(2*log(2)));
+    DD_std  = DD_FWHM./(2*sqrt(2*log(2)));
     ODD_std = ODD_FWHM/(2*sqrt(2*log(2)));
 else
     DD_std  = 0;
     ODD_std = 0;
 end
 
-%% Diagonal disorder if any
+%% Diagonal/Off-Diaginal disorder if any
 P_FlucCorr = P_FlucCorr/100; % turn percentage to number within 0~1
 
+% diagonal disorder
 Correlation_Dice = rand;
 if Correlation_Dice < P_FlucCorr
     dF_DD = DD_std.*(randn(1,1).*ones(N,1));
 else 
     dF_DD = DD_std.*randn(N,1); 
 end
-% LocFreq = LocFreq + dF_DD;
 dF_DD = [0;dF_DD]; % add the zero exciton part
-OneExH = OneExH + bsxfun(@times,eye(N+1),dF_DD);
 
-%% Off diagonal disorder
+% Off diagonal disorder
 dBeta   = ODD_std*randn(N);
 dBeta   = (dBeta + dBeta')./2; % symetrize
-Beta    = Beta + dBeta;
+dBeta   = blkdiag(0,dBeta);
+
+OneExH = OneExH + bsxfun(@times,eye(N+1),dF_DD) + dBeta;
 
 %% Generate Two Exciton block diag part of full Hamiltonianif needed (TwoExOvertoneH & TwoExCombinationH)
 TEDIndexBegin = [];

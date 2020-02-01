@@ -120,6 +120,6 @@ hAx.ZLabel.String = 'Z';
 axis(hAx,'image');
 rotate3d(hAx,'on')
 grid(hAx,'on')
-view(hAx,[0,0])
+view(hAx,[50,10])
 axis(hAx,'image');
     

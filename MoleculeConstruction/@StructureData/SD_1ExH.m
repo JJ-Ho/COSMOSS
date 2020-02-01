@@ -1,18 +1,12 @@
-function Output= ExcitonH(SData,GUI_Inputs)
-%% OneExcitonH
+function obj_SD_1ExH = SD_1ExH(obj_SD)
+%% OneExcitonH generation method of StructureData class
 %  
-% Given StructureData, this script generate 1 Exciton Hamiltonain
-% 
-% Todo: fix [Improve] part
-%       Integrate Diagonal disorder part in.
-% 
+% Given StructureData, this script generate 1 Exciton Hamiltonian
 % Copyright Jia-Jung Ho, 2013-2020
 
-%% Debug
-% Structure  = Data_COSMOSS.Structure;
-% GUI_Inputs = ParseGUI_Main(Data_COSMOSS.hGUIs);
+%% GUI Inputs parser
+GUI_Inputs = obj_SD.GUI_Inputs;
 
-%% Inputs parser
 % Turn Output from Read GUI to cell array
 GUI_Inputs_C      = fieldnames(GUI_Inputs);
 GUI_Inputs_C(:,2) = struct2cell(GUI_Inputs);
@@ -38,16 +32,16 @@ Beta_NN      = INPUT.Results.Beta_NN;
 
 %% para variables
 % Reassign variable names from StrucInfo
-Nmodes  = SData.Nmodes;
-LocFreq = SData.LocFreq;
+Nmodes  = obj_SD.Nmodes;
+LocFreq = obj_SD.LocFreq;
 
 %% Apply Jansen map if needed
 if eq(LocFreqType,2)
-    [~,dF_Jansen] = Coupling_Jansen(SData);
+    [~,dF_Jansen] = Coupling_Jansen(obj_SD);
     LocFreq = LocFreq + dF_Jansen;
 end
 
-Beta = Coupling(SData,CouplingType,Beta_NN); % Coupling
+Beta = Coupling(obj_SD,CouplingType,Beta_NN); % Coupling
 
 %% One Exciton full Hamiltonian
 % Zero exciton part of full Hamiltonain 
@@ -60,5 +54,6 @@ OneExPart = bsxfun(@times,eye(Nmodes),LocFreq) + Beta;
 OneExH = blkdiag(ZeroExPart,OneExPart);
 
 %% Output Variables
-Output.Beta   = Beta;
-Output.OneExH = OneExH;
+obj_SD_1ExH        = obj_SD;
+obj_SD_1ExH.Beta   = Beta;
+obj_SD_1ExH.OneExH = OneExH;

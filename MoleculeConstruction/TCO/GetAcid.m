@@ -210,7 +210,5 @@ TCO.LocAlpha        = alpha; % raman tensor vector form [N x 9]
 TCO.FilesName       = 'Acid Dimer';
 TCO.GUI_Inputs      = GUI_Inputs;
 
-%% Calculate One Exciton Hamiltoian 
-H = ExcitonH(TCO,GUI_Inputs);
-TCO.OneExH = H.OneExH;
-TCO.Beta   = H.Beta;
+TCO = SD_1ExH(TCO); % Calculate One Exciton Hamiltoian
+

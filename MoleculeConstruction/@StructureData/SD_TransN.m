@@ -1,4 +1,6 @@
 function obj_TN = SD_TransN(obj,V,N)
+% Given a translational vector and Number of copies N, this method duplicate 
+% the orign StructureData by N times and move them by increatment of V.
 %% Check Input
 % Make sure V is a column
 if isrow(V)

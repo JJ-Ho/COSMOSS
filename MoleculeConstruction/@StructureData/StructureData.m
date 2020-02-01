@@ -1,12 +1,12 @@
 classdef StructureData < handle
-   properties
+   properties % Minimum propertiess
        % Bare minimum properties that is needed for all the SD method 
        % start to work
        XYZ      % size = [NAtoms,3]
        AtomName % size = {NAtoms,1} 
    end
    
-   properties
+   properties % Full properties
        LocCenter       % size = [Nmodes,3]
        LocFreq         % size = [Nmodes,1]
        LocAnharm       % size = [Nmodes,1]
@@ -25,14 +25,7 @@ classdef StructureData < handle
        Extra           % all the model dependent properties can be saved in here
    end
    
-   properties
-       % These properties will be automatically update when the dependent
-       % peoperty is assigned. But is is free to be change later.
-       Scaled_LocMu    % for comb2 concentration scaling that only applys on the MuAlphaGen
-       Scaled_LocAlpha % for comb2 concentration scaling that only applys on the MuAlphaGen
-   end
-   
-   properties
+   properties % Get properties
        % These properties will be calculated when quaried
        Nmodes       % # of local modes
        NAtoms       % # of atoms
@@ -41,7 +34,14 @@ classdef StructureData < handle
        CoM          % Center of Mass, as a reference point of common origin in a coordinate system
    end
    
-   methods
+   properties % Set Properties
+       % These properties will be automatically update when the dependent
+       % peoperty is assigned. But is is free to be change later.
+       Scaled_LocMu    % for comb2 concentration scaling that only applys on the MuAlphaGen
+       Scaled_LocAlpha % for comb2 concentration scaling that only applys on the MuAlphaGen
+   end
+    
+   methods % Get methods
       function Nmodes = get.Nmodes(obj)
            Nmodes = size(obj.LocFreq,1);
       end
@@ -66,49 +66,35 @@ classdef StructureData < handle
            AP   = SD_AtomicProperties(obj);
            Mass = AP.Mass;
            CoM  = sum(bsxfun(@times,obj.XYZ,Mass),1)./sum(Mass);
-      end
-      function hF = Draw(obj,varargin)
-          % Simplify the structure drawing syntex
-          hAx = 'New';
-          if nargin > 1 
-              hAx = varargin{:};
-          end
-          
-          if isa(obj.hPlotFunc,'function_handle')
-              % check if triggered by a GUI interface
-              if isempty(obj.GUI_Inputs)
-                  obj.GUI_Inputs.Debug = 'Debug';
-                  disp('There is no GUI_Inpus in the StructureData, so use default values for drawing...')
-              end
-              hF = obj.hPlotFunc(hAx,obj);
-          else
-              hF = '';
-              disp('No @hPlotFunc defined, method "Draw" would not work...')
-          end
-      end
-      
-      % Automatically copy the non-scaled value to the scaled properties
-      % when the value fisrt being assigned
-      function set.LocMu(obj,Value)
+      end 
+   end
+   
+   methods % Set methods
+       % Automatically copy the non-scaled value to the scaled properties
+       % when the value fisrt being assigned
+       function set.LocMu(obj,Value)
           obj.LocMu = Value;
           obj.Scaled_LocMu = Value;
-      end
-      function set.LocAlpha(obj,Value)
+       end
+       function set.LocAlpha(obj,Value)
           obj.LocAlpha = Value;
           obj.Scaled_LocAlpha = Value;
-      end
-      
-      % Other methods defined as a separated function
-      AP         = SD_AtomicProperties(obj)
-      obj_T      = SD_Trans(obj,V)
-      obj_R      = SD_Rot(obj,R)
-      obj_comb2  = SD_Comb2(obj1,obj2)
-      Dihedral   = SD_PeptideDihedral(obj)
-      obj_S      = SD_ScaleTransitions(obj,Scaling)
-      obj_New    = SD_Copy(obj)
-      obj_TN     = SD_TransN(obj,V,N)
-      obj_Framed = SD_SetFrame(obj,Center_Ind,Z_Ind,XZ_Ind)
-      Obj_AmideI = SD_GetAmideI(obj)
+      end 
+   end
+   
+   methods % Other methods defined as a separated function
+      AP          = SD_AtomicProperties(obj)
+      obj_T       = SD_Trans(obj,V)
+      obj_R       = SD_Rot(obj,R)
+      obj_comb2   = SD_Comb2(obj1,obj2)
+      Dihedral    = SD_PeptideDihedral(obj)
+      obj_S       = SD_ScaleTransitions(obj,Scaling)
+      obj_New     = SD_Copy(obj)
+      obj_TN      = SD_TransN(obj,V,N)
+      obj_Framed  = SD_SetFrame(obj,Center_Ind,Z_Ind,XZ_Ind)
+      Obj_AmideI  = SD_GetAmideI(obj)
+      obj_SD_1ExH = SD_1ExH(obj_SD)
+      hF          = SD_Draw(obj_SD,varargin)
    end
 
 end

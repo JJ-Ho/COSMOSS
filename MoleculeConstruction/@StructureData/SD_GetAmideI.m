@@ -1,4 +1,4 @@
-function S_PDB_AmideI = SD_GetAmideI(obj_SD)
+function Obj_SD_AmideI = SD_GetAmideI(obj_SD)
 %% GetAmideI
 
 % Output = GetAmideI(Num_Atoms,XYZ,AtomName,FilesName,GUI_Inputs)
@@ -202,13 +202,13 @@ AmideIFreq   = ones(Nmodes,1).* NLFreq;
 AmideIAnharm = ones(Nmodes,1).* Anharm;
 
 %% Output Structure
-S_PDB_AmideI = SD_Copy(obj_SD);
+Obj_SD_AmideI = SD_Copy(obj_SD);
 
-S_PDB_AmideI.LocCenter = AmideICenter;
-S_PDB_AmideI.LocFreq   = AmideIFreq;
-S_PDB_AmideI.LocAnharm = AmideIAnharm;
-S_PDB_AmideI.LocMu     = mu_Sim;
-S_PDB_AmideI.LocAlpha  = alpha; % raman tensor vector form [N x 9]
+Obj_SD_AmideI.LocCenter = AmideICenter;
+Obj_SD_AmideI.LocFreq   = AmideIFreq;
+Obj_SD_AmideI.LocAnharm = AmideIAnharm;
+Obj_SD_AmideI.LocMu     = mu_Sim;
+Obj_SD_AmideI.LocAlpha  = alpha; % raman tensor vector form [N x 9]
 
-S_PDB_AmideI.Extra.AmideIAtomSerNo = AmideIAtomSerNo;
+Obj_SD_AmideI.Extra.AmideIAtomSerNo = AmideIAtomSerNo;
 

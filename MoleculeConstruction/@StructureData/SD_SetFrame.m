@@ -1,4 +1,6 @@
 function obj_Framed = SD_SetFrame(obj_SD,Center_Ind,Z_Ind,XZ_Ind)
+% Given the desired frame for the molecule to align with, this method put
+% the StructureData into aligned orentation.
 %% Rotated the molecule with [Orientation] info
 % Get Ratational Matrix to rotate the molecule to defined frame 
 Vec_Z  = obj_SD.XYZ( Z_Ind(2),:) - obj_SD.XYZ( Z_Ind(1),:);

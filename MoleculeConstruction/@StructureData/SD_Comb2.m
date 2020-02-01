@@ -1,4 +1,6 @@
 function obj_comb2 = SD_Comb2(obj_SD1,obj_SD2)
+% Given two StructureDatas, this method will combie the two as a new
+% StructureData
 %% General properties
 XYZ_1             = obj_SD1.XYZ;
 AtomName_1        = obj_SD1.AtomName;

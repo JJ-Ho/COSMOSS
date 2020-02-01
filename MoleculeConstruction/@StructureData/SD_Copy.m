@@ -1,4 +1,5 @@
 function obj_New = SD_Copy(obj_SD)
+% This method copy the input StructureData as a New one
 obj_New = StructureData;
 
 FieldName = fieldnames(obj_SD);

@@ -1,4 +1,5 @@
 function obj_T = SD_Trans(obj_SD,V)
+% Given a translational vector V, this method move the StructureData accordingly 
 %% Check Input
 % Make sure V is a row
 if iscolumn(V)

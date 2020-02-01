@@ -1,4 +1,5 @@
 function obj_RT = SD_Rot(obj_SD,R1)
+% Given a rotational matrix, this method export the rotated StructureData
 %% Check Input
 % check if R is [3x3]
 if ~isequal(size(R1),[3,3])

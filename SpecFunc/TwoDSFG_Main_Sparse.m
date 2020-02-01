@@ -83,10 +83,8 @@ P_Sig2D      = INPUT.Results.P_Sig2D;
 PCutOff      = INPUT.Results.PCutOff;
 
 %% Call TwoExcitonH to calculate H,mu and alpha under exciton basis
-H = ExcitonH(Structure,GUI_Inputs);    
-
-Mu    = MuAlphaGen(Structure,H,'TwoEx','Mode','Mu');
-Alpha = MuAlphaGen(Structure,H,'TwoEx','Mode','Alpha');
+Mu    = MuAlphaGen(Structure,'TwoEx','Mu',GUI_Inputs);
+Alpha = MuAlphaGen(Structure,'TwoEx','Alpha',GUI_Inputs);
 
 %% Decide what kinds of rod rotation average is
 % note:sparse version dose not have mirror plane impemented, yet...
@@ -115,7 +113,6 @@ E = EPolar5(P_Sig2D,P_Vis2D,P_Probe,P_Pump2,P_Pump1); % Take [radius]
 %% Generate Feynman pathway for 2DSFG
 SpecType = '2DSFG';
 
-Data_2D.H       = H;
 Data_2D.Mu      = Mu;
 Data_2D.Alpha   = Alpha;
 Data_2D.PCutOff = PCutOff;

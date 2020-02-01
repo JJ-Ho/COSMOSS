@@ -120,9 +120,9 @@ hAx.XMinorGrid = 'on';
 
 FilesName       = OneD_Data.FilesName;
 FilesName_Reg   = regexprep(FilesName,'\_','\\_');
-Coupling        = GUI_Inputs.CouplingType;
-Coupling_Reg    = regexprep(Coupling,'\_','\\_');
-Title_String{1} = [Signal_Type_Title,'-',OneD_Data.SpecType,' ',FilesName_Reg,', Coupling:',Coupling_Reg]; 
+%Coupling        = GUI_Inputs.CouplingType; % since the Variable is moved from the main GUI to the Sub-SGUI, this information need to be redirected
+%Coupling_Reg    = regexprep(Coupling,'\_','\\_');
+Title_String{1} = [Signal_Type_Title,'-',OneD_Data.SpecType,' ',FilesName_Reg];%,', Coupling:',Coupling_Reg]; 
 
 if PlotCursor
     hAx.Units = 'normalized'; % use normalized scale

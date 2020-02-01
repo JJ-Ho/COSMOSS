@@ -1,4 +1,4 @@
-function Output = MuAlphaGen(SData,H,ExMode,varargin)
+function Output = MuAlphaGen(SData,ExMode,TrMode,GUI_Inputs)
 %% MuAlphaGen 
 % 
 % This Script generate mu and alpha matrix in local mode basis. According
@@ -14,24 +14,33 @@ function Output = MuAlphaGen(SData,H,ExMode,varargin)
 % Copyright Jia-Jung Ho, 2013-2020
 
 %% Inputs parser
+% Turn Output from Read GUI to cell array
+GUI_Inputs_C      = fieldnames(GUI_Inputs);
+GUI_Inputs_C(:,2) = struct2cell(GUI_Inputs);
+GUI_Inputs_C      = GUI_Inputs_C';
+
 INPUT = inputParser;
+INPUT.KeepUnmatched = true;
 
-% Default values
-defaultMode   = 'Mu';
+defaultSampling     = 0;
+defaultP_FlucCorr   = 100;
+% defaultDD_FWHM      = 0;
+defaultODD_FWHM     = 0;
 
-expectedModes = {'Mu','Alpha'};
+addOptional(INPUT,'Sampling'    ,defaultSampling);
+addOptional(INPUT,'P_FlucCorr'  ,defaultP_FlucCorr);
+% addOptional(INPUT,'DD_FWHM'     ,defaultDD_FWHM);
+addOptional(INPUT,'ODD_FWHM'    ,defaultODD_FWHM);
 
-% Add optional inputs to inputparser object
+parse(INPUT,GUI_Inputs_C{:});
 
-addParamValue(INPUT,'Mode',defaultMode,...
-                 @(x) any(validatestring(x,expectedModes)));
-           
-parse(INPUT,varargin{:});
+Sampling     = INPUT.Results.Sampling;
+P_FlucCorr   = INPUT.Results.P_FlucCorr;
+% DD_FWHM      = INPUT.Results.DD_FWHM;
+ODD_FWHM     = INPUT.Results.ODD_FWHM;
 
-% Reassign Variable names
-Mode = INPUT.Results.Mode;
-
-switch Mode   
+%% 
+switch TrMode   
     case 'Mu'
        Trans_Moment = SData.Scaled_LocMu; % size [N x 3]
        
@@ -45,9 +54,37 @@ M = size(Trans_Moment,2);
 N         = SData.Nmodes;
 LocFreq   = SData.LocFreq;
 LocAnharm = SData.LocAnharm;
-Beta      = H.Beta;
-OneExH    = H.H;
+Beta      = SData.Beta;
+OneExH    = SData.OneExH;
 
+DiagDisorder    = SData.DiagDisorder;
+
+% check if apply random sampling
+if Sampling
+    DD_std  = DiagDisorder./(2*sqrt(2*log(2)));
+    ODD_std = ODD_FWHM/(2*sqrt(2*log(2)));
+else
+    DD_std  = 0;
+    ODD_std = 0;
+end
+
+%% Diagonal disorder if any
+P_FlucCorr = P_FlucCorr/100; % turn percentage to number within 0~1
+
+Correlation_Dice = rand;
+if Correlation_Dice < P_FlucCorr
+    dF_DD = DD_std.*(randn(1,1).*ones(N,1));
+else 
+    dF_DD = DD_std.*randn(N,1); 
+end
+% LocFreq = LocFreq + dF_DD;
+dF_DD = [0;dF_DD]; % add the zero exciton part
+OneExH = OneExH + bsxfun(@times,eye(N+1),dF_DD);
+
+%% Off diagonal disorder
+dBeta   = ODD_std*randn(N);
+dBeta   = (dBeta + dBeta')./2; % symetrize
+Beta    = Beta + dBeta;
 
 %% Generate Two Exciton block diag part of full Hamiltonianif needed (TwoExOvertoneH & TwoExCombinationH)
 if strcmp(ExMode,'TwoEx')
@@ -231,7 +268,7 @@ VX_01     = [];
 DX_12     = [];
 VX_12     = [];
 
-switch Mode   
+switch TrMode   
     case 'Mu'
         M_Ex_01_N = sqrt(sum(M_Ex_01.^2,2)); % size = [N,1]
        
@@ -245,7 +282,7 @@ switch Mode
 end
 
 if strcmp(ExMode,'TwoEx')
-    switch Mode   
+    switch TrMode   
         case 'Mu'
             X_12 = reshape(M_Ex_12,[],3);
             M_Ex_12_N = sqrt(sum(X_12.^2,2)); % size = [N,1]

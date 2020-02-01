@@ -14,6 +14,8 @@ classdef StructureData < handle
        LocAlpha        % size = [Nmodes,9]
        DiagDisorder    % size = [Nmodes,1]
        OffDiagDisorder % size = [Nmodes,1]
+       OneExH          % size = [Nmodes+1,Nmodes+1], one exciton Hamiltonian
+       Beta            % size = [Nmodes,Nmodes], coupling matrix
        
        hPlotFunc       % function handle of the model specific drawing function 
        GUI_Inputs      % GUI_Inputs that include the figure options. This is necessary for excuting the hPlotFunc
@@ -96,7 +98,7 @@ classdef StructureData < handle
           obj.Scaled_LocAlpha = Value;
       end
       
-      % Othe methods defined as a separated function
+      % Other methods defined as a separated function
       AP         = SD_AtomicProperties(obj)
       obj_T      = SD_Trans(obj,V)
       obj_R      = SD_Rot(obj,R)

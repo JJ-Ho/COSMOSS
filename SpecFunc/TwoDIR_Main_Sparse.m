@@ -69,9 +69,7 @@ P_Sig2D      = INPUT.Results.P_Sig2D;
 PCutOff      = INPUT.Results.PCutOff;
 
 %% Call TwoExcitonH to calculate H,mu and alpha under exciton basis
-H = ExcitonH(Structure,GUI_Inputs);
-
-Mu = MuAlphaGen(Structure,H,'TwoEx','Mode','Mu');
+Mu = MuAlphaGen(Structure,'TwoEx','Mu',GUI_Inputs);
 
 %% Decide what kinds of rod rotation average is and applied rotational 
 % average on Response in molecular frame
@@ -98,7 +96,6 @@ E = EPolar4(P_Sig2D,P_Probe,P_Pump2,P_Pump1);
 %% Generate Feynman pathway for 2DSFG
 SpecType = '2DIR';
 
-Data_2D.H       = H;
 Data_2D.Mu      = Mu;
 Data_2D.PCutOff = PCutOff;
 Data_2D.EJLR    = E*J*R_Avg;

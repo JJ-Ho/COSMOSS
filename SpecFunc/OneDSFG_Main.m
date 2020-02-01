@@ -74,11 +74,8 @@ P_Sig1D      = INPUT.Results.P_Sig1D;
 FreqRange    = INPUT.Results.FreqRange;
 
 %% Call OneExcitonH to calculate H,mu and alpha under exciton basis
-% H = ExcitonH(SData,'ExMode','OneEx','CouplingType',CouplingType,'Beta_NN',Beta_NN);
-H = ExcitonH(Structure,GUI_Inputs);
-
-Mu    = MuAlphaGen(Structure,H,'OneEx','Mode','Mu');
-Alpha = MuAlphaGen(Structure,H,'OneEx','Mode','Alpha');
+Mu    = MuAlphaGen(Structure,'OneEx','Mu',GUI_Inputs);
+Alpha = MuAlphaGen(Structure,'OneEx','Alpha',GUI_Inputs);
 
 Ex_F1   = Mu.Sort_Ex_F1;
 M_Ex_01 = Mu.M_Ex_01';    %=> [3*N]
@@ -129,7 +126,6 @@ OneDSFG.SpecType     = 'SFG';
 OneDSFG.Response1D   = AccuGrid;
 OneDSFG.Res_Int      = AccuGridInt;
 OneDSFG.freq_OneD    = FreqRange;
-OneDSFG.H            = H;
 OneDSFG.Mu           = Mu;
 OneDSFG.Alpha        = Alpha;
 OneDSFG.MolFrame     = ResLF;

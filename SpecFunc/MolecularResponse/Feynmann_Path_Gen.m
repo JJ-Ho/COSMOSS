@@ -18,14 +18,12 @@ function [SpectraGrid,Beta,IntensityGrid] = Feynmann_Path_Gen(SpecType,Pathways,
 % MEM_CutOff = 3e-1; %[GB]
 
 %% Define common variables
-Mu      = Data_2D.Mu;
+F1      = Data_2D.H.Sort_Ex_F1;
+F2      = Data_2D.H.Sort_Ex_F2;
+M01     = Data_2D.Mu.M_Ex_01;
+M01_N   = Data_2D.Mu.M_Ex_01_N;
 PCutOff = Data_2D.PCutOff;
 EJLR    = Data_2D.EJLR;
-
-F1    = Mu.Sort_Ex_F1;
-F2    = Mu.Sort_Ex_F2;
-M01   = Mu.M_Ex_01;
-M01_N = Mu.M_Ex_01_N;
 
 %% Decide Frequency bin size
 F1 = round(F1); % 1cm-1
@@ -54,8 +52,8 @@ switch Pathways
         Ibx = sub2ind([N1,N2],Kb,Kx);
         
         % Define the linearlized  1ex -> 2ex transition dipole matrix 
-        M12 = reshape(Mu.M_Ex_12,[],3);
-        M12_N = Mu.M_Ex_12_N;
+        M12 = reshape(Data_2D.Mu.M_Ex_12,[],3);
+        M12_N = Data_2D.Mu.M_Ex_12_N;
         
     otherwise
         disp(['Pathway type: ',Pathways,' is not correct...'])
@@ -107,8 +105,8 @@ switch SpecType
         
         L01   = M01;
         L01_N = M01_N;
-        L12   = reshape(Mu.M_Ex_12,[],3); % linearlized  1ex -> 2ex transition dipole matrix 
-        L12_N = Mu.M_Ex_12_N;
+        L12   = reshape(Data_2D.Mu.M_Ex_12,[],3); % linearlized  1ex -> 2ex transition dipole matrix 
+        L12_N = Data_2D.Mu.M_Ex_12_N;
         
     otherwise
         disp(['Spectral type: ',SpecType,' is not correct...'])

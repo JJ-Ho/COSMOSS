@@ -74,10 +74,11 @@ P_Sig1D      = INPUT.Results.P_Sig1D;
 FreqRange    = INPUT.Results.FreqRange;
 
 %% Call OneExcitonH to calculate H,mu and alpha under exciton basis
-Mu    = MuAlphaGen(Structure,'OneEx','Mu',GUI_Inputs);
-Alpha = MuAlphaGen(Structure,'OneEx','Alpha',GUI_Inputs);
+H     = H_handler(Structure,GUI_Inputs,'OneEx');
+Mu    = TrMoment(Structure,'OneEx','Mu',H);
+Alpha = TrMoment(Structure,'OneEx','Alpha',H);
 
-Ex_F1   = Mu.Sort_Ex_F1;
+Ex_F1   = H.Sort_Ex_F1;
 M_Ex_01 = Mu.M_Ex_01';    %=> [3*N]
 A_Ex_01 = Alpha.M_Ex_01'; %=> [9*N]
 

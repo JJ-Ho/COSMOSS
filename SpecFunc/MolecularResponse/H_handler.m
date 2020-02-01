@@ -1,65 +1,43 @@
-function Output = MuAlphaGen(SData,ExMode,TrMode,GUI_Inputs)
-%% MuAlphaGen 
-% 
-% This Script generate mu and alpha matrix in local mode basis. According
-% to Jenny's Mathematica code, to generate alpha(Raman tensor) in local
-% mode basis, the transition-slection rule is the same as mu is. 
-% 
-% Since the Raman tensor is symmetric for normal molecule, we can reduce
-% the unique elements from 9 to 6 in GetAmideI.m. As a result, the input of
-% alpha_in_Simulation_frame will be a N_modes * 6 matrix.
-% 
-% Todo: 1. fix [Improve] part
-% 
-% Copyright Jia-Jung Ho, 2013-2020
+function Output= H_handler(SData,Main_GUI_Inputs,ExMode)
+% this function handle the One exciton Hamiltonian in the StrutureData with
+% the following tasks:
+%   1. Diagonal disorder
+%   2. Off-Diagonal disorder
+%   3. Generate Two-Exciton part if needed
+%   4. Diagnalization
 
 %% Inputs parser
 % Turn Output from Read GUI to cell array
-GUI_Inputs_C      = fieldnames(GUI_Inputs);
-GUI_Inputs_C(:,2) = struct2cell(GUI_Inputs);
+GUI_Inputs_C      = fieldnames(Main_GUI_Inputs);
+GUI_Inputs_C(:,2) = struct2cell(Main_GUI_Inputs);
 GUI_Inputs_C      = GUI_Inputs_C';
 
 INPUT = inputParser;
 INPUT.KeepUnmatched = true;
 
 defaultSampling     = 0;
-defaultP_FlucCorr   = 100;
-% defaultDD_FWHM      = 0;
 defaultODD_FWHM     = 0;
+defaultP_FlucCorr   = 100;
 
 addOptional(INPUT,'Sampling'    ,defaultSampling);
-addOptional(INPUT,'P_FlucCorr'  ,defaultP_FlucCorr);
-% addOptional(INPUT,'DD_FWHM'     ,defaultDD_FWHM);
 addOptional(INPUT,'ODD_FWHM'    ,defaultODD_FWHM);
+addOptional(INPUT,'P_FlucCorr'  ,defaultP_FlucCorr);
 
 parse(INPUT,GUI_Inputs_C{:});
 
 Sampling     = INPUT.Results.Sampling;
-P_FlucCorr   = INPUT.Results.P_FlucCorr;
-% DD_FWHM      = INPUT.Results.DD_FWHM;
 ODD_FWHM     = INPUT.Results.ODD_FWHM;
-
-%% 
-switch TrMode   
-    case 'Mu'
-       Trans_Moment = SData.Scaled_LocMu; % size [N x 3]
-       
-    case 'Alpha'  
-       Trans_Moment = SData.Scaled_LocAlpha; % note: RamanV = [N x 9], index: [xx xy xz yx yy yz zx zy zz]
-end
-
-M = size(Trans_Moment,2);
+P_FlucCorr   = INPUT.Results.P_FlucCorr;
 
 %% reassign variable names
-N         = SData.Nmodes;
-LocFreq   = SData.LocFreq;
-LocAnharm = SData.LocAnharm;
-Beta      = SData.Beta;
-OneExH    = SData.OneExH;
+DiagDisorder = SData.DiagDisorder;
+OneExH       = SData.OneExH;
+Beta         = SData.Beta;
+N            = SData.Nmodes;
+LocFreq      = SData.LocFreq;
+LocAnharm    = SData.LocAnharm;
 
-DiagDisorder    = SData.DiagDisorder;
-
-% check if apply random sampling
+%% check if apply random sampling
 if Sampling
     DD_std  = DiagDisorder./(2*sqrt(2*log(2)));
     ODD_std = ODD_FWHM/(2*sqrt(2*log(2)));
@@ -87,6 +65,9 @@ dBeta   = (dBeta + dBeta')./2; % symetrize
 Beta    = Beta + dBeta;
 
 %% Generate Two Exciton block diag part of full Hamiltonianif needed (TwoExOvertoneH & TwoExCombinationH)
+TEDIndexBegin = [];
+TEDIndexEnd   = [];
+
 if strcmp(ExMode,'TwoEx')
     StatesNum = (N+2)*(N+1)/2; 
 
@@ -195,112 +176,10 @@ if strcmp(ExMode,'TwoEx')
     Sort_Ex_V2 = Sort_Ex_V(N+2:end,N+2:end);
 end 
 
-% export
+%% export
 Output.Sort_Ex_F1 = Sort_Ex_F1;
 Output.Sort_Ex_V1 = Sort_Ex_V1;
 Output.Sort_Ex_F2 = Sort_Ex_F2;
 Output.Sort_Ex_V2 = Sort_Ex_V2;
-
-% Zero to One exciton transition 
-M_Lo_01 = Trans_Moment; % size [N x 3 or 9]
-
-%% Two Exciton part in local mode basis
-M_Lo_12 = [];
-
-if strcmp(ExMode,'TwoEx')
-
-    % One exciton to Overtone transition 
-    Trans12_Onsite = zeros(N,N,M);
-
-    for ii=1:N
-        Trans12_Onsite(ii,ii,:) = Trans_Moment(ii,:)*sqrt(2);
-    end
-
-    % Build up the block begin/end list from Two Exciton index
-    TEDIndexBegin = TEDIndexBegin-N;
-    TEDIndexEnd   = TEDIndexEnd-N;
-
-    % One exciton to Combination transition
-    Trans12_Combination = zeros(N,N*(N-1)/2,M);
-    for jj1=1:N-1
-        Temp_Trans12_Combination          = zeros(N,N-jj1,M);
-        Temp_Trans12_Combination(jj1,:,:) = Trans_Moment(jj1+1:end,:);
-
-        % [Improve] Can remove this for loop by work out the exact indexing of 
-        % the diagnoal terms.
-        for kk=1:N-jj1
-            Temp_Trans12_Combination(kk+jj1,kk,:) = Trans_Moment(jj1,:);
-        end
-
-        Trans12_Combination(:,TEDIndexBegin(jj1):TEDIndexEnd(jj1),:) = Temp_Trans12_Combination;
-    end
-
-    M_Lo_12 = [Trans12_Onsite,Trans12_Combination];
-end
-
-%% Change of basis and output
-% 0->1, size = [N x 3 or 9] 
-M_Ex_01    = Sort_Ex_V1' * M_Lo_01;
-
-% 1->2
-M_Ex_12 = [];
-
-if strcmp(ExMode,'TwoEx')
-    M_Ex_12    = zeros(N,N*(N+1)/2,M);
-    
-    for II = 1:M
-        % size = [N x N*(N+1)/2 x 3 or 9] 
-        M_Ex_12(:,:,II) = Sort_Ex_V1' * squeeze(M_Lo_12(:,:,II)) * Sort_Ex_V2; 
-    end
-end
-
-% export
-Output.M_Lo_01 = M_Lo_01;
-Output.M_Ex_01 = M_Ex_01;
-Output.M_Lo_12 = M_Lo_12;
-Output.M_Ex_12 = M_Ex_12;
-
-%% Calculate the norm or eigenvalues of the exciton modes
-M_Ex_01_N = [];
-M_Ex_12_N = [];
-DX_01     = [];
-VX_01     = [];
-DX_12     = [];
-VX_12     = [];
-
-switch TrMode   
-    case 'Mu'
-        M_Ex_01_N = sqrt(sum(M_Ex_01.^2,2)); % size = [N,1]
-       
-    case 'Alpha'  
-        % note: RamanV = [N x 9], index: [xx xy xz yx yy yz zx zy zz]
-        X_01 = reshape(M_Ex_01,[],3,3);
-        [VX_01,DX_01] = eig3(X_01); 
-        %M_Ex_01_N = max(abs(DX_01),[],2); % size = [N,1]
-        M_Ex_01_N = sum(abs(DX_01),2); % size = [N,1], take trace
-        
-end
-
-if strcmp(ExMode,'TwoEx')
-    switch TrMode   
-        case 'Mu'
-            X_12 = reshape(M_Ex_12,[],3);
-            M_Ex_12_N = sqrt(sum(X_12.^2,2)); % size = [N,1]
-            
-        case 'Alpha'
-            X_12 = reshape(M_Ex_12,[],3,3);
-            [VX_12,DX_12] = eig3(X_12);
-            %M_Ex_12_N = max(abs(DX_12),[],2); % size = [N,1]
-            M_Ex_12_N = sum(abs(DX_12),2); % size = [N,1], take trace
-            
-    end
-end
-
-
-% Output
-Output.M_Ex_01_N = M_Ex_01_N; % size = [N,1]
-Output.M_Ex_12_N = M_Ex_12_N; % size = [N,1]
-Output.M_Ex_01_D = DX_01; % size = [N,3]
-Output.M_Ex_01_V = VX_01; % size = [N,3,3]
-Output.M_Ex_12_D = DX_12; % size = [N,3]
-Output.M_Ex_12_V = VX_12; % size = [N,3,3]  
+Output.TEDIndexBegin = TEDIndexBegin;
+Output.TEDIndexEnd   = TEDIndexEnd;

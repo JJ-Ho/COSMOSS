@@ -83,8 +83,9 @@ P_Sig2D      = INPUT.Results.P_Sig2D;
 PCutOff      = INPUT.Results.PCutOff;
 
 %% Call TwoExcitonH to calculate H,mu and alpha under exciton basis
-Mu    = MuAlphaGen(Structure,'TwoEx','Mu',GUI_Inputs);
-Alpha = MuAlphaGen(Structure,'TwoEx','Alpha',GUI_Inputs);
+H     = H_handler(Structure,GUI_Inputs,'TwoEx');
+Mu    = TrMoment(Structure,'TwoEx','Mu',H);
+Alpha = TrMoment(Structure,'TwoEx','Alpha',H);
 
 %% Decide what kinds of rod rotation average is
 % note:sparse version dose not have mirror plane impemented, yet...
@@ -113,14 +114,15 @@ E = EPolar5(P_Sig2D,P_Vis2D,P_Probe,P_Pump2,P_Pump1); % Take [radius]
 %% Generate Feynman pathway for 2DSFG
 SpecType = '2DSFG';
 
+Data_2D.H       = H;
 Data_2D.Mu      = Mu;
 Data_2D.Alpha   = Alpha;
 Data_2D.PCutOff = PCutOff;
 Data_2D.EJLR    = E*J*R_Avg;
 
 % decide the max frequency
-F1  = Mu.Sort_Ex_F1;
-F2  = Mu.Sort_Ex_F2;
+F1  = H.Sort_Ex_F1;
+F2  = H.Sort_Ex_F2;
 F_Max = max(F2) - min(F1);
 SparseMax = ceil(max(GUI_Inputs.F_Max,F_Max));
 

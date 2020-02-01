@@ -49,10 +49,10 @@ parse(INPUT,GUI_Inputs_C{:});
 FreqRange    = INPUT.Results.FreqRange;
 
 %% Main
+H  = H_handler(Structure,GUI_Inputs,'OneEx');
+Mu = TrMoment(Structure,'OneEx','Mu',H);
 
-Mu = MuAlphaGen(Structure,'OneEx','Mu',GUI_Inputs);
-
-Ex_F1   = Mu.Sort_Ex_F1;
+Ex_F1   = H.Sort_Ex_F1;
 M_Ex_01 = Mu.M_Ex_01;
 
 Response = sum(M_Ex_01.^2,2); % E-field of FTIR signal is mu^2 base on feynmann diagram! 

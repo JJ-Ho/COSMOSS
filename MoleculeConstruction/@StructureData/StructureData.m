@@ -12,8 +12,6 @@ classdef StructureData < handle
        LocAnharm       % size = [Nmodes,1]
        LocMu           % size = [Nmodes,3]
        LocAlpha        % size = [Nmodes,9]
-       %DiagDisorder    % size = [Nmodes,1]
-       %OffDiagDisorder % size = [Nmodes,1]
        OneExH          % size = [Nmodes+1,Nmodes+1], one exciton Hamiltonian
        Beta            % size = [Nmodes,Nmodes], coupling matrix
        

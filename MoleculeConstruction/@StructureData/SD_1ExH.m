@@ -36,7 +36,7 @@ Nmodes  = obj_SD.Nmodes;
 LocFreq = obj_SD.LocFreq;
 
 %% Apply Jansen map if needed
-if eq(LocFreqType,2)
+if strcmp(LocFreqType,'Jensen Map')
     [~,dF_Jansen] = Coupling_Jansen(obj_SD);
     LocFreq = LocFreq + dF_Jansen;
 end

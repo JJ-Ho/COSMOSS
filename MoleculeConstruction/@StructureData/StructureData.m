@@ -12,7 +12,6 @@ classdef StructureData < handle
        LocAnharm       % size = [Nmodes,1]
        LocMu           % size = [Nmodes,3]
        LocAlpha        % size = [Nmodes,9]
-       OneExH          % size = [Nmodes+1,Nmodes+1], one exciton Hamiltonian
        Beta            % size = [Nmodes,Nmodes], coupling matrix
        
        hPlotFunc       % function handle of the model specific drawing function 
@@ -23,13 +22,14 @@ classdef StructureData < handle
        Extra           % all the model dependent properties can be saved in here
    end
    
-   properties % Get properties
+   properties (NonCopyable) % Get properties
        % These properties will be calculated when quaried
        Nmodes       % # of local modes
        NAtoms       % # of atoms
        NStucture    % # of structures, this is only require when load PDB file with multiple snapshots
        LocAlphaM    % Raman tensors in Matrix form, use for visual inspection only
        CoM          % Center of Mass, as a reference point of common origin in a coordinate system
+       OneExH       % One exciton Hamiltonian, size = [Nmodes+1,Nmodes+1]
    end
    
    properties % Set Properties
@@ -40,10 +40,10 @@ classdef StructureData < handle
    end
     
    methods % Get methods
-      function Nmodes = get.Nmodes(obj)
+      function Nmodes    = get.Nmodes(obj)
            Nmodes = size(obj.LocFreq,1);
       end
-      function NAtoms = get.NAtoms(obj)
+      function NAtoms    = get.NAtoms(obj)
            NAtoms = size(obj.XYZ,1);
       end
       function NStucture = get.NStucture(obj)
@@ -60,11 +60,22 @@ classdef StructureData < handle
            % | [ Aizx Aizy Aizz ]
            locAlphaM = reshape(obj.LocAlpha,[],3,3);
       end      
-      function CoM = get.CoM(obj)
+      function CoM       = get.CoM(obj)
            AP   = SD_AtomicProperties(obj);
            Mass = AP.Mass;
            CoM  = sum(bsxfun(@times,obj.XYZ,Mass),1)./sum(Mass);
       end 
+      function OneExH    = get.OneExH(obj)
+          LF = obj.LocFreq;
+          B  = obj.Beta;
+          if ~isempty(LF) && ~isempty(B)
+            OneExPart = bsxfun(@times,eye(obj.Nmodes),LF) + B;
+            OneExH = blkdiag(0,OneExPart);
+          else
+            disp('Local mode frequency and/or coupling are missing...')
+            return
+          end
+      end
    end
    
    methods % Set methods
@@ -91,7 +102,7 @@ classdef StructureData < handle
       obj_TN      = SD_TransN(obj,V,N)
       obj_Framed  = SD_SetFrame(obj,Center_Ind,Z_Ind,XZ_Ind)
       Obj_AmideI  = SD_GetAmideI(obj)
-      obj_SD_1ExH = SD_1ExH(obj_SD)
+      obj_1ExBeta = SD_1ExH(obj_SD)
       hF          = SD_Draw(obj_SD,varargin)
    end
 

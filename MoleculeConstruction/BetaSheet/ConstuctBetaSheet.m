@@ -51,7 +51,14 @@ defaultTrans_Y    = 0;
 defaultTrans_Z    = 0;
 defaultTwist_X    = 0;
 defaultTwist_Y    = 0;
-defaultTwist_Z    = 0; 
+defaultTwist_Z    = 0;
+defaultPhi_D      = 0;
+defaultPsi_D      = 0;
+defaultTheta_D    = 0;
+defaultNLFreq     = 1650;
+defaultAnharm     = 10;
+defaultLFreq      = 1630;
+defaultL_Index    = 'None';
 
 % add Optional inputs / Parameters
 addOptional(INPUT,'SheetType', defaultSheetType );
@@ -63,7 +70,13 @@ addOptional(INPUT,'Trans_Z'  , defaultTrans_Z   );
 addOptional(INPUT,'Twist_X'  , defaultTwist_X   );
 addOptional(INPUT,'Twist_Y'  , defaultTwist_Y   );
 addOptional(INPUT,'Twist_Z'  , defaultTwist_Z   );
-
+addOptional(INPUT,'Phi_D'    , defaultPhi_D     );
+addOptional(INPUT,'Psi_D'    , defaultPsi_D     );
+addOptional(INPUT,'Theta_D'  , defaultTheta_D   );
+addOptional(INPUT,'NLFreq'   , defaultNLFreq    );
+addOptional(INPUT,'Anharm'   , defaultAnharm    );
+addOptional(INPUT,'LFreq'    , defaultLFreq     );
+addOptional(INPUT,'L_Index'  , defaultL_Index   );
 
 parse(INPUT,GUI_Inputs_C{:});
 
@@ -77,6 +90,13 @@ Trans_Z   = INPUT.Results.Trans_Z;
 Twist_X   = INPUT.Results.Twist_X;
 Twist_Y   = INPUT.Results.Twist_Y;
 Twist_Z   = INPUT.Results.Twist_Z;
+Phi_D     = INPUT.Results.Phi_D;
+Psi_D     = INPUT.Results.Psi_D;
+Theta_D   = INPUT.Results.Theta_D;
+NLFreq    = INPUT.Results.NLFreq;
+Anharm    = INPUT.Results.Anharm;
+LFreq     = INPUT.Results.LFreq;
+L_Index   = INPUT.Results.L_Index;
 
 %% Post process of inputs
 TransV = [Trans_X,Trans_Y,Trans_Z];
@@ -204,7 +224,7 @@ else
     SheetTypeString = 'PB';
 end
 
-TwistV = TwistV/180*pi; % unit raidus
+TwistV = TwistV./180.*pi; % unit raidus
 for j = 2:N_Strand
     
     if APB_Flag
@@ -247,20 +267,45 @@ Atoms_Array = 1:Num_Atoms;
 Ind_H = Atoms_Array(strcmp(AtomName,'H'));
 Ind_O = Ind_H -1;
 
+%% Initiate a StrutureData class container to fill in information
+S_BSheet = StructureData;
+S_BSheet.XYZ        = XYZ;
+S_BSheet.AtomName   = AtomName;
+
+% Find all the amide modes and their default values
+S_BSheet = SD_GetAmideI(S_BSheet);
+
+%% Rotate the molecule
+RotV_D   = [Phi_D,Psi_D,Theta_D];
+RotV     = RotV_D./180.*pi;
+R        = R1_ZYZ_0(RotV(1),RotV(2),RotV(3));
+S_BSheet = SD_Rot(S_BSheet,R);
+
 %% Collecting Extra info
+Extra = S_BSheet.Extra;
 Extra.N_Residue         = N_Residue;
 Extra.N_Strand          = N_Strand;
 Extra.N_Mode_per_Starnd = N_Residue-1;
+Extra.Ind_H             = Ind_H;
+Extra.Ind_O             = Ind_O;
+Extra.TransV            = TransV;
+Extra.TwistV            = TwistV;
+Extra.RotV_D            = RotV_D;
+S_BSheet.Extra = Extra;
 
-Extra.Ind_H     = Ind_H;
-Extra.Ind_O     = Ind_O;
+%% Modify Mode frequency, anharmonicity, and Labling according to the GUI inputs
+LocFreq   = ones(S_BSheet.Nmodes,1).*NLFreq;
+LocAnharm = ones(S_BSheet.Nmodes,1).*Anharm;
 
-Extra.TransV    = TransV;
-Extra.TwistV    = TwistV;
+if ~ischar(L_Index)
+    LocFreq(L_Index) = LFreq;
+end
 
-%% Formating output coordinate
-S_BSheet = StructureData;
-S_BSheet.XYZ       = XYZ;
-S_BSheet.AtomName  = AtomName;
-S_BSheet.FilesName = [SheetTypeString,'-R',num2str(N_Residue),'S',num2str(N_Strand)];
-S_BSheet.Extra     = Extra;
+S_BSheet.LocAnharm  = LocAnharm;
+S_BSheet.LocFreq    = LocFreq;
+
+%% Formating other outputs 
+S_BSheet.FilesName  = [SheetTypeString,'-R',num2str(N_Residue),'S',num2str(N_Strand)];
+S_BSheet.GUI_Inputs = GUI_Inputs;
+S_BSheet.hPlotFunc  = @Plot_Betasheet_AmideI; % Add figure drawing function and GUI inputs
+S_BSheet            = SD_1ExH(S_BSheet); % Calculate One Exciton Hamiltoian

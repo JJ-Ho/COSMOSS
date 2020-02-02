@@ -43,8 +43,6 @@ defaultNLFreq          = 1716;
 defaultAnharm          = 20;
 defaultLFreq           = 1604;
 defaultL_Index         = 'None';
-defaultDiagDisorder    = 0;
-defaultOffDiagDisorder = 0;
 
 % add Optional inputs / Parameters
 addOptional(INPUT,'Phi_D1'         ,defaultPhi_D1         );
@@ -58,8 +56,6 @@ addOptional(INPUT,'NLFreq'         ,defaultNLFreq         );
 addOptional(INPUT,'Anharm'         ,defaultAnharm         );
 addOptional(INPUT,'LFreq'          ,defaultLFreq          );
 addOptional(INPUT,'L_Index'        ,defaultL_Index        );
-addOptional(INPUT,'DiagDisorder'   ,defaultDiagDisorder   );
-addOptional(INPUT,'OffDiagDisorder',defaultOffDiagDisorder);
 
 parse(INPUT,GUI_Inputs_C{:});
 
@@ -75,8 +71,6 @@ NLFreq          = INPUT.Results.NLFreq;
 Anharm          = INPUT.Results.Anharm;
 LFreq           = INPUT.Results.LFreq;
 L_Index         = INPUT.Results.L_Index;
-DiagDisorder    = INPUT.Results.DiagDisorder   ;
-OffDiagDisorder = INPUT.Results.OffDiagDisorder;
 
 %% Settings
 
@@ -172,11 +166,9 @@ for ii=1:Num_Modes
     alpha_Sim(ii,:,:) = R_Mol2Sim * alpha_Mol' * R_Mol2Sim';
 end    
 
-%% Define Mode frequency and anharmonicity
+%% Define Mode frequency, anharmonicity, and Labling
 LocFreq         = ones(Num_Modes,1).*NLFreq;
 LocAnharm       = ones(Num_Modes,1).*Anharm;
-DiagDisorder    = ones(Num_Modes,1).*DiagDisorder;
-OffDiagDisorder = ones(Num_Modes,1).*OffDiagDisorder;
 
 if ~ischar(L_Index)
     LocFreq(L_Index) = LFreq;

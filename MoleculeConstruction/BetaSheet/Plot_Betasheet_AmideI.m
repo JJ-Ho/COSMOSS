@@ -159,7 +159,7 @@ axis(hAx,'image');
 rotate3d(hAx,'on')
 grid(hAx,'on')
 box(hAx,'on')
-view(hAx,[0,0])
+view(hAx,[40,10])
 hAx.XLabel.String = 'X';
 hAx.YLabel.String = 'Y';
 hAx.ZLabel.String = 'Z';
@@ -170,6 +170,6 @@ FilesName     = SData.FilesName;
 FilesName_Reg = regexprep(FilesName,'\_','\\_');
 TransV_String = sprintf('T: %1.2f, %1.2f, %1.2f; ' ,Extra.TransV(1),Extra.TransV(2),Extra.TransV(3));
 TwistV_String = sprintf('Tw: %3.0f, %3.0f, %3.0f; ',Extra.TwistV(1),Extra.TwistV(2),Extra.TwistV(3));
-RotV_String   = sprintf('R: %3.0f, %3.0f, %3.0f; ' ,Extra.RotV(1),Extra.RotV(2),Extra.RotV(3));
+RotV_String   = sprintf('R: %3.0f, %3.0f, %3.0f; ' ,Extra.RotV_D(1),Extra.RotV_D(2),Extra.RotV_D(3));
 Title_String  = {[FilesName_Reg, ', ', TransV_String], [TwistV_String, RotV_String]};
 title(hAx,Title_String,'FontSize',14); 

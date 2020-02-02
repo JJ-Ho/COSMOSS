@@ -37,3 +37,6 @@ if ~isempty(obj.LocCenter)
     LocCenter_TN_3D  = bsxfun(@plus,repmat(obj.LocCenter,1,1,N),V_T);
     obj_TN.LocCenter = reshape(permute(LocCenter_TN_3D,[1,3,2]),[],3);
 end
+
+%% Generate Hamiltonian after producing translational copie
+obj_TN = SD_1ExH(obj_TN);

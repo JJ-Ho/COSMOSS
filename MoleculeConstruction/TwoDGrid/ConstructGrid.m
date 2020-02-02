@@ -20,8 +20,6 @@ defaultNLFreq          = 1720;
 defaultAnharm          = 20;
 defaultLFreq           = 1700;
 defaultL_Index         = 'None';
-defaultDiagDisorder    = 0;
-defaultOffDiagDisorder = 0;
 
 % add Optional inputs / Parameters
 addOptional(INPUT,'Delta_Phi'      ,defaultDelta_Phi      );
@@ -35,8 +33,6 @@ addOptional(INPUT,'NLFreq'         ,defaultNLFreq         );
 addOptional(INPUT,'Anharm'         ,defaultAnharm         );
 addOptional(INPUT,'LFreq'          ,defaultLFreq          );
 addOptional(INPUT,'L_Index'        ,defaultL_Index        );
-addOptional(INPUT,'DiagDisorder'   ,defaultDiagDisorder   );
-addOptional(INPUT,'OffDiagDisorder',defaultOffDiagDisorder);
 
 parse(INPUT,GUI_Inputs_C{:});
 
@@ -49,18 +45,17 @@ NLFreq          = INPUT.Results.NLFreq         ;
 Anharm          = INPUT.Results.Anharm         ;
 LFreq           = INPUT.Results.LFreq          ;
 L_Index         = INPUT.Results.L_Index        ;
-DiagDisorder    = INPUT.Results.DiagDisorder   ;
-OffDiagDisorder = INPUT.Results.OffDiagDisorder;
 
 %% Extend the monomer along the two directions
+% Note the Hamiltonian is also expended during the translational copy
+% process. Also note, in this case all the molecular coupling use the same
+% model specified on the GUI
 S_V1N = SD_TransN(S_Monomer,Vec_1,N_1);
 S_V1N_V2M = SD_TransN(S_V1N,Vec_2,N_2);
 
 %% Assign Labeled frequency
-S_V1N_V2M.LocFreq         = ones(S_V1N_V2M.Nmodes,1).*NLFreq;
-S_V1N_V2M.LocAnharm       = ones(S_V1N_V2M.Nmodes,1).*Anharm;
-S_V1N_V2M.DiagDisorder    = ones(S_V1N_V2M.Nmodes,1).*DiagDisorder;
-S_V1N_V2M.OffDiagDisorder = ones(S_V1N_V2M.Nmodes,1).*OffDiagDisorder;
+S_V1N_V2M.LocFreq   = ones(S_V1N_V2M.Nmodes,1).*NLFreq;
+S_V1N_V2M.LocAnharm = ones(S_V1N_V2M.Nmodes,1).*Anharm;
 
 if ~ischar(L_Index)
     S_V1N_V2M.LocFreq(L_Index) = LFreq;
@@ -77,3 +72,4 @@ Extra.Vec_2  = Vec_2;
 
 S_V1N_V2M.Extra    = Extra;
 S_V1N_V2M.Children = S_Monomer;
+

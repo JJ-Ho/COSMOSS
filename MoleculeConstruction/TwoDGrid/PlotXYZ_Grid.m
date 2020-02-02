@@ -72,7 +72,8 @@ hold(hAx,'on')
         if eq(N_Vec1*N_Vec2,1)
             Atom_Ind_Str = strsplit(num2str(1:Atom_Num));
             XYZ_Atom_Ind = XYZ + 0.1;
-            text(hAx,XYZ_Atom_Ind(:,1),XYZ_Atom_Ind(:,2),XYZ_Atom_Ind(:,3),Atom_Ind_Str)
+            text(hAx,XYZ_Atom_Ind(:,1),XYZ_Atom_Ind(:,2),XYZ_Atom_Ind(:,3),Atom_Ind_Str,...
+                'Color','red','FontSize',14)
         else
             disp('Atom Index only work for single molecule now...')
         end
@@ -94,7 +95,7 @@ hold(hAx,'on')
         plot3(hAx,XYZ(O_Ind,1),XYZ(O_Ind,2),XYZ(O_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',10,'MarkerEdgeColor','none')
         plot3(hAx,XYZ(N_Ind,1),XYZ(N_Ind,2),XYZ(N_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,1],'MarkerSize',10,'MarkerEdgeColor','none')        
         plot3(hAx,XYZ(S_Ind,1),XYZ(S_Ind,2),XYZ(S_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,1,0],'MarkerSize',10,'MarkerEdgeColor','none')        
-        plot3(hAx,XYZ(H_Ind,1),XYZ(H_Ind,2),XYZ(H_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,1,1],'MarkerSize',5,'MarkerEdgeColor','none')        
+        plot3(hAx,XYZ(H_Ind,1),XYZ(H_Ind,2),XYZ(H_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,1,1],'MarkerSize',5,'MarkerEdgeColor',[0,0,0])        
 
     end
     

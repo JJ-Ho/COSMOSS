@@ -5,11 +5,6 @@ function Output = TrMoment(SData,ExMode,TrMode,H)
 % both local mode and exciton mode basis. According to Jenny's Mathematica 
 % code, to generate alpha in local mode basis, the transition-slection rule 
 % is the same as mu. 
-% 
-% Since the Raman tensor is symmetric for normal molecule, we can reduce
-% the unique elements from 9 to 6 in GetAmideI.m. As a result, the input of
-% alpha_in_Simulation_frame will be a N_modes * 6 matrix.
-% 
 % Copyright Jia-Jung Ho, 2013-2020
 
 

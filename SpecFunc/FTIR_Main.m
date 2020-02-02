@@ -66,6 +66,7 @@ Output.SpecType     = 'FTIR';
 Output.Response1D   = AccuGrid;
 Output.freq_OneD    = FreqRange;
 Output.Mu           = Mu;
+Output.H            = H;
 
 
 

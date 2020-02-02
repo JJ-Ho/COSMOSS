@@ -37,8 +37,8 @@ Color2 = [0,0,1]; % Two Exciton modes
 Y_Blank = 5; % for Y axis range
 
 %% One Exciton
-N1 = H.Nmodes;
 F1 = H.Sort_Ex_F1;
+N1 = length(F1);
 M1 = TV.M_Ex_01;
 switch size(M1,2)
     case 3

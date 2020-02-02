@@ -128,6 +128,7 @@ OneDSFG.Response1D   = AccuGrid;
 OneDSFG.Res_Int      = AccuGridInt;
 OneDSFG.freq_OneD    = FreqRange;
 OneDSFG.Mu           = Mu;
+OneDSFG.H           = H;
 OneDSFG.Alpha        = Alpha;
 OneDSFG.MolFrame     = ResLF;
 OneDSFG.R_Avg        = R_Avg;

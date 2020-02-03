@@ -90,7 +90,7 @@ obj_comb2.Children        = Children;
 obj_comb2.Scaled_LocMu    = Scaled_LocMu;    % reassign to replace the automatically generated on from "obj_comb2.LocMu"
 obj_comb2.Scaled_LocAlpha = Scaled_LocAlpha; % reassign to replace the automatically generated on from "obj_comb2.LocAlpha"
 
-%% Deal with the Couplings
+%% Deal with the Coupling between the two strutureData objects
 % Note the two coupling models can be different
 Beta_1 = obj_SD1.Beta;
 Beta_2 = obj_SD2.Beta;

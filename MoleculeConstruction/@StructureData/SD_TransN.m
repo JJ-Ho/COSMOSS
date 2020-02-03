@@ -14,11 +14,8 @@ if ~isequal(size(V),[3,1])
     return
 end
 
-%% Assign properties that is not affected by either translation and duplication 
-obj_TN = StructureData;
-obj_TN.FilesName  = obj.FilesName;
-obj_TN.hPlotFunc  = obj.hPlotFunc;
-obj_TN.GUI_Inputs = obj.GUI_Inputs;
+%% Copy properties from input
+obj_TN = SD_Copy(obj);
 
 %% Duplicate propeties that are not affected by translational movement
 obj_TN.AtomName  = repmat(obj.AtomName ,N,1);
@@ -39,4 +36,8 @@ if ~isempty(obj.LocCenter)
 end
 
 %% Generate Hamiltonian after producing translational copie
-obj_TN = SD_1ExH(obj_TN);
+% note: its possible that the L_Index is outside the range of current mode
+% number since SD_TransN method can be used during the strutural model
+% construction, wher the struture model is not yet complete. As a result, I
+% decide not to generate Hamiltonian information for this method.
+% obj_TN = SD_1ExH(obj_TN);

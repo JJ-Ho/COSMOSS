@@ -1,35 +1,31 @@
-function S_G09_MF = ReadG09Input(FName)
-% 
-% Given a input file name "FName", this script can parse XYZ, mu and alpha
-% variables and generate parsed input structure "P"
-% 
+function S_G09_MF = Load_G09(GUI_Inputs)
+% The function read the formattetd G09 output text file then generate a
+% StructureData object with following information:
+% S_G09.XYZ   
+% S_G09.AtomName  
+% S_G09.LocCenter
+% S_G09.LocMu
+% S_G09.LocAlpha
+% S_G09_MF.GUI_Inputs
+% S_G09_MF.hPlotFunc 
+% S_G09_MF.FilesName 
+% S_G09_MF.Extra 
+% S_G09_MF.LocFreq   
+% S_G09_MF.LocAnharm 
 
-% ------- Version log ----------------------------------------------------
-% 
-% V2.1  161103  Move out the rotation action to XYZ, TDV, Raman; only read 
-%               and report the molecular frame axis definition 
-% 
-% V2.0  161103  Move molecule frame ratation transform out of ReadG09Input 
-% 
-% V1.1  150426  Copy from 2DSFG_Ester project
-%               Update debug part
-% 
-% V1.0  140903  Modified from ReadDNAInput v1.6
-%               Add Conn(3,13) = 1 for connection S-C bond
-% 
-% ------------------------------------------------------------------------ 
-% Copyright Jia-Jung Ho, 2013-2016
+% Copyright Jia-Jung Ho, 2013-2020
 
-% ----[Debug] ------------------------------
-% clear all
-% close all
-% clc
-% FName = '131029_MBA.txt';
-% ------------------------------------------
+%% Read G09 formatted inputs
+PWD = pwd;
+G09_default_folder = [PWD, '/StructureFiles/G09/'];
+
+[FilesName,PathName,~] = uigetfile({'*.txt','Formatted G09 output'; ...
+                                    '*,*','All Files'},...
+                                    'Select inputs',G09_default_folder);
 
 
-%% Start to read inputs
-fid = fopen(FName);
+G09_Path = [PathName FilesName];                             
+fid = fopen(G09_Path);
 
 % Predefined Variables
 Atom_Num = cell2mat(textscan(fid,'[Atom_Num] %f',1,'commentStyle','%'));
@@ -85,6 +81,8 @@ end
 
 fclose(fid);
 
+disp([FilesName,' loaded...'])
+
 %% Formating raw data
 Atom_Name = Atom{1}; % Atom symbel
 XYZ       = Atom{2};  % Unrotated molecule xyz. Already a array since 'CollectOutput'
@@ -114,16 +112,18 @@ S_G09 = StructureData;
 S_G09.XYZ       = XYZ;
 S_G09.AtomName  = Atom_Name;
 S_G09.LocCenter = S_G09.CoM; % put the mode at center of mass
-S_G09.LocFreq   = Freq.Fundamental;
-S_G09.LocAnharm = 2*Freq.Fundamental - Freq.Overtone;
 S_G09.LocMu     = TDV;
 S_G09.LocAlpha  = Raman_Vector; % raman tensor vector form [N x 9]
-S_G09.FilesName = FName;
 
 %% Set the Assigned center to zero and rotated the molecule with [Orientation] info
 Z_Ind  = [ Z_i_Ind, Z_f_Ind];
 XZ_Ind = [XZ_i_Ind,XZ_f_Ind];
 S_G09_MF = SD_SetFrame(S_G09,Center_Ind,Z_Ind,XZ_Ind);
+
+%% Set model dependent data
+S_G09_MF.GUI_Inputs = GUI_Inputs;
+S_G09_MF.hPlotFunc  = @PlotXYZ_Grid;
+S_G09_MF.FilesName  = FilesName;
 
 %% Extra infomation
 Int_Harm.IR     = Int_Harm.IR{2}   ;
@@ -145,3 +145,6 @@ Extra.Mol_Frame  = Mol_Frame;
 
 S_G09_MF.Extra   = Extra;
 
+%% Update the local mode frequency and anharmonicity from G09 output 
+S_G09_MF.LocFreq   = Freq.Fundamental;
+S_G09_MF.LocAnharm = 2*Freq.Fundamental - Freq.Overtone;

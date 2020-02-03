@@ -108,6 +108,7 @@ hold(hAx,'on')
         Conn = Connectivity(Atom_Side,XYZ_Side);
         gplot3(Conn,XYZ_Side,'Parent',hAx);
     end
+    
     %% Draw atoms
     if Plot_Atoms
         % Plot the mode center label

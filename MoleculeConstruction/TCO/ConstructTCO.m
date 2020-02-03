@@ -1,23 +1,7 @@
-function TCO = GetAcid(GUI_Inputs)
-%% GetAmideI
-
-% ------- Version log -----------------------------------------------------
-% 
-% Ver. 1.4  140922  Add input parser; Integrate the rotation/
-%                   translation part from CTCO_1.m back to GetAcid.m 
-%                   Delete handles as input
-% 
-% Ver. 1.3  140723  Add D atom into structure
-% 
-% Ver. 1.2  140717  Add local mode freq and anharm GUI read in 
-% 
-% Ver. 1.1  140619  Archive PDB file readin section ans substitude it with
-%                   dimer construction function.
-% 
-% Ver. 1.0  140618  Modify from GetAmideI.m 
-% 
-% ------------------------------------------------------------------------
-% Copyright Jia-Jung Ho, 2014
+function TCO = ConstructTCO(GUI_Inputs)
+% This script construct a Two Coupled Oscillator model using two cabocilic 
+% acid molecules. The molecular information was calculated by G09.
+% Copyright Jia-Jung Ho, 2014-2020
 
 %% Debug input part
 % clear all
@@ -39,6 +23,9 @@ defaultPhi_D2          = 0;
 defaultPsi_D2          = 0;
 defaultTheta_D2        = 0;
 defaultDisplacement    = [0,0,5];
+defaultPhi             = 0;
+defaultPsi             = 0;
+defaultTheta           = 0;
 defaultNLFreq          = 1716;
 defaultAnharm          = 20;
 defaultLFreq           = 1604;
@@ -52,6 +39,9 @@ addOptional(INPUT,'Phi_D2'         ,defaultPhi_D2         );
 addOptional(INPUT,'Psi_D2'         ,defaultPsi_D2         );
 addOptional(INPUT,'Theta_D2'       ,defaultTheta_D2       );
 addOptional(INPUT,'Displacement'   ,defaultDisplacement   );
+addOptional(INPUT,'Phi'            ,defaultPhi            );
+addOptional(INPUT,'Psi'            ,defaultPsi            );
+addOptional(INPUT,'Theta'          ,defaultTheta          );
 addOptional(INPUT,'NLFreq'         ,defaultNLFreq         );
 addOptional(INPUT,'Anharm'         ,defaultAnharm         );
 addOptional(INPUT,'LFreq'          ,defaultLFreq          );
@@ -67,13 +57,15 @@ Phi_D2          = INPUT.Results.Phi_D2;
 Psi_D2          = INPUT.Results.Psi_D2;
 Theta_D2        = INPUT.Results.Theta_D2;
 Displacement    = INPUT.Results.Displacement;
+Phi             = INPUT.Results.Phi;
+Psi             = INPUT.Results.Psi;
+Theta           = INPUT.Results.Theta;
 NLFreq          = INPUT.Results.NLFreq;
 Anharm          = INPUT.Results.Anharm;
 LFreq           = INPUT.Results.LFreq;
 L_Index         = INPUT.Results.L_Index;
 
-%% Settings
-
+%% Monomer Settings
 Num_Modes = 2;
 
 % Monomer XYZ, C, =O, -O, D
@@ -85,7 +77,7 @@ XYZ_1 = [0.000,   0.000,   0.000;
 
 AtomName = {'C','O','O','H'};             
              
-% Rotate the first chromophore
+%% Rotate the first chromophore
 % Orientation = Orientation/180*pi; % turn to radius unit
 Phi_R1   = Phi_D1/180*pi;
 Psi_R1   = Psi_D1/180*pi;
@@ -94,7 +86,7 @@ Theta_R1 = Theta_D1/180*pi;
 Rot_Mat1 = R1_ZYZ_0(Phi_R1,Psi_R1,Theta_R1);
 XYZ_1_Rot = (Rot_Mat1*XYZ_1')';
 
-%% Re-orient the second Acid 
+%% Orient the second Acid 
 % XYZ_coor = CTCO_1(handles,XYZ_1);
 
 XYZ_2 = XYZ_1;
@@ -166,16 +158,7 @@ for ii=1:Num_Modes
     alpha_Sim(ii,:,:) = R_Mol2Sim * alpha_Mol' * R_Mol2Sim';
 end    
 
-%% Define Mode frequency, anharmonicity, and Labling
-LocFreq         = ones(Num_Modes,1).*NLFreq;
-LocAnharm       = ones(Num_Modes,1).*Anharm;
-
-if ~ischar(L_Index)
-    LocFreq(L_Index) = LFreq;
-end
-
-%% Rotate the whole system 
-% take vectorize Alpha
+%% Vectorize Alpha
 % alpha_Sim = [N x 3 x3 ]
 % for a signle mode, the alpha_Sim: 
 % [ XX, XY, XZ ]
@@ -188,7 +171,15 @@ end
 % symmetric, I am being exta caucious here to make the indexing right.
 alpha = reshape(permute(alpha_Sim,[1,3,2]),[Num_Modes,9]);
 
-%% Output Structure
+%% Define Mode frequency, anharmonicity, and Labling
+LocFreq         = ones(Num_Modes,1).*NLFreq;
+LocAnharm       = ones(Num_Modes,1).*Anharm;
+
+if ~ischar(L_Index)
+    LocFreq(L_Index) = LFreq;
+end
+
+%% Constructe the Structure Data
 TCO = StructureData;
 TCO.XYZ             = XYZ;
 TCO.AtomName        = AtomName;
@@ -200,5 +191,22 @@ TCO.LocAlpha        = alpha; % raman tensor vector form [N x 9]
 TCO.FilesName       = 'Acid Dimer';
 TCO.GUI_Inputs      = GUI_Inputs;
 
-TCO = SD_1ExH(TCO); % Calculate One Exciton Hamiltoian
+%% Post process of the dimer
+% Rotate the molecule
+Phi_r   = Phi/180*pi;
+Psi_r   = Psi/180*pi;
+Theta_r = Theta/180*pi;
+R1      = R1_ZYZ_0(Phi_r,Psi_r,Theta_r);
+TCO     = SD_Rot(TCO,R1);
+            
+% Move the center of the two Carbon atoms to the origin (0,0,0)
+CV  = mean(TCO.XYZ([1,5],:));
+TCO = SD_Trans(TCO,-CV);
+
+% Calculate One Exciton Hamiltoian
+TCO = SD_1ExH(TCO); 
+
+% Add figure drawing function and GUI inputs
+TCO.hPlotFunc  = @PlotXYZfiles_TCO;
+TCO.GUI_Inputs = GUI_Inputs;
 

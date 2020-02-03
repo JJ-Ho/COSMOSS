@@ -17,11 +17,9 @@ end
 obj_T = SD_Copy(obj_SD);
 
 %% Apply translation to relevent properties
-XYZ_T     = bsxfun(@plus,obj_SD.XYZ,V);
-obj_T.XYZ = XYZ_T;
+obj_T.XYZ = bsxfun(@plus,obj_SD.XYZ,V);
 
 % check if the center location of modes is assigned
 if ~isempty(obj_SD.LocCenter)
-    LocCenter_T = bsxfun(@plus,obj_SD.LocCenter,V);
-    obj_T.LocCenter = LocCenter_T;
+    obj_T.LocCenter = bsxfun(@plus,obj_SD.LocCenter,V);
 end

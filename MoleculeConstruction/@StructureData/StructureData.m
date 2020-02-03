@@ -34,7 +34,7 @@ classdef StructureData < handle
    
    properties % Set Properties
        % These properties will be automatically update when the dependent
-       % peoperty is assigned. But is is free to be change later.
+       % peoperty is assigned. But they are free to be change later.
        Scaled_LocMu    % for comb2 concentration scaling that only applys on the MuAlphaGen
        Scaled_LocAlpha % for comb2 concentration scaling that only applys on the MuAlphaGen
    end
@@ -95,7 +95,7 @@ classdef StructureData < handle
       AP          = SD_AtomicProperties(obj)
       obj_T       = SD_Trans(obj,V)
       obj_R       = SD_Rot(obj,R)
-      obj_comb2   = SD_Comb2(obj1,obj2)
+      obj_comb2   = SD_Comb2(obj1,obj2,CouplingType,Beta_NN)
       Dihedral    = SD_PeptideDihedral(obj)
       obj_S       = SD_ScaleTransitions(obj,Scaling)
       obj_New     = SD_Copy(obj)

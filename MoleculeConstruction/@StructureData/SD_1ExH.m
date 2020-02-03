@@ -1,7 +1,9 @@
 function obj_1ExH = SD_1ExH(obj_SD)
 %% OneExcitonH generation method of StructureData class
 %  
-% Given StructureData, this script generate 1 Exciton Hamiltonian
+% Given StructureData, this script deal with both the diagonal (LocFreq)
+% and off-diagonal (Beta) elements of a one Exciton Hamiltonian using the
+% GUI_Inputs.
 % Copyright Jia-Jung Ho, 2013-2020
 
 %% GUI Inputs parser
@@ -30,13 +32,15 @@ LocFreqType  = INPUT.Results.LocFreqType;
 CouplingType = INPUT.Results.CouplingType;
 Beta_NN      = INPUT.Results.Beta_NN;
 
-%% Apply Jansen map if needed
+%% Modify diagonal elements (LocFreq)
 LocFreq = obj_SD.LocFreq;
+% Apply Jansen map if needed
 if strcmp(LocFreqType,'Jensen Map')
     [~,dF_Jansen] = Coupling_Jansen(obj_SD);
     LocFreq = LocFreq + dF_Jansen;
 end
 
+%% Generate Off-Diagonal Elements (Beta)
 Beta = Coupling(obj_SD,CouplingType,Beta_NN); % Coupling
 
 %% Output Variables

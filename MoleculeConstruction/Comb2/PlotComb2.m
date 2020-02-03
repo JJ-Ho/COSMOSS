@@ -11,7 +11,7 @@ end
 N_S = length(Structure.Children);
 for i = 1:N_S
     S = Structure.Children(i);    
-    S.Draw(hAx);
+    S.SD_Draw(hAx);
 end
 
 %% figure options

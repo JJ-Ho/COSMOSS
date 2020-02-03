@@ -49,9 +49,8 @@ parse(INPUT,GUI_Inputs_C{:});
 FreqRange    = INPUT.Results.FreqRange;
 
 %% Main
-H = ExcitonH(Structure,GUI_Inputs,'OneEx');
-
-Mu = MuAlphaGen(Structure,H,'Mode','Mu');
+H  = H_handler(Structure,GUI_Inputs,'OneEx');
+Mu = TrMoment(Structure,'OneEx','Mu',H);
 
 Ex_F1   = H.Sort_Ex_F1;
 M_Ex_01 = Mu.M_Ex_01;
@@ -66,8 +65,8 @@ Output.FilesName    = Structure.FilesName;
 Output.SpecType     = 'FTIR';
 Output.Response1D   = AccuGrid;
 Output.freq_OneD    = FreqRange;
-Output.H            = H;
 Output.Mu           = Mu;
+Output.H            = H;
 
 
 

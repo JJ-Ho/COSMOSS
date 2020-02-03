@@ -15,14 +15,18 @@ defaultPlot_Axis      = 1;
 defaultPlot_Lattice   = 0;
 defaultPlot_AtomIndex = 0;
 defaultMF_Center      = 1;
+defaultPlot_Label     = 0;
+defaultL_Index        = [];
 
 % Add optional inputs to inputparser object
 addOptional(INPUT,'Plot_Atoms'     ,defaultPlot_Atoms);
 addOptional(INPUT,'Plot_Bonds'     ,defaultPlot_Bonds);
 addOptional(INPUT,'Plot_Axis'      ,defaultPlot_Axis);
 addOptional(INPUT,'Plot_Lattice'   ,defaultPlot_Lattice);
-addOptional(INPUT,'Plot_AtomIndex',defaultPlot_AtomIndex);
+addOptional(INPUT,'Plot_AtomIndex' ,defaultPlot_AtomIndex);
 addOptional(INPUT,'MF_Center'      ,defaultMF_Center);
+addOptional(INPUT,'Plot_Label'     ,defaultPlot_Label);
+addOptional(INPUT,'L_Index'        ,defaultL_Index);
 
 parse(INPUT,GUI_Inputs_C{:});
 
@@ -32,6 +36,8 @@ Plot_Axis      = INPUT.Results.Plot_Axis;
 Plot_Lattice   = INPUT.Results.Plot_Lattice;
 Plot_AtomIndex = INPUT.Results.Plot_AtomIndex;
 MF_Center      = INPUT.Results.MF_Center;
+Plot_Label     = INPUT.Results.Plot_Label;
+L_Index        = INPUT.Results.L_Index;
 
 %% Rotate the molecule to Lab frame
 XYZ      = SData.XYZ;
@@ -72,7 +78,8 @@ hold(hAx,'on')
         if eq(N_Vec1*N_Vec2,1)
             Atom_Ind_Str = strsplit(num2str(1:Atom_Num));
             XYZ_Atom_Ind = XYZ + 0.1;
-            text(hAx,XYZ_Atom_Ind(:,1),XYZ_Atom_Ind(:,2),XYZ_Atom_Ind(:,3),Atom_Ind_Str)
+            text(hAx,XYZ_Atom_Ind(:,1),XYZ_Atom_Ind(:,2),XYZ_Atom_Ind(:,3),Atom_Ind_Str,...
+                'Color','red','FontSize',14)
         else
             disp('Atom Index only work for single molecule now...')
         end
@@ -94,7 +101,7 @@ hold(hAx,'on')
         plot3(hAx,XYZ(O_Ind,1),XYZ(O_Ind,2),XYZ(O_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',10,'MarkerEdgeColor','none')
         plot3(hAx,XYZ(N_Ind,1),XYZ(N_Ind,2),XYZ(N_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,1],'MarkerSize',10,'MarkerEdgeColor','none')        
         plot3(hAx,XYZ(S_Ind,1),XYZ(S_Ind,2),XYZ(S_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,1,0],'MarkerSize',10,'MarkerEdgeColor','none')        
-        plot3(hAx,XYZ(H_Ind,1),XYZ(H_Ind,2),XYZ(H_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,1,1],'MarkerSize',5,'MarkerEdgeColor','none')        
+        plot3(hAx,XYZ(H_Ind,1),XYZ(H_Ind,2),XYZ(H_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,1,1],'MarkerSize',5,'MarkerEdgeColor',[0,0,0])        
 
     end
     
@@ -107,7 +114,7 @@ hold(hAx,'on')
         PlotRotMolFrame(hAx,Lab_Frame,Lab_Frame,CoM)
     end
     
-    %% Draw lattice, for MBA now
+    %% Draw lattice
     if Plot_Lattice
         % find the anchor points
         XYZ_N = reshape(SData.XYZ,[],SData.Nmodes,3);
@@ -132,14 +139,29 @@ hold(hAx,'on')
             Conn_V2_Upper = Connectivity('None',AtomCenter,'BondLength',L_Vec2);
             Conn_V2_Lower = Connectivity('None',AtomCenter,'BondLength',L_Vec2*0.9);
             Conn_V2 = and(Conn_V2_Upper,~Conn_V2_Lower);         
-            gplot3(or(Conn_V1,Conn_V2),AtomCenter,'Color',[0,1,0],'LineWidth',2,'Parent',hAx)
+            gplot3(or(Conn_V1,Conn_V2),AtomCenter,'Color',[0,0.5,0],'LineWidth',2,'Parent',hAx)
         end
 
 
     end
 
-hold(hAx,'off')
+    %% Draw labeled atoms
+    if Plot_Label
+        if ~isempty(L_Index)
+            NAtoms = SData.Children.NAtoms;
+            XYZ_Monomer_Array = reshape(XYZ,NAtoms,[],3);
+            Center_Ind = SData.Extra.Mol_Frame.Center_Ind;
+            A1 = reshape(XYZ_Monomer_Array(Center_Ind,:,:),[],3);
 
+            plot3(hAx,A1(L_Index,1),A1(L_Index,2),A1(L_Index,3),...
+                  'LineStyle','none',...
+                  'Marker','o',...
+                  'MarkerFaceColor',[0,1,0],...
+                  'MarkerSize',10)
+        end
+    end
+
+hold(hAx,'off')
 %% Figure options
 axis(hAx,'image'); %tight
 rotate3d(hAx,'on')

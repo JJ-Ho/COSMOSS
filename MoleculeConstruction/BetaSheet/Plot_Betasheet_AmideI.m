@@ -61,20 +61,23 @@ INPUT.KeepUnmatched = 1;
 defaultPlot_Atoms = 1;
 defaultPlot_Bonds = 1;
 defaultPlot_Axis  = 1;
-defaultL_Index    = [];
+defaultPlot_Label     = 0;
+defaultL_Index        = [];
 
 % Add optional inputs to inputparser object
 addOptional(INPUT,'Plot_Atoms',defaultPlot_Atoms);
 addOptional(INPUT,'Plot_Bonds',defaultPlot_Bonds);
 addOptional(INPUT,'Plot_Axis' ,defaultPlot_Axis);
-addOptional(INPUT,'L_Index'   ,defaultL_Index);
+addOptional(INPUT,'Plot_Label'     ,defaultPlot_Label);
+addOptional(INPUT,'L_Index'        ,defaultL_Index);
 
 parse(INPUT,GUI_Inputs_C{:});
 
 Plot_Atoms = INPUT.Results.Plot_Atoms;
 Plot_Bonds = INPUT.Results.Plot_Bonds;
 Plot_Axis  = INPUT.Results.Plot_Axis;
-L_Index    = INPUT.Results.L_Index;
+Plot_Label     = INPUT.Results.Plot_Label;
+L_Index        = INPUT.Results.L_Index;
 
 %% reassign variable names
 XYZ      = SData.XYZ;
@@ -116,6 +119,12 @@ else
 end
 
 hold(hAx,'on')
+    %% draws bonds
+    if Plot_Bonds
+        Conn = Connectivity(AtomName,XYZ);
+        gplot3(Conn,XYZ,'LineWidth',1,'Color',[0,0,0],'Parent',hAx);
+    end  
+    
     %% draw atoms  
     if Plot_Atoms
         plot3(hAx,Center(:,1),Center(:,2),Center(:,3),'LineStyle','none','Marker','d','MarkerFaceColor','w')
@@ -127,11 +136,7 @@ hold(hAx,'on')
         plot3(hAx,C_H_Pos(:,1),C_H_Pos(:,2),C_H_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','w','MarkerSize',10)
         plot3(hAx,C_O_Pos(:,1),C_O_Pos(:,2),C_O_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','r','MarkerSize',10)
     end
-    %% draws bonds
-    if Plot_Bonds
-        Conn = Connectivity(AtomName,XYZ);
-        gplot3(Conn,XYZ,'LineWidth',1,'Color',[0,0,0],'Parent',hAx);
-    end  
+
     %% Draw molecular and Lab frame
     if Plot_Axis
         Lab_Frame = [1,0,0;
@@ -143,7 +148,6 @@ hold(hAx,'on')
         PlotRotMolFrame(hAx,Lab_Frame,R_MF_LF,CoM)
     end    
     %% Draw labeled atoms
-    Plot_Label = 1;
     if Plot_Label
         L_C = XYZ_C(L_Index,:);
         L_O = XYZ_O(L_Index,:);
@@ -159,7 +163,7 @@ axis(hAx,'image');
 rotate3d(hAx,'on')
 grid(hAx,'on')
 box(hAx,'on')
-view(hAx,[0,0])
+view(hAx,[40,10])
 hAx.XLabel.String = 'X';
 hAx.YLabel.String = 'Y';
 hAx.ZLabel.String = 'Z';
@@ -170,6 +174,6 @@ FilesName     = SData.FilesName;
 FilesName_Reg = regexprep(FilesName,'\_','\\_');
 TransV_String = sprintf('T: %1.2f, %1.2f, %1.2f; ' ,Extra.TransV(1),Extra.TransV(2),Extra.TransV(3));
 TwistV_String = sprintf('Tw: %3.0f, %3.0f, %3.0f; ',Extra.TwistV(1),Extra.TwistV(2),Extra.TwistV(3));
-RotV_String   = sprintf('R: %3.0f, %3.0f, %3.0f; ' ,Extra.RotV(1),Extra.RotV(2),Extra.RotV(3));
+RotV_String   = sprintf('R: %3.0f, %3.0f, %3.0f; ' ,Extra.RotV_D(1),Extra.RotV_D(2),Extra.RotV_D(3));
 Title_String  = {[FilesName_Reg, ', ', TransV_String], [TwistV_String, RotV_String]};
 title(hAx,Title_String,'FontSize',14); 

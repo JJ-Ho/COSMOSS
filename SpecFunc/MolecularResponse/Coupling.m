@@ -34,7 +34,7 @@ switch CoupleType
     case 'NN_Mix_TDC'
         [Beta,DistM] = Coupling_TDC(Structure);
 
-        DistCutOff = 4;
+        DistCutOff = 4; %Need to export this as a GUI option
         Beta(DistM < DistCutOff) = Beta_NN;
 
     case 'Jansen_TDC'

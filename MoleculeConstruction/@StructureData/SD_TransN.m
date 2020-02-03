@@ -1,4 +1,6 @@
 function obj_TN = SD_TransN(obj,V,N)
+% Given a translational vector and Number of copies N, this method duplicate 
+% the orign StructureData by N times and move them by increatment of V.
 %% Check Input
 % Make sure V is a column
 if isrow(V)
@@ -12,11 +14,8 @@ if ~isequal(size(V),[3,1])
     return
 end
 
-%% Assign properties that is not affected by either translation and duplication 
-obj_TN = StructureData;
-obj_TN.FilesName  = obj.FilesName;
-obj_TN.hPlotFunc  = obj.hPlotFunc;
-obj_TN.GUI_Inputs = obj.GUI_Inputs;
+%% Copy properties from input
+obj_TN = SD_Copy(obj);
 
 %% Duplicate propeties that are not affected by translational movement
 obj_TN.AtomName  = repmat(obj.AtomName ,N,1);
@@ -35,3 +34,10 @@ if ~isempty(obj.LocCenter)
     LocCenter_TN_3D  = bsxfun(@plus,repmat(obj.LocCenter,1,1,N),V_T);
     obj_TN.LocCenter = reshape(permute(LocCenter_TN_3D,[1,3,2]),[],3);
 end
+
+%% Generate Hamiltonian after producing translational copie
+% note: its possible that the L_Index is outside the range of current mode
+% number since SD_TransN method can be used during the strutural model
+% construction, wher the struture model is not yet complete. As a result, I
+% decide not to generate Hamiltonian information for this method.
+% obj_TN = SD_1ExH(obj_TN);

@@ -1,4 +1,7 @@
 function Dihedral = SD_PeptideDihedral(obj_SD)
+% This method get dihedral angles of a Struecture data with AmideI
+% structure 
+% 
 % Index Definition 
 %     O(1)                     O(2)                      O(n)                     O
 %     ||                       ||                        ||                       ||

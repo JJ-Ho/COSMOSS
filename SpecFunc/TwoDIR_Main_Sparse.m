@@ -69,9 +69,8 @@ P_Sig2D      = INPUT.Results.P_Sig2D;
 PCutOff      = INPUT.Results.PCutOff;
 
 %% Call TwoExcitonH to calculate H,mu and alpha under exciton basis
-H = ExcitonH(Structure,GUI_Inputs,'TwoEx');
-
-Mu = MuAlphaGen(Structure,H,'Mode','Mu');
+H  = H_handler(Structure,GUI_Inputs,'TwoEx');
+Mu = TrMoment(Structure,'TwoEx','Mu',H);
 
 %% Decide what kinds of rod rotation average is and applied rotational 
 % average on Response in molecular frame

@@ -16,7 +16,8 @@ Trans_Z      = GUI_Inputs.Trans_Z;
 Rot_Phi      = GUI_Inputs.Rot_Phi/180*pi;
 Rot_Psi      = GUI_Inputs.Rot_Psi/180*pi;
 Rot_Theta    = GUI_Inputs.Rot_Theta/180*pi;
-
+CouplingType = GUI_Inputs.CouplingType;
+Beta_NN      = GUI_Inputs.Beta_NN;
 TransV = [Trans_X,Trans_Y,Trans_Z];
 
 %% Move the molecules before merge the two Structures
@@ -43,7 +44,7 @@ end
 S2_T_R_S = SD_ScaleTransitions(S2_T_R,Conc_Scaling);
 
 %% Merge the two and Output
-SC = SD_Comb2(S1_0,S2_T_R_S);
+SC = SD_Comb2(S1_0,S2_T_R_S,CouplingType,Beta_NN);
 
 SC.hPlotFunc  = @PlotComb2;
 SC.GUI_Inputs = GUI_Inputs;

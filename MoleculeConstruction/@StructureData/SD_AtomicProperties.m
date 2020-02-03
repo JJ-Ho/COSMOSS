@@ -1,7 +1,7 @@
 function AP = SD_AtomicProperties(obj_SD)
 %% Load Atom Properties
 % The 'AtomicProperties.mat' was extracted from Mathematica with cmd:
-% ´MatrixForm[Table[{ElementData[z, "AtomicNumber"], ElementData[z, "Abbreviation"], ElementData[z, "AtomicRadius"], ElementData[z, "AtomicWeight"]}, {z, 118}]]
+% MatrixForm[Table[{ElementData[z, "AtomicNumber"], ElementData[z, "Abbreviation"], ElementData[z, "AtomicRadius"], ElementData[z, "AtomicWeight"]}, {z, 118}]]
 % and with some string clean-up using vim.
 % load : AtomName
 %        AtomMass,[amu]

@@ -83,10 +83,9 @@ P_Sig2D      = INPUT.Results.P_Sig2D;
 PCutOff      = INPUT.Results.PCutOff;
 
 %% Call TwoExcitonH to calculate H,mu and alpha under exciton basis
-H = ExcitonH(Structure,GUI_Inputs,'TwoEx');    
-
-Mu    = MuAlphaGen(Structure,H,'Mode','Mu');
-Alpha = MuAlphaGen(Structure,H,'Mode','Alpha');
+H     = H_handler(Structure,GUI_Inputs,'TwoEx');
+Mu    = TrMoment(Structure,'TwoEx','Mu',H);
+Alpha = TrMoment(Structure,'TwoEx','Alpha',H);
 
 %% Decide what kinds of rod rotation average is
 % note:sparse version dose not have mirror plane impemented, yet...

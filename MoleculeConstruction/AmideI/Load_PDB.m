@@ -1,4 +1,7 @@
 function S_PDB = Load_PDB(app,GUI_Inputs)
+% This function read a PDB file and turn it into a StructureData object
+% Copyright Jia-Jung Ho, 2013-2020
+
 %% Get pdb file location 
 PWD = pwd;
 PDB_Path = [PWD, '/StructureFiles/PDB/'];
@@ -74,4 +77,4 @@ S_PDB = StructureData;
 S_PDB.XYZ       = XYZ;
 S_PDB.AtomName  = AtomName;
 S_PDB.FilesName = FilesName;
-S_PDB.Extra     = PDB_orig;
+S_PDB.Extra.PDB = PDB_orig;

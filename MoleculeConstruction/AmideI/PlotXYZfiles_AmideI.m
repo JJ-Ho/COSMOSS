@@ -91,7 +91,6 @@ else
 end
 
 hold(hAx,'on')
-
     %% draw bonds
     if Plot_Bonds
         XYZ_bond = XYZ(BB_Ind,:);
@@ -108,6 +107,7 @@ hold(hAx,'on')
         Conn = Connectivity(Atom_Side,XYZ_Side);
         gplot3(Conn,XYZ_Side,'Parent',hAx);
     end
+    
     %% Draw atoms
     if Plot_Atoms
         % Plot the mode center label
@@ -123,8 +123,10 @@ hold(hAx,'on')
         Lab_Frame = [1,0,0;
                      0,1,0;
                      0,0,1 ];
-        
-        PlotRotMolFrame(hAx,Lab_Frame,Lab_Frame,CoM)
+        R_MF_LF = R1_ZYZ_0(GUI_Inputs.Phi_D/180*pi,...
+                           GUI_Inputs.Psi_D/180*pi,...
+                           GUI_Inputs.Theta_D/180*pi);
+        PlotRotMolFrame(hAx,Lab_Frame,R_MF_LF,CoM)
     end
     
     %% Draw labeled atoms

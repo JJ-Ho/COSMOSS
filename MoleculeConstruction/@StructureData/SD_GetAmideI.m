@@ -1,64 +1,7 @@
 function Obj_SD_AmideI = SD_GetAmideI(obj_SD)
-%% GetAmideI
-
-% Output = GetAmideI(Num_Atoms,XYZ,AtomName,FilesName,GUI_Inputs)
 % This function recongnize the amide I group by searching C-O-N-CA atom
-% name sequence. It also roatae the molecule by inputs.
-% 
-
-% ------- Version log -----------------------------------------------------
-% Ver. 5.0  171006 Add this function into StructureData Methods
-% 
-% Ver. 4.1  161129  Fix the bug that C-O-O is recognized as C-O-N
-% 
-% Ver. 4.0  161119  Vectorize the C-O-N-NA seqrching process
-% 
-% Ver. 3.1  141021  Copy from SFG_AmideI_GUI
-%                   Add Input parser
-% 
-% Ver. 3.0  140825  Correct the TDV direction from pointing to N stom to
-%                   pointing away from N atom. See DFT calculation of 
-%                   140207_NMA for TDV vector direction. 
-% 
-% Ver. 2.9  140824  Add "Dimenesion" to determine sum/cross dimention for 
-%                   one mode case.
-% 
-% Ver. 2.8  140822  Clean up the code accessing tedious cell structure
-%                   Correct Aminde I modes coordinate system and the TDV
-%                   direction.
-% 
-% Ver. 2.7  140605  Add XYZ as output
-% 
-% Ver. 2.6  140603  Add uigetfile to select input; Adjust output names
-% 
-% Ver. 2.5  131108  change name of ouput variable "mu_orig" to "mu"
-% 
-% Ver. 2.4  130925  fix home filder dependancy in "pdb file location" part
-%                   export alpha in both matrix form and vector form.
-% 
-% Ver. 2.3  130813  AmideI miss assignmant fixed by using while loop
-% 
-% Ver. 2.2  130731  use varargin to avoid error when there's no labeling
-%                   inputs. varargin{1} = label index array; varargin{2} = 
-%                   label frequency array.
-% 
-% Ver. 2.1  130723  Reduce Raman tensor to 6 unique element after final
-%                   rotation. The output of unique Raman tensor is
-%                   linearized 6*1 vector.
-%                   And rename all "Lab" frames variables to "Sim" frame
-%                   since the coordinate transform is from Molecule frame
-%                   to Simulation frame here. 
-% 
-% Ver. 2.0  130706  Change this script to function, move plot molecular
-%                   part to upper level => TwoDSFG_Simulation. And remove
-%                   plot_toggle.
-% 
-% Ver. 1.1  130619  Atom_Data = TT.Model.Atom
-% 
-% Ver. 1.0  130604 
-% 
-% ------------------------------------------------------------------------
-% Copyright Jia-Jung Ho, 2013
+% name sequence. 
+% Copyright Jia-Jung Ho, 2013-2020
 
 %% Redefine the variable names
 XYZ       = obj_SD.XYZ;
@@ -156,10 +99,10 @@ XYZ_Sim = reshape(XYZ_Sim,Nmodes,3,[]);
 
 %% Calculate the transition dipoles (mu) and Raman tensors (alpha) in the Lab frame
 % Transition dipole Angle
-mu_angle = -27.5*pi/180; % cunter clockwise roation about x axis from Jenny's paper (10.1021/jp408064b)
+mu_angle = -27.5*pi/180; % from J. Laaser's paper (10.1021/jp408064b)
 % mu_angle = -20*pi/180; % from D. Strasfeld's paper (10.1021/jp9072203)
-% mu_angle = -25*pi/180; % from Cho's paper
-% mu_angle = -10*pi/180; % follow Skinner's 2014 paper, doi:10.1063/1.4882059
+% mu_angle = -25*pi/180; % from M. H. Cho's paper
+% mu_angle = -10*pi/180; % follow J. Skinner's paper (doi:10.1063/1.4882059)
 
 mu_vec0 = 16.1016*[0,0,-1]';       % this scale factor was calculated from DFT simulation, check the 'NMA' note 
 mu_Mol  = (Rx(mu_angle)*mu_vec0)'; % 1 by 3
@@ -205,10 +148,11 @@ AmideIAnharm = ones(Nmodes,1).* Anharm;
 Obj_SD_AmideI = SD_Copy(obj_SD);
 
 Obj_SD_AmideI.LocCenter = AmideICenter;
-Obj_SD_AmideI.LocFreq   = AmideIFreq;
-Obj_SD_AmideI.LocAnharm = AmideIAnharm;
 Obj_SD_AmideI.LocMu     = mu_Sim;
 Obj_SD_AmideI.LocAlpha  = alpha; % raman tensor vector form [N x 9]
+
+Obj_SD_AmideI.LocFreq   = AmideIFreq;
+Obj_SD_AmideI.LocAnharm = AmideIAnharm;
 
 Obj_SD_AmideI.Extra.AmideIAtomSerNo = AmideIAtomSerNo;
 

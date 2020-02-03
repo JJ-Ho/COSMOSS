@@ -17,35 +17,56 @@ GUI_Inputs_C      = GUI_Inputs_C';
 INPUT = inputParser;
 INPUT.KeepUnmatched = true;
 
+defaultNLFreq       = 1716;
+defaultAnharm       = 20;
+defaultLFreq        = 1604;
+defaultL_Index      = 'None';
 defaultLocFreqType  = 1;
 defaultCouplingType = 'TDC';
 defaultBeta_NN      = 0.8; % 0.8 cm-1 according to Lauren's PNAS paper (doi/10.1073/pnas.1117704109); that originate from Min Cho's paper (doi:10.1063/1.1997151)
 
-addOptional(INPUT,'LocFreqType' ,defaultLocFreqType);
-addOptional(INPUT,'CouplingType',defaultCouplingType);
-addOptional(INPUT,'Beta_NN'     ,defaultBeta_NN);
+addOptional(INPUT,'NLFreq'      ,defaultNLFreq         );
+addOptional(INPUT,'Anharm'      ,defaultAnharm         );
+addOptional(INPUT,'LFreq'       ,defaultLFreq          );
+addOptional(INPUT,'L_Index'     ,defaultL_Index        );
+addOptional(INPUT,'LocFreqType' ,defaultLocFreqType    );
+addOptional(INPUT,'CouplingType',defaultCouplingType   );
+addOptional(INPUT,'Beta_NN'     ,defaultBeta_NN        );
 
 parse(INPUT,GUI_Inputs_C{:});
 
 % Reassign Variable names
+NLFreq       = INPUT.Results.NLFreq;
+Anharm       = INPUT.Results.Anharm;
+LFreq        = INPUT.Results.LFreq;
+L_Index      = INPUT.Results.L_Index;
 LocFreqType  = INPUT.Results.LocFreqType;
 CouplingType = INPUT.Results.CouplingType;
 Beta_NN      = INPUT.Results.Beta_NN;
 
-%% Modify diagonal elements (LocFreq)
-LocFreq = obj_SD.LocFreq;
+%% Update Anharmonicity
+obj_1ExH           = SD_Copy(obj_SD);
+obj_1ExH.LocAnharm = ones(obj_SD.Nmodes,1).*Anharm;
+
+%% Deal with local mode frequencies and their labeling
+LocFreq = ones(obj_SD.Nmodes,1).*NLFreq;
+
 % Apply Jansen map if needed
 if strcmp(LocFreqType,'Jensen Map')
     [~,dF_Jansen] = Coupling_Jansen(obj_SD);
     LocFreq = LocFreq + dF_Jansen;
 end
 
-%% Generate Off-Diagonal Elements (Beta)
-Beta = Coupling(obj_SD,CouplingType,Beta_NN); % Coupling
+% Apply isotope labeling
+if ~isempty(L_Index)
+    LocFreq(L_Index) = LFreq;  
+end
 
-%% Output Variables
-% Note: the One exciton Hamiltonian will be calculated providing the
-% following data exisited in the StructureData
-obj_1ExH         = obj_SD;
 obj_1ExH.LocFreq = LocFreq;
-obj_1ExH.Beta    = Beta;
+
+%% Generate Off-Diagonal Elements (Beta)
+obj_1ExH.Beta = Coupling(obj_1ExH,CouplingType,Beta_NN);
+
+
+
+

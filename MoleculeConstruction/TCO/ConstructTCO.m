@@ -26,10 +26,6 @@ defaultDisplacement    = [0,0,5];
 defaultPhi             = 0;
 defaultPsi             = 0;
 defaultTheta           = 0;
-defaultNLFreq          = 1716;
-defaultAnharm          = 20;
-defaultLFreq           = 1604;
-defaultL_Index         = 'None';
 
 % add Optional inputs / Parameters
 addOptional(INPUT,'Phi_D1'         ,defaultPhi_D1         );
@@ -42,10 +38,6 @@ addOptional(INPUT,'Displacement'   ,defaultDisplacement   );
 addOptional(INPUT,'Phi'            ,defaultPhi            );
 addOptional(INPUT,'Psi'            ,defaultPsi            );
 addOptional(INPUT,'Theta'          ,defaultTheta          );
-addOptional(INPUT,'NLFreq'         ,defaultNLFreq         );
-addOptional(INPUT,'Anharm'         ,defaultAnharm         );
-addOptional(INPUT,'LFreq'          ,defaultLFreq          );
-addOptional(INPUT,'L_Index'        ,defaultL_Index        );
 
 parse(INPUT,GUI_Inputs_C{:});
 
@@ -60,10 +52,6 @@ Displacement    = INPUT.Results.Displacement;
 Phi             = INPUT.Results.Phi;
 Psi             = INPUT.Results.Psi;
 Theta           = INPUT.Results.Theta;
-NLFreq          = INPUT.Results.NLFreq;
-Anharm          = INPUT.Results.Anharm;
-LFreq           = INPUT.Results.LFreq;
-L_Index         = INPUT.Results.L_Index;
 
 %% Monomer Settings
 Num_Modes = 2;
@@ -171,25 +159,13 @@ end
 % symmetric, I am being exta caucious here to make the indexing right.
 alpha = reshape(permute(alpha_Sim,[1,3,2]),[Num_Modes,9]);
 
-%% Define Mode frequency, anharmonicity, and Labling
-LocFreq         = ones(Num_Modes,1).*NLFreq;
-LocAnharm       = ones(Num_Modes,1).*Anharm;
-
-if ~ischar(L_Index)
-    LocFreq(L_Index) = LFreq;
-end
-
-%% Constructe the Structure Data
+%% Constructe the StructureData Object with given Structural information
 TCO = StructureData;
 TCO.XYZ             = XYZ;
 TCO.AtomName        = AtomName;
 TCO.LocCenter       = AcidCenter;
-TCO.LocFreq         = LocFreq;
-TCO.LocAnharm       = LocAnharm;
 TCO.LocMu           = mu_Sim;
 TCO.LocAlpha        = alpha; % raman tensor vector form [N x 9]
-TCO.FilesName       = 'Acid Dimer';
-TCO.GUI_Inputs      = GUI_Inputs;
 
 %% Post process of the dimer
 % Rotate the molecule
@@ -199,14 +175,16 @@ Theta_r = Theta/180*pi;
 R1      = R1_ZYZ_0(Phi_r,Psi_r,Theta_r);
 TCO     = SD_Rot(TCO,R1);
             
-% Move the center of the two Carbon atoms to the origin (0,0,0)
+% Move the center of the two Carbon atoms to the  origin (0,0,0)
 CV  = mean(TCO.XYZ([1,5],:));
 TCO = SD_Trans(TCO,-CV);
 
-% Calculate One Exciton Hamiltoian
-TCO = SD_1ExH(TCO); 
-
-% Add figure drawing function and GUI inputs
+%% Add Model dependent properties
+TCO.FilesName  = 'Acid Dimer';
+TCO.GUI_Inputs = GUI_Inputs;
 TCO.hPlotFunc  = @PlotXYZfiles_TCO;
 TCO.GUI_Inputs = GUI_Inputs;
+
+%% Calculate One Exciton Hamiltoian
+TCO = SD_1ExH(TCO); 
 

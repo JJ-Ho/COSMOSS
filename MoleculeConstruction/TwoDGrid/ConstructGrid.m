@@ -57,7 +57,7 @@ S_V1N_V2M = SD_TransN(S_V1N,Vec_2,N_2);
 S_V1N_V2M.LocFreq   = ones(S_V1N_V2M.Nmodes,1).*NLFreq;
 S_V1N_V2M.LocAnharm = ones(S_V1N_V2M.Nmodes,1).*Anharm;
 
-if ~ischar(L_Index)
+if ~isempty(L_Index)
     S_V1N_V2M.LocFreq(L_Index) = LFreq;
 end
 

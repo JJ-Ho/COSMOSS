@@ -1,27 +1,27 @@
 classdef StructureData < handle
-   properties % Minimum propertiess
-       % Bare minimum properties that is needed for all the SD method 
-       % start to work
-       XYZ      % size = [NAtoms,3]
-       AtomName % size = {NAtoms,1} 
+   properties % Structural properties taking cared by construction functions
+       XYZ             % size = [NAtoms,3]
+       AtomName        % size = {NAtoms,1} 
+       
+       LocCenter       % size = [Nmodes,3]
+       LocMu           % size = [Nmodes,3] => used to define Nmodes
+       LocAlpha        % size = [Nmodes,9]
    end
    
-   properties % Full properties
-       LocCenter       % size = [Nmodes,3]
-       LocFreq         % size = [Nmodes,1]
-       LocAnharm       % size = [Nmodes,1]
-       LocMu           % size = [Nmodes,3]
-       LocAlpha        % size = [Nmodes,9]
-       Beta            % size = [Nmodes,Nmodes], coupling matrix
-       
-       hPlotFunc       % function handle of the model specific drawing function 
+   properties % Model dependent properties
        GUI_Inputs      % GUI_Inputs that include the figure options. This is necessary for excuting the hPlotFunc
-       
+       hPlotFunc       % function handle of the model specific drawing function   
        FilesName       % name for figure drawing and identification
        Children        % this property is only used by Comb2 to draw subsystem
        Extra           % all the model dependent properties can be saved in here
    end
    
+   properties % Hamiltonian properties taking cared by the SD_1ExH method
+       LocFreq         % size = [Nmodes,1]
+       LocAnharm       % size = [Nmodes,1]
+       Beta            % size = [Nmodes,Nmodes], coupling matrix
+   end
+ 
    properties (NonCopyable) % Get properties
        % These properties will be calculated when quaried
        Nmodes       % # of local modes
@@ -41,7 +41,8 @@ classdef StructureData < handle
     
    methods % Get methods
       function Nmodes    = get.Nmodes(obj)
-           Nmodes = size(obj.LocFreq,1);
+           %Nmodes = size(obj.LocFreq,1);
+           Nmodes = size(obj.LocMu,1);
       end
       function NAtoms    = get.NAtoms(obj)
            NAtoms = size(obj.XYZ,1);
@@ -91,7 +92,7 @@ classdef StructureData < handle
       end 
    end
    
-   methods % Other methods defined as a separated function
+   methods % Other methods defined as separated functions
       AP          = SD_AtomicProperties(obj)
       obj_T       = SD_Trans(obj,V)
       obj_R       = SD_Rot(obj,R)

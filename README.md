@@ -1,4 +1,8 @@
-New documentation is moving to [HackMD](https://hackmd.io/@jjh/rkw9VLLfI/)!  
+- ![#f03c15](https://placehold.it/15/f03c15/000000?text=+) New documentation is moving to the HackMD!
+
+[COSMOSS document on HackMD](https://hackmd.io/@jjh/rkw9VLLfI/)
+
+
 
 # COSMOSS 
 COSMOSS = *Coupled OScillator MOdel Spectrum Simulator*

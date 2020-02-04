@@ -1,3 +1,5 @@
+New documentation is moving to [HackMD](https://hackmd.io/@jjh/rkw9VLLfI/)!  
+
 # COSMOSS 
 COSMOSS = *Coupled OScillator MOdel Spectrum Simulator*
 

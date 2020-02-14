@@ -1,6 +1,6 @@
 - ![#f03c15](https://placehold.it/15/f03c15/000000?text=+) New documentation is moving to the HackMD!
 
-[COSMOSS document on HackMD](https://hackmd.io/@jjh/rkw9VLLfI/)
+[COSMOSS document on HackMD](https://hackmd.io/@jjh/COSMOSS)
 
 
 

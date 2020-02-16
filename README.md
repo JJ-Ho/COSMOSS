@@ -23,7 +23,13 @@ Currently, COSMOSS supports the following structural construction models:
 * Amide-I modes of an ideal beta-sheet
 * Combination of any two models above
 
-This code is designed to be used for other molecules as well. You can generate your interested molecule and their spectra. Check [Wiki page](../../wiki) for more information.
+This code is designed to be used for other molecules as well. You can generate your interested molecule and their spectra. Check the [documentation](https://hackmd.io/@jjh/COSMOSS)
+ for more information.
+
+- ![#f03c15](https://placehold.it/15/f03c15/000000?text=+) New documentation is moving to the HackMD!
+
+[COSMOSS document on HackMD](https://hackmd.io/@jjh/COSMOSS)
+
 
 ### License
 

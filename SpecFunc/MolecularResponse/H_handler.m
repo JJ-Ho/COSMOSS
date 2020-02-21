@@ -21,7 +21,7 @@ defaultODD_FWHM     = 0;
 defaultP_FlucCorr   = 100;
 
 addOptional(INPUT,'Sampling'    ,defaultSampling);
-addOptional(INPUT,'DD_FWHM'     ,defaultODD_FWHM);
+addOptional(INPUT,'DD_FWHM'     ,defaultDD_FWHM);
 addOptional(INPUT,'ODD_FWHM'    ,defaultODD_FWHM);
 addOptional(INPUT,'P_FlucCorr'  ,defaultP_FlucCorr);
 

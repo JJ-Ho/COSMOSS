@@ -80,16 +80,28 @@ classdef StructureData < handle
    end
    
    methods % Set methods
-       % Automatically copy the non-scaled value to the scaled properties
-       % when the value fisrt being assigned
        function set.LocMu(obj,Value)
+          % Automatically copy the non-scaled value to the scaled properties
+          % when the value fisrt being assigned
           obj.LocMu = Value;
           obj.Scaled_LocMu = Value;
        end
        function set.LocAlpha(obj,Value)
+          % Automatically copy the non-scaled value to the scaled properties
+          % when the value fisrt being assigned
           obj.LocAlpha = Value;
           obj.Scaled_LocAlpha = Value;
-      end 
+       end 
+       function set.Beta(obj,Value)
+           % Check if the coupling matrix is symmetric
+           
+          Test = Value - Value'; 
+          if nnz(Test)
+              warning('The coupling matrx (beta) is not symmetric! You might want to check your input...')
+          end
+          
+          obj.Beta = Value;
+       end
    end
    
    methods % Other methods defined as separated functions

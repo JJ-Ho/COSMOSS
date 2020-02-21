@@ -1,19 +1,13 @@
-function [SpectraGrid,Response] = TwoD_Iteration(h2DFunc,app)
+function [SpectraGrid,Response,CVL] = TwoD_Iteration(h2DFunc,app)
 %% Read GUI
 I = app.Parse_GUI;
 S = app.Structure;
 
 Sampling      = I.Sampling;
-DynamicUpdate = I.DynamicUpdate;
 Sample_Num    = I.Sample_Num;
-FreqRange     = I.FreqRange;
 
-%% Pre-calculation settings
-% Create figure object for dynamics figure update
-if DynamicUpdate && Sampling
-    hF = figure;
-    hAx = axes('Parent',hF);
-end
+hF = figure;
+hAx = axes('Parent',hF);
 
 %% Calculate TwoD response
 if Sampling
@@ -71,9 +65,9 @@ if Sampling
         while and(~eq(DynamicUpdate,0),eq(mod(i,10),0))
             CVL = Conv2D(SpectraGrid,I);
             CVL.FilesName = [S.FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title
-            SpecType = Response.SpecType;
+
             cla(hAx)
-            Plot2D(hAx,CVL,I,SpecType);
+            Plot2D(hAx,CVL,I,Response.SpecType);
             drawnow
             DynamicUpdate = 0;
         end
@@ -86,4 +80,7 @@ if Sampling
 
 else
     [SpectraGrid,Response] = h2DFunc(S,I);
+    CVL = Conv2D(SpectraGrid,I);
+    CVL.FilesName = S.FilesName;
+    Plot2D(hAx,CVL,I,Response.SpecType);
 end

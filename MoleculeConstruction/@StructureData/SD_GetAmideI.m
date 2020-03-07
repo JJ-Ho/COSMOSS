@@ -2,7 +2,7 @@ function Obj_SD_AmideI = SD_GetAmideI(obj_SD)
 % This function recongnize the amide I group by searching C-O-N-CA atom
 % name sequence. 
 % Copyright Jia-Jung Ho, 2013-2020
-
+% obj_SD = Data_PDB_AmideI.app.PDB;
 %% Redefine the variable names
 XYZ       = obj_SD.XYZ;
 AtomName  = obj_SD.AtomName;
@@ -10,16 +10,16 @@ AtomName  = obj_SD.AtomName;
 %% Determine atom index of Amide I modes and "AmideIAtomSerNo"
 % [C,O,N,CA]
 Ind = (1:obj_SD.NAtoms)';
-Atom = [strcmp(AtomName,'C'),...
-        strcmp(AtomName,'O'),...
-        strcmp(AtomName,'N'),...
-        or(strcmp(AtomName,'CA'),strcmp(AtomName,'CH3')),... % CH3 is for Emory's special case
-       ];
+
+Atom_C  = strcmp(AtomName,'C'); %size(Atom_C)
+Atom_O  = strcmp(AtomName,'O'); %size(Atom_O)
+Atom_N  = strcmp(AtomName,'N'); %size(Atom_N)
+Atom_CA = strcmp(AtomName,'CA'); %size(Atom_CA)
+Atom = [Atom_C,Atom_O,Atom_N,Atom_CA];
 
 % delete irrelevent lines with no above atoms 
 Ind (~any(Atom,2))   = [];
 Atom(~any(Atom,2),:) = [];
-
 % Remove first few rows not start with 'C'
 Head   = 'y';
 while strcmp(Head,'y')
@@ -42,7 +42,7 @@ while strcmp(Tail,'y')
     end
 end
 
-% Remove any lines that does not have all three atoms
+% Remove any lines that does not have all four atoms
 % ex:
 %   i [1,0,0,0]     [1,0,0,0]
 %   j [0,1,0,0]  vs [0,1,0,0]  by clapse the ijk dimemsion
@@ -51,6 +51,7 @@ end
 %        ||            ||
 %        \/            \/
 %     [1,1,1,1]     [1,2,0,1]  
+
 AtomX = sum(permute(reshape(Atom,4,[],4),[3,2,1]),3);
 Mask = ones(size(AtomX));
 Array_Mask = logical(bsxfun(@times,all(~(AtomX - Mask)),[1,1,1,1]'));

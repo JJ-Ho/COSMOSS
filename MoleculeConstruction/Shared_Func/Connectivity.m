@@ -34,6 +34,7 @@ if nargin > 2
 
     BondLength = INPUT.Results.BondLength;
     RC = ones(N,1).* (BondLength/2*100); % turn unit into pm
+    BL_Scale = 1.1; 
 else
     %% Load covalent radii data
     % data from Mathematica, cmd:
@@ -47,14 +48,16 @@ else
         STR = Atom{i}; % this extra step if for PDB atom names which have multiple charaters, ex: CA => C atom
         RC(i) = Radii(strcmp(STR(1),AtomName));
     end
+    BL_Scale = 1.5;
 end
 
 %% generate connectivity matrix ndgrid version
+% Define bonded if dist. < (radii A + radii B)* BL_Scale
 
 % generate index for substracting
 [n m] = ndgrid(1:N);
 % Generate bond length matrix, /100 frm pm to Ang, *1.1 scaling facotr
-B = reshape((RC(m(:)) + RC(n(:)) )./100.*1.1,N,N);
+B = reshape((RC(m(:)) + RC(n(:)) )./100.*BL_Scale,N,N);
 % substract atom's position according to index generate above
 T1 = XYZ(m(:),:)-XYZ(n(:),:);
 % Get atom distance

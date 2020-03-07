@@ -77,15 +77,20 @@ else
 end
 
 hold(hAx,'on')
+    %% draw a line connection the two oscillator
+    Conn = zeros(SData.NAtoms);
+    Conn(1,5)=1;
+    Conn = Conn|Conn';
+    gplot3(Conn,XYZ,'LineWidth',1,'Color',[0.3,0.3,0.3],'Parent',hAx);
     %% draw bonds
     if Plot_Bonds
-        Conn = Connectivity(AtomName,XYZ);
-        %Conn = Connectivity(XYZ);
-            % add line between the two Carbon
-            Conn(1,5) = 1;
-            Conn(5,1) = 1;
+        Conn = SD_Connectivity(SData);
+        % add line between the two Carbon
+        Conn(1,4) = 0;
+        Conn(5,8) = 0;
+        Conn = Conn&Conn';
 
-        gplot3(Conn,XYZ,'LineWidth',1,'Color',[0,0,0],'Parent',hAx);
+        gplot3(Conn,XYZ,'LineWidth',5,'Color',[0.3,0.3,0.3],'Parent',hAx);
     end
     %%  Draw atoms
     if Plot_Atoms
@@ -94,9 +99,14 @@ hold(hAx,'on')
         C_Ind = strcmp(AtomName,'C');
         O_Ind = strcmp(AtomName,'O');
         H_Ind = strcmp(AtomName,'H');
-        plot3(hAx,XYZ(C_Ind,1),XYZ(C_Ind,2),XYZ(C_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,0],'MarkerSize',10)
-        plot3(hAx,XYZ(O_Ind,1),XYZ(O_Ind,2),XYZ(O_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',10)
-        plot3(hAx,XYZ(H_Ind,1),XYZ(H_Ind,2),XYZ(H_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,1,1],'MarkerSize',10)        
+        XYZ_C = XYZ(C_Ind,:);
+        XYZ_O = XYZ(O_Ind,:);
+        XYZ_H = XYZ(H_Ind,:);
+             
+        PlotAtom(hAx,'C',XYZ_C);
+        PlotAtom(hAx,'O',XYZ_O);
+        PlotAtom(hAx,'H',XYZ_H);
+        
     end
 
     %% Draw molecular and Lab frame
@@ -121,4 +131,6 @@ rotate3d(hAx,'on')
 grid(hAx,'on')
 view(hAx,[50,10])
 axis(hAx,'image');
+camlight
+daspect([1 1 1]);
     

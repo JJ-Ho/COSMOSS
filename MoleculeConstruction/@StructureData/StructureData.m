@@ -117,6 +117,8 @@ classdef StructureData < handle
       Obj_AmideI  = SD_GetAmideI(obj)
       obj_1ExBeta = SD_1ExH(obj_SD)
       hF          = SD_Draw(obj_SD,varargin)
+      Conn        = SD_Connectivity(obj_SD)
+      [X,Y,Z]     = SD_gplot3(obj_SD,varargin)
    end
 
 end

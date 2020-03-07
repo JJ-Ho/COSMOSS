@@ -7,7 +7,11 @@ function AP = SD_AtomicProperties(obj_SD)
 %        AtomMass,[amu]
 %        AtomNumber 
 %        AtomRadii,[pm]
-load('AtomicProperties.mat')
+load('AtomicProperties.mat',...
+     'AtomName',...
+     'AtomMass',...
+     'AtomNumber',...
+     'AtomRadii')
 
 %% Match Atom Name with its properties
 NAtoms = obj_SD.NAtoms;
@@ -21,10 +25,10 @@ for i = 1:NAtoms
     % multiple charaters, eg: CA => C atom
     AtomName_Str = obj_SD.AtomName{i};
     if ~any(strcmp(AtomName_Str,AtomName))
-        AtomName_Str = AtomName_Str(1);
+        startIndex = regexp(AtomName_Str,'[A-Z]');
+        AtomName_Str = AtomName_Str(startIndex(1));
     end
     AtomIndex = strcmp(AtomName_Str,AtomName);
-
     Name(i)   = AtomName(AtomIndex);
     Mass(i)   = AtomMass(AtomIndex);
     Number(i) = AtomNumber(AtomIndex);

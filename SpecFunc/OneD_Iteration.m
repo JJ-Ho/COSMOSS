@@ -2,10 +2,11 @@ function OneD = OneD_Iteration(h1DFunc,app)
 I = app.Parse_GUI;
 S = app.Structure;
 
-if eq(I.Sampling,1)
-    hF  = figure;
-    hAx = axes('Parent',hF);
-    
+hF  = figure;
+hAx = axes('Parent',hF);
+
+
+if eq(I.Sampling,1)   
     % Pre-allocate
     GridSize   = length(I.FreqRange);
     Response1D = zeros(GridSize,1);
@@ -55,4 +56,5 @@ if eq(I.Sampling,1)
         
 else
     OneD = h1DFunc(S,I);
+    Plot1D(hAx,OneD,I);
 end

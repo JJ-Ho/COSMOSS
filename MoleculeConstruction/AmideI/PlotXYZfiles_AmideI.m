@@ -64,7 +64,6 @@ L_Index        = INPUT.Results.L_Index;
 %% Main
 XYZ      = SData.XYZ;
 AtomName = SData.AtomName;
-Center   = SData.LocCenter;
 CoM      = SData.CoM;
 AmideIAtomSerNo = SData.Extra.AmideIAtomSerNo;
 
@@ -77,6 +76,9 @@ N_Ind = AmideIAtomSerNo(:,3);
 Index_All = 1:length(AtomName);
 CA_Ind = Index_All(strcmp(AtomName,'CA'))';
 BB_Ind = [C_Ind;O_Ind;N_Ind;CA_Ind];
+        
+Side_Ind = Index_All;
+Side_Ind(BB_Ind) = [];
 
 XYZ_C = XYZ(C_Ind,:);
 XYZ_O = XYZ(O_Ind,:);
@@ -93,29 +95,36 @@ end
 hold(hAx,'on')
     %% draw bonds
     if Plot_Bonds
-        XYZ_bond = XYZ(BB_Ind,:);
-        Atom_bond = AtomName(BB_Ind);
+        BB = StructureData;
+        BB.XYZ = XYZ(BB_Ind,:);
+        BB.AtomName = AtomName(BB_Ind);
         
-        Conn = Connectivity(Atom_bond,XYZ_bond);
-        gplot3(Conn,XYZ_bond,'LineWidth',1,'Color',[0,0,0],'Parent',hAx);
+        SD_gplot3(BB,...
+        'LineWidth',2,...
+        'LineStyle','-',...
+        'Color',[0,0.6,0],...
+        'Parent',hAx);
+        
     end
     
     if Plot_SideChain
-        XYZ_Side = XYZ;
-        Atom_Side = AtomName;
+        SC = StructureData;
+        SC.XYZ = XYZ(Side_Ind,:);
+        SC.AtomName = AtomName(Side_Ind);
         
-        Conn = Connectivity(Atom_Side,XYZ_Side);
-        gplot3(Conn,XYZ_Side,'Parent',hAx);
+        SD_gplot3(SC,...
+        'LineWidth',1,...
+        'LineStyle','-',...
+        'Color',[0.3,0.3,0.3],...
+        'Parent',hAx);
     end
+    
     
     %% Draw atoms
     if Plot_Atoms
-        % Plot the mode center label
-        %plot3(hAx,Center(:,1)  ,Center(:,2)  ,Center(:,3)  ,'LineStyle','none','Marker','d','MarkerFaceColor','w')
-        
-        plot3(hAx,XYZ_C(:,1),XYZ_C(:,2),XYZ_C(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,0],'MarkerSize',10)
-        plot3(hAx,XYZ_O(:,1),XYZ_O(:,2),XYZ_O(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',10)
-        plot3(hAx,XYZ_N(:,1),XYZ_N(:,2),XYZ_N(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,1],'MarkerSize',10)        
+        PlotAtom(hAx,'C',XYZ_C);
+        PlotAtom(hAx,'O',XYZ_O);
+        PlotAtom(hAx,'N',XYZ_N);
     end
     
     %% Draw molecular and Lab frame
@@ -131,13 +140,7 @@ hold(hAx,'on')
     
     %% Draw labeled atoms
     if Plot_Label
-        L_C = XYZ_C(L_Index,:);
-        L_O = XYZ_O(L_Index,:);
-        L_N = XYZ_N(L_Index,:);
-
-        plot3(hAx,L_C(:,1),L_C(:,2),L_C(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,1,0],'MarkerSize',10)
-        plot3(hAx,L_O(:,1),L_O(:,2),L_O(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,1,0],'MarkerSize',10)
-        plot3(hAx,L_N(:,1),L_N(:,2),L_N(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,1,0],'MarkerSize',10)    
+        PlotAtom(hAx,'Label',XYZ_C(L_Index,:));
     end
 hold(hAx,'off')
 
@@ -150,3 +153,5 @@ view(hAx,[-20,20])
 hAx.XGrid = 'on';
 hAx.YGrid = 'on';
 hAx.ZGrid = 'on';
+camlight
+daspect([1 1 1]);

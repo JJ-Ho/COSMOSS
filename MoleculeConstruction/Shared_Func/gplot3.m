@@ -15,16 +15,16 @@ function [Xout,Yout,Zout]=gplot3(A,xyz,varargin)
 xyz = double(xyz);
 
 [i,j] = find(A);
-[ignore, p] = sort(max(i,j));
+[~, p] = sort(max(i,j));
 i = i(p);
 j = j(p);
 
 % Create a long, NaN-separated list of line segments,
 % rather than individual segments.
 
-X = [ xyz(i,1) xyz(j,1) repmat(NaN,size(i))]';
-Y = [ xyz(i,2) xyz(j,2) repmat(NaN,size(i))]';
-Z = [ xyz(i,3) xyz(j,3) repmat(NaN,size(i))]';
+X = [ xyz(i,1) xyz(j,1) NaN(size(i))]';
+Y = [ xyz(i,2) xyz(j,2) NaN(size(i))]';
+Z = [ xyz(i,3) xyz(j,3) NaN(size(i))]';
 X = X(:);
 Y = Y(:);
 Z = Z(:);

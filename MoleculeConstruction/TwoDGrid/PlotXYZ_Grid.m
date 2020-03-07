@@ -67,7 +67,7 @@ hold(hAx,'on')
     %% draw bonds
     if Plot_Bonds
         Conn = Connectivity(AtomName,XYZ);
-        gplot3(Conn,XYZ,'Parent',hAx,'Color','b');
+        gplot3(Conn,XYZ,'Parent',hAx,'Color','b');     
     end
     
     %% Add atom indexes
@@ -97,11 +97,11 @@ hold(hAx,'on')
     if Plot_Atoms
         %plot3(hAx,Center(:,1)  ,Center(:,2)  ,Center(:,3)  ,'LineStyle','none','Marker','d','MarkerFaceColor','w')
 
-        plot3(hAx,XYZ(C_Ind,1),XYZ(C_Ind,2),XYZ(C_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,0],'MarkerSize',5,'MarkerEdgeColor','none')
-        plot3(hAx,XYZ(O_Ind,1),XYZ(O_Ind,2),XYZ(O_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',10,'MarkerEdgeColor','none')
-        plot3(hAx,XYZ(N_Ind,1),XYZ(N_Ind,2),XYZ(N_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,1],'MarkerSize',10,'MarkerEdgeColor','none')        
-        plot3(hAx,XYZ(S_Ind,1),XYZ(S_Ind,2),XYZ(S_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,1,0],'MarkerSize',10,'MarkerEdgeColor','none')        
-        plot3(hAx,XYZ(H_Ind,1),XYZ(H_Ind,2),XYZ(H_Ind,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,1,1],'MarkerSize',5,'MarkerEdgeColor',[0,0,0])        
+        PlotAtom(hAx,'C',XYZ(C_Ind,:));
+        PlotAtom(hAx,'O',XYZ(O_Ind,:));
+        PlotAtom(hAx,'N',XYZ(N_Ind,:));
+        PlotAtom(hAx,'S',XYZ(S_Ind,:));
+        PlotAtom(hAx,'H',XYZ(H_Ind,:));
 
     end
     
@@ -153,11 +153,7 @@ hold(hAx,'on')
             Center_Ind = SData.Extra.Mol_Frame.Center_Ind;
             A1 = reshape(XYZ_Monomer_Array(Center_Ind,:,:),[],3);
 
-            plot3(hAx,A1(L_Index,1),A1(L_Index,2),A1(L_Index,3),...
-                  'LineStyle','none',...
-                  'Marker','o',...
-                  'MarkerFaceColor',[0,1,0],...
-                  'MarkerSize',10)
+            PlotAtom(hAx,'Label',A1(L_Index,:));
         end
     end
 
@@ -178,4 +174,7 @@ hAx.XLim = hAx.XLim + ExtScal*sum(hAx.XLim.*[-1,1])*[-1,1];
 hAx.YLim = hAx.YLim + ExtScal*sum(hAx.YLim.*[-1,1])*[-1,1];
 hAx.ZLim = hAx.ZLim + ExtScal*sum(hAx.ZLim.*[-1,1])*[-1,1];
 hAx.DataAspectRatio = [1,1,1];
+
+camlight
+daspect([1 1 1]);
 

@@ -129,12 +129,11 @@ hold(hAx,'on')
     if Plot_Atoms
         plot3(hAx,Center(:,1),Center(:,2),Center(:,3),'LineStyle','none','Marker','d','MarkerFaceColor','w')
 
-        plot3(hAx,XYZ_C(:,1),XYZ_C(:,2),XYZ_C(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,0],'MarkerSize',10)
-        plot3(hAx,XYZ_O(:,1),XYZ_O(:,2),XYZ_O(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[1,0,0],'MarkerSize',10)
-        plot3(hAx,XYZ_N(:,1),XYZ_N(:,2),XYZ_N(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,0,1],'MarkerSize',10)        
-
-        plot3(hAx,C_H_Pos(:,1),C_H_Pos(:,2),C_H_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','w','MarkerSize',10)
-        plot3(hAx,C_O_Pos(:,1),C_O_Pos(:,2),C_O_Pos(:,3),'LineStyle','none','Marker','o','MarkerFaceColor','r','MarkerSize',10)
+        PlotAtom(hAx,'C',XYZ_C);
+        PlotAtom(hAx,'O',XYZ_O);
+        PlotAtom(hAx,'N',XYZ_N);     
+        PlotAtom(hAx,'H',C_H_Pos);
+        PlotAtom(hAx,'O',C_O_Pos);
     end
 
     %% Draw molecular and Lab frame
@@ -149,12 +148,7 @@ hold(hAx,'on')
     end    
     %% Draw labeled atoms
     if Plot_Label
-        L_C = XYZ_C(L_Index,:);
-        L_O = XYZ_O(L_Index,:);
-        L_N = XYZ_N(L_Index,:);
-        plot3(hAx,L_C(:,1),L_C(:,2),L_C(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,1,0],'MarkerSize',10)
-        plot3(hAx,L_O(:,1),L_O(:,2),L_O(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,1,0],'MarkerSize',10)
-        plot3(hAx,L_N(:,1),L_N(:,2),L_N(:,3),'LineStyle','none','Marker','o','MarkerFaceColor',[0,1,0],'MarkerSize',10)        
+        PlotAtom(hAx,'Label',XYZ_C(L_Index,:));
     end    
 hold(hAx,'off')
 
@@ -167,6 +161,8 @@ view(hAx,[40,10])
 hAx.XLabel.String = 'X';
 hAx.YLabel.String = 'Y';
 hAx.ZLabel.String = 'Z';
+camlight
+daspect([1 1 1]);
 
 % title
 Extra = SData.Extra;

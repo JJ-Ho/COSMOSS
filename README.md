@@ -1,3 +1,5 @@
+[![View COSMOSS on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://www.mathworks.com/matlabcentral/fileexchange/64433-cosmoss)
+
 - ![#f03c15](https://placehold.it/15/f03c15/000000?text=+) New documentation is moving to the HackMD!
 
 [COSMOSS document on HackMD](https://hackmd.io/@jjh/COSMOSS)

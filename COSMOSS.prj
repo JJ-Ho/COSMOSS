@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="2808481048" file="/Users/jjho/Documents/MATLAB/COSMOSS/COSMOSS.prj" location="/Users/jjho/Documents/MATLAB/COSMOSS" name="COSMOSS" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="2770482707" file="/Users/jjho/Documents/MATLAB/COSMOSS/COSMOSS.prj" location="/Users/jjho/Documents/MATLAB/COSMOSS" name="COSMOSS" target="target.mlapps" target-name="Package App">
     <param.appname>COSMOSS</param.appname>
     <param.authnamewatermark>Jia-Jung Ho</param.authnamewatermark>
     <param.email>jhoatgit@gmail.com</param.email>
@@ -21,9 +21,10 @@
 &lt;li&gt;Two Dimensional Sum-Frequency Generation spectrum (2DSFG)&lt;/li&gt;
 &lt;/ol&gt;
 
-COSMOSS v2.0 start to use the Appdesigner. For more information check &lt;a href="https://github.com/JJ-Ho/COSMOSS/wiki"&gt;Wiki page&lt;/a&gt;:</param.description>
-    <param.screenshot />
-    <param.version>2.3.0</param.version>
+COSMOSS v2.0 start to use the Appdesigner. For more information check 
+https://hackmd.io/@jjh/COSMOSS</param.description>
+    <param.screenshot>/Users/jjho/Desktop/截圖 2020-03-07 下午7.46.16.png</param.screenshot>
+    <param.version>2.3.1</param.version>
     <param.products.name />
     <param.products.id />
     <param.products.version />
@@ -32,7 +33,6 @@ COSMOSS v2.0 start to use the Appdesigner. For more information check &lt;a href
     <param.guid>62bfa010-75ae-4fc1-bbeb-616c50def761</param.guid>
     <unset>
       <param.company />
-      <param.screenshot />
       <param.products.name />
       <param.products.id />
       <param.products.version />

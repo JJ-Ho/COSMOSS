@@ -44,6 +44,7 @@ defaultPlot_Axis  = 1;
 defaultPhi        = 0;
 defaultPsi        = 0;
 defaultTheta      = 0;
+defaultL_Index    = [];
 
 % Add optional inputs to inputparser object
 addOptional(INPUT,'Plot_Atoms',defaultPlot_Atoms);
@@ -52,6 +53,7 @@ addOptional(INPUT,'Plot_Axis' ,defaultPlot_Axis );
 addOptional(INPUT,'Phi'       ,defaultPhi       );
 addOptional(INPUT,'Psi'       ,defaultPsi       );
 addOptional(INPUT,'Theta'     ,defaultTheta     );
+addOptional(INPUT,'L_Index'        ,defaultL_Index);
 
 parse(INPUT,GUI_Inputs_C{:});
 
@@ -61,6 +63,7 @@ Plot_Axis  = INPUT.Results.Plot_Axis;
 Phi        = INPUT.Results.Phi;
 Psi        = INPUT.Results.Psi;
 Theta      = INPUT.Results.Theta;
+L_Index        = INPUT.Results.L_Index;
 
 %% Rotate the molecule to Lab frame
 XYZ       = SData.XYZ;
@@ -117,6 +120,12 @@ hold(hAx,'on')
         
         R_MF_LF = R1_ZYZ_0(Phi/180*pi,Psi/180*pi,Theta/180*pi);
         PlotRotMolFrame(hAx,Lab_Frame,R_MF_LF,[0,0,0])
+    end
+    
+    %% Draw labeled atoms
+    Plot_Label = 1;
+    if Plot_Label
+        PlotAtom(hAx,'Label',XYZ_C(L_Index,:));
     end
     
 hold(hAx,'off')

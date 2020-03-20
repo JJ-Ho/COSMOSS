@@ -23,7 +23,7 @@ Besides simple spectral simulations, you can also use it in various ways. For ex
 ![](https://i.imgur.com/5M4loNP.gif)
 
 
-Also, the [coding structure](https://hackmd.io/@jjh/COSMOSS/Vwfo8DgmQL2Ya_ryUYd06w) is very general! As long as the 'modes' in question can be model as  coupled oscillators, you can generate their corresponding spectrum as well. For example, if you are interested in simulating the UV-Vis spectra of a model system, you can repurpose the FTIR core with little modification. 
+Also, the [coding structure](https://hackmd.io/@jjh/COSMOSS_Code_Structure) is very general! As long as the 'modes' in question can be model as  coupled oscillators, you can generate their corresponding spectrum as well. For example, if you are interested in simulating the UV-Vis spectra of a model system, you can repurpose the FTIR core with little modification. 
 
 
 Documentation
@@ -67,7 +67,7 @@ For the source code, please pull from the [GitHub repo](https://github.com/JJ-Ho
 
 [^Download]:Since v2.3.1, the [Matlab file-exchange](https://www.mathworks.com/matlabcentral/fileexchange/64433-cosmoss) download page is integrated with the master branch of the [GitHub](https://github.com/JJ-Ho/COSMOSS) repository. No more fooling around!
 
-[^mlapp]: You can modify the GUI elements and the callbacks with the [AppDesinger](https://www.mathworks.com/videos/app-designer-overview-1510748719083.html) in Matlab. See [How to edit COSMOSS GUI](https://hackmd.io/@jjh/COSMOSS/Vy7kwQ4WTHGCOLoZqNPhnw) for more information.
+[^mlapp]: You can modify the GUI elements and the callbacks with the [AppDesinger](https://www.mathworks.com/videos/app-designer-overview-1510748719083.html) in Matlab. See [How to edit COSMOSS GUI](https://hackmd.io/@jjh/EditGUI) for more information.
 
 ###### tags: `COSMOSS`
 

@@ -29,6 +29,8 @@ The [coding structure](/Vwfo8DgmQL2Ya_ryUYd06w) is very general! As long as the 
 
 Documentation
 ---
+![](https://i.imgur.com/pDJrSvz.jpg)
+
 All the notes and tutorails are hosted on the HackMD. Learn more [in the documentation](https://hackmd.io/@jjh/COSMOSS) This documentation will help you understand the coding structure and theoretical backgroung so you can make the best of COSMOSS.
 
 

@@ -1,8 +1,5 @@
 What is COSMOSS?
 ===
-
-
-
 :::info
 **COSMOSS** is a **C**oupled **OS**cillator **MO**del **S**pectral **S**imulator
 :::
@@ -26,7 +23,10 @@ Besides simple spectral simulations, you can also use it in a creative way. For 
 
 The [coding structure](/Vwfo8DgmQL2Ya_ryUYd06w) is very general! As long as the 'modes' in question can be model as  coupled oscillators, you can generate their corresponding spectrum as well. For example, if you are interested in simulating the UV-Vis spectra of a model system, you can repurpose the FTIR core with little modification. This notebook will help you understand the coding structure and theoretical backgroung so you can make the best of COSMOSS. 
 
-I hope with the documentation, one can find COSMOSS useful to their need. At least, when I have to teach student the idea of spectral simulation, COSMOSS can serve the educational purpose : )   
+:::success
+Learn more in the [documentation]("https://hackmd.io/@jjh/COSMOSS")   
+:::
+
 
 
 Installation

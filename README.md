@@ -4,8 +4,9 @@ What is COSMOSS?
 **COSMOSS** is a **C**oupled **OS**cillator **MO**del **S**pectral **S**imulator
 :::
 
+
 <figure style="float:right;">
-    <img src="https://i.imgur.com/HOQWa4m.png" width="160" height="160">
+    <img src="https://i.imgur.com/HOQWa4m.png" align="right" width="160" height="160">
 </figure>
 
 I originally wrote COSMOSS for my own research projects. Using the coupled-oscillators framwork, I simulate and extract useful information from spectrum in my [previous works](https://scholar.google.com/citations?user=O8Y6wd8AAAAJ&hl=en&authuser=1), mostly on 2D IR/ 2D SFG. As the COSMOSS project moving forward, I couldn't help but wonder if I can make it more general (as its name implied), i.e. works for different molecules, with a user-freindly GUI, support other spectral types, and most important of all, it is **open source**! So here is it, hope you enjoy it.   

@@ -21,11 +21,15 @@ Besides simple spectral simulations, you can also use it in a creative way. For 
 
 [^Ref_Paper_1]: [J. Phys. Chem. A 2018, 122, 5, 1270-1282](https://pubs.acs.org/doi/abs/10.1021/acs.jpca.7b11934)
 
-The [coding structure](/Vwfo8DgmQL2Ya_ryUYd06w) is very general! As long as the 'modes' in question can be model as  coupled oscillators, you can generate their corresponding spectrum as well. For example, if you are interested in simulating the UV-Vis spectra of a model system, you can repurpose the FTIR core with little modification. This notebook will help you understand the coding structure and theoretical backgroung so you can make the best of COSMOSS. 
+The [coding structure](/Vwfo8DgmQL2Ya_ryUYd06w) is very general! As long as the 'modes' in question can be model as  coupled oscillators, you can generate their corresponding spectrum as well. For example, if you are interested in simulating the UV-Vis spectra of a model system, you can repurpose the FTIR core with little modification. 
 
-:::success   
-Learn more in the [documentation]("https://hackmd.io/@jjh/COSMOSS")   
-:::   
+
+Documentation
+---
+All the notes and tutorails are hosted on the HackMD. Learn more [in the documentation]("https://hackmd.io/@jjh/COSMOSS")
+
+This documentation will help you understand the coding structure and theoretical backgroung so you can make the best of COSMOSS.
+
 
 
 

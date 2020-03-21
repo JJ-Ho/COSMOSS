@@ -9,7 +9,7 @@ What is COSMOSS?
     <img src="https://i.imgur.com/HOQWa4m.png" align="right" width="160" height="160">
 </figure>
 
-I originally wrote COSMOSS for my research projects. Using the coupled-oscillators framwork, I simulated and extracted  information from experimental spectrum[^GoogleScholar], mostly on 2D IR and 2D SFG. As the COSMOSS project moving forward, I couldn't help but wonder if I can make it more general (as its name implied), i.e. works for different molecules, with a user-freindly GUI, support other spectral types, and most important of all, it is **open source**! So here is it, hope you enjoy it.   
+I originally wrote COSMOSS for my research projects. Using the coupled-oscillators framework, I simulated and extracted  information from experimental spectrum[^GoogleScholar], mostly on 2D IR and 2D SFG. As the COSMOSS project moving forward, I couldn't help but wonder if I can make it more general (as its name implied), i.e. works for different molecules, with a user-friendly GUI, support other spectral types, and most important of all, it is **open source**! So here is it, hope you enjoy it.   
 
 ## What can COSMOSS do?
 COSMOSS can help you generate model structures and simulated their vibrational spectrum, currently includes:
@@ -19,7 +19,7 @@ COSMOSS can help you generate model structures and simulated their vibrational s
 - Two-Dimensional Infrared spectrum [(2D IR)](https://en.wikipedia.org/wiki/Two-dimensional_infrared_spectroscopy)
 - Two-Dimensional Sum-Frequency Generation spectrum [(2D SFG)](https://zanni.chem.wisc.edu/2d-sfg-spectroscopy/)
 
-Besides simple spectral simulations, you can also use it in various ways. For example, I used COSMOSS to study how the peptide orientaiton affecting the 2D spectral features:[^Ref_Paper_1] 
+Besides simple spectral simulations, you can also use it in various ways. For example, I used COSMOSS to study how the peptide orientation affecting the 2D spectral features:[^Ref_Paper_1] 
 ![](https://i.imgur.com/5M4loNP.gif)
 
 
@@ -30,7 +30,7 @@ Documentation
 ---
 ![](https://i.imgur.com/pDJrSvz.jpg)
 
-All the notes and tutorails are hosted on the HackMD. Learn more [in the documentation](https://hackmd.io/@jjh/COSMOSS). This documentation will help you understand the coding structure and theoretical backgroung so you can make the best of COSMOSS.
+All the notes and tutorials are hosted on the HackMD. Learn more [in the documentation](https://hackmd.io/@jjh/COSMOSS). This documentation will help you understand the coding structure and theoretical background so you can make the best of COSMOSS.
 
 
 
@@ -48,11 +48,11 @@ One of the main reason why COSMOSS is open source is for collaboration! Any cont
 - Documentation
 - Source code
 
-This website is editable if you regist an account and sign-in.  Lean more on how to edit the page on HackMD here: 
+This website is editable if you register an account and sign-in.  Lean more on how to edit the page on HackMD here: 
 - [HeckMD help page (English)](https://hackmd.io/c/tutorials/%2Fs%2Ftutorials). 
 - [HeckMD help page (Chinese)](https://hackmd.io/c/tutorials-tw/%2Fs%2Ftutorials-tw). 
 
-Feel free to write/edit about anything relevent. You are also welcome to send me the link of your personal documentation though my email: 
+Feel free to write/edit about anything relevant. You are also welcome to send me the link of your personal documentation though my email: 
 
 - jhoatgit [at] gmail.com
 

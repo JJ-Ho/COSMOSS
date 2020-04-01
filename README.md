@@ -69,7 +69,7 @@ For the source code, please pull from the [GitHub repo](https://github.com/JJ-Ho
 
 [^mlapp]: You can modify the GUI elements and the callbacks with the [AppDesinger](https://www.mathworks.com/videos/app-designer-overview-1510748719083.html) in Matlab. See [How to edit COSMOSS GUI](https://hackmd.io/@jjh/EditGUI) for more information.
 
-###### tags: `COSMOSS`
+###### tags: `COSMOSS` `test`
 
 
 

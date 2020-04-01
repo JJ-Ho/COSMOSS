@@ -76,6 +76,7 @@ OneExH = OneExH + bsxfun(@times,eye(N+1),dF_DD) + dBeta;
 %% Generate Two Exciton block diag part of full Hamiltonianif needed (TwoExOvertoneH & TwoExCombinationH)
 TEDIndexBegin = [];
 TEDIndexEnd   = [];
+TwoExPart     = [];
 
 if strcmp(ExMode,'TwoEx')
     StatesNum = (N+2)*(N+1)/2; 

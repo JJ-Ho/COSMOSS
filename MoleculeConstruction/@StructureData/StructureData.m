@@ -70,8 +70,8 @@ classdef StructureData < handle
           LF = obj.LocFreq;
           B  = obj.Beta;
           if ~isempty(LF) && ~isempty(B)
-            OneExPart = bsxfun(@times,eye(obj.Nmodes),LF) + B;
-            OneExH = blkdiag(0,OneExPart);
+            OneExPart = diag(LF) + B;
+            OneExH    = blkdiag(0,OneExPart);
           else
             disp('Local mode frequency and/or coupling are missing...')
             return
@@ -96,7 +96,8 @@ classdef StructureData < handle
            % Check if the coupling matrix is symmetric
            
           Test = Value - Value'; 
-          if nnz(Test)
+          % If the value are symblic object then don't output warrning
+          if nnz(Test) && ~isobject(Value)
               warning('The coupling matrx (beta) is not symmetric! You might want to check your input...')
           end
           

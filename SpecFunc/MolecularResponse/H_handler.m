@@ -39,6 +39,12 @@ N            = SData.Nmodes;
 LocFreq      = SData.LocFreq;
 LocAnharm    = SData.LocAnharm;
 
+%% Check if generated in Symbolic mode
+symMode = false;
+if isobject(LocFreq)
+    LocAnharm = sym('A%d',[N,1]);
+    symMode = true;
+end
 %% check if apply random sampling
 if Sampling
     DD_std  = DD_FWHM./(2*sqrt(2*log(2)));
@@ -75,7 +81,10 @@ if strcmp(ExMode,'TwoEx')
     StatesNum = (N+2)*(N+1)/2; 
 
     %- Pre-allocate the total matrix size
-    TwoExPart = zeros(StatesNum-1-N,StatesNum-1-N);
+    TwoExPart = zeros(StatesNum-1-N);
+    if symMode
+        TwoExPart = sym(TwoExPart);
+    end
 
     %- Two Exciton Overtone Hamiltonian, TwoExOvertoneH
     TwoExPart(1:N,1:N) = diag(2*LocFreq-LocAnharm);
@@ -129,14 +138,19 @@ if strcmp(ExMode,'TwoEx')
     % Bolck-Diagnonal Part of of TwoExCombinationH
     for m=1:N-1
         TwoExPart(TEDIndexBegin(m):TEDIndexEnd(m),TEDIndexBegin(m):TEDIndexEnd(m))...
-            = bsxfun(@times,eye(N-m),LocFreq(m+1:end)+LocFreq(m)) + Beta(m+1:end,m+1:end);
+            =  diag(LocFreq(m+1:end)+LocFreq(m))+ Beta(m+1:end,m+1:end);
+            %= bsxfun(@times,eye(N-m),LocFreq(m+1:end)+LocFreq(m)) + Beta(m+1:end,m+1:end);
     end
 
     %% Two Exciton Hamiltonian Cross part between TwoExOvertoneH and TwoExCombinationH
     for n1=1:N-1
         TempOffDiagMatrix = zeros(N,N-n1);
+        if symMode
+            TempOffDiagMatrix = sym(TempOffDiagMatrix);
+        end
+        
         TempOffDiagMatrix(n1,:) = Beta(n1,n1+1:N).*sqrt(2);
-        TempOffDiagMatrix(n1+1:N,:) = bsxfun(@times,eye(N-n1),Beta(n1,n1+1:N).*sqrt(2));
+        TempOffDiagMatrix(n1+1:N,:) = eye(N-n1).*Beta(n1,n1+1:N).*sqrt(2); %bsxfun(@times,eye(N-n1),Beta(n1,n1+1:N).*sqrt(2));
 
         TwoExPart(1:N,TEDIndexBegin(n1):TEDIndexEnd(n1))...
             = TempOffDiagMatrix;
@@ -144,8 +158,12 @@ if strcmp(ExMode,'TwoEx')
 
     for n2=1:N-1
         TempOffDiagMatrix = zeros(N-n2,N);
+        if symMode
+            TempOffDiagMatrix = sym(TempOffDiagMatrix);
+        end
+        
         TempOffDiagMatrix(:,n2) = Beta(n2+1:N,n2).*sqrt(2);
-        TempOffDiagMatrix(:,n2+1:N) = bsxfun(@times,eye(N-n2),Beta(n2,n2+1:N).*sqrt(2));
+        TempOffDiagMatrix(:,n2+1:N) = eye(N-n2).*Beta(n2,n2+1:N).*sqrt(2);%bsxfun(@times,eye(N-n2),Beta(n2,n2+1:N).*sqrt(2));
 
         TwoExPart(TEDIndexBegin(n2):TEDIndexEnd(n2),1:N)...
             = TempOffDiagMatrix;
@@ -186,3 +204,4 @@ Output.Sort_Ex_F2 = Sort_Ex_F2;
 Output.Sort_Ex_V2 = Sort_Ex_V2;
 Output.TEDIndexBegin = TEDIndexBegin;
 Output.TEDIndexEnd   = TEDIndexEnd;
+Output.TwoExPart     = TwoExPart;

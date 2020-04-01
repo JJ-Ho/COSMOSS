@@ -48,16 +48,22 @@ Beta_NN      = INPUT.Results.Beta_NN;
 obj_1ExH           = SD_Copy(obj_SD);
 obj_1ExH.LocAnharm = ones(obj_SD.Nmodes,1).*Anharm;
 
-%% Deal with local mode frequencies and their labeling
-LocFreq = ones(obj_SD.Nmodes,1).*NLFreq;
-
-% Apply Jansen map if needed
-if strcmp(LocFreqType,'Jensen Map')
-    [~,dF_Jansen] = Coupling_Jansen(obj_SD);
-    LocFreq = LocFreq + dF_Jansen;
+%% Deal with local mode frequencies cases
+switch LocFreqType
+    case 'Jensen Map'
+        % Apply local mode corrections from Jansen map
+        [~,dF_Jansen] = Coupling_Jansen(obj_SD);
+        LocFreq = ones(obj_SD.Nmodes,1).*NLFreq + dF_Jansen;
+        
+    case 'Symbolic'
+        LocFreq = sym('w%d', [obj_SD.Nmodes,1]);
+        obj_SD.LocFreq = LocFreq;
+        
+    otherwise
+        LocFreq = ones(obj_SD.Nmodes,1).*NLFreq;
 end
 
-% Apply isotope labeling
+%% Apply isotope labeling
 if ~isempty(L_Index)
     LocFreq(L_Index) = LFreq;  
 end

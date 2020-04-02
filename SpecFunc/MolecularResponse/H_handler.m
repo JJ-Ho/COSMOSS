@@ -39,6 +39,12 @@ N            = SData.Nmodes;
 LocFreq      = SData.LocFreq;
 LocAnharm    = SData.LocAnharm;
 
+%% Check if generated in Symbolic mode
+symMode = false;
+if isobject(LocFreq)
+    LocAnharm = sym('A%d',[N,1]);
+    symMode = true;
+end
 %% check if apply random sampling
 if Sampling
     DD_std  = DD_FWHM./(2*sqrt(2*log(2)));
@@ -70,12 +76,16 @@ OneExH = OneExH + bsxfun(@times,eye(N+1),dF_DD) + dBeta;
 %% Generate Two Exciton block diag part of full Hamiltonianif needed (TwoExOvertoneH & TwoExCombinationH)
 TEDIndexBegin = [];
 TEDIndexEnd   = [];
+TwoExPart     = [];
 
 if strcmp(ExMode,'TwoEx')
     StatesNum = (N+2)*(N+1)/2; 
 
     %- Pre-allocate the total matrix size
-    TwoExPart = zeros(StatesNum-1-N,StatesNum-1-N);
+    TwoExPart = zeros(StatesNum-1-N);
+    if symMode
+        TwoExPart = sym(TwoExPart);
+    end
 
     %- Two Exciton Overtone Hamiltonian, TwoExOvertoneH
     TwoExPart(1:N,1:N) = diag(2*LocFreq-LocAnharm);
@@ -99,6 +109,10 @@ if strcmp(ExMode,'TwoEx')
         for k1=k2+1:N-1
 
             TempOffDiagMatrix = zeros(N-k1,N-k2);
+            if symMode
+                TempOffDiagMatrix = sym(TempOffDiagMatrix);
+            end
+            
             TempOffDiagMatrix(:,k1-k2) = Beta(k1+1:end,k2);
             TempOffDiagMatrix(:,k1-k2+1:end) = eye(N-k1)*Beta(k1,k2);
 
@@ -112,6 +126,10 @@ if strcmp(ExMode,'TwoEx')
         for k1=1:k2-1
 
             TempOffDiagMatrix = zeros(N-k1,N-k2);
+            if symMode
+                TempOffDiagMatrix = sym(TempOffDiagMatrix);
+            end
+            
             TempOffDiagMatrix(k2-k1,:) = Beta(k2+1:end,k1);
             TempOffDiagMatrix(k2-k1+1:end,:) = eye(N-k2)*Beta(k2,k1);
 
@@ -126,17 +144,21 @@ if strcmp(ExMode,'TwoEx')
     % is slower than running another "for"
     % --- Note ----------------------------------------------------------------
 
-    % Bolck-Diagnonal Part of of TwoExCombinationH
+    % Block-Diagnonal Part of of TwoExCombinationH
     for m=1:N-1
         TwoExPart(TEDIndexBegin(m):TEDIndexEnd(m),TEDIndexBegin(m):TEDIndexEnd(m))...
-            = bsxfun(@times,eye(N-m),LocFreq(m+1:end)+LocFreq(m)) + Beta(m+1:end,m+1:end);
+            =  diag(LocFreq(m+1:end)+LocFreq(m))+ Beta(m+1:end,m+1:end);
     end
 
     %% Two Exciton Hamiltonian Cross part between TwoExOvertoneH and TwoExCombinationH
     for n1=1:N-1
         TempOffDiagMatrix = zeros(N,N-n1);
+        if symMode
+            TempOffDiagMatrix = sym(TempOffDiagMatrix);
+        end
+        
         TempOffDiagMatrix(n1,:) = Beta(n1,n1+1:N).*sqrt(2);
-        TempOffDiagMatrix(n1+1:N,:) = bsxfun(@times,eye(N-n1),Beta(n1,n1+1:N).*sqrt(2));
+        TempOffDiagMatrix(n1+1:N,:) = eye(N-n1).*Beta(n1,n1+1:N).*sqrt(2); %bsxfun(@times,eye(N-n1),Beta(n1,n1+1:N).*sqrt(2));
 
         TwoExPart(1:N,TEDIndexBegin(n1):TEDIndexEnd(n1))...
             = TempOffDiagMatrix;
@@ -144,8 +166,12 @@ if strcmp(ExMode,'TwoEx')
 
     for n2=1:N-1
         TempOffDiagMatrix = zeros(N-n2,N);
+        if symMode
+            TempOffDiagMatrix = sym(TempOffDiagMatrix);
+        end
+        
         TempOffDiagMatrix(:,n2) = Beta(n2+1:N,n2).*sqrt(2);
-        TempOffDiagMatrix(:,n2+1:N) = bsxfun(@times,eye(N-n2),Beta(n2,n2+1:N).*sqrt(2));
+        TempOffDiagMatrix(:,n2+1:N) = eye(N-n2).*Beta(n2,n2+1:N).*sqrt(2);%bsxfun(@times,eye(N-n2),Beta(n2,n2+1:N).*sqrt(2));
 
         TwoExPart(TEDIndexBegin(n2):TEDIndexEnd(n2),1:N)...
             = TempOffDiagMatrix;
@@ -154,6 +180,10 @@ if strcmp(ExMode,'TwoEx')
 end
 
 %% Diagonalize the full hamiltonian
+Sort_Ex_F1 = [];
+Sort_Ex_V1 = [];
+Sort_Ex_F2 = [];
+Sort_Ex_V2 = [];
 
 if strcmp(ExMode,'TwoEx')
     FullH = blkdiag(OneExH,TwoExPart);
@@ -161,24 +191,24 @@ else
     FullH = OneExH;
 end 
 
-% note: the eiganvector V_Full(:,i) has been already normalized.
-[V_Full,D_Full] = eig(FullH);
-Ex_Freq = diag(D_Full);
+% Diagonalization
+if ~symMode
+    % note: the eiganvector V_Full(:,i) has been already normalized.
+    [V_Full,D_Full] = eig(FullH);
+    Ex_Freq = diag(D_Full);
 
-% sort eiganvalue form small to big and reorder the eiganvectors
-[Sort_Ex_Freq,Indx] = sort(Ex_Freq);
- Sort_Ex_V          = V_Full(:,Indx);
- 
-Sort_Ex_F1 = Sort_Ex_Freq(2:N+1);
-Sort_Ex_V1 = Sort_Ex_V(2:N+1,2:N+1);
-Sort_Ex_F2 = [];
-Sort_Ex_V2 = [];
+    % sort eiganvalue form small to big and reorder the eiganvectors
+    [Sort_Ex_Freq,Indx] = sort(Ex_Freq);
+     Sort_Ex_V          = V_Full(:,Indx);
 
-if strcmp(ExMode,'TwoEx')
-    Sort_Ex_F2 = Sort_Ex_Freq(N+2:end);
-    Sort_Ex_V2 = Sort_Ex_V(N+2:end,N+2:end);
+    Sort_Ex_F1 = Sort_Ex_Freq(2:N+1);
+    Sort_Ex_V1 = Sort_Ex_V(2:N+1,2:N+1);
+
+    if strcmp(ExMode,'TwoEx')
+        Sort_Ex_F2 = Sort_Ex_Freq(N+2:end);
+        Sort_Ex_V2 = Sort_Ex_V(N+2:end,N+2:end);
+    end 
 end 
-
 %% export
 Output.Sort_Ex_F1 = Sort_Ex_F1;
 Output.Sort_Ex_V1 = Sort_Ex_V1;
@@ -186,3 +216,4 @@ Output.Sort_Ex_F2 = Sort_Ex_F2;
 Output.Sort_Ex_V2 = Sort_Ex_V2;
 Output.TEDIndexBegin = TEDIndexBegin;
 Output.TEDIndexEnd   = TEDIndexEnd;
+Output.TwoExPart     = TwoExPart;

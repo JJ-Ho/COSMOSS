@@ -1,4 +1,4 @@
-function [Beta,CouplingList] = Coupling(Structure,CoupleType,Beta_NN)
+function [Beta,CouplingList] = Coupling(obj_SD,CoupleType,Beta_NN)
 %% Coupling
 %  
 % Coupling.m is a function to generate mode coupling with a given model. 
@@ -29,17 +29,17 @@ CouplingList = {'TDC',...
 
 switch CoupleType
     case 'TDC'
-        Beta = Coupling_TDC(Structure);
+        Beta = Coupling_TDC(obj_SD);
         
     case 'NN_Mix_TDC'
-        [Beta,DistM] = Coupling_TDC(Structure);
+        [Beta,DistM] = Coupling_TDC(obj_SD);
 
         DistCutOff = 4; %Need to export this as a GUI option
         Beta(DistM < DistCutOff) = Beta_NN;
 
     case 'Jansen_TDC'
-        Beta = Coupling_TDC(Structure);
-        [Beta_Jansen_NN,~] = Coupling_Jansen(Structure);
+        Beta = Coupling_TDC(obj_SD);
+        [Beta_Jansen_NN,~] = Coupling_Jansen(obj_SD);
         
         Sub_Ind = ~eq(Beta_Jansen_NN,0);
         Beta(Sub_Ind) = Beta_Jansen_NN(Sub_Ind);
@@ -47,9 +47,9 @@ switch CoupleType
     case 'NN_Mix_TDC_Betasheet'
         % this is for betasheet only
         % othe structure do not have N_residue and N_Strand
-        Beta      = Coupling_TDC(Structure);
-        N_Residue = Structure.N_Residue;
-        N_Strand  = Structure.N_Strand;
+        Beta      = Coupling_TDC(obj_SD);
+        N_Residue = obj_SD.N_Residue;
+        N_Strand  = obj_SD.N_Strand;
 
         N_Mode_per_Starnd = N_Residue -1;
 
@@ -66,31 +66,35 @@ switch CoupleType
 
     case 'Cho_PB'
         % this is for betasheet only
-        Beta = Coupling_Cho_PB(Structure);
+        Beta = Coupling_Cho_PB(obj_SD);
 
     case 'Cho_APB'
         % this is for betasheet only
-        Beta = Coupling_Cho_APB(Structure);
+        Beta = Coupling_Cho_APB(obj_SD);
 
     case 'TDC+Cho_APB'
         % this is for betasheet only
-        Beta_TDC_all = Coupling_TDC(Structure);
-        Nmodes1 = Structure.StrucData1.Nmodes;
-        Beta_APB = Coupling_Cho_APB(Structure.StrucData2);
+        Beta_TDC_all = Coupling_TDC(obj_SD);
+        Nmodes1 = obj_SD.StrucData1.Nmodes;
+        Beta_APB = Coupling_Cho_APB(obj_SD.StrucData2);
 
         Beta_Mix = Beta_TDC_all;
-        Beta_APB_Ind = Nmodes1+1:Structure.Nmodes;
+        Beta_APB_Ind = Nmodes1+1:obj_SD.Nmodes;
         Beta_Mix(Beta_APB_Ind,Beta_APB_Ind) = Beta_APB;
 
         Beta = Beta_Mix;
 
     case 'Zero'
-        Nmodes = Structure.Nmodes;
-        Beta = zeros(Nmodes);
+        Beta = zeros(obj_SD.Nmodes);
         
     case 'TDC_PBC'
-        Beta = Coupling_TDC_PBC(Structure);
-
+        Beta = Coupling_TDC_PBC(obj_SD);
+        
+    case 'Symbolic'
+        Beta = sym('B%d_%d',obj_SD.Nmodes);
+        Beta(boolean(eye(obj_SD.Nmodes))) = zeros(obj_SD.Nmodes,1);
+        obj_SD.Beta = Beta;
+        
     case 'List'
         % do nothing, this is for generating the coupling list 
         Beta = [];

@@ -17,6 +17,8 @@ GUI_Inputs.CouplingType = 'Symbolic';
 
 app = struct;
 app.Parent = [];
+app.fileChooser = DefaultFileChooser;
 
 S_PDB = Load_PDB(app,GUI_Inputs);
 S_PDB_AmideI = ConstructAmideIPDB(S_PDB,GUI_Inputs);
+SD_PDB_H2ex = H_handler(S_PDB_AmideI,GUI_Inputs,'TwoEx');

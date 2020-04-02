@@ -37,7 +37,7 @@ for i = 1:length(distanceArray)
 end 
 
 %% Save GIF
-saveGIF  = 1;
+saveGIF  = 0;
 BaseFileName = 'TCO_X3_X10';
 SavePath = '~/Desktop';
 SaveName = [SavePath,'/',BaseFileName,'.gif'];
@@ -65,4 +65,4 @@ hF  = figure;
 hF.Position = [100,100,800,300];
 hAx_FTIR     = subplot(1,2,1,'Parent',hF);
 hAx_Molecule = subplot(1,2,2,'Parent',hF);
-movie(hF,Frame_all,10)
+movie(hF,Frame_all,3)

@@ -1,16 +1,4 @@
 function Init_COSMOSS_GUI(app)
-%% Setup paths
-[pathCOSMOSS,~,~] = fileparts(which('COSMOSS'));
-app.resourcePaths{1} = pathCOSMOSS;
-app.resourcePaths{2} = genpath([pathCOSMOSS,'/GUI_resources']);
-app.resourcePaths{3} = genpath([pathCOSMOSS,'/MoleculeConstruction']);
-app.resourcePaths{4} = genpath([pathCOSMOSS,'/SpecFunc']);
-app.resourcePaths{5} = genpath([pathCOSMOSS,'/AnalysisTools']);
-
-for i = 1:length(app.resourcePaths)
-    addpath(app.resourcePaths{i})
-end
-
 %% Setup default GUI appearences
 % Setup the list of structure models
 [~,StructureModelList] = StructureModel('List');

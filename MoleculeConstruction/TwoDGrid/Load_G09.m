@@ -1,4 +1,4 @@
-function S_G09_MF = Load_G09(GUI_Inputs)
+function S_G09_MF = Load_G09(app,GUI_Inputs)
 % The function read the formattetd G09 output text file then generate a
 % StructureData object with following information:
 % S_G09.XYZ   
@@ -16,15 +16,16 @@ function S_G09_MF = Load_G09(GUI_Inputs)
 % Copyright Jia-Jung Ho, 2013-2020
 
 %% Read G09 formatted inputs
-PWD = pwd;
-G09_default_folder = [PWD, '/StructureFiles/G09/'];
+[FilesName,PathName,~] = app.fileChooser.chooseFile('*.*');
+% PWD = pwd;
+% G09_default_folder = [PWD, '/StructureFiles/G09/'];
+% 
+% [FilesName,PathName,~] = uigetfile({'*.txt','Formatted G09 output'; ...
+%                                     '*,*','All Files'},...
+%                                     'Select inputs',G09_default_folder);
 
-[FilesName,PathName,~] = uigetfile({'*.txt','Formatted G09 output'; ...
-                                    '*,*','All Files'},...
-                                    'Select inputs',G09_default_folder);
 
-
-G09_Path = [PathName FilesName];                             
+G09_Path = [PathName FilesName];                        
 fid = fopen(G09_Path);
 
 % Predefined Variables

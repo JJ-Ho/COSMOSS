@@ -3,13 +3,7 @@ function S_PDB = Load_PDB(app,GUI_Inputs)
 % Copyright Jia-Jung Ho, 2013-2020
 
 %% Get pdb file location 
-PWD = pwd;
-PDB_Path = [PWD, '/StructureFiles/PDB/'];
-
-[FilesName,PathName,~] = uigetfile({'*.pdb','PDB file'; ...
-                                    '*,*','All Files'},...
-                                    'MultiSelect','on',...
-                                    'Select inputs',PDB_Path);
+[FilesName,PathName,~] = app.fileChooser.chooseFile('*.*');
                                 
 %% Parse molecule structure
 if GUI_Inputs.Preprocessed

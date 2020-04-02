@@ -9,5 +9,6 @@ switch ParentInfo{1}
         disp('Running sub-GUI from Comb2...')
     case 'StandAlong'
         app.Parent.GUI_Tag = 'None';
+        app.fileChooser   = DefaultFileChooser;
         disp('Running Model GUI in stand alone mode...')
 end

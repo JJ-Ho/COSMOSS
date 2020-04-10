@@ -42,6 +42,9 @@ defaultPlot_Bonds     = 1;
 defaultPlot_Axis      = 1;
 defaultPlot_SideChain = 0;
 defaultPlot_Label     = 0;
+defaultPhi_D          = 0;
+defaultPsi_D          = 0;
+defaultTheta_D        = 0;
 defaultL_Index        = [];
 
 % Add optional inputs to inputparser object
@@ -50,6 +53,9 @@ addOptional(INPUT,'Plot_Bonds'     ,defaultPlot_Bonds);
 addOptional(INPUT,'Plot_Axis'      ,defaultPlot_Axis);
 addOptional(INPUT,'Plot_SideChain' ,defaultPlot_SideChain);
 addOptional(INPUT,'Plot_Label'     ,defaultPlot_Label);
+addOptional(INPUT,'Phi_D'          ,defaultPhi_D     );
+addOptional(INPUT,'Psi_D'          ,defaultPsi_D     );
+addOptional(INPUT,'Theta_D'        ,defaultTheta_D   );
 addOptional(INPUT,'L_Index'        ,defaultL_Index);
 
 parse(INPUT,GUI_Inputs_C{:});
@@ -59,6 +65,9 @@ Plot_Bonds     = INPUT.Results.Plot_Bonds;
 Plot_Axis      = INPUT.Results.Plot_Axis;
 Plot_SideChain = INPUT.Results.Plot_SideChain;
 Plot_Label     = INPUT.Results.Plot_Label;
+Phi_D          = INPUT.Results.Phi_D;
+Psi_D          = INPUT.Results.Psi_D;
+Theta_D        = INPUT.Results.Theta_D;
 L_Index        = INPUT.Results.L_Index;
 
 %% Main
@@ -132,9 +141,9 @@ hold(hAx,'on')
         Lab_Frame = [1,0,0;
                      0,1,0;
                      0,0,1 ];
-        R_MF_LF = R1_ZYZ_0(GUI_Inputs.Phi_D/180*pi,...
-                           GUI_Inputs.Psi_D/180*pi,...
-                           GUI_Inputs.Theta_D/180*pi);
+        R_MF_LF = R1_ZYZ_0(Phi_D/180*pi,...
+                           Psi_D/180*pi,...
+                           Theta_D/180*pi);
         PlotRotMolFrame(hAx,Lab_Frame,R_MF_LF,CoM)
     end
     

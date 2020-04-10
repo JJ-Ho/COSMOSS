@@ -271,6 +271,7 @@ Ind_O = Ind_H -1;
 S_BSheet = StructureData;
 S_BSheet.XYZ        = XYZ;
 S_BSheet.AtomName   = AtomName;
+S_BSheet.Extra.ChainID = {'     '}; % output dummy space array to skip Chain recognition 
 
 % Find all the amide modes and their default values
 S_BSheet = SD_GetAmideI(S_BSheet);

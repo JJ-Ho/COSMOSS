@@ -30,12 +30,6 @@ Psi_D   = INPUT.Results.Psi_D;
 Theta_D = INPUT.Results.Theta_D;
 
 %% Add AmideI mode info into StructureData class PDB
-% S_SD_AmideI.LocCenter
-% S_SD_AmideI.LocMu     
-% S_SD_AmideI.LocAlpha  
-% S_SD_AmideI.LocFreq   , will be midified by SD_1ExH method with the GUI inputs
-% S_SD_AmideI.LocAnharm , will be midified by SD_1ExH method with the GUI inputs
-% S_SD_AmideI.Extra.AmideIAtomSerNo = AmideIAtomSerNo;
 S_PDB_AmideI = SD_GetAmideI(S_PDB);
 
 %% Rotate the molecule

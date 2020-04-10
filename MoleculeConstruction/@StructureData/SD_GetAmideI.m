@@ -6,78 +6,87 @@ function Obj_SD_AmideI = SD_GetAmideI(obj_SD)
 %% Redefine the variable names
 XYZ       = obj_SD.XYZ;
 AtomName  = obj_SD.AtomName;
+ChainID   = obj_SD.Extra.ChainID;
 
-%% Determine atom index of Amide I modes and "AmideIAtomSerNo"
 % [C,O,N,CA]
-Ind = (1:obj_SD.NAtoms)';
-
 Atom_C  = strcmp(AtomName,'C'); %size(Atom_C)
 Atom_O  = strcmp(AtomName,'O'); %size(Atom_O)
 Atom_N  = strcmp(AtomName,'N'); %size(Atom_N)
 Atom_CA = strcmp(AtomName,'CA'); %size(Atom_CA)
 Atom = [Atom_C,Atom_O,Atom_N,Atom_CA];
+AtomInd = (1:obj_SD.NAtoms)';
 
-% delete irrelevent lines with no above atoms 
-Ind (~any(Atom,2))   = [];
-Atom(~any(Atom,2),:) = [];
-% Remove first few rows not start with 'C'
-Head   = 'y';
-while strcmp(Head,'y')
-    if eq(Atom(1,:), [1,0,0,0])
-        Head = 'n';
-    else
-        Atom(1,:) = [];
-         Ind(1,:) = [];
-    end
+%% Check if there is ChainIDs
+if ~isspace([ChainID{:}])
+    
+    Chain_Ind_TF = ~strcmp(ChainID(2:end),ChainID(1:end-1));
+    ChainEnd     = AtomInd(Chain_Ind_TF);
+    ChainStart   = ChainEnd+1;
+    ChainEnd     = [ChainEnd;obj_SD.NAtoms];
+    ChainStart   = [1;ChainStart];
+    N_Chain      = length(ChainStart);
+else
+    N_Chain = 1;
+    ChainStart = 1;
+    ChainEnd = obj_SD.NAtoms;
 end
 
-% Remove last few rows not end with 'CA'
-Tail   = 'y';
-while strcmp(Tail,'y')
-    if eq(Atom(end,:), [0,0,0,1])
-        Tail = 'n';
-    else
-        Atom(end,:) = [];
-         Ind(end,:) = [];
+%% Find AmideI mode in each Chain and determine their atom index and "AmideIAtomSerNo"
+AmideIAtomSerNo = [];
+
+for NC = 1:N_Chain
+    AtomInd = (ChainStart(NC):ChainEnd(NC))';
+    ChainAtom = Atom(ChainStart(NC):ChainEnd(NC),:);
+    
+    % delete  irrelevent lines with no above atoms 
+    AtomInd (~any(ChainAtom,2))   = [];
+    ChainAtom(~any(ChainAtom,2),:) = [];
+    % Remove first few rows not start with 'C'
+    Head   = 'y';
+    while strcmp(Head,'y')
+        if eq(ChainAtom(1,:), [1,0,0,0])
+            Head = 'n';
+        else
+            ChainAtom(1,:) = [];
+             AtomInd(1,:) = [];
+        end
     end
+
+    % Remove last few rows not end with 'CA'
+    Tail   = 'y';
+    while strcmp(Tail,'y')
+        if eq(ChainAtom(end,:), [0,0,0,1])
+            Tail = 'n';
+        else
+            ChainAtom(end,:) = [];
+             AtomInd(end,:) = [];
+        end
+    end
+    % Remove any lines that does not have all four atoms
+    % ex:
+    %   i [1,0,0,0]     [1,0,0,0]
+    %   j [0,1,0,0]  vs [0,1,0,0]  by clapse the ijk dimemsion
+    %   k [0,0,1,0]     [0,1,0,0]
+    %   l [0,0,0,1]     [0,0,0,1]
+    %        ||            ||
+    %        \/            \/
+    %     [1,1,1,1]     [1,2,0,1]  
+
+    AtomX = sum(permute(reshape(ChainAtom,4,[],4),[3,2,1]),3);
+    Mask = ones(size(AtomX));
+    Array_Mask = logical(bsxfun(@times,all(~(AtomX - Mask)),[1,1,1,1]'));
+    IndX = AtomInd(Array_Mask(:));  
+    Tmp_AmideIAtomSerNo = reshape(IndX,4,[])';
+    AmideIAtomSerNo = [AmideIAtomSerNo;Tmp_AmideIAtomSerNo];
 end
 
-% Remove any lines that does not have all four atoms
-% ex:
-%   i [1,0,0,0]     [1,0,0,0]
-%   j [0,1,0,0]  vs [0,1,0,0]  by clapse the ijk dimemsion
-%   k [0,0,1,0]     [0,1,0,0]
-%   l [0,0,0,1]     [0,0,0,1]
-%        ||            ||
-%        \/            \/
-%     [1,1,1,1]     [1,2,0,1]  
-
-AtomX = sum(permute(reshape(Atom,4,[],4),[3,2,1]),3);
-Mask = ones(size(AtomX));
-Array_Mask = logical(bsxfun(@times,all(~(AtomX - Mask)),[1,1,1,1]'));
-IndX = Ind(Array_Mask(:));
-
-% IndX = bsxfun(@times,IndX,Array_Mask);
-% IndX(~any(IndX,1))   = [];
-
-AmideIAtomSerNo = reshape(IndX,4,[])';
-
-% Check if C-N distance >> typical bond length
-% if so, this is the end group and will be deleted
-XYZ_C = XYZ(AmideIAtomSerNo(:,1),:);
-XYZ_N = XYZ(AmideIAtomSerNo(:,3),:);
-D_CN = sum((XYZ_C-XYZ_N).^2,2);
-D_CN_CutOff = 3; % CutOff distance in Ang
-EndGroupInd = gt(D_CN,D_CN_CutOff);
-
-AmideIAtomSerNo(EndGroupInd,:) = []; 
-Nmodes = size(AmideIAtomSerNo,1);
-
+%% Define Aminde I modes coordinate system
 % Find the XYZ coordinate of Amide I related Atoms
+Nmodes = size(AmideIAtomSerNo,1);
 XYZ_AmideI_Atoms = XYZ(AmideIAtomSerNo(:),:);
 XYZ_AmideI_Atoms = reshape(XYZ_AmideI_Atoms,Nmodes,[],3); % [C_xyz O_xyz N_xyz CA_xyz; C_xyz, O_xyz, N_xyz, CA_xyz ; ...]
 
-%% Define Aminde I modes coordinate system
+% Define local coordinate system
 Vec_CO = XYZ_AmideI_Atoms(:,2,:)-XYZ_AmideI_Atoms(:,1,:);
 Vec_CO = reshape(Vec_CO,Nmodes,3);
 Vec_CO = bsxfun(@rdivide,Vec_CO,sqrt(sum(abs(Vec_CO).^2,2))); % normaliz CO vectors

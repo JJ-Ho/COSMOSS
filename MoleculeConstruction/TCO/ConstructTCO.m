@@ -185,6 +185,6 @@ TCO.GUI_Inputs = GUI_Inputs;
 TCO.hPlotFunc  = @PlotXYZfiles_TCO;
 TCO.GUI_Inputs = GUI_Inputs;
 
-%% Calculate One Exciton Hamiltoian
+%% Calculate One Exciton Hamiltonian
 TCO = SD_1ExH(TCO); 
 

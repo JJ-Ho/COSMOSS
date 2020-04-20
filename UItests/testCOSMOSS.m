@@ -1,6 +1,8 @@
 classdef testCOSMOSS < matlab.uitest.TestCase & matlab.mock.TestCase
     properties
         hApp
+        RelTol = 1e-12
+        AbsTol = 1e-8
     end
     
     methods(TestClassSetup)
@@ -31,7 +33,7 @@ classdef testCOSMOSS < matlab.uitest.TestCase & matlab.mock.TestCase
             calculated.Data_2DSFG = app.Data_2DSFG;
             
             load('expectedResults_TCO','expectedResults')
-            tc.verifyEqual(calculated,expectedResults)
+            tc.verifyEqual(calculated,expectedResults,'AbsTol',tc.AbsTol)
         end
         
         function test_PDB(tc)
@@ -60,7 +62,7 @@ classdef testCOSMOSS < matlab.uitest.TestCase & matlab.mock.TestCase
             calculated.Data_2DSFG = app.Data_2DSFG;
             
             load('expectedResults_PDB_5GlyHelix','expectedResults')
-            tc.verifyEqual(calculated,expectedResults)
+            tc.verifyEqual(calculated,expectedResults,'AbsTol',tc.AbsTol)
         end
 
         function test2DGrid(tc)
@@ -78,7 +80,20 @@ classdef testCOSMOSS < matlab.uitest.TestCase & matlab.mock.TestCase
             tc.press(app.Button_SelectModel);
             tc.press(app.hModel.Button_LoadInput);
             tc.press(app.hModel.Button_Generate);
-            tc.press(app.hModel.Button_Draw);
+            
+            tc.press(app.Button_FTIR);
+            tc.press(app.Button_SFG);
+            tc.press(app.Button_2DIR);
+            tc.press(app.Button_2DSFG);
+
+            calculated.Structure  = app.Structure;
+            calculated.Data_FTIR  = app.Data_FTIR;
+            calculated.Data_SFG   = app.Data_SFG;
+            calculated.Data_2DIR  = app.Data_2DIR;
+            calculated.Data_2DSFG = app.Data_2DSFG;
+            
+            load('expectedResults_2DGrid','expectedResults')
+            tc.verifyEqual(calculated,expectedResults,'AbsTol',tc.AbsTol)
         end
         
         function test_BetaSheet(tc)
@@ -102,7 +117,7 @@ classdef testCOSMOSS < matlab.uitest.TestCase & matlab.mock.TestCase
             calculated.Data_2DSFG = app.Data_2DSFG;
             
             load('expectedResults_BetaSheet','expectedResults')
-            tc.verifyEqual(calculated,expectedResults)
+            tc.verifyEqual(calculated,expectedResults,'AbsTol',tc.AbsTol)
         end
         
         function test_Comb2(tc)
@@ -129,7 +144,7 @@ classdef testCOSMOSS < matlab.uitest.TestCase & matlab.mock.TestCase
             calculated.Data_2DSFG = app.Data_2DSFG;
             
             load('expectedResults_Comb2','expectedResults')
-            tc.verifyEqual(calculated,expectedResults)
+            tc.verifyEqual(calculated,expectedResults,'AbsTol',tc.AbsTol)
         end
         
     end

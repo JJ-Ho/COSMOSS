@@ -30,6 +30,7 @@ classdef StructureData < handle
        LocAlphaM    % Raman tensors in Matrix form, use for visual inspection only
        CoM          % Center of Mass, as a reference point of common origin in a coordinate system
        OneExH       % One exciton Hamiltonian, size = [Nmodes+1,Nmodes+1]
+       TwoExH       % Two exciton Hamiltonian, size = [(N+2)*(N+1)/2,(N+2)*(N+1)/2]
    end
    
    properties % Set Properties
@@ -77,6 +78,9 @@ classdef StructureData < handle
             return
           end
       end
+      function TwoExH    = get.TwoExH(obj)
+          TwoExH = SD_2ExH(obj);
+      end
    end
    
    methods % Set methods
@@ -116,7 +120,8 @@ classdef StructureData < handle
       obj_TN      = SD_TransN(obj,V,N)
       obj_Framed  = SD_SetFrame(obj,Center_Ind,Z_Ind,XZ_Ind)
       Obj_AmideI  = SD_GetAmideI(obj)
-      obj_1ExBeta = SD_1ExH(obj_SD)
+      obj_1ExH    = SD_1ExH(obj_SD)
+      obj_2ExH    = SD_2ExH(obj_SD)
       hF          = SD_Draw(obj_SD,varargin)
       Conn        = SD_Connectivity(obj_SD)
       [X,Y,Z]     = SD_gplot3(obj_SD,varargin)

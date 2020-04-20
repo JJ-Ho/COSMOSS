@@ -37,6 +37,5 @@ This code is designed to be used for other molecules as well. You can generate y
 
 GPL2
 
-### Andy comment
 
    

@@ -1,4 +1,4 @@
-function [SpectraGrid,Beta,IntensityGrid] = Feynmann_Path_Gen(SpecType,Pathways,Data_2D,SparseMax,MEM_CutOff)
+function [SpectraGrid,Gamma,IntensityGrid] = Feynmann_Path_Gen(SpecType,Pathways,Data_2D,SparseMax,MEM_CutOff)
 %% debug
 % SpecType = '2DSFG';
 % Pathways = 'NR3';
@@ -171,7 +171,7 @@ F_ind = sub2ind([SparseMax,SparseMax],F_sub(:,1),F_sub(:,2));
 Ele_Max = round(MEM_CutOff/(L_Response * 8 / 1e9)) + 1; % max number of elements to reach MEM_CufOff
 
 %% Calculate molecular response tensor
-Beta = sparse(SparseMax^2,L_Response); % Preallocate sparse matrix container
+Gamma = sparse(SparseMax^2,L_Response); % Preallocate sparse matrix container
 N_Path = numel(I1);
 
 if N_Path > Ele_Max
@@ -196,9 +196,9 @@ if N_Path > Ele_Max
     
     Response = zeros(Ele_Max,Loop_N-1);
     for LN = 1:Loop_N -1         
-        Beta_Raw = T4(I4_Loop(:,LN),Ja).*T3(I3_Loop(:,LN),Jb).*T2(I2_Loop(:,LN),Jc).*T1(I1_Loop(:,LN),Jd);
-        Beta(F1D_Loop(:,LN),:) = Beta_Raw;
-        Response(:,LN)         = Beta_Raw*EJLR';
+        Gamma_Raw = T4(I4_Loop(:,LN),Ja).*T3(I3_Loop(:,LN),Jb).*T2(I2_Loop(:,LN),Jc).*T1(I1_Loop(:,LN),Jd);
+        Gamma(F1D_Loop(:,LN),:) = Gamma_Raw;
+        Response(:,LN)         = Gamma_Raw*EJLR';
     end    
     Response = Response(:);
     
@@ -210,15 +210,15 @@ if N_Path > Ele_Max
     I3_End   = I3_Loop(Last_Ind,Loop_N);
     I4_End   = I4_Loop(Last_Ind,Loop_N);
     
-    Beta_Raw_End = T4(I4_End,Ja).*T3(I3_End,Jb).*T2(I2_End,Jc).*T1(I1_End,Jd);
-    Beta(F1D_End,:) = Beta_Raw_End;
-    Response_End    = Beta_Raw_End*EJLR';
+    Gamma_Raw_End = T4(I4_End,Ja).*T3(I3_End,Jb).*T2(I2_End,Jc).*T1(I1_End,Jd);
+    Gamma(F1D_End,:) = Gamma_Raw_End;
+    Response_End    = Gamma_Raw_End*EJLR';
     
     Response = [ Response; Response_End];    
 else
-    Beta_Raw = T4(I4,Ja).*T3(I3,Jb).*T2(I2,Jc).*T1(I1,Jd);
-    Beta(F_ind,:) = Beta_Raw;
-    Response      = Beta_Raw*EJLR';
+    Gamma_Raw = T4(I4,Ja).*T3(I3,Jb).*T2(I2,Jc).*T1(I1,Jd);
+    Gamma(F_ind,:) = Gamma_Raw;
+    Response      = Gamma_Raw*EJLR';
 end
 
 %% Deal with Other outputs

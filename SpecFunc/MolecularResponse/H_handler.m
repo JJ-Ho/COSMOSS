@@ -1,5 +1,5 @@
 function Output= H_handler(SData,Main_GUI_Inputs,ExMode)
-% this function handle the One exciton Hamiltonian in the StrutureData with
+% this function handle the Hamiltonian generation from the StrutureData with
 % the following tasks:
 %   1. Diagonal disorder
 %   2. Off-Diagonal disorder
@@ -7,7 +7,6 @@ function Output= H_handler(SData,Main_GUI_Inputs,ExMode)
 %   4. Diagnalization
 
 %% Inputs parser
-% Turn Output from Read GUI to cell array
 GUI_Inputs_C      = fieldnames(Main_GUI_Inputs);
 GUI_Inputs_C(:,2) = struct2cell(Main_GUI_Inputs);
 GUI_Inputs_C      = GUI_Inputs_C';
@@ -33,18 +32,8 @@ ODD_FWHM     = INPUT.Results.ODD_FWHM;
 P_FlucCorr   = INPUT.Results.P_FlucCorr;
 
 %% reassign variable names
-OneExH       = SData.OneExH;
-% Beta         = SData.Beta;
-N            = SData.Nmodes;
-% LocFreq      = SData.LocFreq;
-% LocAnharm    = SData.LocAnharm;
+N = SData.Nmodes;
 
-%% Check if generated in Symbolic mode
-% symMode = false;
-% if isobject(LocFreq)
-%     LocAnharm = sym('A%d',[N,1]);
-%     symMode = true;
-% end
 %% check if apply random sampling
 if Sampling
     DD_std  = DD_FWHM./(2*sqrt(2*log(2)));
@@ -64,14 +53,16 @@ if Correlation_Dice < P_FlucCorr
 else 
     dF_DD = DD_std.*randn(N,1); 
 end
-dF_DD = [0;dF_DD]; % add the zero exciton part
 
 % Off diagonal disorder
 dBeta   = ODD_std*randn(N);
 dBeta   = (dBeta + dBeta')./2; % symetrize
-dBeta   = blkdiag(0,dBeta);
+dBeta(logical(eye(N))) = zeros(N,1); % Get ride of diagnal
 
-OneExH = OneExH + bsxfun(@times,eye(N+1),dF_DD) + dBeta;
+% Update the local mode frequencies and the couplings
+SData.LocFreq = SData.LocFreq + dF_DD;
+SData.Beta    = SData.Beta + dBeta;
+OneExH        = SData.OneExH;
 
 %% Generate Two Exciton block diag part of full Hamiltonianif needed (TwoExOvertoneH & TwoExCombinationH)
 TEDIndexBegin = [];
@@ -116,10 +107,10 @@ if ~isobject(SData.LocFreq)
     end 
 end 
 %% export
-Output.Sort_Ex_F1 = Sort_Ex_F1;
-Output.Sort_Ex_V1 = Sort_Ex_V1;
-Output.Sort_Ex_F2 = Sort_Ex_F2;
-Output.Sort_Ex_V2 = Sort_Ex_V2;
+Output.Sort_Ex_F1    = Sort_Ex_F1;
+Output.Sort_Ex_V1    = Sort_Ex_V1;
+Output.Sort_Ex_F2    = Sort_Ex_F2;
+Output.Sort_Ex_V2    = Sort_Ex_V2;
 Output.TEDIndexBegin = TEDIndexBegin;
 Output.TEDIndexEnd   = TEDIndexEnd;
 Output.TwoExPart     = TwoExPart;

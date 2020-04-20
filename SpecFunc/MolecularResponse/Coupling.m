@@ -92,7 +92,7 @@ switch CoupleType
         
     case 'Symbolic'
         Beta = sym('B%d_%d',obj_SD.Nmodes);
-        Beta(boolean(eye(obj_SD.Nmodes))) = zeros(obj_SD.Nmodes,1);
+        Beta(logical(eye(obj_SD.Nmodes))) = zeros(obj_SD.Nmodes,1);
         obj_SD.Beta = Beta;
         
     case 'List'

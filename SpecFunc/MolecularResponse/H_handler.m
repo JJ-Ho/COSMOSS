@@ -64,6 +64,17 @@ SData.LocFreq = SData.LocFreq + dF_DD;
 SData.Beta    = SData.Beta + dBeta;
 OneExH        = SData.OneExH;
 
+%% Polariton 1Ex
+%define cavity energy here for now
+w_c = 1700;  %cavity energy in units of wavenumber
+g = 10;      %cavity molecule coupling term
+
+%Extend First Excited State Hamiltonian..
+OneExH = blkdiag(OneExH,w_c);
+OneExH(2:N+1,N+2)=g;
+OneExH(N+2,2:N+1)=g;
+
+
 %% Generate Two Exciton block diag part of full Hamiltonianif needed (TwoExOvertoneH & TwoExCombinationH)
 TEDIndexBegin = [];
 TEDIndexEnd   = [];
@@ -74,7 +85,31 @@ if strcmp(ExMode,'TwoEx')
     TEDIndexBegin = TwoExH.TEDIndexBegin;
     TEDIndexEnd   = TwoExH.TEDIndexEnd;
     TwoExPart     = TwoExH.TwoExPart;    
+    
+    %Extend Second Excited State Hamiltonian...
+    %energies of one cavity excitation + (one molecular excitation or cavity excitation)
+    TwoExCavH= diag(diag(OneExH(2:N+2,2:N+2)));
+    TwoExCavH(1:N,N+1)=g;
+    TwoExCavH(N+1,1:N)=g;
+    TwoExPart = blkdiag(TwoExPart,TwoExCavH);
+
+    %Fill in cross terms of between cavity and 2nd excited state Hamiltonian
+    for i=1:N
+       TwoExPart(((N+1)*N/2)-((N-i+2)*(N-i+1)/2)+1:((N+1)*N/2)-((N-i+2)*(N-i+1)/2)+1+(N-i),...
+                 ((N+1)*N/2+i):((N+1)*N/2+N))=diag(ones(N-i+1,1))*g;  
+
+       TwoExPart(((N+1)*N/2+i):((N+1)*N/2+N),...
+                 ((N+1)*N/2)-((N-i+2)*(N-i+1)/2)+1:((N+1)*N/2)-((N-i+2)*(N-i+1)/2)+1+(N-i))=diag(ones(N-i+1,1))*g;        
+
+    end
+
+    for i=1:N-1
+        TwoExPart(((N+1)*N/2)-((N-i+1)*(N-i)/2)+1:((N+1)*N/2)-((N-i+1)*(N-i+0)/2)+N-i,(N+1)*N/2+i)=g*ones(N-i,1);
+        TwoExPart((N+1)*N/2+i,((N+1)*N/2)-((N-i+1)*(N-i)/2)+1:((N+1)*N/2)-((N-i+1)*(N-i+0)/2)+N-i)=g*ones(N-i,1)';
+    end
 end
+
+
 
 %% Diagonalize the full hamiltonian
 Sort_Ex_F1 = [];
@@ -114,3 +149,4 @@ Output.Sort_Ex_V2    = Sort_Ex_V2;
 Output.TEDIndexBegin = TEDIndexBegin;
 Output.TEDIndexEnd   = TEDIndexEnd;
 Output.TwoExPart     = TwoExPart;
+Output.OneExH        = OneExH;

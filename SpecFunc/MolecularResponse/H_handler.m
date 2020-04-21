@@ -88,7 +88,7 @@ if strcmp(ExMode,'TwoEx')
     
     %Extend Second Excited State Hamiltonian...
     %energies of one cavity excitation + (one molecular excitation or cavity excitation)
-    TwoExCavH= diag(diag(OneExH(2:N+2,2:N+2)));
+    TwoExCavH= diag(diag(OneExH(2:N+2,2:N+2))+w_c);
     TwoExCavH(1:N,N+1)=g;
     TwoExCavH(N+1,1:N)=g;
     TwoExPart = blkdiag(TwoExPart,TwoExCavH);

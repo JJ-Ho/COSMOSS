@@ -116,7 +116,7 @@ hold(hAx,'on')
         
     end
     
-    if Plot_SideChain
+    if Plot_SideChain && ~isempty(Side_Ind)
         SC = StructureData;
         SC.XYZ = XYZ(Side_Ind,:);
         SC.AtomName = AtomName(Side_Ind);

@@ -23,6 +23,7 @@ CouplingList = {'TDC',...
                 'NN_Mix_TDC',...
                 'Jansen_TDC',...
                 'Zero',...
+                'Constant',...
                 };
 
 %% select models
@@ -86,6 +87,9 @@ switch CoupleType
 
     case 'Zero'
         Beta = zeros(obj_SD.Nmodes);
+        
+    case 'Constant'
+        Beta = ones(obj_SD.Nmodes).* Beta_NN;
         
     case 'TDC_PBC'
         Beta = Coupling_TDC_PBC(obj_SD);

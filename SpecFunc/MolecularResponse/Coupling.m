@@ -89,8 +89,8 @@ switch CoupleType
         Beta = zeros(obj_SD.Nmodes);
         
     case 'Constant'
-        Beta = ones(obj_SD.Nmodes).* Beta_NN;
-        
+        %Beta = ones(obj_SD.Nmodes).* Beta_NN;
+         Beta = (ones(obj_SD.Nmodes)-diag(ones(obj_SD.Nmodes,1))).* Beta_NN;  %Add Constant coupling term to all cross terms.
     case 'TDC_PBC'
         Beta = Coupling_TDC_PBC(obj_SD);
         

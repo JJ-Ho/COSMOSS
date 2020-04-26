@@ -95,11 +95,10 @@ obj_comb2.Scaled_LocAlpha = Scaled_LocAlpha; % reassign to replace the automatic
 Beta_1 = obj_SD1.Beta;
 Beta_2 = obj_SD2.Beta;
 
-Beta_blkdiag = blkdiag(Beta_1,Beta_2);
-
 % coupling between the two model
+Beta_blkdiag_ind = blkdiag(ones(size(Beta_1)),ones(size(Beta_2)));
 Beta_offblkdiag = Coupling(obj_comb2,CouplingType,Beta_NN);
-Beta_offblkdiag = Beta_offblkdiag .* ~Beta_blkdiag;
+Beta_offblkdiag = Beta_offblkdiag .* ~Beta_blkdiag_ind;
 
-Beta = Beta_blkdiag + Beta_offblkdiag;
+Beta = blkdiag(Beta_1,Beta_2) + Beta_offblkdiag;
 obj_comb2.Beta = Beta;

@@ -3,13 +3,16 @@ classdef testCOSMOSS < matlab.uitest.TestCase & matlab.mock.TestCase
         hApp
         RelTol = 1e-12
         AbsTol = 1e-8
+        COSMOSSPath
     end
     
     methods(TestClassSetup)
         function addPath(tc)
             % get the upper layer path before the tests begin
-            [COSMOSSPath,~,~] = fileparts(pwd);
-            addpath(COSMOSSPath)
+            [Path,~,~] = fileparts(pwd);
+            addpath(Path)
+            
+            tc.COSMOSSPath = Path;
         end
     end
 
@@ -39,7 +42,7 @@ classdef testCOSMOSS < matlab.uitest.TestCase & matlab.mock.TestCase
         function test_PDB(tc)
             import matlab.mock.actions.AssignOutputs
             FilesName = '5-glycine-helix-z.pdb';
-            PathName = '/Users/jjho/Documents/MATLAB/COSMOSS/StructureFiles/PDB/Helix/';
+            PathName = [tc.COSMOSSPath,'/StructureFiles/PDB/Helix/'];
             
             [mockChooser,behavior] = tc.createMock(?FileChooser);
             when(behavior.chooseFile('*.*'),AssignOutputs(FilesName,PathName,1))
@@ -68,7 +71,7 @@ classdef testCOSMOSS < matlab.uitest.TestCase & matlab.mock.TestCase
         function test2DGrid(tc)
             import matlab.mock.actions.AssignOutputs
             FilesName = '131029_MBA_Reverse_TDV.txt';
-            PathName = '/Users/jjho/Documents/MATLAB/COSMOSS/StructureFiles/G09/';
+            PathName = [tc.COSMOSSPath,'/StructureFiles/G09/'];
             
             [mockChooser,behavior] = tc.createMock(?FileChooser);
             when(behavior.chooseFile('*.*'),AssignOutputs(FilesName,PathName,1))

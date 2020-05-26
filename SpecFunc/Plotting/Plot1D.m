@@ -93,11 +93,17 @@ switch Signal_Type
         Signal_Type_Title = 'Homo';
 end
 
-if PlotNorm
-    PlotY = PlotY./max(abs(PlotY(:)));
-    Stick = Stick./max(abs(Stick(:)));
+if any(PlotY(:))% check if PlotY is a non-zero array
+    if PlotNorm
+        PlotY = PlotY./max(abs(PlotY(:)));
+        Stick = Stick./max(abs(Stick(:)));
+    else
+        PlotY = PlotY.*(max(abs(Stick(:)))/max(abs(PlotY(:))));
+    end
+    PlotYLim = max(abs(PlotY(:)))*1.1;
 else
-    PlotY = PlotY.*(max(abs(Stick(:)))/max(abs(PlotY(:))));
+    disp('all elements of PlotY are zeros!')
+    PlotYLim = 1;
 end
 
 hold(hAx,'on')
@@ -110,7 +116,7 @@ hold(hAx,'off')
 
 %% figure setting 
 hAx.FontSize = 14;
-hAx.YLim = [-max(abs(PlotY(:))),max(abs(PlotY(:)))]*1.1;
+hAx.YLim = [-PlotYLim,PlotYLim];
 hAx.XLim = [FreqRange(1),FreqRange(end)];
 hAx.XLabel.String = 'cm^{-1}';
 hAx.YLabel.String = 'Intensity';

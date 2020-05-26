@@ -113,7 +113,7 @@ P_IR    =    P_IR/180*pi;
 P_Vis1D = P_Vis1D/180*pi;
 P_Sig1D = P_Sig1D/180*pi;
 
-E = EPolar3(P_Sig1D,P_Vis1D,P_IR); % => [8,1]
+E = EPolar3(P_Sig1D,P_Vis1D,P_IR); % => [1,8]
 
 E_J_ResLF_Avg = E * J_ResLF_Avg; % => [1,N]
 
@@ -128,7 +128,7 @@ OneDSFG.Response1D   = AccuGrid;
 OneDSFG.Res_Int      = AccuGridInt;
 OneDSFG.freq_OneD    = FreqRange;
 OneDSFG.Mu           = Mu;
-OneDSFG.H           = H;
+OneDSFG.H            = H;
 OneDSFG.Alpha        = Alpha;
 OneDSFG.MolFrame     = ResLF;
 OneDSFG.R_Avg        = R_Avg;

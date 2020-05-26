@@ -4,6 +4,8 @@ classdef testCOSMOSS < matlab.uitest.TestCase & matlab.mock.TestCase
         RelTol = 1e-12
         AbsTol = 1e-8
         COSMOSSPath
+        expectedPath
+        saveResult = 0
     end
     
     methods(TestClassSetup)
@@ -13,12 +15,14 @@ classdef testCOSMOSS < matlab.uitest.TestCase & matlab.mock.TestCase
             addpath(Path)
             
             tc.COSMOSSPath = Path;
+            tc.expectedPath = './expected/';
         end
     end
 
     methods (Test)
         
         function test_TCO(tc) 
+            caseName = 'TCO';
             app = COSMOSS;
             tc.hApp = app;
             tc.choose(app.ListBox_Model,1);
@@ -35,11 +39,17 @@ classdef testCOSMOSS < matlab.uitest.TestCase & matlab.mock.TestCase
             calculated.Data_2DIR  = app.Data_2DIR;
             calculated.Data_2DSFG = app.Data_2DSFG;
             
-            load('expectedResults_TCO','expectedResults')
+            load([tc.expectedPath,'expectedResults_',caseName],'expectedResults')
             tc.verifyEqual(calculated,expectedResults,'AbsTol',tc.AbsTol)
+            
+            if tc.saveResult
+                expectedResults = calculated;
+                save(['expectedResults_',caseName],'expectedResults')
+            end
         end
         
         function test_PDB(tc)
+            caseName = 'PDB_5GlyHelix';
             import matlab.mock.actions.AssignOutputs
             FilesName = '5-glycine-helix-z.pdb';
             PathName = [tc.COSMOSSPath,'/StructureFiles/PDB/Helix/'];
@@ -64,11 +74,17 @@ classdef testCOSMOSS < matlab.uitest.TestCase & matlab.mock.TestCase
             calculated.Data_2DIR  = app.Data_2DIR;
             calculated.Data_2DSFG = app.Data_2DSFG;
             
-            load('expectedResults_PDB_5GlyHelix','expectedResults')
+            load([tc.expectedPath,'expectedResults_',caseName],'expectedResults')
             tc.verifyEqual(calculated,expectedResults,'AbsTol',tc.AbsTol)
+            
+            if tc.saveResult
+                expectedResults = calculated;
+                save(['expectedResults_',caseName],'expectedResults')
+            end
         end
 
         function test2DGrid(tc)
+            caseName = '2DGrid';
             import matlab.mock.actions.AssignOutputs
             FilesName = '131029_MBA_Reverse_TDV.txt';
             PathName = [tc.COSMOSSPath,'/StructureFiles/G09/'];
@@ -95,11 +111,17 @@ classdef testCOSMOSS < matlab.uitest.TestCase & matlab.mock.TestCase
             calculated.Data_2DIR  = app.Data_2DIR;
             calculated.Data_2DSFG = app.Data_2DSFG;
             
-            load('expectedResults_2DGrid','expectedResults')
+            load([tc.expectedPath,'expectedResults_',caseName],'expectedResults')
             tc.verifyEqual(calculated,expectedResults,'AbsTol',tc.AbsTol)
+            
+            if tc.saveResult
+                expectedResults = calculated;
+                save(['expectedResults_',caseName],'expectedResults')
+            end
         end
         
         function test_BetaSheet(tc)
+            caseName = 'BetaSheet';
             app = COSMOSS;
             tc.hApp = app;
             
@@ -119,11 +141,17 @@ classdef testCOSMOSS < matlab.uitest.TestCase & matlab.mock.TestCase
             calculated.Data_2DIR  = app.Data_2DIR;
             calculated.Data_2DSFG = app.Data_2DSFG;
             
-            load('expectedResults_BetaSheet','expectedResults')
+            load([tc.expectedPath,'expectedResults_',caseName],'expectedResults')
             tc.verifyEqual(calculated,expectedResults,'AbsTol',tc.AbsTol)
+
+            if tc.saveResult
+                expectedResults = calculated;
+                save(['expectedResults_',caseName],'expectedResults')
+            end
         end
         
         function test_Comb2(tc)
+            caseName = 'Comb2';
             app = COSMOSS;
             tc.hApp = app;
             
@@ -146,8 +174,13 @@ classdef testCOSMOSS < matlab.uitest.TestCase & matlab.mock.TestCase
             calculated.Data_2DIR  = app.Data_2DIR;
             calculated.Data_2DSFG = app.Data_2DSFG;
             
-            load('expectedResults_Comb2','expectedResults')
+            load([tc.expectedPath,'expectedResults_',caseName],'expectedResults')
             tc.verifyEqual(calculated,expectedResults,'AbsTol',tc.AbsTol)
+
+            if tc.saveResult
+                expectedResults = calculated;
+                save(['expectedResults_',caseName],'expectedResults')
+            end
         end
         
     end

@@ -58,6 +58,8 @@ switch Avg_Mirror
     case 'No' % no mirror plane
         V = [1;1;1];
         switch N_Interactions
+            case 2
+                M = kron(V,V);
             case 3
                 M = kron(kron(V,V),V);
             case 5
@@ -70,6 +72,9 @@ switch Avg_Mirror
         V1 = [-1; 1;1];
         V2 = [ 1;-1;1];
         switch N_Interactions
+            case 2
+                Sigma_X = kron(V1,V1);
+                Sigma_Y = kron(V2,V2);
             case 3
                 Sigma_X = kron(kron(V1,V1),V1);
                 Sigma_Y = kron(kron(V2,V2),V2);

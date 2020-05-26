@@ -1,0 +1,59 @@
+% To model cavity mode, I modify the H2O, bend
+%
+% Anharmonic Freq: /home/jho/Projects/Gaussian_jobs/140128_H2O
+% TDV, Raman Tensor: /home/jho/Projects/Gaussian_jobs/140128_H2O
+% 
+% Latest update 18/05/20
+% ------------------------------------------------------------------------
+
+[Atom_Num] 3
+[Mode_Num] 1
+
+% XYZ, from std input of Freq output file
+[Atom] O     0.000000    0.121237    0.000000
+[Atom] H     0.783034   -0.484955    0.000000
+[Atom] H    -0.783034   -0.484940    0.000000
+
+
+% Define New Molecule Orientation
+%  Center of ring (index 1:6) at origin
+%  T1 => Z axis
+%  T2 => X-Z plane
+%
+% Use S-C as Z, benzene plane as ZX plane
+%
+% Orientation    Center Z_I Z_F XY_I XY_F
+[Orientation]       1   1   2    1   3
+
+% Transition Dipole Vector (TDV) from Gaussian w anharmonic  correction
+[TDV] B  0 0 0
+%[TDV] SS  2.42459E-03 -1.45152E+00  6.60379E-13
+%[TDV] AS -4.68490E+00 -7.76693E-04  2.28983E-14
+
+% Raman tensor com from polarizability deriaion of gaussian job [XX XY XZ YX YY YZ ZX ZY ZZ]
+[Raman] B  0 0 0 0 0 0 0 0 0
+%[Raman] SS  0.224035D+01 -0.738893D-03  0.000000D+00 -0.738893D-03  0.110111D+01  0.000000D+00 0.000000D+00  0.000000D+00 -0.138801D+00
+%[Raman] AS  0.120452D-02  0.134547D+01  0.000000D+00  0.134547D+01  0.569517D-03  0.000000D+00 0.000000D+00  0.000000D+00 -0.741209D-04
+
+
+% IR/Raman intensity
+[Int_Harm]   IR    B 57.73016784
+[Int_Harm]   Raman B  0.08344518
+[Int_AnHarm] IR    B 60.02460725
+[Int_AnHarm] Raman B  0.08793573
+
+
+% Anharmonic Corretion 
+[AnharmCorrect] yes
+
+% for B3LYP/6311Gdp
+[FreqScaleFactor] 0.9614
+% [FreqScaleFactor] 1
+
+
+% Eigen mode frequencies, anharmonic corrected
+[Freq] B 1643.405 
+
+[Freq] 2B 3308.260
+
+

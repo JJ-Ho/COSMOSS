@@ -85,7 +85,7 @@ A_IR_OUT = 0;
 A_IR_IN  =  A_IR_IN/180*pi;
 A_IR_OUT = A_IR_OUT/180*pi;
 
-J = JonesRef2(A_IR_OUT,A_IR_IN); % => [9,4]
+J = JonesTrans2(A_IR_OUT,A_IR_IN); % => [9,4]
 
 J_ResLF_Avg = J * ResLF_Avg; % => [4,N]
 

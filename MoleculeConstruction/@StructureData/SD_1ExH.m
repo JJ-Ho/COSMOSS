@@ -21,7 +21,7 @@ defaultNLFreq       = 1716;
 defaultAnharm       = 20;
 defaultLFreq        = 1604;
 defaultL_Index      = '';
-defaultLocFreqType  = 1;
+defaultLocFreqType  = 'None';
 defaultCouplingType = 'TDC';
 defaultBeta_NN      = 0.8; % 0.8 cm-1 according to Lauren's PNAS paper (doi/10.1073/pnas.1117704109); that originate from Min Cho's paper (doi:10.1063/1.1997151)
 

@@ -33,6 +33,7 @@ GUI_Inputs.CouplingType = 'Zero';
 S_C.GUI_Inputs = GUI_Inputs;
 S_C.FilesName = [num2str(NCModes),' cavity modes'];
 % hPlotFunc
+S_C.Extra.CavityInd = 1:NCModes; % add index for comb2 to tell which modes are cavity modes
 
 %% Calculate One Exciton Hamiltonian
 S_C = SD_1ExH(S_C); 

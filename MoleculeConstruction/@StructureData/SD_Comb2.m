@@ -45,6 +45,18 @@ Extra_2 = obj_SD2.Extra;
 Extra.Extra_1 = Extra_1;
 Extra.Extra_2 = Extra_2;
 
+% identify cavity index
+if isfield(Extra_1,'CavityInd') || isfield(Extra_2,'CavityInd')
+    if isfield(Extra_1,'CavityInd')
+        Extra.CavityInd = Extra_1.CavityInd;
+        if isfield(Extra_2,'CavityInd') 
+            Extra.CavityInd = [Extra.CavityInd,(Extra_2.CavityInd + obj_SD1.Nmodes)];
+        end
+    else
+        Extra.CavityInd = Extra_2.CavityInd + obj_SD1.Nmodes
+    end
+end
+
 %% Deal with extra properties:AmideIAtomSerNo for peptides
 N_Mode_1 = obj_SD1.Nmodes;
 N_Mode_2 = obj_SD2.Nmodes;

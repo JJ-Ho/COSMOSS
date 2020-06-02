@@ -111,6 +111,15 @@ for n2=1:N-1
         = TempOffDiagMatrix;
 end
 
+%% Check which modes are cavities and correcting their couplings by 1/sqrt(2)
+if isfield(obj_SD.Extra,'CavityInd')
+    CavityInd = obj_SD.Extra.CavityInd;
+    TwoExPart(CavityInd,:) = TwoExPart(CavityInd,:) ./ sqrt(2);
+    TwoExPart(:,CavityInd) = TwoExPart(:,CavityInd) ./ sqrt(2);
+    TwoExPart(CavityInd,CavityInd) = TwoExPart(CavityInd,CavityInd) * 2;
+    %disp('The coupling between cavity modes in the 2ExH is corrected without the extra sqrt(2)!')
+end
+
 %% Output
 Output.TEDIndexBegin = TEDIndexBegin;
 Output.TEDIndexEnd   = TEDIndexEnd;

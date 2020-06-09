@@ -53,7 +53,7 @@ if isfield(Extra_1,'CavityInd') || isfield(Extra_2,'CavityInd')
             Extra.CavityInd = [Extra.CavityInd,(Extra_2.CavityInd + obj_SD1.Nmodes)];
         end
     else
-        Extra.CavityInd = Extra_2.CavityInd + obj_SD1.Nmodes
+        Extra.CavityInd = Extra_2.CavityInd + obj_SD1.Nmodes;
     end
 end
 

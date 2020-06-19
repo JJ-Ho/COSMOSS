@@ -26,6 +26,7 @@ defaultDisplacement    = [0,0,5];
 defaultPhi             = 0;
 defaultPsi             = 0;
 defaultTheta           = 0;
+defaultScalingFactor   = [1,1];
 
 % add Optional inputs / Parameters
 addOptional(INPUT,'Phi_D1'         ,defaultPhi_D1         );
@@ -38,6 +39,7 @@ addOptional(INPUT,'Displacement'   ,defaultDisplacement   );
 addOptional(INPUT,'Phi'            ,defaultPhi            );
 addOptional(INPUT,'Psi'            ,defaultPsi            );
 addOptional(INPUT,'Theta'          ,defaultTheta          );
+addOptional(INPUT,'ScalingFactor'  ,defaultScalingFactor  );
 
 parse(INPUT,GUI_Inputs_C{:});
 
@@ -52,6 +54,7 @@ Displacement    = INPUT.Results.Displacement;
 Phi             = INPUT.Results.Phi;
 Psi             = INPUT.Results.Psi;
 Theta           = INPUT.Results.Theta;
+ScalingFactor   = INPUT.Results.ScalingFactor;
 
 %% Monomer Settings
 Num_Modes = 2;
@@ -140,10 +143,9 @@ mu_Sim    = zeros(Num_Modes,3);
 alpha_Sim = zeros(Num_Modes,3,3);
 
 for ii=1:Num_Modes
-    
     R_Mol2Sim = squeeze(XYZ_Sim(ii,:,:));
-    mu_Sim(ii,:,:)    = R_Mol2Sim * mu_Mol';
-    alpha_Sim(ii,:,:) = R_Mol2Sim * alpha_Mol' * R_Mol2Sim';
+    mu_Sim(ii,:,:)    = ScalingFactor(ii) .* R_Mol2Sim * mu_Mol';
+    alpha_Sim(ii,:,:) = ScalingFactor(ii) .* R_Mol2Sim * alpha_Mol' * R_Mol2Sim';
 end    
 
 %% Vectorize Alpha

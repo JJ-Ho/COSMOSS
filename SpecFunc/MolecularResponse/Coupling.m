@@ -24,6 +24,7 @@ CouplingList = {'TDC',...
                 'Jansen_TDC',...
                 'Zero',...
                 'Constant',...
+                'Polariton',...
                 };
 
 %% select models
@@ -91,8 +92,12 @@ switch CoupleType
     case 'Constant'
         %Beta = ones(obj_SD.Nmodes).* Beta_NN;
          Beta = (ones(obj_SD.Nmodes)-diag(ones(obj_SD.Nmodes,1))).* Beta_NN;  %Add Constant coupling term to all cross terms.
+         
     case 'TDC_PBC'
         Beta = Coupling_TDC_PBC(obj_SD);
+    
+    case 'Polariton'
+        Beta = Coupling_Cavity(obj_SD);
         
     case 'Symbolic'
         Beta = sym('B%d_%d',obj_SD.Nmodes);

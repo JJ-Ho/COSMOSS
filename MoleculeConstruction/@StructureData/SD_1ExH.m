@@ -44,23 +44,31 @@ LocFreqType  = INPUT.Results.LocFreqType;
 CouplingType = INPUT.Results.CouplingType;
 Beta_NN      = INPUT.Results.Beta_NN;
 
-%% Update Anharmonicity
-obj_1ExH           = SD_Copy(obj_SD);
-obj_1ExH.LocAnharm = ones(obj_SD.Nmodes,1).*Anharm;
-
 %% Deal with local mode frequencies cases
+obj_1ExH = SD_Copy(obj_SD);
+
 switch LocFreqType
     case 'Jensen Map'
         % Apply local mode corrections from Jansen map
         [~,dF_Jansen] = Coupling_Jansen(obj_SD);
         LocFreq = ones(obj_SD.Nmodes,1).*NLFreq + dF_Jansen;
+        LocAnharm = ones(obj_SD.Nmodes,1).*Anharm;
         
     case 'Symbolic'
         LocFreq = sym('w%d', [obj_SD.Nmodes,1]);
         obj_SD.LocFreq = LocFreq;
+        LocAnharm = ones(obj_SD.Nmodes,1).*Anharm;
+        
+    case 'NCO'
+        S = GUI_Inputs.StructureInputs;
+        N_Modes_toggle = logical(S(:,1));
+        S = S(N_Modes_toggle,:);
+        LocFreq = S(:,9);
+        LocAnharm = S(:,10);
         
     otherwise
         LocFreq = ones(obj_SD.Nmodes,1).*NLFreq;
+        LocAnharm = ones(obj_SD.Nmodes,1).*Anharm;
 end
 
 %% Apply isotope labeling
@@ -69,6 +77,9 @@ if ~isempty(L_Index)
 end
 
 obj_1ExH.LocFreq = LocFreq;
+
+% Update Anharmonicity
+obj_1ExH.LocAnharm = LocAnharm;
 
 %% Generate Off-Diagonal Elements (Beta)
 obj_1ExH.Beta = Coupling(obj_1ExH,CouplingType,Beta_NN);

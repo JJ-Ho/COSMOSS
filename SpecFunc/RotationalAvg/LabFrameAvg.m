@@ -1,6 +1,6 @@
 function [R,M,R_List,M_List] = LabFrameAvg(Avg_Rot,Avg_Mirror,N_Interactions)
 %% List of options
-R_List = {'No symmetry','C2_z','C4_z (<Phi>)','Isotropic'};
+R_List = {'Isotropic','No symmetry','C2_z','C4_z (<Phi>)'};
 M_List = {'No','Sigma v'};
 
 R = 'Not Assigned';

@@ -73,7 +73,7 @@ end
 
 %% Apply isotope labeling
 if ~isempty(L_Index)
-    LocFreq(L_Index) = LFreq;  
+    LocFreq(L_Index) = LocFreq;  
 end
 
 obj_1ExH.LocFreq = LocFreq;

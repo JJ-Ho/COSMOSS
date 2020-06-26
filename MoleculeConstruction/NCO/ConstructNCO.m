@@ -52,7 +52,7 @@ Num_Modes = size(Phi_monomer,1);
 XYZ_monomer = [0.000,   0.000,   0.602;
                0.000,   0.000,  -0.602];
 
-AtomName = {'N','N'};   
+AtomName = {'N','N'}';   
 
 AcidCenter = XYZ_monomer(1,:);
 
@@ -89,8 +89,6 @@ for i = 2:Num_Modes
     
     NCO = SD_Comb2(NCO,Monomer_tmp,'Zero',0); % give a dummy coupling model, will deal with it later
 end
-
-NCO.AtomName = permute(NCO.AtomName,[2,1]);
 
 %% Post process of the dimer
 % Rotate the molecule

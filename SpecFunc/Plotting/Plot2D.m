@@ -60,7 +60,7 @@ Pathway     = INPUT.Results.Pathway_2D;
 FreqRange = CVL.FreqRange;
 
 if existFig
-    hAx = findobj(hFig,'Type','Axes');
+    hAx = findobj(evalin('base',hFig),'Type','Axes');
 end
 
 hold(hAx,'on')

@@ -116,7 +116,7 @@ else
 end
 
 if existFig
-    hAx = findobj(hFig,'Type','Axes');
+    hAx = findobj(evalin('base',hFig),'Type','Axes');
 end
 
 hold(hAx,'on')

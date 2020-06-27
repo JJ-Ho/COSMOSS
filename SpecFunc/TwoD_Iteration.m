@@ -3,8 +3,9 @@ function [SpectraGrid,Response,CVL] = TwoD_Iteration(h2DFunc,app)
 I = app.Parse_GUI;
 S = app.Structure;
 
-Sampling      = I.Sampling;
-Sample_Num    = I.Sample_Num;
+Sampling   = I.Sampling;
+Sample_Num = I.Sample_Num;
+FilesName  = S.FilesName;
 
 hF = figure;
 hAx = axes('Parent',hF);
@@ -15,8 +16,8 @@ if Sampling
     [SG1,~] = h2DFunc(S,I);
     
     % Pre-allocate
-    GridSize  = size(SG1.R1,1) + 100; 
-    I.F_Max = GridSize; % force all the iterations to take this value as it's grid size
+    GridSize   = size(SG1.R1,1) + 100; 
+    I.F_Max_2D = GridSize; % force all the iterations to take this value as it's grid size
     R1   = sparse(GridSize,GridSize);
     R2   = sparse(GridSize,GridSize);
     R3   = sparse(GridSize,GridSize);
@@ -64,7 +65,7 @@ if Sampling
         % Dynamic update of figure % update every 10 run
         while and(~eq(DynamicUpdate,0),eq(mod(i,10),0))
             CVL = Conv2D(SpectraGrid,I);
-            CVL.FilesName = [S.FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title
+            CVL.FilesName = [FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title
 
             cla(hAx)
             Plot2D(hAx,CVL,I,Response.SpecType);
@@ -81,6 +82,6 @@ if Sampling
 else
     [SpectraGrid,Response] = h2DFunc(S,I);
     CVL = Conv2D(SpectraGrid,I);
-    CVL.FilesName = S.FilesName;
+    CVL.FilesName = FilesName;
     Plot2D(hAx,CVL,I,Response.SpecType);
 end

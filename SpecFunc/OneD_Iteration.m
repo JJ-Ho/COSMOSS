@@ -2,19 +2,23 @@ function OneD = OneD_Iteration(h1DFunc,app)
 I = app.Parse_GUI;
 S = app.Structure;
 
+Sampling   = I.Sampling;
+FreqRange  = I.FreqRange_1D;
+Sample_Num = I.Sample_Num;
+FilesName  = S.FilesName;
+
 hF  = figure;
 hAx = axes('Parent',hF);
 
-
-if eq(I.Sampling,1)   
+if eq(Sampling,1)   
     % Pre-allocate
-    GridSize   = length(I.FreqRange);
+    GridSize   = length(FreqRange);
     Response1D = zeros(GridSize,1);
     
-    TSTART = zeros(I.Sample_Num,1,'uint64');
-    TIME   = zeros(I.Sample_Num,1);
+    TSTART = zeros(Sample_Num,1,'uint64');
+    TIME   = zeros(Sample_Num,1);
     
-    for i = 1:I.Sample_Num
+    for i = 1:Sample_Num
         TSTART(i) = tic;
         
         % Read GUI input directly from obj handle
@@ -42,7 +46,7 @@ if eq(I.Sampling,1)
         disp(['Run ' num2str(i) ' finished within '  num2str(TIME(i)) '...'])
         
         while ~eq(DynamicUpdate,0)
-            OneD.FilesName = [S.FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title
+            OneD.FilesName = [FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title
             cla(hAx)
             Plot1D(hAx,OneD,I);
             drawnow

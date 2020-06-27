@@ -44,7 +44,6 @@ Theta_monomer = S(:,4)./180*pi; % turn to radius unit
 Displacement  = S(:,5:7);
 ScalingFactor = S(:,8);
 
-
 Num_Modes = size(Phi_monomer,1);
 
 %% Monomer Settings, take carboxylic acid group as example
@@ -89,6 +88,9 @@ for i = 2:Num_Modes
     
     NCO = SD_Comb2(NCO,Monomer_tmp,'Zero',0); % give a dummy coupling model, will deal with it later
 end
+
+% remove unnecessary Children
+NCO.Children = [];
 
 %% Post process of the dimer
 % Rotate the molecule

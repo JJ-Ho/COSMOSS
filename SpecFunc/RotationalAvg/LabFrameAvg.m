@@ -1,6 +1,6 @@
 function [R,M,R_List,M_List] = LabFrameAvg(Avg_Rot,Avg_Mirror,N_Interactions)
 %% List of options
-R_List = {'Isotropic','No symmetry','C2_z','C4_z (<Phi>)'};
+R_List = {'Isotropic','C1','C2_z','C4_z (<Phi>)'};
 M_List = {'No','Sigma v'};
 
 R = 'Not Assigned';
@@ -10,7 +10,7 @@ switch Avg_Rot
     case 'List'
         V_Name = 'None';
         
-    case 'No symmetry'
+    case 'C1'
         % Initially generate using following equation
         % R = hf_R(0,0,0);
         V_Name = 'C1';

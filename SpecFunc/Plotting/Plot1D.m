@@ -31,42 +31,51 @@ INPUT = inputParser;
 INPUT.KeepUnmatched = 1;
 
 % Default values
-defaultSaveFig      = 0;
-defaultSavePath     = '~/Desktop/';
-defaultPlotStick    = 1;
-defaultPlotNorm     = 0;
-defaultLineWidth    = 5;
-defaultSignal_Type  = 'Heterodyne';
-defaultLineShape    = 'Lorentzian';
-defaultPlotCursor   = 0;
-defaultIntegralArea = 0;
-defaultFreqRange    = 1650:1750;
+defaultSaveFig        = 0;
+defaultSavePath       = '~/Desktop/';
+defaultexistFig       = 0;
+defaulthFig           = '';
+defaultFreqRange_1D   = 1650:1750;
+defaultPlotNorm_1D    = 0;
+defaultPlotCursor_1D  = 0;
+defaultPlotStick_1D   = 1;
+defaultIntArea_1D     = 0;
+defaultYSym_1D        = 0;
+defaultLineShape_1D   = 'Lorentzian';
+defaultLineWidth_1D   = 5;
+defaultSignal_Type_1D = 'Heterodyne';
 
 % add Optional inputs / Parameters
-addOptional(INPUT,'SaveFig'     ,defaultSaveFig);
-addOptional(INPUT,'SavePath'    ,defaultSavePath);
-addOptional(INPUT,'PlotStick'   ,defaultPlotStick);
-addOptional(INPUT,'PlotNorm'    ,defaultPlotNorm);
-addOptional(INPUT,'LineWidth'   ,defaultLineWidth);
-addOptional(INPUT,'Signal_Type' ,defaultSignal_Type);
-addOptional(INPUT,'LineShape'   ,defaultLineShape);
-addOptional(INPUT,'PlotCursor'  ,defaultPlotCursor);
-addOptional(INPUT,'IntegralArea',defaultIntegralArea);
-addOptional(INPUT,'FreqRange'   ,defaultFreqRange);
+addOptional(INPUT,'SaveFig'        ,defaultSaveFig);
+addOptional(INPUT,'SavePath'       ,defaultSavePath);
+addOptional(INPUT,'existFig'       ,defaultexistFig);
+addOptional(INPUT,'hFig'           ,defaulthFig);
+addOptional(INPUT,'FreqRange_1D'   ,defaultFreqRange_1D);
+addOptional(INPUT,'PlotNorm_1D'    ,defaultPlotNorm_1D);
+addOptional(INPUT,'PlotCursor_1D'  ,defaultPlotCursor_1D);
+addOptional(INPUT,'PlotStick_1D'   ,defaultPlotStick_1D);
+addOptional(INPUT,'IntArea_1D'     ,defaultIntArea_1D);
+addOptional(INPUT,'YSym_1D'        ,defaultYSym_1D);
+addOptional(INPUT,'LineShape_1D'   ,defaultLineShape_1D);
+addOptional(INPUT,'LineWidth_1D'   ,defaultLineWidth_1D);
+addOptional(INPUT,'Signal_Type_1D' ,defaultSignal_Type_1D);
 
 parse(INPUT,GUI_Inputs_C{:});
 
 % Re-assign variable names
 SaveFig      = INPUT.Results.SaveFig;
 SavePath     = INPUT.Results.SavePath;
-PlotStick    = INPUT.Results.PlotStick;
-PlotNorm     = INPUT.Results.PlotNorm;
-LineWidth    = INPUT.Results.LineWidth;
-Signal_Type  = INPUT.Results.Signal_Type;
-LineShape    = INPUT.Results.LineShape;
-PlotCursor   = INPUT.Results.PlotCursor;
-IntegralArea = INPUT.Results.IntegralArea;
-FreqRange    = INPUT.Results.FreqRange;
+existFig     = INPUT.Results.existFig;
+hFig         = INPUT.Results.hFig;
+FreqRange    = INPUT.Results.FreqRange_1D;
+PlotNorm     = INPUT.Results.PlotNorm_1D;
+PlotCursor   = INPUT.Results.PlotCursor_1D;
+PlotStick    = INPUT.Results.PlotStick_1D;
+IntegralArea = INPUT.Results.IntArea_1D;
+ySym         = INPUT.Results.YSym_1D;
+LineShape    = INPUT.Results.LineShape_1D;
+LineWidth    = INPUT.Results.LineWidth_1D;
+Signal_Type  = INPUT.Results.Signal_Type_1D;
 
 %% Determine spectrum type  
 switch OneD_Data.SpecType
@@ -106,6 +115,10 @@ else
     PlotYLim = 1;
 end
 
+if existFig
+    hAx = findobj(hFig,'Type','Axes');
+end
+
 hold(hAx,'on')
     line(hAx,[FreqRange(1);FreqRange(end)],[0;0],'Color',[1,0,0]) % plot baseline
     plot(hAx,FreqRange,PlotY,'-','LineWidth',2)
@@ -115,8 +128,12 @@ hold(hAx,'on')
 hold(hAx,'off')
 
 %% figure setting 
+% YLim symmetrized
+if ySym
+    hAx.YLim = [-PlotYLim,PlotYLim];
+end
+
 hAx.FontSize = 14;
-hAx.YLim = [-PlotYLim,PlotYLim];
 hAx.XLim = [FreqRange(1),FreqRange(end)];
 hAx.XLabel.String = 'cm^{-1}';
 hAx.YLabel.String = 'Intensity';
@@ -145,11 +162,8 @@ title(hAx,Title_String,'FontSize',16);
 if IntegralArea
     % integrate the curve area
     Area = trapz(FreqRange,abs(PlotY));
-    uicontrol(hF,...
-              'style','text',...
-              'Position',[100,100,100,25],...
-              'String',['IA = ' num2str(Area)],...
-              'FontSize',14);
+    text(hAx,mean(FreqRange),PlotYLim*0.9,['IA = ' num2str(Area)],...
+         'FontSize',14);
 
     % StickSum = sum(Stick);
     % Title = [Signal_Type_Title, ', IA: ' num2str(Area), ',  Stick sum: ', num2str(StickSum)];

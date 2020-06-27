@@ -32,7 +32,6 @@ INPUT = inputParser;
 INPUT.KeepUnmatched = true;
 
 % Default values
-defaultCouplingType = 'TDC';
 defaultAvg_Rot      = 1;
 defaultAvg_Mirror   = 1;
 defaultA_IR         = 90;
@@ -41,11 +40,9 @@ defaultA_Sig1D      = 90;
 defaultP_IR         = 0;
 defaultP_Vis1D      = 0;
 defaultP_Sig1D      = 0;
-% defaultBeta_NN      = 0.8;
-defaultFreqRange    = 1650:1750;
+defaultFreqRange_1D = 1650:1750;
 
 % add Optional inputs / Parameters
-addOptional(INPUT,'CouplingType',defaultCouplingType);
 addOptional(INPUT,'Avg_Rot'     ,defaultAvg_Rot);
 addOptional(INPUT,'Avg_Mirror'  ,defaultAvg_Mirror);
 addOptional(INPUT,'A_IR'        ,defaultA_IR);
@@ -54,14 +51,11 @@ addOptional(INPUT,'A_Sig1D'     ,defaultA_Sig1D);
 addOptional(INPUT,'P_IR'        ,defaultP_IR);
 addOptional(INPUT,'P_Vis1D'     ,defaultP_Vis1D);
 addOptional(INPUT,'P_Sig1D'     ,defaultP_Sig1D);
-% addOptional(INPUT,'Beta_NN'     ,defaultBeta_NN);
-addOptional(INPUT,'FreqRange'   ,defaultFreqRange);
+addOptional(INPUT,'FreqRange_1D',defaultFreqRange_1D);
 
 parse(INPUT,GUI_Inputs_C{:});
 
 % Re-assign variable names
-
-% CouplingType = INPUT.Results.CouplingType;
 Avg_Rot      = INPUT.Results.Avg_Rot;
 Avg_Mirror   = INPUT.Results.Avg_Mirror;
 A_IR         = INPUT.Results.A_IR;
@@ -70,8 +64,7 @@ A_Sig1D      = INPUT.Results.A_Sig1D;
 P_IR         = INPUT.Results.P_IR;
 P_Vis1D      = INPUT.Results.P_Vis1D;
 P_Sig1D      = INPUT.Results.P_Sig1D;
-% Beta_NN      = INPUT.Results.Beta_NN;
-FreqRange    = INPUT.Results.FreqRange;
+FreqRange    = INPUT.Results.FreqRange_1D;
 
 %% Call OneExcitonH to calculate H,mu and alpha under exciton basis
 H     = H_handler(Structure,GUI_Inputs,'OneEx');

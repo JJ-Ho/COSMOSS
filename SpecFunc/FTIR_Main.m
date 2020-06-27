@@ -39,18 +39,18 @@ INPUT = inputParser;
 INPUT.KeepUnmatched = true;
 
 % Default values
-defaultFreqRange    = 1650:1750;
+defaultFreqRange_1D    = 1650:1750;
 defaultAvg_Rot      = 1;
 defaultAvg_Mirror   = 1;
 
-addOptional(INPUT,'FreqRange'   ,defaultFreqRange);
+addOptional(INPUT,'FreqRange_1D',defaultFreqRange_1D);
 addOptional(INPUT,'Avg_Rot'     ,defaultAvg_Rot);
 addOptional(INPUT,'Avg_Mirror'  ,defaultAvg_Mirror);
 
 parse(INPUT,GUI_Inputs_C{:});
 
 % Re-assign variable names
-FreqRange    = INPUT.Results.FreqRange;
+FreqRange    = INPUT.Results.FreqRange_1D;
 Avg_Rot      = INPUT.Results.Avg_Rot;
 Avg_Mirror   = INPUT.Results.Avg_Mirror;
 

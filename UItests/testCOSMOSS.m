@@ -21,16 +21,20 @@ classdef testCOSMOSS < matlab.uitest.TestCase & matlab.mock.TestCase
 
     methods (Test)
         
-        function test_TCO(tc) 
-            caseName = 'TCO';
+        function test_NCO(tc) 
+            caseName = 'NCO';
             app = COSMOSS;
             tc.hApp = app;
             tc.choose(app.ListBox_Model,1);
             tc.press(app.Button_SelectModel);
             tc.press(app.hModel.Button_Generate);
+            tc.choose(app.DropDown_RotAvg,'Isotropic')
             tc.press(app.Button_FTIR);
+            tc.choose(app.DropDown_RotAvg,'C1')
             tc.press(app.Button_SFG);
+            tc.choose(app.DropDown_RotAvg,'Isotropic')
             tc.press(app.Button_2DIR);
+            tc.choose(app.DropDown_RotAvg,'C1')
             tc.press(app.Button_2DSFG);
             
             calculated.Structure  = app.Structure;
@@ -39,12 +43,13 @@ classdef testCOSMOSS < matlab.uitest.TestCase & matlab.mock.TestCase
             calculated.Data_2DIR  = app.Data_2DIR;
             calculated.Data_2DSFG = app.Data_2DSFG;
             
-            load([tc.expectedPath,'expectedResults_',caseName],'expectedResults')
-            tc.verifyEqual(calculated,expectedResults,'AbsTol',tc.AbsTol)
-            
             if tc.saveResult
+                disp('Saving result...')
                 expectedResults = calculated;
                 save(['expectedResults_',caseName],'expectedResults')
+            else
+                load([tc.expectedPath,'expectedResults_',caseName],'expectedResults')
+                tc.verifyEqual(calculated,expectedResults,'AbsTol',tc.AbsTol)
             end
         end
         
@@ -63,9 +68,13 @@ classdef testCOSMOSS < matlab.uitest.TestCase & matlab.mock.TestCase
             tc.press(app.Button_SelectModel);
             tc.press(app.hModel.Button_LoadPDB);
             tc.press(app.hModel.Button_Generate);
+            tc.choose(app.DropDown_RotAvg,'Isotropic')
             tc.press(app.Button_FTIR);
+            tc.choose(app.DropDown_RotAvg,'C1')
             tc.press(app.Button_SFG);
+            tc.choose(app.DropDown_RotAvg,'Isotropic')
             tc.press(app.Button_2DIR);
+            tc.choose(app.DropDown_RotAvg,'C1')
             tc.press(app.Button_2DSFG);
             
             calculated.Structure  = app.Structure;
@@ -74,12 +83,13 @@ classdef testCOSMOSS < matlab.uitest.TestCase & matlab.mock.TestCase
             calculated.Data_2DIR  = app.Data_2DIR;
             calculated.Data_2DSFG = app.Data_2DSFG;
             
-            load([tc.expectedPath,'expectedResults_',caseName],'expectedResults')
-            tc.verifyEqual(calculated,expectedResults,'AbsTol',tc.AbsTol)
-            
             if tc.saveResult
+                disp('Saving result...')
                 expectedResults = calculated;
                 save(['expectedResults_',caseName],'expectedResults')
+            else
+                load([tc.expectedPath,'expectedResults_',caseName],'expectedResults')
+                tc.verifyEqual(calculated,expectedResults,'AbsTol',tc.AbsTol)
             end
         end
 
@@ -99,10 +109,13 @@ classdef testCOSMOSS < matlab.uitest.TestCase & matlab.mock.TestCase
             tc.press(app.Button_SelectModel);
             tc.press(app.hModel.Button_LoadInput);
             tc.press(app.hModel.Button_Generate);
-            
+            tc.choose(app.DropDown_RotAvg,'Isotropic')
             tc.press(app.Button_FTIR);
+            tc.choose(app.DropDown_RotAvg,'C1')
             tc.press(app.Button_SFG);
+            tc.choose(app.DropDown_RotAvg,'Isotropic')
             tc.press(app.Button_2DIR);
+            tc.choose(app.DropDown_RotAvg,'C1')
             tc.press(app.Button_2DSFG);
 
             calculated.Structure  = app.Structure;
@@ -111,12 +124,13 @@ classdef testCOSMOSS < matlab.uitest.TestCase & matlab.mock.TestCase
             calculated.Data_2DIR  = app.Data_2DIR;
             calculated.Data_2DSFG = app.Data_2DSFG;
             
-            load([tc.expectedPath,'expectedResults_',caseName],'expectedResults')
-            tc.verifyEqual(calculated,expectedResults,'AbsTol',tc.AbsTol)
-            
             if tc.saveResult
+                disp('Saving result...')
                 expectedResults = calculated;
                 save(['expectedResults_',caseName],'expectedResults')
+            else
+                load([tc.expectedPath,'expectedResults_',caseName],'expectedResults')
+                tc.verifyEqual(calculated,expectedResults,'AbsTol',tc.AbsTol)
             end
         end
         
@@ -130,9 +144,13 @@ classdef testCOSMOSS < matlab.uitest.TestCase & matlab.mock.TestCase
             tc.type(app.hModel.N_Residue,3);
             tc.type(app.hModel.N_Strand,2);
             tc.press(app.hModel.Button_Generate);
+            tc.choose(app.DropDown_RotAvg,'Isotropic')
             tc.press(app.Button_FTIR);
+            tc.choose(app.DropDown_RotAvg,'C1')
             tc.press(app.Button_SFG);
+            tc.choose(app.DropDown_RotAvg,'Isotropic')
             tc.press(app.Button_2DIR);
+            tc.choose(app.DropDown_RotAvg,'C1')
             tc.press(app.Button_2DSFG);
             
             calculated.Structure  = app.Structure;
@@ -141,12 +159,13 @@ classdef testCOSMOSS < matlab.uitest.TestCase & matlab.mock.TestCase
             calculated.Data_2DIR  = app.Data_2DIR;
             calculated.Data_2DSFG = app.Data_2DSFG;
             
-            load([tc.expectedPath,'expectedResults_',caseName],'expectedResults')
-            tc.verifyEqual(calculated,expectedResults,'AbsTol',tc.AbsTol)
-
             if tc.saveResult
+                disp('Saving result...')
                 expectedResults = calculated;
                 save(['expectedResults_',caseName],'expectedResults')
+            else
+                load([tc.expectedPath,'expectedResults_',caseName],'expectedResults')
+                tc.verifyEqual(calculated,expectedResults,'AbsTol',tc.AbsTol)
             end
         end
         
@@ -163,9 +182,13 @@ classdef testCOSMOSS < matlab.uitest.TestCase & matlab.mock.TestCase
             tc.press(app.hModel.hModel2.Button_Generate);
             tc.type(app.hModel.Trans_Z,5);
             tc.press(app.hModel.Button_Combine);
+            tc.choose(app.DropDown_RotAvg,'Isotropic')
             tc.press(app.Button_FTIR);
+            tc.choose(app.DropDown_RotAvg,'C1')
             tc.press(app.Button_SFG);
+            tc.choose(app.DropDown_RotAvg,'Isotropic')
             tc.press(app.Button_2DIR);
+            tc.choose(app.DropDown_RotAvg,'C1')
             tc.press(app.Button_2DSFG);
             
             calculated.Structure  = app.Structure;
@@ -174,12 +197,13 @@ classdef testCOSMOSS < matlab.uitest.TestCase & matlab.mock.TestCase
             calculated.Data_2DIR  = app.Data_2DIR;
             calculated.Data_2DSFG = app.Data_2DSFG;
             
-            load([tc.expectedPath,'expectedResults_',caseName],'expectedResults')
-            tc.verifyEqual(calculated,expectedResults,'AbsTol',tc.AbsTol)
-
             if tc.saveResult
+                disp('Saving result...')
                 expectedResults = calculated;
                 save(['expectedResults_',caseName],'expectedResults')
+            else
+                load([tc.expectedPath,'expectedResults_',caseName],'expectedResults')
+                tc.verifyEqual(calculated,expectedResults,'AbsTol',tc.AbsTol)
             end
         end
         
@@ -187,8 +211,16 @@ classdef testCOSMOSS < matlab.uitest.TestCase & matlab.mock.TestCase
     
     methods (TestMethodTeardown)
         function closeCOSMOSS(tc)
-            delete(tc.hApp.hModel)
+            UUID = tc.hApp.UUID;
             delete(tc.hApp)
+            
+            % find childrens
+            hUIFigures = findall(0, 'HandleVisibility', 'off');
+            for j = 1:length(hUIFigures)
+                if isequal(hUIFigures(j).Tag,UUID)
+                    delete(hUIFigures(j))
+                end
+            end
             close all
         end
     end

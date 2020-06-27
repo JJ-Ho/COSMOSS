@@ -8,14 +8,12 @@ switch app.GUI_Tag
         Export.Data_2DSFG = app.Data_2DSFG;            
         %Export.hCOSMOSS   = app;
         %Export.hModel     = app.hModel;
-
     otherwise
         Export.Structure  = app.Structure;
         Export.CombOrder  = app.CombOrder;
         Export.GUI_Inputs = app.Parse_GUI;
         %Export.Parent     = app.Parent;
         %Export.app        = app;
-
 end
 
 ExportName = ['Data_', app.GUI_Tag];

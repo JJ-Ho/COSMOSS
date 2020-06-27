@@ -5,10 +5,19 @@ S = app.Structure;
 Sampling   = I.Sampling;
 FreqRange  = I.FreqRange_1D;
 Sample_Num = I.Sample_Num;
+existFig   = I.existFig;
+hFig       = I.hFig;
 FilesName  = S.FilesName;
 
-hF  = figure;
-hAx = axes('Parent',hF);
+if existFig
+    hAx = findobj(evalin('base',hFig),'Type','Axes');
+else
+    hF  = figure;
+    hAx = axes('Parent',hF);
+end
+
+
+
 
 if eq(Sampling,1)   
     % Pre-allocate

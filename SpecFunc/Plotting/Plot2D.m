@@ -24,8 +24,6 @@ INPUT.KeepUnmatched = 1;
 % Default values
 defaultSaveFig        = 0;
 defaultSavePath       = '~/Desktop/';
-defaultexistFig       = 0;
-defaulthFig           = '';
 defaultPlotNorm_2D    = 0;
 defaultPlotCursor_2D  = 0;
 defaultNum_Contour_2D = 20;
@@ -35,8 +33,6 @@ defaultPathway_2D     = 'All';
 % add Optional inputs / Parameters
 addOptional(INPUT,'SaveFig'       ,defaultSaveFig);
 addOptional(INPUT,'SavePath'      ,defaultSavePath);
-addOptional(INPUT,'existFig'      ,defaultexistFig);
-addOptional(INPUT,'hFig'          ,defaulthFig);
 addOptional(INPUT,'PlotNorm_2D'   ,defaultPlotNorm_2D);
 addOptional(INPUT,'PlotCursor_2D' ,defaultPlotCursor_2D);
 addOptional(INPUT,'Num_Contour_2D',defaultNum_Contour_2D);
@@ -48,8 +44,6 @@ parse(INPUT,GUI_Inputs_C{:});
 % Re-assign variable names
 SaveFig     = INPUT.Results.SaveFig;
 SavePath    = INPUT.Results.SavePath;
-existFig    = INPUT.Results.existFig;
-hFig        = INPUT.Results.hFig;
 PlotCursor  = INPUT.Results.PlotCursor_2D;
 PlotNorm    = INPUT.Results.PlotNorm_2D;
 Num_Contour = INPUT.Results.Num_Contour_2D;
@@ -58,10 +52,6 @@ Pathway     = INPUT.Results.Pathway_2D;
 
 %% Main
 FreqRange = CVL.FreqRange;
-
-if existFig
-    hAx = findobj(evalin('base',hFig),'Type','Axes');
-end
 
 hold(hAx,'on')
 X = FreqRange;

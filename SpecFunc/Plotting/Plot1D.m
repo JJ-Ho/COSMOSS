@@ -33,8 +33,6 @@ INPUT.KeepUnmatched = 1;
 % Default values
 defaultSaveFig        = 0;
 defaultSavePath       = '~/Desktop/';
-defaultexistFig       = 0;
-defaulthFig           = '';
 defaultFreqRange_1D   = 1650:1750;
 defaultPlotNorm_1D    = 0;
 defaultPlotCursor_1D  = 0;
@@ -48,8 +46,6 @@ defaultSignal_Type_1D = 'Heterodyne';
 % add Optional inputs / Parameters
 addOptional(INPUT,'SaveFig'        ,defaultSaveFig);
 addOptional(INPUT,'SavePath'       ,defaultSavePath);
-addOptional(INPUT,'existFig'       ,defaultexistFig);
-addOptional(INPUT,'hFig'           ,defaulthFig);
 addOptional(INPUT,'FreqRange_1D'   ,defaultFreqRange_1D);
 addOptional(INPUT,'PlotNorm_1D'    ,defaultPlotNorm_1D);
 addOptional(INPUT,'PlotCursor_1D'  ,defaultPlotCursor_1D);
@@ -65,8 +61,6 @@ parse(INPUT,GUI_Inputs_C{:});
 % Re-assign variable names
 SaveFig      = INPUT.Results.SaveFig;
 SavePath     = INPUT.Results.SavePath;
-existFig     = INPUT.Results.existFig;
-hFig         = INPUT.Results.hFig;
 FreqRange    = INPUT.Results.FreqRange_1D;
 PlotNorm     = INPUT.Results.PlotNorm_1D;
 PlotCursor   = INPUT.Results.PlotCursor_1D;
@@ -113,10 +107,6 @@ if any(PlotY(:))% check if PlotY is a non-zero array
 else
     disp('all elements of PlotY are zeros!')
     PlotYLim = 1;
-end
-
-if existFig
-    hAx = findobj(evalin('base',hFig),'Type','Axes');
 end
 
 hold(hAx,'on')

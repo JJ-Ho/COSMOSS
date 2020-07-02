@@ -12,7 +12,8 @@ switch ParentInfo{1}
         app.CombOrder    = ParentInfo{3};
         disp('Running sub-GUI from Comb2...')
     case 'StandAlong'
-        app.ParentGUI   = ParentInfo{1};
+        app.ParentGUI         = struct;
+        app.ParentGUI.GUI_Tag = 'StandAlong';
         app.fileChooser = DefaultFileChooser;
         disp('Running Model GUI in stand alone mode...')
     otherwise

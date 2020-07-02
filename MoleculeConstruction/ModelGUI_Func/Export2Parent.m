@@ -11,6 +11,8 @@ switch app.ParentGUI.GUI_Tag
         app.ParentGUI.RefreshSD % auto refresh the combined structure
     case 'StandAlong'
         % do nothing
+    otherwise 
+        disp('The ParentGUI type is not supported...')
 end
 
 %% Display update message

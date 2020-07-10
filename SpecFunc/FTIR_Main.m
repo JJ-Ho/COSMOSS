@@ -39,9 +39,9 @@ INPUT = inputParser;
 INPUT.KeepUnmatched = true;
 
 % Default values
-defaultFreqRange_1D    = 1650:1750;
-defaultAvg_Rot      = 1;
-defaultAvg_Mirror   = 1;
+defaultFreqRange_1D = 1650:1750;
+defaultAvg_Rot      = 'Isotropic';
+defaultAvg_Mirror   = 'No';
 
 addOptional(INPUT,'FreqRange_1D',defaultFreqRange_1D);
 addOptional(INPUT,'Avg_Rot'     ,defaultAvg_Rot);

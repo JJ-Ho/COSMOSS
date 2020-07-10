@@ -66,6 +66,11 @@ switch LocFreqType
         LocFreq = S(:,9);
         LocAnharm = S(:,10);
         
+    case 'Cavity'
+        % read the previously set frequency array
+        LocFreq   = obj_SD.LocFreq;
+        LocAnharm = zeros(obj_SD.Nmodes,1);
+        
     otherwise
         LocFreq = ones(obj_SD.Nmodes,1).*NLFreq;
         LocAnharm = ones(obj_SD.Nmodes,1).*Anharm;
@@ -73,7 +78,7 @@ end
 
 %% Apply isotope labeling
 if ~isempty(L_Index)
-    LocFreq(L_Index) = LocFreq;  
+    LocFreq(L_Index) = LFreq;  
 end
 
 obj_1ExH.LocFreq = LocFreq;

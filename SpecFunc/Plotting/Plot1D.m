@@ -68,10 +68,18 @@ LineWidth    = INPUT.Results.LineWidth_1D;
 Signal_Type  = INPUT.Results.Signal_Type_1D;
 
 %% check the hAx input
-if strcmp(hAx,'new')
-    disp('Creating a new figure...')
-    hF = figure;
-    hAx = axes('Parent',hF);
+switch hAx
+    case 'new'
+        disp('Creating a new figure...')
+        hF = figure;
+        hAx = axes('Parent',hF);
+        
+    case 'none'
+        disp('skip figure creation...')
+        hF  = 'none';
+        hAx = 'none';
+    otherwise
+        % do nothing
 end
 
 %% Determine spectrum type  
@@ -79,21 +87,22 @@ switch OneD_Data.SpecType
     case 'FTIR'
         Signal_Type = 'Heterodyne'; % self heterodyne!!
     case 'SFG'
+        % do nothing
 end
 
 Response1D  = OneD_Data.Response1D;
 Res_Freq    = OneD_Data.freq_OneD;
 
-%% Make figure
+%% prepare Y
 [ConvL,~] = Conv_LineShape(1,LineShape,FreqRange,LineWidth);
 CVL_Total = conv(Response1D,ConvL,'same');
 
 switch Signal_Type
-    case 'Heterodyne' % heterodyne
+    case 'Heterodyne'
         PlotY = imag(CVL_Total);
         Stick = Response1D;
         Signal_Type_Title = 'Hetero';
-    case 'Homodyne' % homodyne
+    case 'Homodyne'
         PlotY = abs(CVL_Total).^2;
         Stick = Response1D.^2;
         Signal_Type_Title = 'Homo';
@@ -112,65 +121,70 @@ else
     PlotYLim = 1;
 end
 
-hold(hAx,'on')
-    line(hAx,[FreqRange(1);FreqRange(end)],[0;0],'Color',[1,0,0]) % plot baseline
-    plot(hAx,FreqRange,PlotY,'-','LineWidth',2)
-    if eq(PlotStick,1)
-        line(hAx,[Res_Freq;Res_Freq],[zeros(1,length(FreqRange));Stick']);
+%% Make figure
+if ~strcmp(hAx,'none')
+
+    hold(hAx,'on')
+        line(hAx,[FreqRange(1);FreqRange(end)],[0;0],'Color',[1,0,0]) % plot baseline
+        plot(hAx,FreqRange,PlotY,'-','LineWidth',2)
+        if eq(PlotStick,1)
+            line(hAx,[Res_Freq;Res_Freq],[zeros(1,length(FreqRange));Stick']);
+        end
+    hold(hAx,'off')
+
+    %% figure setting 
+    % YLim symmetrized
+    if ySym
+        hAx.YLim = [-PlotYLim,PlotYLim];
     end
-hold(hAx,'off')
 
-%% figure setting 
-% YLim symmetrized
-if ySym
-    hAx.YLim = [-PlotYLim,PlotYLim];
-end
+    hAx.FontSize = 14;
+    hAx.XLim = [FreqRange(1),FreqRange(end)];
+    hAx.XLabel.String = 'cm^{-1}';
+    hAx.YLabel.String = 'Intensity';
+    hAx.XGrid = 'on';
+    hAx.YGrid = 'on';
+    hAx.XMinorGrid = 'on';
 
-hAx.FontSize = 14;
-hAx.XLim = [FreqRange(1),FreqRange(end)];
-hAx.XLabel.String = 'cm^{-1}';
-hAx.YLabel.String = 'Intensity';
-hAx.XGrid = 'on';
-hAx.YGrid = 'on';
-hAx.XMinorGrid = 'on';
+    FilesName       = OneD_Data.FilesName;
+    FilesName_Reg   = regexprep(FilesName,'\_','\\_');
+    %Coupling        = GUI_Inputs.CouplingType; % since the Variable is moved from the main GUI to the Sub-SGUI, this information need to be redirected
+    %Coupling_Reg    = regexprep(Coupling,'\_','\\_');
+    Title_String{1} = [Signal_Type_Title,'-',OneD_Data.SpecType,' ',FilesName_Reg];%,', Coupling:',Coupling_Reg]; 
 
-FilesName       = OneD_Data.FilesName;
-FilesName_Reg   = regexprep(FilesName,'\_','\\_');
-%Coupling        = GUI_Inputs.CouplingType; % since the Variable is moved from the main GUI to the Sub-SGUI, this information need to be redirected
-%Coupling_Reg    = regexprep(Coupling,'\_','\\_');
-Title_String{1} = [Signal_Type_Title,'-',OneD_Data.SpecType,' ',FilesName_Reg];%,', Coupling:',Coupling_Reg]; 
-
-if PlotCursor
-    hAx.Units = 'normalized'; % use normalized scale
     hF = hAx.Parent;
-    hF.Units = 'normalized'; % use normalized scale
-    Title_String{2} = '';
-    % Call pointer
-    S.fh = hF;
-    S.ax = hAx;
-    Pointer_N(S) % use normalized scale
-end
-title(hAx,Title_String,'FontSize',16);
+    if PlotCursor
+        hAx.Units = 'normalized'; % use normalized scale
+        hF.Units = 'normalized'; % use normalized scale
+        Title_String{2} = '';
+        % Call pointer
+        S.fh = hF;
+        S.ax = hAx;
+        Pointer_N(S) % use normalized scale
+    end
+    title(hAx,Title_String,'FontSize',16);
 
-if IntegralArea
-    % integrate the curve area
-    Area = trapz(FreqRange,abs(PlotY));
-    text(hAx,mean(FreqRange),PlotYLim*0.9,['IA = ' num2str(Area)],...
-         'FontSize',14);
+    if IntegralArea
+        % integrate the curve area
+        Area = trapz(FreqRange,abs(PlotY));
+        text(hAx,mean(FreqRange),PlotYLim*0.9,['IA = ' num2str(Area)],...
+             'FontSize',14);
 
-    % StickSum = sum(Stick);
-    % Title = [Signal_Type_Title, ', IA: ' num2str(Area), ',  Stick sum: ', num2str(StickSum)];
-    % title(Title,'FontSize',16);
-end
+        % StickSum = sum(Stick);
+        % Title = [Signal_Type_Title, ', IA: ' num2str(Area), ',  Stick sum: ', num2str(StickSum)];
+        % title(Title,'FontSize',16);
+    end
 
-%% Auto Save
-if SaveFig
-    timeStamp    = datetime('now','TimeZone','local');
-    timeSamepStr = datestr(timeStamp,'yymmdd_HH-MM-SS');
-    FigName      = [OneD_Data.SpecType,'_',timeSamepStr];
-    
-    hF = hAx.Parent;
-    SaveFigures(hF,SavePath,FigName)
+    %% Auto Save
+    if SaveFig
+        timeStamp    = datetime('now','TimeZone','local');
+        timeSamepStr = datestr(timeStamp,'yymmdd_HH-MM-SS');
+        FigName      = [OneD_Data.SpecType,'_',timeSamepStr];
+
+        hF = hAx.Parent;
+        SaveFigures(hF,SavePath,FigName)
+    end
+
 end
 
 %% Other outputs

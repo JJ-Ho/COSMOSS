@@ -9,22 +9,38 @@ INPUT.KeepUnmatched = 1;
 
 % Default values
 defaultNCModes  = 1;
+defaultFSR      = 100;
+defaultNLFreq   = 1650;
 
 % add Optional inputs / Parameters
 addOptional(INPUT,'NCModes',defaultNCModes);
+addOptional(INPUT,'FSR'    ,defaultFSR);
+addOptional(INPUT,'NLFreq' ,defaultNLFreq);
 
 parse(INPUT,GUI_Inputs_C{:});
 
 % Re-assign variable names
 NCModes = INPUT.Results.NCModes;
+FSR     = INPUT.Results.FSR;
+NLFreq  = INPUT.Results.NLFreq;
+
+%% Constrcut local frequencies array
+FSR_Array    = (0:FSR:(NCModes-1)*FSR)';
+LocFreqArray = ones(NCModes,1)*NLFreq + FSR_Array;
 
 %% Construct essential structure data of the cavity
+% mu and alpha of carboxylic acid calculated by G09
+% I use these value as a reference to decide a meaningful magnitude 
+% mu_Mol    = [-5.43155E+00,  1.653500E+01, -3.17990E-05];
+mu_Mol = [0.0000,  0.0000,  17.4043].*10; % 10 times larger than the carboxylic acid
+
 S_C = StructureData;
 S_C.XYZ       = zeros(NCModes,3);
 S_C.AtomName  = cellstr(repmat('C',NCModes,1)); % place carbon atoms at the center of the cavity mode for the CoM method to work
 S_C.LocCenter = zeros(NCModes,3);
-S_C.LocMu     = zeros(NCModes,3);
-S_C.LocAlpha  = zeros(NCModes,9); % raman tensor vector form [N x 9]
+S_C.LocFreq   = LocFreqArray;
+S_C.LocMu     = repmat(mu_Mol,NCModes,1);
+S_C.LocAlpha  = zeros(NCModes,9); % let's assume ther's no raman active cavity modes
 
 %% Decide coupling types 
 GUI_Inputs.CouplingType = 'Zero';

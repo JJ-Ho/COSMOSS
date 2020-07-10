@@ -17,21 +17,24 @@ INPUT = inputParser;
 INPUT.KeepUnmatched = 1;
 
 % Default values
-defaultPhi             = 0;
-defaultPsi             = 0;
-defaultTheta           = 0;
+defaultPhi          = 0;
+defaultPsi          = 0;
+defaultTheta        = 0;
+defaultLocFreqType  = 'NCO';
 
 % add Optional inputs / Parameters
-addOptional(INPUT,'Phi'            ,defaultPhi            );
-addOptional(INPUT,'Psi'            ,defaultPsi            );
-addOptional(INPUT,'Theta'          ,defaultTheta          );
+addOptional(INPUT,'Phi'         ,defaultPhi         );
+addOptional(INPUT,'Psi'         ,defaultPsi         );
+addOptional(INPUT,'Theta'       ,defaultTheta       );
+addOptional(INPUT,'LocFreqType' ,defaultLocFreqType );
 
 parse(INPUT,GUI_Inputs_C{:});
 
 % Re-assign variable names
-Phi             = INPUT.Results.Phi;
-Psi             = INPUT.Results.Psi;
-Theta           = INPUT.Results.Theta;
+Phi          = INPUT.Results.Phi;
+Psi          = INPUT.Results.Psi;
+Theta        = INPUT.Results.Theta;
+LocFreqType  = INPUT.Results.LocFreqType;
 
 %% Parse the structure info from the GUI input table
 S = GUI_Inputs.StructureInputs;
@@ -100,6 +103,9 @@ Theta_r = Theta/180*pi;
 R1      = R1_ZYZ_0(Phi_r,Psi_r,Theta_r);
 NCO     = SD_Rot(NCO,R1);
             
+%% Feeds the default GUI_Options back into the StructureData
+GUI_Inputs.LocFreqType = LocFreqType;
+
 %% Add Model dependent properties
 NCO.FilesName  = 'Acid N-mer';
 NCO.GUI_Inputs = GUI_Inputs;

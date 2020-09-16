@@ -45,6 +45,18 @@ Extra_2 = obj_SD2.Extra;
 Extra.Extra_1 = Extra_1;
 Extra.Extra_2 = Extra_2;
 
+% identify cavity index
+if isfield(Extra_1,'CavityInd') || isfield(Extra_2,'CavityInd')
+    if isfield(Extra_1,'CavityInd')
+        Extra.CavityInd = Extra_1.CavityInd;
+        if isfield(Extra_2,'CavityInd') 
+            Extra.CavityInd = [Extra.CavityInd,(Extra_2.CavityInd + obj_SD1.Nmodes)];
+        end
+    else
+        Extra.CavityInd = Extra_2.CavityInd + obj_SD1.Nmodes;
+    end
+end
+
 %% Deal with extra properties:AmideIAtomSerNo for peptides
 N_Mode_1 = obj_SD1.Nmodes;
 N_Mode_2 = obj_SD2.Nmodes;
@@ -95,11 +107,10 @@ obj_comb2.Scaled_LocAlpha = Scaled_LocAlpha; % reassign to replace the automatic
 Beta_1 = obj_SD1.Beta;
 Beta_2 = obj_SD2.Beta;
 
-Beta_blkdiag = blkdiag(Beta_1,Beta_2);
-
 % coupling between the two model
+Beta_blkdiag_ind = blkdiag(ones(size(Beta_1)),ones(size(Beta_2)));
 Beta_offblkdiag = Coupling(obj_comb2,CouplingType,Beta_NN);
-Beta_offblkdiag = Beta_offblkdiag .* ~Beta_blkdiag;
+Beta_offblkdiag = Beta_offblkdiag .* ~Beta_blkdiag_ind;
 
-Beta = Beta_blkdiag + Beta_offblkdiag;
+Beta = blkdiag(Beta_1,Beta_2) + Beta_offblkdiag;
 obj_comb2.Beta = Beta;

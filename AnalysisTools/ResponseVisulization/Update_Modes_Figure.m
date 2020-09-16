@@ -177,7 +177,7 @@ hold off
 Fig_Title = hAx.Title.String;
 
 Mode_Ind_Str  = sprintf('#%d',Mode_Ind);
-Mode_Freq_Str = sprintf(', @%6.2f cm^{-1}' ,SpecData.H.Sort_Ex_F1(Mode_Ind +1));
+Mode_Freq_Str = sprintf(', @%6.2f cm^{-1}' ,SpecData.H.Sort_Ex_F1(Mode_Ind));
 Scaling_Str   = sprintf(', S\\mu= %2.1f, S\\alpha= %2.1f',TDV_Scale,Raman_Scale);
 
 Fig_Title{length(Fig_Title)+1} = [Mode_Ind_Str, Mode_Freq_Str, Scaling_Str];

@@ -21,13 +21,14 @@ app.UITable_2D.Data = Exp_2D;
 
 % Setup the list of Lineshapes
 [~,AvalibleL] = Conv_LineShape('List','','','');
-app.DropDown_LineShape.Items = AvalibleL;
+app.DropDown_LineShape_1D.Items = AvalibleL;
+app.DropDown_LineShape_2D.Items = AvalibleL;
 
 % Setup the list of color maps
 [~,CMap_List] = SelectColormap('List');
-app.DropDown_ColorMap.Items = CMap_List;
+app.DropDown_ColorMap_2D.Items = CMap_List;
 
-%% Attach properties change listners
+%% export obj handles to attach aproperties change listners
 SA = [...
       app.EditField_FeynmannCutoff;...
       app.DropDown_RotAvg;...

@@ -25,26 +25,26 @@ INPUT = inputParser;
 INPUT.KeepUnmatched = 1;
 
 % Default values
-defaultFreqRange   = 1600:1750;
-defaultPathway     = 'All';
-defaultLineShape   = 'Lorentzian';
-defauleLineWidth   = 5;
-defaultSpecType    = 'Absorptive';
+defaultFreqRange_2D   = 1600:1750;
+defaultLineShape_2D   = 'Lorentzian';
+defauleLineWidth_2D   = 5;
+defaultPathway_2D     = 'All';
+defaultSpecType_2D    = 'Absorptive';
 
-addOptional(INPUT,'FreqRange',defaultFreqRange);
-addOptional(INPUT,'Pathway'  ,defaultPathway  );
-addOptional(INPUT,'LineShape',defaultLineShape);
-addOptional(INPUT,'LineWidth',defauleLineWidth);
-addOptional(INPUT,'SpecType' ,defaultSpecType );
+addOptional(INPUT,'FreqRange_2D',defaultFreqRange_2D);
+addOptional(INPUT,'LineShape_2D',defaultLineShape_2D);
+addOptional(INPUT,'LineWidth_2D',defauleLineWidth_2D);
+addOptional(INPUT,'Pathway_2D'  ,defaultPathway_2D  );
+addOptional(INPUT,'SpecType_2D' ,defaultSpecType_2D );
             
 parse(INPUT,GUI_Inputs_C{:});
 
 % Reassign Variable names
-FreqRange   = INPUT.Results.FreqRange;
-Pathway     = INPUT.Results.Pathway;
-LineShape   = INPUT.Results.LineShape;
-LineWidth   = INPUT.Results.LineWidth;
-SpecType    = INPUT.Results.SpecType;
+FreqRange   = INPUT.Results.FreqRange_2D;
+LineShape   = INPUT.Results.LineShape_2D;
+LineWidth   = INPUT.Results.LineWidth_2D;
+Pathway     = INPUT.Results.Pathway_2D;
+SpecType    = INPUT.Results.SpecType_2D;
 
 %% Convert Sparse matrix back to full matrix
 MinF = FreqRange(1);

@@ -54,7 +54,6 @@ Extra.Vec_1  = Vec_1;
 Extra.Vec_2  = Vec_2;
 
 S_V1N_V2M.Extra    = Extra;
-S_V1N_V2M.Children = S_Monomer;
 
 %% Calculate One Exciton Hamiltonian
 S_V1N_V2M = SD_1ExH(S_V1N_V2M); 

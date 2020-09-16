@@ -23,10 +23,12 @@ CouplingList = {'TDC',...
                 'NN_Mix_TDC',...
                 'Jansen_TDC',...
                 'Zero',...
+                'Constant',...
+                'Polariton',...
+                'Symbolic',...
                 };
 
 %% select models
-
 switch CoupleType
     case 'TDC'
         Beta = Coupling_TDC(obj_SD);
@@ -51,13 +53,11 @@ switch CoupleType
         N_Residue = obj_SD.N_Residue;
         N_Strand  = obj_SD.N_Strand;
 
-        N_Mode_per_Starnd = N_Residue -1;
-
         % Subsituting nearest neighbor Beta_NN
         for i1 = 1:N_Strand
-            for j1 = 1:N_Mode_per_Starnd-1
+            for j1 = 1:N_Residue-1
 
-                Ind12 = (i1-1)*N_Mode_per_Starnd+j1;
+                Ind12 = (i1-1)*N_Residue+j1;
 
                 Beta(Ind12    ,Ind12 + 1) = Beta_NN;
                 Beta(Ind12 + 1,Ind12    ) = Beta_NN;
@@ -87,12 +87,19 @@ switch CoupleType
     case 'Zero'
         Beta = zeros(obj_SD.Nmodes);
         
+    case 'Constant'
+        %Beta = ones(obj_SD.Nmodes).* Beta_NN;
+         Beta = (ones(obj_SD.Nmodes)-diag(ones(obj_SD.Nmodes,1))).* Beta_NN;  %Add Constant coupling term to all cross terms.
+         
     case 'TDC_PBC'
         Beta = Coupling_TDC_PBC(obj_SD);
+    
+    case 'Polariton'
+        Beta = Coupling_Cavity(obj_SD);
         
     case 'Symbolic'
         Beta = sym('B%d_%d',obj_SD.Nmodes);
-        Beta(boolean(eye(obj_SD.Nmodes))) = zeros(obj_SD.Nmodes,1);
+        Beta(logical(eye(obj_SD.Nmodes))) = zeros(obj_SD.Nmodes,1);
         obj_SD.Beta = Beta;
         
     case 'List'

@@ -44,6 +44,7 @@ defaultP_Pump2      = 0;
 defaultP_Probe      = 0;
 defaultP_Sig2D      = 0;
 defaultPCutOff      = 0;
+defaultF_Max_2D     = 1750;
 
 addOptional(INPUT,'A_Pump1'     ,defaultA_Pump1);
 addOptional(INPUT,'A_Pump2'     ,defaultA_Pump2);
@@ -54,7 +55,8 @@ addOptional(INPUT,'P_Pump2'     ,defaultP_Pump2);
 addOptional(INPUT,'P_Probe'     ,defaultP_Probe);
 addOptional(INPUT,'P_Sig2D'     ,defaultP_Sig2D);
 addOptional(INPUT,'PCutOff'     ,defaultPCutOff);
-         
+addOptional(INPUT,'F_Max_2D'    ,defaultF_Max_2D);
+     
 parse(INPUT,GUI_Inputs_C{:});
 
 % Reassign Variable names
@@ -67,6 +69,7 @@ P_Pump2      = INPUT.Results.P_Pump2;
 P_Probe      = INPUT.Results.P_Probe;
 P_Sig2D      = INPUT.Results.P_Sig2D;
 PCutOff      = INPUT.Results.PCutOff;
+F_Max_2D     = INPUT.Results.F_Max_2D;
 
 %% Call TwoExcitonH to calculate H,mu and alpha under exciton basis
 H  = H_handler(Structure,GUI_Inputs,'TwoEx');
@@ -106,7 +109,7 @@ Data_2D.EJLR    = E*J*R_Avg;
 F1  = H.Sort_Ex_F1;
 F2  = H.Sort_Ex_F2;
 F_Max = max(F2) - min(F1);
-SparseMax = ceil(max(GUI_Inputs.F_Max,F_Max));
+SparseMax = ceil(max(F_Max_2D,F_Max));
 
 MEM_CutOff = 1; %[GB]
 

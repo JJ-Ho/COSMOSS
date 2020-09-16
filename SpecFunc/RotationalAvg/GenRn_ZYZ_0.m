@@ -37,6 +37,16 @@ tic;matlabFunction(R3_ZYZ,'file','R3_ZYZ_0');disp('R3_ZYZ_0 is saved as Matlab f
 
 disp('R1-R3_ZYZ_0 Function generation finished!')
 
+%% Average for R2
+R2_ZYZ_1   = int(R2_ZYZ               ,Phi  ,0,2*pi)./(2*pi);disp('R2_ZYZ_1   matrix generated...')
+R2_ZYZ_12  = int(R2_ZYZ_1             ,Psi  ,0,2*pi)./(2*pi);disp('R2_ZYZ_12  matrix generated...')
+R2_ZYZ_123 = int(R2_ZYZ_12.*sin(Theta),Theta,0,  pi)./(2)   ;disp('R2_ZYZ_123 matrix generated...')
+disp('integration of R3_ZYZ is done!')
+
+tic;matlabFunction(R2_ZYZ_1  ,'file','R2_ZYZ_1'  )  ;disp('R2_ZYZ_1   is saved as Matlab function!') ;toc
+tic;matlabFunction(R2_ZYZ_12 ,'file','R2_ZYZ_12' )  ;disp('R2_ZYZ_12  is saved as Matlab function!') ;toc
+tic;matlabFunction(R2_ZYZ_123,'file','R2_ZYZ_123')  ;disp('R2_ZYZ_123 is saved as Matlab function!') ;toc
+
 %% Average for R3
 R3_ZYZ_1   = int(R3_ZYZ               ,Phi  ,0,2*pi)./(2*pi);disp('R3_ZYZ_1   matrix generated...')
 R3_ZYZ_12  = int(R3_ZYZ_1             ,Psi  ,0,2*pi)./(2*pi);disp('R3_ZYZ_12  matrix generated...')

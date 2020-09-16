@@ -15,6 +15,9 @@ function hF = SD_Draw(obj_SD,varargin)
         hF = obj_SD.hPlotFunc(hAx,obj_SD);
     else
         hF = '';
-        disp('No @hPlotFunc defined, method "Draw" would not work...')
+        FN = obj_SD.FilesName;
+        disp(['No @hPlotFunc defined for the mode: "',...
+               FN,...
+              '", method "Draw" would not work...'])
     end
 end

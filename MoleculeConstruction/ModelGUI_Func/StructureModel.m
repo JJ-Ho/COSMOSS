@@ -4,7 +4,7 @@ function [hModel, ModelList] = StructureModel(StructModel)
 
 %% List 
 ModelList = {...
-             '1:Two coupled oscillators',...
+             '1:N-coupled oscillators',...
              '2:Extract Amide-I from PDB files',...
              '3:Build 2D grid from G09 monomer',...
              '4:Ideal betasheet',...
@@ -15,7 +15,7 @@ ModelList = {...
 %% Run Models
 switch StructModel
     case 1
-        hModel = @Model_TCO;
+        hModel = @Model_NCO;
     case 2 
         hModel = @Model_PDB_AmideOne;
     case 3
@@ -24,6 +24,8 @@ switch StructModel
         hModel = @Model_Betasheet_AmideI;
     case 5
         hModel = @LoadStructureData;
+%     case 6
+%         hModel = @Model_CavityModes;
     case 6
         hModel = @Model_Comb2;
 

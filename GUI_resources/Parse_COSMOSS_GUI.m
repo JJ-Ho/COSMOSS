@@ -47,19 +47,35 @@ O.Exp2D        = Exp2D;
 % For Figures -------------------------------------------------------------
 O.SaveFig      = app.CheckBox_SaveFig.Value;
 O.SavePath     = app.EditField_SavePath.Value;
-O.PlotStick    = app.CheckBox_Sticks.Value;
-O.PlotNorm     = app.CheckBox_Normalize.Value;
-O.PlotCursor   = app.CheckBox_Cursor.Value;
-O.F_Min        = app.EditField_FreqMin.Value;
-O.F_Max        = app.EditField_FreqMax.Value;
-O.FreqRange    = O.F_Min:O.F_Max;
-O.LineShape    = app.DropDown_LineShape.Value;
-O.LineWidth    = app.EditField_Width.Value;
-O.Num_Contour  = app.EditField_Contour.Value;
-O.CMAP_Index   = app.DropDown_ColorMap.Value;
-O.Signal_Type  = app.DropDown_SignalType.Value; % Need isolate the list of options?
-O.SpecType     = app.DropDown_SpectralType.Value; % Need isolate the list of options?
-O.Pathway      = app.DropDown_Pathway.Value; % Need isolate the list of options?
+O.existFig     = app.ExisitingfigureCheckBox.Value;
+O.hFig         = app.hFEditField.Value;
+
+% 1D
+O.PlotStick_1D    = app.CheckBox_Sticks_1D.Value;
+O.PlotNorm_1D     = app.CheckBox_Normalize_1D.Value;
+O.PlotCursor_1D   = app.CheckBox_Cursor_1D.Value;
+O.IntArea_1D      = app.CheckBox_IntArea_1D.Value;
+O.YSym_1D         = app.CheckBox_YSym_1D.Value;
+O.F_Min_1D        = app.EditField_FreqMin_1D.Value;
+O.F_Max_1D        = app.EditField_FreqMax_1D.Value;
+O.FreqRange_1D    = O.F_Min_1D:O.F_Max_1D;
+O.LineShape_1D    = app.DropDown_LineShape_1D.Value;
+O.LineWidth_1D    = app.EditField_Width_1D.Value;
+O.Signal_Type_1D  = app.DropDown_SignalType_1D.Value;
+
+% 2D
+O.PlotNorm_2D     = app.CheckBox_Normalize_2D.Value;
+O.PlotCursor_2D   = app.CheckBox_Cursor_2D.Value;
+O.Num_Contour_2D  = app.EditField_Contour_2D.Value;
+O.F_Min_2D        = app.EditField_FreqMin_2D.Value;
+O.F_Max_2D        = app.EditField_FreqMax_2D.Value;
+O.FreqRange_2D    = O.F_Min_2D:O.F_Max_2D;
+O.LineShape_2D    = app.DropDown_LineShape_2D.Value;
+O.LineWidth_2D    = app.EditField_Width_2D.Value;
+O.CMAP_Index_2D   = app.DropDown_ColorMap_2D.Value;
+O.Pathway_2D      = app.DropDown_Pathway_2D.Value;
+O.SpecType_2D     = app.DropDown_SpectralType_2D.Value;
+%O.Signal_Type_2D  = app.DropDown_SignalType_2D.Value; % is not used in plot2D
 % -------------------------------------------------------------------------
 
 % For Analysis Tools ------------------------------------------------------

@@ -22,30 +22,33 @@ INPUT = inputParser;
 INPUT.KeepUnmatched = 1;
 
 % Default values
-defaultSaveFig     = 0;
-defaultSavePath    = '~/Desktop/';
-defaultNum_Contour = 20;
-defaultPlotCursor  = 0;
-defaultCMAP_Index  = 1;
-defaultPlotNorm    = 0;
+defaultSaveFig        = 0;
+defaultSavePath       = '~/Desktop/';
+defaultPlotNorm_2D    = 0;
+defaultPlotCursor_2D  = 0;
+defaultNum_Contour_2D = 20;
+defaultCMAP_Index_2D  = 1;
+defaultPathway_2D     = 'All';
 
 % add Optional inputs / Parameters
-addOptional(INPUT,'SaveFig'    ,defaultSaveFig);
-addOptional(INPUT,'SavePath'   ,defaultSavePath);
-addOptional(INPUT,'Num_Contour',defaultNum_Contour);
-addOptional(INPUT,'PlotCursor' ,defaultPlotCursor);
-addOptional(INPUT,'CMAP_Index' ,defaultCMAP_Index);
-addOptional(INPUT,'PlotNorm'   ,defaultPlotNorm);
+addOptional(INPUT,'SaveFig'       ,defaultSaveFig);
+addOptional(INPUT,'SavePath'      ,defaultSavePath);
+addOptional(INPUT,'PlotNorm_2D'   ,defaultPlotNorm_2D);
+addOptional(INPUT,'PlotCursor_2D' ,defaultPlotCursor_2D);
+addOptional(INPUT,'Num_Contour_2D',defaultNum_Contour_2D);
+addOptional(INPUT,'CMAP_Index_2D' ,defaultCMAP_Index_2D);
+addOptional(INPUT,'Pathway_2D'  ,defaultPathway_2D  );
 
 parse(INPUT,GUI_Inputs_C{:});
 
 % Re-assign variable names
 SaveFig     = INPUT.Results.SaveFig;
 SavePath    = INPUT.Results.SavePath;
-Num_Contour = INPUT.Results.Num_Contour;
-PlotCursor  = INPUT.Results.PlotCursor;
-CMAP_Index  = INPUT.Results.CMAP_Index;
-PlotNorm    = INPUT.Results.PlotNorm;
+PlotCursor  = INPUT.Results.PlotCursor_2D;
+PlotNorm    = INPUT.Results.PlotNorm_2D;
+Num_Contour = INPUT.Results.Num_Contour_2D;
+CMAP_Index  = INPUT.Results.CMAP_Index_2D;
+Pathway     = INPUT.Results.Pathway_2D;
 
 %% Main
 FreqRange = CVL.FreqRange;
@@ -129,7 +132,6 @@ FilesName_Reg = regexprep(FilesName,'\_','\\_');
 % Coupling_Reg  = regexprep(Coupling,'\_','\\_');
 %Title_String = [SpecType,' ',FilesName_Reg,', Coupling:',Coupling_Reg];
 
-Pathway       = GUI_Inputs.Pathway;
 Title_String = [SpecType,' ',FilesName_Reg,', Pathway: ',Pathway];
 hAx.Title.String   = Title_String;
 hAx.Title.FontSize = 16;

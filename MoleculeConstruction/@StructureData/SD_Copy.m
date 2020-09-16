@@ -7,7 +7,8 @@ N_Fields = length(FieldName);
 
 
 for i = 1:N_Fields
-    if ~findprop(obj_SD,FieldName{i}).NonCopyable
+    mp = findprop(obj_SD,FieldName{i});
+    if ~mp.NonCopyable
         % Check if the property is a NonCopyable one
         obj_New.(FieldName{i}) = obj_SD.(FieldName{i});
     else

@@ -174,7 +174,7 @@ classdef testCOSMOSS < matlab.uitest.TestCase & matlab.mock.TestCase
             app = COSMOSS;
             tc.hApp = app;
             
-            tc.choose(app.ListBox_Model,7);
+            tc.choose(app.ListBox_Model,6);
             tc.press(app.Button_SelectModel);
             tc.press(app.hModel.Button_Model1);
             tc.press(app.hModel.Button_Model2);

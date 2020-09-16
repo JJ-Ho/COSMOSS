@@ -164,12 +164,12 @@ end
 AtomName_1strand = reshape(AtomName_1strand',[],1);
 
 %% substitute the last N and CA to O and H on C terminus for the first strand
-% add x at the end of the atom name so it does not confuse the GetAmideI.m
-Ind_H_1strand = length(AtomName_1strand);
-AtomName_1strand{Ind_H_1strand-3} = 'Cx';
-AtomName_1strand{Ind_H_1strand-2} = 'Ox';
-AtomName_1strand{Ind_H_1strand-1} = 'Ox';
-AtomName_1strand{Ind_H_1strand}   = 'Hx';
+% % add x at the end of the atom name so it does not confuse the GetAmideI.m
+% Ind_H_1strand = length(AtomName_1strand);
+% AtomName_1strand{Ind_H_1strand-3} = 'Cx';
+% AtomName_1strand{Ind_H_1strand-2} = 'Ox';
+% AtomName_1strand{Ind_H_1strand-1} = 'Ox';
+% AtomName_1strand{Ind_H_1strand}   = 'Hx';
 
 %% Define flipping center for the fliping operation in creating antiparallel betasheet
 if mod(N_Residue,2)
@@ -286,7 +286,6 @@ S_BSheet = SD_Rot(S_BSheet,R);
 Extra = S_BSheet.Extra;
 Extra.N_Residue         = N_Residue;
 Extra.N_Strand          = N_Strand;
-Extra.N_Mode_per_Starnd = N_Residue-1;
 Extra.Ind_H             = Ind_H;
 Extra.Ind_O             = Ind_O;
 Extra.TransV            = TransV;

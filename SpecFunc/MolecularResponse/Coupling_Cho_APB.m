@@ -4,13 +4,12 @@ function Beta = Coupling_Cho_APB(S)
 % 
 % S.N_Residue = 11;
 % S.N_Strand  = 5;
-% S.N_Mode_per_Starnd = S.N_Residue - 1;
-% S.Num_Modes = S.N_Strand*S.N_Mode_per_Starnd;
+% S.Num_Modes = S.N_Strand*S.N_Residue;
 
 %% Reassign variable names from StrucInfo
-Num_Modes         = S.Num_Modes;
-N_Mode_per_Starnd = S.N_Mode_per_Starnd;
-N_Strand          = S.N_Strand;
+Num_Modes = S.Num_Modes;
+N_Residue = S.N_Residue;
+N_Strand  = S.N_Strand;
 
 % Define Parallel Betasheet parameters
 F12  =   1.2;
@@ -26,10 +25,10 @@ Beta = zeros(Num_Modes);
 
 % define mode index
 I_Mode = (1: Num_Modes)';
-[I_Residue,~] = ind2sub([N_Mode_per_Starnd,N_Strand],I_Mode);
+[I_Residue,~] = ind2sub([N_Residue,N_Strand],I_Mode);
 
 I_Residue_head = eq(I_Residue,1);
-I_Residue_tail = eq(I_Residue,N_Mode_per_Starnd);
+I_Residue_tail = eq(I_Residue,N_Residue);
 
 %% F12
 Sub12 = [I_Mode,I_Mode+1];
@@ -48,20 +47,20 @@ Ind13 = sub2ind(size(Beta),Sub13(:,2),Sub13(:,1));
 Beta(Ind13) = F13;
 
 %% Fab
-Sub_ab = [I_Mode(1:Num_Modes-N_Mode_per_Starnd),I_Mode(N_Mode_per_Starnd+1:Num_Modes)];
+Sub_ab = [I_Mode(1:Num_Modes-N_Residue),I_Mode(N_Residue+1:Num_Modes)];
 Ind_ab = sub2ind(size(Beta),Sub_ab(:,2),Sub_ab(:,1));
 Beta(Ind_ab) = Fab;
 
 %% Fac
-Sub_ac = [I_Mode(1:Num_Modes-2*N_Mode_per_Starnd),I_Mode(2*N_Mode_per_Starnd+1:Num_Modes)];
+Sub_ac = [I_Mode(1:Num_Modes-2*N_Residue),I_Mode(2*N_Residue+1:Num_Modes)];
 Ind_ac = sub2ind(size(Beta),Sub_ac(:,2),Sub_ac(:,1));
 Beta(Ind_ac) = Fac;
 
 
 %% Fpbx
-StrandDirectionMatrix = ones(N_Strand,N_Mode_per_Starnd);
+StrandDirectionMatrix = ones(N_Strand,N_Residue);
 
-Residue_Array =          1:N_Mode_per_Starnd ;
+Residue_Array =          1:N_Residue ;
 Residue_Even  =        ~mod(Residue_Array,2) ;
 Residue_Odd   = logical(mod(Residue_Array,2));
 
@@ -69,9 +68,9 @@ Strand_Array =                  1:N_Strand ;
 Strand_Even  =        ~mod(Strand_Array,2) ;
 Strand_Odd   = logical(mod(Strand_Array,2));
 
-Strand1               = ones(1,N_Mode_per_Starnd);
+Strand1               = ones(1,N_Residue);
 Strand1(Residue_Even) = 1i; 
-Strand2               = ones(1,N_Mode_per_Starnd).*(-1);
+Strand2               = ones(1,N_Residue).*(-1);
 Strand2(Residue_Odd)  = -1i;
 
 StrandDirectionMatrix( Strand_Odd,:) = bsxfun(@times,StrandDirectionMatrix( Strand_Odd ,:),Strand1);
@@ -80,11 +79,11 @@ StrandDirectionMatrix(Strand_Even,:) = bsxfun(@times,StrandDirectionMatrix( Stra
 StrandDirection = reshape(permute(StrandDirectionMatrix,[2,1]),[],1);
 
 
-I1_Down  = 1:(Num_Modes-N_Mode_per_Starnd);
+I1_Down  = 1:(Num_Modes-N_Residue);
 L_I1     = length(I1_Down);
 
-I2_Left  = I1_Down + N_Mode_per_Starnd -1;
-I2_Right = I1_Down + N_Mode_per_Starnd +1;
+I2_Left  = I1_Down + N_Residue -1;
+I2_Right = I1_Down + N_Residue +1;
  
 Sub_Left  = [I1_Down;I2_Left ]';
 Sub_Right = [I1_Down;I2_Right]';

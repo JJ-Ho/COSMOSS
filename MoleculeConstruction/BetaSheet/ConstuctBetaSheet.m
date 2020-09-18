@@ -55,10 +55,6 @@ defaultTwist_Z    = 0;
 defaultPhi_D      = 0;
 defaultPsi_D      = 0;
 defaultTheta_D    = 0;
-defaultNLFreq     = 1650;
-defaultAnharm     = 10;
-defaultLFreq      = 1630;
-defaultL_Index    = 'None';
 
 % add Optional inputs / Parameters
 addOptional(INPUT,'SheetType', defaultSheetType );
@@ -73,10 +69,6 @@ addOptional(INPUT,'Twist_Z'  , defaultTwist_Z   );
 addOptional(INPUT,'Phi_D'    , defaultPhi_D     );
 addOptional(INPUT,'Psi_D'    , defaultPsi_D     );
 addOptional(INPUT,'Theta_D'  , defaultTheta_D   );
-addOptional(INPUT,'NLFreq'   , defaultNLFreq    );
-addOptional(INPUT,'Anharm'   , defaultAnharm    );
-addOptional(INPUT,'LFreq'    , defaultLFreq     );
-addOptional(INPUT,'L_Index'  , defaultL_Index   );
 
 parse(INPUT,GUI_Inputs_C{:});
 
@@ -93,10 +85,8 @@ Twist_Z   = INPUT.Results.Twist_Z;
 Phi_D     = INPUT.Results.Phi_D;
 Psi_D     = INPUT.Results.Psi_D;
 Theta_D   = INPUT.Results.Theta_D;
-NLFreq    = INPUT.Results.NLFreq;
-Anharm    = INPUT.Results.Anharm;
-LFreq     = INPUT.Results.LFreq;
-L_Index   = INPUT.Results.L_Index;
+
+LocModeData = GUI_Inputs.LocModeData;
 
 %% Post process of inputs
 TransV = [Trans_X,Trans_Y,Trans_Z];
@@ -294,12 +284,8 @@ Extra.RotV_D            = RotV_D;
 S_BSheet.Extra = Extra;
 
 %% Modify Mode frequency, anharmonicity, and Labling according to the GUI inputs
-LocFreq   = ones(S_BSheet.Nmodes,1).*NLFreq;
-LocAnharm = ones(S_BSheet.Nmodes,1).*Anharm;
-
-if ~ischar(L_Index)
-    LocFreq(L_Index) = LFreq;
-end
+LocFreq   = LocModeData(:,4) + LocModeData(:,5);
+LocAnharm = LocModeData(:,6) + LocModeData(:,7);
 
 S_BSheet.LocAnharm  = LocAnharm;
 S_BSheet.LocFreq    = LocFreq;

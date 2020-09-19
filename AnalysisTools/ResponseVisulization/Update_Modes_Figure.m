@@ -66,8 +66,8 @@ N_Mode_Select = length(Mode_Ind);
 Center_Loc_MF = Structure.LocCenter;
 
 % Transition dipole
-Mu_Loc_MF = SpecData.Mu.M_Lo_01;
-Mu_Ex_MF  = SpecData.Mu.M_Ex_01;
+Mu_Loc_MF = SpecData.Response.Mu.M_Lo_01;
+Mu_Ex_MF  = SpecData.Response.Mu.M_Ex_01;
 
 % Raman Tensor
 switch SpecType
@@ -75,8 +75,8 @@ switch SpecType
         Alpha_Loc_MF = zeros(size(Mu_Loc_MF,1),9); % size [N x 9]
         Alpha_Ex_MF  = zeros(size(Mu_Ex_MF,1),9);  % size [N x 9]
     case 'SFG'
-        Alpha_Loc_MF = SpecData.Alpha.M_Lo_01;
-        Alpha_Ex_MF  = SpecData.Alpha.M_Ex_01;
+        Alpha_Loc_MF = SpecData.Response.Alpha.M_Lo_01;
+        Alpha_Ex_MF  = SpecData.Response.Alpha.M_Ex_01;
 end
 
 %% Plot TDV/Raman
@@ -120,7 +120,7 @@ end
 
 %% Plot Mixing coefficients
 % Eigen vectors
-EigVecM = SpecData.H.Sort_Ex_V1;
+EigVecM = SpecData.Response.H.Sort_Ex_V1;
 if Plot_EigVec
     if gt(length(Mode_Ind),1)
         disp('Eigenvevtor visulization only take 1 mode at a time')
@@ -177,7 +177,7 @@ hold off
 Fig_Title = hAx.Title.String;
 
 Mode_Ind_Str  = sprintf('#%d',Mode_Ind);
-Mode_Freq_Str = sprintf(', @%6.2f cm^{-1}' ,SpecData.H.Sort_Ex_F1(Mode_Ind));
+Mode_Freq_Str = sprintf(', @%6.2f cm^{-1}' ,SpecData.Response.H.Sort_Ex_F1(Mode_Ind));
 Scaling_Str   = sprintf(', S\\mu= %2.1f, S\\alpha= %2.1f',TDV_Scale,Raman_Scale);
 
 Fig_Title{length(Fig_Title)+1} = [Mode_Ind_Str, Mode_Freq_Str, Scaling_Str];

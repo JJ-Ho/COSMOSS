@@ -12,21 +12,15 @@ function Transition_Strength(SpecData)
 switch SpecData.SpecType
     case 'FTIR'
         ExType = '1ex';
-        H  = SpecData.H;
-        TV = SpecData.Mu;
     case 'SFG'
         ExType = '1ex';
-        H  = SpecData.H;
-        TV = SpecData.Alpha;
     case '2DIR'
         ExType = '2ex';
-        H  = SpecData.Response.H;
-        TV = SpecData.Response.Mu;
     case '2DSFG'
         ExType = '2ex';
-        H  = SpecData.Response.H;
-        TV = SpecData.Response.Alpha;
 end
+H  = SpecData.Response.H;
+TV = SpecData.Response.Mu;
 %% Figure parameters
 % Box dimension to represent transition strength
 Box_X = 0.6;

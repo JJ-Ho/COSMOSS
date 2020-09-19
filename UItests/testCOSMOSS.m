@@ -143,6 +143,7 @@ classdef testCOSMOSS < matlab.uitest.TestCase & matlab.mock.TestCase
             tc.press(app.Button_SelectModel);
             tc.type(app.hModel.N_Residue,2);
             tc.type(app.hModel.N_Strand,2);
+            tc.choose(app.DropDown_Coupling,'TDC')
             tc.press(app.hModel.Button_Generate);
             tc.choose(app.DropDown_RotAvg,'Isotropic')
             tc.press(app.Button_FTIR);

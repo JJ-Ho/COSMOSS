@@ -20,15 +20,20 @@ end
 %% iteration or single run
 if eq(Sampling,1)   
     
+    % prepare axes for histogram
+    hF_histo = figure;
+    hAx_hiso = axes('Parent',hF_histo);
+    
     % Pre-allocate data ouputs
+    Freq = nan(S.Nmodes,Sample_Num); % this is for analysing local mode frequency distribution
     switch simulationType
         case 'oneD'
             GridSize   = length(I.FreqRange_1D);
             Response1D = zeros(GridSize,1);
         case 'twoD'
             % run the 2D simulation once
-            [SG1,~]    = specFunc(S,I);
-            GridSize   = SG1.SparseMax + 100; 
+            [~,Res1]   = specFunc(S,I);
+            GridSize   = Res1.SparseMax+ 100; 
             I.F_Max_2D = GridSize; % force all the iterations to take this value as it's grid size
             R1   = sparse(GridSize,GridSize);
             R2   = sparse(GridSize,GridSize);
@@ -45,21 +50,15 @@ if eq(Sampling,1)
     % iteration loops
     for i = 1:Sample_Num
         TSTART(i) = tic;
-        
-        % Read GUI inputs directly from the GUI
-        DynamicUpdate = app.CheckBox_DynamicFigUpdate.Value;
-        UpdateStatus  = app.CheckBox_Continue.Value;
-        if and(~eq(i,1), and(eq(DynamicUpdate,1),~eq(UpdateStatus,1)))
-            break
-        end
-        
+                
         % Calculate and accumulate 1D/2D respsonses
         switch simulationType
             case 'oneD' 
-                Tmp_1D     = specFunc(S,I);
+                Tmp_1D = specFunc(S,I);
                 Response1D = Response1D + Tmp_1D.Response1D; % recursive accumulation of signal, note freq is binned and sorted, so direct addition work
-                Tmp_1D.Response1D = Response1D;     
                 
+                Tmp_1D.Response1D = Response1D;
+                Freq(:,i) = Tmp_1D.H.dLocFreq;
             case 'twoD'
                 [Tmp_SG,Tmp_Res] = specFunc(S,I);
                 try % Accumulate result
@@ -81,45 +80,72 @@ if eq(Sampling,1)
                 SpectraGrid.NR2  = NR2  ;
                 SpectraGrid.NR3  = NR3  ;
                 Response = Tmp_Res;
-                
+                Freq(:,i) = Tmp_Res.H.dLocFreq;
+        end
+        
+        
+        % Dynamic update of figure and export output
+        DynamicUpdate = app.CheckBox_DynamicFigUpdate.Value;
+        UpdateStatus  = app.CheckBox_Continue.Value;
+        if and(~eq(i,1), and(eq(DynamicUpdate,1),~eq(UpdateStatus,1)))
+            break
+        end
+        cla(hAx)
+        output.Freq = Freq;
+        
+        while eq(DynamicUpdate,1)
+            % draw histogram of sampling frequency
+            histogram(hAx_hiso,Freq(:))
+            Title_String = [FilesName,' ',num2str(i),'-th run...'];
+            title(hAx_hiso,Title_String,'FontSize',16);
+            
+            switch simulationType            
+                case 'oneD' 
+                    Tmp_1D.FilesName = [FilesName,' local mode sampling ',num2str(i),'-th run...'];
+                    Plot1D(hAx,Tmp_1D,I);
+                    drawnow
+                case 'twoD' % Dynamic update of figure, update every 10 run 
+                    if eq(mod(i,3),0)
+                        CVL = Conv2D(SpectraGrid,I);
+                        CVL.FilesName = [FilesName,' ',num2str(i),'-th run...'];
+                        Plot2D(hAx,CVL,I,Response.SpecType);
+                        drawnow
+                    end
+            end
+            DynamicUpdate = 0;
         end
 
-        % Dynamic update of figure and export output
-        cla(hAx)
-        switch simulationType            
-            case 'oneD' 
-                while ~eq(DynamicUpdate,0)
-                    Tmp_1D.FilesName = [FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title
-                    Plot1D(hAx,Tmp_1D,I);
-                    
-                    output = Tmp_1D;
-                end
-            case 'twoD' % Dynamic update of figure, update every 10 run   
-                while and(~eq(DynamicUpdate,0),eq(mod(i,10),0))
-                    CVL = Conv2D(SpectraGrid,I);
-                    CVL.FilesName = [FilesName,' ',num2str(i),'-th run...']; % pass filesname for figure title
-                    Plot2D(hAx,CVL,I,Response.SpecType);
-                    
-                    output.SpectraGrid = SpectraGrid;
-                    output.Response    = Response;
-                    output.CVL         = CVL;
-                end
-        end
-        drawnow
-        DynamicUpdate = 0;
-        
         TIME(i) = toc(TSTART(i));
         disp(['Run ' num2str(i) ' finished within '  num2str(TIME(i)) '...'])
     end
+    
+    % draw the final spectra and export output
+    switch simulationType
+        case 'oneD'
+            Plot1D(hAx,Tmp_1D,I);
+            output.Response = Tmp_1D;
+        case 'twoD'
+            CVL = Conv2D(SpectraGrid,I);
+            CVL.FilesName = [FilesName,' ',num2str(i),'-th run...'];
+            Plot2D(hAx,CVL,I,Response.SpecType);
+            output.SpectraGrid = SpectraGrid;
+            output.Response    = Response;
+            output.CVL         = CVL;
+    end
+    
     Total_TIME = sum(TIME);
     disp(['Total time: ' num2str(Total_TIME)])
         
 else
     % if not sampling, run single simulation
+    output.Freq = S.LocFreq;
     switch simulationType
         case 'oneD'
-            output = specFunc(S,I);
-            Plot1D(hAx,output,I);
+            Response = specFunc(S,I);
+            Plot1D(hAx,Response,I);
+            
+            output.Response = Response;
+            
         case 'twoD'
             [SpectraGrid,Response] = specFunc(S,I);
             CVL = Conv2D(SpectraGrid,I);

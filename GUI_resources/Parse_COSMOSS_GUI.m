@@ -9,13 +9,16 @@ O.Avg_Mirror = app.DropDown_MirrorPlane.Value;
 % -------------------------------------------------------------------------
 
 % Esemble average ---------------------------------------------------------
-O.Sampling      = app.CheckBox_Sampling.Value;
-O.Sample_Num    = app.EditField_SampleN.Value;
-O.DynamicUpdate = app.CheckBox_DynamicFigUpdate.Value;
-O.UpdateStatus  = app.CheckBox_Continue.Value;
-O.P_FlucCorr    = app.EditField_FluctuationCorrelation.Value;
-O.DD_FWHM       = app.EditField_DD.Value;
-O.ODD_FWHM      = app.EditField_ODD.Value;
+O.Sampling         = app.CheckBox_Sampling.Value;
+O.Sample_Num       = app.EditField_SampleN.Value;
+O.DynamicUpdate    = app.CheckBox_DynamicFigUpdate.Value;
+O.UpdateStatus     = app.CheckBox_Continue.Value;
+O.ViewSampling     = app.CheckBox_ViewSampling.Value;
+O.ViewSamplingMode = app.DropDown_ViewSamplingMode.Value;
+O.isotopeDilution  = app.isotopeDilutionCheckBox.Value;
+O.P_FlucCorr       = app.EditField_FluctuationCorrelation.Value;
+O.DD_FWHM          = app.EditField_DD.Value;
+O.ODD_FWHM         = app.EditField_ODD.Value;
 % -------------------------------------------------------------------------
 
 % Exp parameters 1D -------------------------------------------------------

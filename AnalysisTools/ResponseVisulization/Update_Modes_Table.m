@@ -28,7 +28,7 @@ SpecType = SpecData.SpecType;
 
 if or(strcmp(SpecType,'FTIR'),strcmp(SpecType,'SFG'))
     % Mode Frequency
-    F_1q_V = SpecData.H.Sort_Ex_F1;
+    F_1q_V = SpecData.Response.H.Sort_Ex_F1;
     C_Freq = ImportSortInd(C_Freq,F_1q_V);
 
     % mode index
@@ -37,12 +37,12 @@ if or(strcmp(SpecType,'FTIR'),strcmp(SpecType,'SFG'))
     C_Index     = ImportSortInd(C_Index,Ex_Ind);
     
     % Participation number, percentage of local mode involve 
-    EigV    = SpecData.H.Sort_Ex_V1;
+    EigV    = SpecData.Response.H.Sort_Ex_V1;
     P_Num   = 1./sum(EigV.^4,1)'./Num_Ex_Mode.*100;
     C_P_Num = ImportSortInd(C_P_Num,P_Num);
 
     % Transition dipole vector direction
-    Ex_Mu   = SpecData.Mu.M_Ex_01; % [Nx3]
+    Ex_Mu   = SpecData.Response.Mu.M_Ex_01; % [Nx3]
     Ex_Mu_N = bsxfun(@rdivide,Ex_Mu,sqrt(sum(Ex_Mu.^2,2))).^2; % normalized vector components (%/100)
     C_Mu_V  = ImportSortInd(C_Mu_V,Ex_Mu_N); % (x^2,y^2,z^2)./(x^2+y^2+z^2) so when the sum of the three components = 1
     C_Mu_V.Data = num2cell(sign(Ex_Mu).*Ex_Mu_N); % update the displaied contents with signed values
@@ -173,7 +173,7 @@ switch SpecType
                               C_Mu_V);
                  
     case 'SFG'
-        Ex_Alpha = SpecData.Alpha.M_Ex_01; % [Nx9]
+        Ex_Alpha = SpecData.Response.Alpha.M_Ex_01; % [Nx9]
         
         % deal with norm(alpha)
         Ex_Alpha_Norm = sqrt(sum(Ex_Alpha(:,:).^2,2)); % Norm defined in Silby's paper: JCP 1992, 97, 5607?5615.
@@ -203,7 +203,7 @@ switch SpecType
         C_Mu_V = ImportSortInd(C_Mu_V,Ex_Mu_N_P_Raman.^2); % (x^2,y^2,z^2)./(x^2+y^2+z^2) so when the sum of the three components = 1
         
         % signal size
-        Signal = SpecData.EJLabFrame';
+        Signal = SpecData.Response.EJLabFrame';
         C_Sig = ImportSortInd(C_Sig,Signal);
         
         % diaplay mode properties

@@ -42,7 +42,6 @@ classdef StructureData < handle
     
    methods % Get methods
       function Nmodes    = get.Nmodes(obj)
-           %Nmodes = size(obj.LocFreq,1);
            Nmodes = size(obj.LocMu,1);
       end
       function NAtoms    = get.NAtoms(obj)
@@ -125,6 +124,7 @@ classdef StructureData < handle
       hF          = SD_Draw(obj_SD,varargin)
       Conn        = SD_Connectivity(obj_SD)
       [X,Y,Z]     = SD_gplot3(obj_SD,varargin)
+      obj_Suffled = SD_permuteStrand(obj_SD)
    end
 
 end

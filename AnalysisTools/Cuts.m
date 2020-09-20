@@ -63,7 +63,7 @@ hAx_Contour = hContour.Parent;
 % get the list of figure
 hF_All = get(0,'Children');
 N_F_All = length(hF_All);
-AvaliableFigureStr = cell(N_Contour+1,1);
+AvaliableFigureStr = cell(1,1);
 AvaliableFigureStr{1} = 'Create New';
 for i = 1:N_F_All
     FigName = num2str(hF_All(i).Number);
@@ -72,7 +72,7 @@ end
 
 % ask for selection
 [Choise_hF_Plot,~] = listdlg('PromptString','Select a figure to place cuts',...
-    'SelectionMode','Single',...
+    'SelectionMode','single',...
     'ListSize',[300,160],...
     'ListString',AvaliableFigureStr);
 

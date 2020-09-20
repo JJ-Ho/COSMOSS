@@ -76,8 +76,8 @@ parse(INPUT,GUI_Inputs_C{:});
 Plot_Atoms = INPUT.Results.Plot_Atoms;
 Plot_Bonds = INPUT.Results.Plot_Bonds;
 Plot_Axis  = INPUT.Results.Plot_Axis;
-Plot_Label     = INPUT.Results.Plot_Label;
-L_Index        = INPUT.Results.L_Index;
+Plot_Label = INPUT.Results.Plot_Label;
+L_Index    = INPUT.Results.L_Index;
 
 %% reassign variable names
 XYZ      = SData.XYZ;

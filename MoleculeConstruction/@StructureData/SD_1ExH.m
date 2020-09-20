@@ -59,31 +59,24 @@ switch LocFreqType
         obj_SD.LocFreq = LocFreq;
         LocAnharm = ones(obj_SD.Nmodes,1).*Anharm;
         
-    case 'NCO'
-        S = GUI_Inputs.StructureInputs;
-        N_Modes_toggle = logical(S(:,1));
-        S = S(N_Modes_toggle,:);
-        LocFreq = S(:,9);
-        LocAnharm = S(:,10);
-        
     case 'Cavity'
         % read the previously set frequency array
         LocFreq   = obj_SD.LocFreq;
         LocAnharm = zeros(obj_SD.Nmodes,1);
         
     otherwise
-        LocFreq = ones(obj_SD.Nmodes,1).*NLFreq;
-        LocAnharm = ones(obj_SD.Nmodes,1).*Anharm;
+        % the LocFreq and LocAnharm will be dtermined by the model
+        % construction function
+        LocFreq   = obj_SD.LocFreq;
+        LocAnharm = obj_SD.LocAnharm;
 end
 
 %% Apply isotope labeling
-if ~isempty(L_Index)
-    LocFreq(L_Index) = LFreq;  
-end
+% if ~isempty(L_Index)
+%     LocFreq(L_Index) = LFreq;  
+% end
 
-obj_1ExH.LocFreq = LocFreq;
-
-% Update Anharmonicity
+obj_1ExH.LocFreq   = LocFreq;
 obj_1ExH.LocAnharm = LocAnharm;
 
 %% Generate Off-Diagonal Elements (Beta)

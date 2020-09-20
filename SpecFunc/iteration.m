@@ -3,13 +3,16 @@ function output = iteration(app,specFunc,simulationType)
 I = app.Parse_GUI;
 S = app.Structure;
 
-Sampling   = I.Sampling;
-Sample_Num = I.Sample_Num;
-existFig   = I.existFig;
-hFig       = I.hFig;
-FilesName  = S.FilesName;
+% parameters for each loop run
+Sampling         = I.Sampling;
+Sample_Num       = I.Sample_Num;
+SeeSampling      = I.ViewSampling;
+ViewSamplingMode = I.ViewSamplingMode;
+existFig         = I.existFig;
+hFig             = I.hFig;
+FilesName        = S.FilesName;
 
-%% deal with figure handles
+%% deal with spectral figure handles
 if existFig
     hAx = findobj(evalin('base',hFig),'Type','Axes');
 else
@@ -20,15 +23,17 @@ end
 %% iteration or single run
 if eq(Sampling,1)   
     
-    % prepare axes for histogram
-    hF_histo = figure;
-    hAx_hiso = axes('Parent',hF_histo);
+    if SeeSampling
+        % prepare axes for histogram
+        hF_histo = figure;
+        hAx_hiso = axes('Parent',hF_histo);
+    end
     
     % Pre-allocate data ouputs
-    Freq = nan(S.Nmodes,Sample_Num); % this is for analysing local mode frequency distribution
     switch simulationType
         case 'oneD'
-            GridSize   = length(I.FreqRange_1D);
+            Res1       = specFunc(S,I);
+            GridSize   = length(Res1.freq_OneD);
             Response1D = zeros(GridSize,1);
         case 'twoD'
             % run the 2D simulation once
@@ -42,8 +47,10 @@ if eq(Sampling,1)
             NR2  = sparse(GridSize,GridSize);
             NR3  = sparse(GridSize,GridSize);
     end
-    
-    % prepare the timer
+    % pre-allocation for the extra sampling parameteres
+    sampledData = nan(S.Nmodes,Sample_Num);     
+   
+    % prepare the timer record
     TSTART = zeros(Sample_Num,1,'uint64');
     TIME   = zeros(Sample_Num,1);
     
@@ -51,14 +58,14 @@ if eq(Sampling,1)
     for i = 1:Sample_Num
         TSTART(i) = tic;
                 
-        % Calculate and accumulate 1D/2D respsonses
+        % Calculate and accumulate 1D/2D respsonses, Note the real change
+        % of parameteres process happen in the "H_handler.m" function
         switch simulationType
             case 'oneD' 
-                Tmp_1D = specFunc(S,I);
-                Response1D = Response1D + Tmp_1D.Response1D; % recursive accumulation of signal, note freq is binned and sorted, so direct addition work
+                Tmp_Res = specFunc(S,I);
+                Response1D = Response1D + Tmp_Res.Response1D; % recursive accumulation of signal, note freq is binned and sorted, so direct addition work
                 
-                Tmp_1D.Response1D = Response1D;
-                Freq(:,i) = Tmp_1D.H.dLocFreq;
+                Tmp_Res.Response1D = Response1D;
             case 'twoD'
                 [Tmp_SG,Tmp_Res] = specFunc(S,I);
                 try % Accumulate result
@@ -80,29 +87,35 @@ if eq(Sampling,1)
                 SpectraGrid.NR2  = NR2  ;
                 SpectraGrid.NR3  = NR3  ;
                 Response = Tmp_Res;
-                Freq(:,i) = Tmp_Res.H.dLocFreq;
+
         end
         
+        % save the extra sampling parameteres
+        switch ViewSamplingMode
+            case 'Frequency'
+                sampledData(:,i) = Tmp_Res.H.dLocFreq;
+            case 'Mode Index'
+                modeIndArray = 1:S.Nmodes;
+                L_IndexArray = logical(Tmp_Res.H.Extra.L_Index);
+                sampledData(L_IndexArray,i) = modeIndArray(L_IndexArray);
+        end
+        output.sampledData = sampledData;
         
-        % Dynamic update of figure and export output
+        % loop interuptable parameteres then check if forced stop
         DynamicUpdate = app.CheckBox_DynamicFigUpdate.Value;
         UpdateStatus  = app.CheckBox_Continue.Value;
         if and(~eq(i,1), and(eq(DynamicUpdate,1),~eq(UpdateStatus,1)))
             break
         end
-        cla(hAx)
-        output.Freq = Freq;
         
+        % dynamically update the figure
+        cla(hAx)
         while eq(DynamicUpdate,1)
-            % draw histogram of sampling frequency
-            histogram(hAx_hiso,Freq(:))
-            Title_String = [FilesName,' ',num2str(i),'-th run...'];
-            title(hAx_hiso,Title_String,'FontSize',16);
-            
+            % update spectra
             switch simulationType            
                 case 'oneD' 
-                    Tmp_1D.FilesName = [FilesName,' local mode sampling ',num2str(i),'-th run...'];
-                    Plot1D(hAx,Tmp_1D,I);
+                    Tmp_Res.FilesName = [FilesName,' local mode sampling ',num2str(i),'-th run...'];
+                    Plot1D(hAx,Tmp_Res,I);
                     drawnow
                 case 'twoD' % Dynamic update of figure, update every 10 run 
                     if eq(mod(i,3),0)
@@ -112,6 +125,22 @@ if eq(Sampling,1)
                         drawnow
                     end
             end
+            
+            % Update sampling parameteres
+            if SeeSampling
+                histogram(hAx_hiso,sampledData(:))
+                Title_String = [FilesName,' ',num2str(i),'-th run...'];
+                title(hAx_hiso,Title_String,'FontSize',16);
+                switch ViewSamplingMode
+                    case 'Frequency' % draw histogram of sampling frequency  
+                        XLabelString = 'cm^{-1}';
+                    case 'Mode Index'
+                        XLabelString = 'Mode Index';
+                end
+                hAx_hiso.XLabel.String = XLabelString;
+            end
+            
+            
             DynamicUpdate = 0;
         end
 
@@ -122,8 +151,8 @@ if eq(Sampling,1)
     % draw the final spectra and export output
     switch simulationType
         case 'oneD'
-            Plot1D(hAx,Tmp_1D,I);
-            output.Response = Tmp_1D;
+            Plot1D(hAx,Tmp_Res,I);
+            output.Response = Tmp_Res;
         case 'twoD'
             CVL = Conv2D(SpectraGrid,I);
             CVL.FilesName = [FilesName,' ',num2str(i),'-th run...'];
@@ -132,13 +161,26 @@ if eq(Sampling,1)
             output.Response    = Response;
             output.CVL         = CVL;
     end
+    if SeeSampling
+        % draw histogram of sampling frequency
+        histogram(hAx_hiso,sampledData(:))
+        Title_String = [FilesName,' sampling distribution'];
+        title(hAx_hiso,Title_String,'FontSize',16);
+        switch ViewSamplingMode
+            case 'Frequency' % draw histogram of sampling frequency  
+                XLabelString = 'cm^{-1}';
+            case 'Mode Index'
+                XLabelString = 'Mode Index';
+        end
+        hAx_hiso.XLabel.String = XLabelString;
+    end
     
     Total_TIME = sum(TIME);
     disp(['Total time: ' num2str(Total_TIME)])
         
 else
     % if not sampling, run single simulation
-    output.Freq = S.LocFreq;
+    output.sampledData = '';
     switch simulationType
         case 'oneD'
             Response = specFunc(S,I);

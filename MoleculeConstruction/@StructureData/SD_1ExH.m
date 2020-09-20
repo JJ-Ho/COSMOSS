@@ -59,13 +59,6 @@ switch LocFreqType
         obj_SD.LocFreq = LocFreq;
         LocAnharm = ones(obj_SD.Nmodes,1).*Anharm;
         
-    case 'NCO'
-        S = GUI_Inputs.StructureInputs;
-        N_Modes_toggle = logical(S(:,1));
-        S = S(N_Modes_toggle,:);
-        LocFreq = S(:,9);
-        LocAnharm = S(:,10);
-        
     case 'Cavity'
         % read the previously set frequency array
         LocFreq   = obj_SD.LocFreq;
@@ -79,9 +72,9 @@ switch LocFreqType
 end
 
 %% Apply isotope labeling
-if ~isempty(L_Index)
-    LocFreq(L_Index) = LFreq;  
-end
+% if ~isempty(L_Index)
+%     LocFreq(L_Index) = LFreq;  
+% end
 
 obj_1ExH.LocFreq   = LocFreq;
 obj_1ExH.LocAnharm = LocAnharm;

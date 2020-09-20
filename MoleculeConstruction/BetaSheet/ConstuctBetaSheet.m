@@ -261,7 +261,7 @@ Ind_O = Ind_H -1;
 S_BSheet = StructureData;
 S_BSheet.XYZ        = XYZ;
 S_BSheet.AtomName   = AtomName;
-S_BSheet.Extra.ChainID = {'     '}; % output dummy space array to skip Chain recognition 
+S_BSheet.Extra.ChainID = {'     '}; % output dummy space array to skip Chain recognition in SD_GetAmindeI.m
 
 % Find all the amide modes and their default values
 S_BSheet = SD_GetAmideI(S_BSheet);
@@ -281,6 +281,7 @@ Extra.Ind_O             = Ind_O;
 Extra.TransV            = TransV;
 Extra.TwistV            = TwistV;
 Extra.RotV_D            = RotV_D;
+Extra.L_Index           = LocModeData(:,5);
 S_BSheet.Extra = Extra;
 
 %% Modify Mode frequency, anharmonicity, and Labling according to the GUI inputs

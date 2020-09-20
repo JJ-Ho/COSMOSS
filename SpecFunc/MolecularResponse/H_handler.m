@@ -14,34 +14,43 @@ GUI_Inputs_C      = GUI_Inputs_C';
 INPUT = inputParser;
 INPUT.KeepUnmatched = true;
 
-defaultSampling     = 0;
-defaultDD_FWHM      = 0;
-defaultODD_FWHM     = 0;
-defaultP_FlucCorr   = 0;
+defaultSampling        = 0;
+defaultDD_FWHM         = 0;
+defaultODD_FWHM        = 0;
+defaultP_FlucCorr      = 0;
+defaultisotopeDilution = 0;
 
-addOptional(INPUT,'Sampling'    ,defaultSampling);
-addOptional(INPUT,'DD_FWHM'     ,defaultDD_FWHM);
-addOptional(INPUT,'ODD_FWHM'    ,defaultODD_FWHM);
-addOptional(INPUT,'P_FlucCorr'  ,defaultP_FlucCorr);
+addOptional(INPUT,'Sampling'       ,defaultSampling);
+addOptional(INPUT,'DD_FWHM'        ,defaultDD_FWHM);
+addOptional(INPUT,'ODD_FWHM'       ,defaultODD_FWHM);
+addOptional(INPUT,'P_FlucCorr'     ,defaultP_FlucCorr);
+addOptional(INPUT,'isotopeDilution',defaultisotopeDilution);
 
 parse(INPUT,GUI_Inputs_C{:});
 
-Sampling     = INPUT.Results.Sampling;
-DD_FWHM      = INPUT.Results.DD_FWHM;
-ODD_FWHM     = INPUT.Results.ODD_FWHM;
-P_FlucCorr   = INPUT.Results.P_FlucCorr;
+Sampling        = INPUT.Results.Sampling;
+DD_FWHM         = INPUT.Results.DD_FWHM;
+ODD_FWHM        = INPUT.Results.ODD_FWHM;
+P_FlucCorr      = INPUT.Results.P_FlucCorr;
+isotopeDilution = INPUT.Results.isotopeDilution;
 
 %% reassign variable names
 N = SData.Nmodes;
 SData_tobedrop = SD_Copy(SData); % to avoide later DD/ODD dBeta modifications being accumulated
 
-%% check if apply random sampling
+%% check if apply random sampling then change of parameters
 if Sampling
+
     DD_std  =  DD_FWHM/(2*sqrt(2*log(2)));
     ODD_std = ODD_FWHM/(2*sqrt(2*log(2)));
 else
     DD_std  = 0;
     ODD_std = 0;
+end
+
+% permute strand order for betasheet isotop dilution
+if isotopeDilution 
+    SData_tobedrop = SD_permuteStrand(SData);
 end
 
 %% Diagonal/Off-Diaginal disorder if any
@@ -77,8 +86,6 @@ if strcmp(ExMode,'TwoEx')
     TwoExPart     = TwoExH.TwoExPart;    
 end
 
-
-
 %% Diagonalize the full hamiltonian
 Sort_Ex_F1 = [];
 Sort_Ex_V1 = [];
@@ -90,7 +97,6 @@ if strcmp(ExMode,'TwoEx')
 else
     FullH = OneExH;
 end 
-
 
 % Diagonalization
 if ~isobject(SData_tobedrop.LocFreq)
@@ -122,3 +128,4 @@ Output.TwoExPart     = TwoExPart;
 Output.OneExH        = OneExH;
 Output.dLocFreq      = SData_tobedrop.LocFreq;
 Output.dBeta         = SData_tobedrop.Beta;
+Output.Extra         = SData_tobedrop.Extra;

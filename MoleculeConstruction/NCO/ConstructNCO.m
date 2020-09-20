@@ -46,6 +46,8 @@ Psi_monomer   = S(:,3)./180*pi; % turn to radius unit
 Theta_monomer = S(:,4)./180*pi; % turn to radius unit
 Displacement  = S(:,5:7);
 ScalingFactor = S(:,8);
+LocFreq       = S(:,9);
+LocAnharm     = S(:,10);
 
 Num_Modes = size(Phi_monomer,1);
 
@@ -111,6 +113,8 @@ NCO.FilesName  = 'Acid N-mer';
 NCO.GUI_Inputs = GUI_Inputs;
 NCO.hPlotFunc  = @PlotXYZ_Grid;
 NCO.GUI_Inputs = GUI_Inputs;
+NCO.LocFreq    = LocFreq;
+NCO.LocAnharm  = LocAnharm;
 
 %% Calculate One Exciton Hamiltonian
 NCO = SD_1ExH(NCO); 

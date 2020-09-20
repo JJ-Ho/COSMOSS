@@ -15,6 +15,20 @@ switch app.ParentGUI.GUI_Tag
         disp('The ParentGUI type is not supported...')
 end
 
+%% Check which type of structure model is used and modify the main GUI accordingly
+switch app.GUI_Tag
+    case 'BSheet'
+        app.ParentGUI.DropDown_ViewSamplingMode.Enable = 1;
+        app.ParentGUI.isotopeDilutionCheckBox.Enable = 1;
+        app.ParentGUI.isotopeDilutionCheckBox.Value  = 0;
+    otherwise
+        app.ParentGUI.DropDown_ViewSamplingMode.Enable = 0;
+        app.ParentGUI.DropDown_ViewSamplingMode.Value  = app.ParentGUI.DropDown_ViewSamplingMode.Items(1);
+        app.ParentGUI.isotopeDilutionCheckBox.Enable = 0;
+        app.ParentGUI.isotopeDilutionCheckBox.Value  = 0;
+end
+    
+
 %% Display update message
 timeStamp    = datetime('now','TimeZone','local');
 timeSamepStr = datestr(timeStamp,'yy/mm/dd HH:MM:SS');

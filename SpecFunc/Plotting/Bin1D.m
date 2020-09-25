@@ -4,7 +4,7 @@ function AccuGrid = Bin1D(Freq,Signal,FreqRange)
     NumFreq = length(FreqRange);
 
     % round to 1cm-1 resolution and shift the frequency to matrix subscript
-    FreqInd = round(Freq) - FreqMin + 1;
+    FreqInd = round(Freq - FreqMin) + 1;
     
         
     % remove any response out of frequency range

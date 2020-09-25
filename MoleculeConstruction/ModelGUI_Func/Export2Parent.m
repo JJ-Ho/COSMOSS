@@ -18,16 +18,22 @@ end
 %% Check which type of structure model is used and modify the main GUI accordingly
 switch app.GUI_Tag
     case 'BSheet'
-        app.ParentGUI.DropDown_ViewSamplingMode.Enable = 1;
-        app.ParentGUI.isotopeDilutionCheckBox.Enable = 1;
+        app.ParentGUI.DropDown_ViewSamplingMode.Enable = 'on';
+        app.ParentGUI.isotopeDilutionCheckBox.Enable = 0;
         app.ParentGUI.isotopeDilutionCheckBox.Value  = 0;
     otherwise
-        app.ParentGUI.DropDown_ViewSamplingMode.Enable = 0;
+        app.ParentGUI.DropDown_ViewSamplingMode.Enable = 'off';
         app.ParentGUI.DropDown_ViewSamplingMode.Value  = app.ParentGUI.DropDown_ViewSamplingMode.Items(1);
         app.ParentGUI.isotopeDilutionCheckBox.Enable = 0;
         app.ParentGUI.isotopeDilutionCheckBox.Value  = 0;
 end
     
+%% Update the figure frequency range
+buffer = 50;
+app.ParentGUI.EditField_FreqMin_1D.Value = min(app.Structure.LocFreq)-buffer;
+app.ParentGUI.EditField_FreqMax_1D.Value = max(app.Structure.LocFreq)+buffer;
+app.ParentGUI.EditField_FreqMin_2D.Value = min(app.Structure.LocFreq)-buffer;
+app.ParentGUI.EditField_FreqMax_2D.Value = max(app.Structure.LocFreq)+buffer;
 
 %% Display update message
 timeStamp    = datetime('now','TimeZone','local');

@@ -12,6 +12,12 @@ function S_G09_MF = Load_G09(app,GUI_Inputs)
 % S_G09_MF.Extra 
 % S_G09_MF.LocFreq   
 % S_G09_MF.LocAnharm 
+%
+% Debug:
+% app.ParentGUI         = struct;
+% app.ParentGUI.GUI_Tag = 'StandAlong';
+% app.fileChooser = DefaultFileChooser;
+% GUI_Input = '';
 
 % Copyright Jia-Jung Ho, 2013-2020
 

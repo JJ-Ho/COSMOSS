@@ -30,21 +30,35 @@
 
 % Transition Dipole Vector (TDV) from Gaussian w anharmonic  correction
 [TDV] B  -6.25763E-05 -7.59804E+00  3.37271E-14
+% [TDV] SS  2.42459E-03 -1.45152E+00  6.60379E-13
+% [TDV] AS -4.68490E+00 -7.76693E-04  2.28983E-14
 
 % Raman tensor com from polarizability deriaion of gaussian job [XX XY XZ YX YY YZ ZX ZY ZZ]
 [Raman] B  -0.346081D+00 -0.224281D-05  0.000000D+00 -0.224281D-05  0.788830D+00  0.000000D+00 0.000000D+00  0.000000D+00  0.102390D+00
+% [Raman] SS  0.224035D+01 -0.738893D-03  0.000000D+00 -0.738893D-03  0.110111D+01  0.000000D+00 0.000000D+00  0.000000D+00 -0.138801D+00
+% [Raman] AS  0.120452D-02  0.134547D+01  0.000000D+00  0.134547D+01  0.569517D-03  0.000000D+00 0.000000D+00  0.000000D+00 -0.741209D-04
+
 
 % Harmonic IR intensity
 [Int_Harm]   IR    B  57.73016784
+% [Int_Harm]   IR    SS  2.10691275
+% [Int_Harm]   IR    AS 21.94825417
 
 % Harmonic Raman intensity
 [Int_Harm]   Raman B  0.08344518
+% [Int_Harm]   Raman SS 0.39699591
+% [Int_Harm]   Raman AS 0.18078930
 
 % Anharmonic IR intensity
 [Int_AnHarm] IR    B  60.02460725
+% [Int_AnHarm] IR    SS  1.08930131
+% [Int_AnHarm] IR    AS 17.31895355
 
 % Anharmonic Raman intensity
 [Int_AnHarm] Raman B  0.08793573
+% [Int_AnHarm] Raman SS 0.20888972
+% [Int_AnHarm] Raman AS 0.45770439
+
 
 % Anharmonic Corretion 
 [AnharmCorrect] yes
@@ -55,7 +69,11 @@
 
 % Eigen mode frequencies, anharmonic corrected
 [Freq] B 1643.405 
+% [Freq] SS 3190.871
+% [Freq] AS 3330.252
 
 [Freq] 2B 3308.260
+% [Freq] 2SS 6353.396
+% [Freq] 2AS 6552.199
 
 
